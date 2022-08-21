@@ -37,7 +37,7 @@ const config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/otterize/docs/tree/main/',
+            'https://github.com/otterize/docs/edit/main/',
         },
         blog: false,
         theme: {
@@ -53,15 +53,21 @@ const config = {
       navbar: {
         title: 'Otterize',
         logo: {
-          alt: 'My Site Logo',
+          alt: 'Otterize Logo',
           src: 'img/logo.svg',
         },
         items: [
           {
             type: 'doc',
-            docId: 'intro',
+            docId: 'documentation/introduction/welcome',
             position: 'left',
-            label: 'Tutorial',
+            label: 'Documentation',
+          },
+          {
+            type: 'doc',
+            docId: 'examples/intro',
+            position: 'left',
+            label: 'Examples',
           },
           {
             href: 'https://github.com/otterize',
