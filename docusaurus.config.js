@@ -9,7 +9,7 @@ const config = {
   title: 'Otterize',
   url: 'https://docs.otterize.com',
   baseUrl: '/',
-  onBrokenLinks: 'throw',
+  onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
 
@@ -86,16 +86,8 @@ const config = {
             title: 'Community',
             items: [
               {
-                label: 'Stack Overflow',
-                href: 'https://stackoverflow.com/questions/tagged/docusaurus',
-              },
-              {
-                label: 'Discord',
-                href: 'https://discordapp.com/invite/docusaurus',
-              },
-              {
-                label: 'Twitter',
-                href: 'https://twitter.com/docusaurus',
+                label: 'Join us on Slack',
+                href: '...',
               },
             ],
           },
@@ -104,11 +96,11 @@ const config = {
             items: [
               {
                 label: 'Otterize',
-                to: '/',
+                to: 'https://otterize.com',
               },
               {
                 label: 'Blog',
-                to: '/blog',
+                to: 'https://otterize.com/blog',
               },
               {
                 label: 'GitHub',
