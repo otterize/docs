@@ -1,11 +1,10 @@
 ---
 sidebar_position: 1
-slug: /
 ---
 
 # Intro
 
-Let's discover **Docusaurus in less than 5 minutes**.
+Get started with Otterize.
 
 ## Getting Started
 
