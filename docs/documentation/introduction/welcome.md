@@ -3,7 +3,7 @@ sidebar_position: 1
 slug: /
 ---
 
-# Quickstart
+# Welcome
 
 Let's try Otterize for Kubernetes out.
 

@@ -2,7 +2,7 @@
 sidebar_position: 1
 ---
 
-# Intro
+# Quickstart
 
 Get started with Otterize.
 

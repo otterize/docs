@@ -26,5 +26,5 @@ jobs:
         with:
           personal_token: ${{ secrets.OTTERIZEBOT_GITHUB_TOKEN }}
           publish_dir: ./build
-          user_name: otterizebot[bot]
-          user_email: otterizebot[bot]@users.noreply.github.com
+          user_name: otterizebot
+          user_email: otterizebot@users.noreply.github.com
