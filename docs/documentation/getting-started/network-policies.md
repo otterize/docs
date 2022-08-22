@@ -66,12 +66,12 @@ lab         access-to-kafka-from-client     otterize/server=kafka-lab-05a2278fbe
 ```
 Look at the generated pod labels
 ```shell
-kubectl get pod -n evya nginx-66b6c48dd5-s8xs9 --show-labels
+kubectl get pod -n lab client-66b6c48dd5-s8xs9 --show-labels
 ```
 ```shell
 
 NAME                      READY   STATUS    RESTARTS    AGE     LABELS
-nginx-66b6c48dd5-s8xs9    1/1     Running   0           7d1h    app=nginx,otterize/server=nginx-evya-05a2278fbe7a
+client-66b6c48dd5-s8xs9    1/1     Running   0           7d1h    app=client,otterize/server=client-lab-05a2278fbe7a
 ```
 
 ## Test what’s protected now relative to scope:
