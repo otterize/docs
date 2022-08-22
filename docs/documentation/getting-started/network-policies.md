@@ -69,7 +69,6 @@ Look at the generated pod labels
 kubectl get pod -n lab client-66b6c48dd5-s8xs9 --show-labels
 ```
 ```shell
-
 NAME                      READY   STATUS    RESTARTS    AGE     LABELS
 client-66b6c48dd5-s8xs9    1/1     Running   0           7d1h    app=client,otterize/server=client-lab-05a2278fbe7a
 ```
