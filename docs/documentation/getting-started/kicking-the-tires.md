@@ -14,13 +14,6 @@ import TOCInline from '@theme/TOCInline'
 ```
 
 
-
-- Assuming there’s already traffic, or it’s easy to generate traffic
-- `helm install`
-- Traffic → intents
-- Change traffic → sniff&diff
-- OK, cool, what can I do with these intents?
-
 ## Enable the Intents Observer
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
