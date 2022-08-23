@@ -16,6 +16,8 @@ spec:
       containers:
         - name: client
           image: alpine/openssl
+          command: [ "/bin/sh", "-c", "--" ]
+          args: [ "trap : TERM INT; sleep infinity & wait" ]
           volumeMounts:
             - name: otterize-credentials
               mountPath: /etc/otterize
