@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client
+spec:
+  selector:
+    matchLabels:
+      app: client
+  template:
+    metadata:
+      labels:
+        app: client
+      annotations:
+        otterize/credentials-secret-name: client-credentials-secret
+    spec:
+      containers:
+        - name: client
+          image: alpine/openssl
+          volumeMounts:
+            - name: otterize-credentials
+              mountPath: /etc/otterize
+              readOnly: true
+      volumes:
+        - name: otterize-credentials
+          secret:
+            secretName: client-credentials-secret
