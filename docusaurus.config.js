@@ -51,9 +51,8 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       navbar: {
-        title: '',
         logo: {
-          alt: 'Otterize Logo',
+          alt: 'Otterize',
           src: 'img/logo.svg',
         },
         items: [
