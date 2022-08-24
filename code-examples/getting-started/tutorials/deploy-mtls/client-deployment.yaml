@@ -1,27 +1,7 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: otterize-tutorial-mtls
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: client-py
-  namespace: otterize-tutorial-mtls
-data:
-  client.py: |
-    import requests
-  
-    resp = requests.get("https://server.otterize-tutorial-mtls/hello",
-        cert=('/etc/otterize/svid.pem', '/etc/otterize/key.pem'),
-        verify="/etc/otterize/bundle.pem")
-    print(resp.text)
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: client
-  namespace: otterize-tutorial-mtls
 spec:
   selector:
     matchLabels:

@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: server
+spec:
+  selector:
+    matchLabels:
+      app: server
+  template:
+    metadata:
+      labels:
+        app: server
+      annotations:
+#        to rename credentials-secret-name
+        otterize/tls-secret-name: server-credentials-secret
+        otterize/cert-ttl: "2592000"
+    spec:
+      containers:
+        - name: server
+          image: golang
+          command: [ "/bin/sh", "-c", "--" ]
+          args: [ "trap : TERM INT; sleep infinity & wait" ]
+          volumeMounts:
+            - mountPath: /app/
+              name: server-go
+            - name: otterize-credentials
+              mountPath: /etc/otterize
+              readOnly: true
+      volumes:
+        - name: server-go
+          configMap:
+            name: server-go
+        - name: otterize-credentials
+          secret:
+            secretName: server-credentials-secret
