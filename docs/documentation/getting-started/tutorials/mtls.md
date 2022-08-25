@@ -30,6 +30,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: client
+  namespace: tutorial
 spec:
   ...
   template:
@@ -42,37 +43,43 @@ spec:
 
 ### Otterize pod identity resolution
 
-Otterize resolves pod identities automatically by using their `resource owner` (e.g. deployment) name.
+Otterize resolves pod identities automatically by using their `resource owner` (e.g. deployment) **name** and **
+namespace**.
+
+In this example the pod identity will be resolved to `client.tutorial`.
 :::note
 To read more about how Otterize resolves pod identities and how to manually control the process pleas read XXX.
 :::
 
-### Annotate deployments
+### Configure deployments
 
-To generate credentials for a pod we need to
-
-1. Annotate the pod to trigger credential generation.
-
-```yaml
-annotations:
-  otterize/credentials-secret-name: client-credentials-secret
-```
-
-2. Mount credentials to pod.
+To generate credentials for a pod we need to update the deployment by annotating it to generate and mount the
+credentials.
 
 ```yaml
 spec:
-  containers:
-    - name: client
+  template:
+    metadata:
       ...
-      volumeMounts:
+      annotations:
+        # highlight-next-line
+        otterize/credentials-secret-name: client-credentials-secret
+    spec:
+      containers:
+        - name: client
+          ...
+          volumeMounts:
+            # highlight-start
+            - name: otterize-credentials
+              mountPath: /etc/otterize
+              readOnly: true
+            # highlight-end
+      volumes:
+        # highlight-start
         - name: otterize-credentials
-          mountPath: /etc/otterize
-          readOnly: true
-  volumes:
-    - name: otterize-credentials
-      secret:
-        secretName: client-credentials-secret
+          secret:
+            secretName: client-credentials-secret
+        # highlight-end
 ```
 
 <details>
@@ -83,6 +90,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: client
+  namespace: tutorial
 spec:
   selector:
     matchLabels:
@@ -92,7 +100,7 @@ spec:
       labels:
         app: client
       annotations:
-        otterize/tls-secret-name: credentials-secret-name
+        otterize/credentials-secret-name: client-credentials-secret
     spec:
       containers:
         - name: client
@@ -110,27 +118,29 @@ spec:
 </details>
 
 :::tip
+You can automate this by templating the process using helm, XXX, YYY. See XXXX.
+:::
+
+:::info
 Visit the [Behavior](/documentation/credential-operator/behavior) section to view all parameters available as pod
 annotation for generating mTLS credentials.
 :::
 
 ## Demo
+
 ### Deploy sample project
 
 Our sample project consists of a client and server pods pair communicating with HTTP over mTLS.
 
 ```bash
-kubectl create namespace otterize-tutorial-mtls
-kubectl apply -f code-examples/getting-started/tutorials/deploy-mtls
-```
-
-```shell title="Result"
-namespace/otterize-tutorial-mtls created
-configmap/client-py created
-deployment.apps/client created
-service/server created
-configmap/server-go created
-deployment.apps/server created
+kubectl create namespace otterize-tutorial-mtls && \
+kubectl apply -n otterize-tutorial-mtls -f code-examples/getting-started/tutorials/deploy-mtls
+> namespace/otterize-tutorial-mtls created
+> configmap/client-py created
+> deployment.apps/client created
+> service/server created
+> configmap/server-go created
+> deployment.apps/server created
 ```
 
 ### Test client and server
@@ -138,33 +148,24 @@ deployment.apps/server created
 The sample provides an HTTP GO server and Python client to showcase how the mTLS certificates can be used.
 You can run them as follows.
 
-```bash title="go run server.go"
+```bash title="go run server.go" footer="g"
 kubectl exec -n otterize-tutorial-mtls -it deploy/server -- go run /app/server.go
+> Waiting for mTLS connections
+> GET /hello mTLS
 ```
 
 ```bash title="python client.py"
 kubectl exec -n otterize-tutorial-mtls -it deploy/client -- python /app/client.py
-```
-
-And get the following results
-
-```bash title="go run server.go"
-Waiting for mTLS connections
-GET /hello mTLS
-```
-
-```bash title="python client.py"
-Hello, world over mTLS!
+> Hello, world over mTLS!
 ```
 
 ### Teardown
+
 To remove the deployed resources run
 
 ```bash
 kubectl delete namespace otterize-tutorial-mtls
-```
-```bash title="Result
-namespace "otterize-tutorial-mtls" deleted
+> namespace "otterize-tutorial-mtls" deleted
 ```
 
 ## What's next
@@ -176,13 +177,15 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
 ## Optional
+
 <details>
 
 Following are examples for how you can test the generated credentials
 
 ### Inspect the certificate
 
-We can use openssl to inspect the generated certificates. The certificates are stored as K8s secrets and are also mounted inside pods.
+We can use openssl to inspect the generated certificates. The certificates are stored as K8s secrets and are also
+mounted inside pods.
 
 We will first retrieve them
 
@@ -199,13 +202,16 @@ kubectl get secret -n otterize-tutorial-mtls client-credentials-secret -o jsonpa
 ```shell
 kubectl exec -n otterize-tutorial-mtls -it deploy/client -- cat /etc/otterize/svid.pem > svid.pem
 ```
+
 </TabItem>
 </Tabs>
 
 And now we can inspect them
+
 ```shell
 openssl x509 -in svid.pem -text | head -n 15
 ```
+
 ```x509 title="Result"
 Certificate:
     Data:
