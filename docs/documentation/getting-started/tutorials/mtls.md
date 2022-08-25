@@ -135,12 +135,14 @@ Our sample project consists of a client and server pods pair communicating with 
 ```bash
 kubectl create namespace otterize-tutorial-mtls && \
 kubectl apply -n otterize-tutorial-mtls -f code-examples/getting-started/tutorials/deploy-mtls
-> namespace/otterize-tutorial-mtls created
-> configmap/client-py created
-> deployment.apps/client created
-> service/server created
-> configmap/server-go created
-> deployment.apps/server created
+```
+```shell title="Output"
+namespace/otterize-tutorial-mtls created
+configmap/client-py created
+deployment.apps/client created
+service/server created
+configmap/server-go created
+deployment.apps/server created
 ```
 
 ### Test client and server
@@ -150,13 +152,17 @@ You can run them as follows.
 
 ```bash title="go run server.go" footer="g"
 kubectl exec -n otterize-tutorial-mtls -it deploy/server -- go run /app/server.go
-> Waiting for mTLS connections
-> GET /hello mTLS
+```
+```shell title="Output"
+Waiting for mTLS connections
+GET /hello mTLS
 ```
 
 ```bash title="python client.py"
 kubectl exec -n otterize-tutorial-mtls -it deploy/client -- python /app/client.py
-> Hello, world over mTLS!
+```
+```shell title="Output"
+Hello, world over mTLS!
 ```
 
 ### Teardown
@@ -165,7 +171,9 @@ To remove the deployed resources run
 
 ```bash
 kubectl delete namespace otterize-tutorial-mtls
-> namespace "otterize-tutorial-mtls" deleted
+```
+```shell title="Output"
+namespace "otterize-tutorial-mtls" deleted
 ```
 
 ## What's next
@@ -212,7 +220,7 @@ And now we can inspect them
 openssl x509 -in svid.pem -text | head -n 15
 ```
 
-```x509 title="Result"
+```x509 title="Output"
 Certificate:
     Data:
         Version: 3 (0x2)
