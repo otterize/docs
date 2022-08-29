@@ -24,7 +24,7 @@ spec:
             - mountPath: /app/
               name: client-py
             - name: otterize-credentials
-              mountPath: /etc/otterize
+              mountPath: /var/otterize/credentials
               readOnly: true
       volumes:
         - name: client-py

@@ -20,7 +20,7 @@ spec:
           args: [ "trap : TERM INT; sleep infinity & wait" ]
           volumeMounts:
             - name: otterize-credentials
-              mountPath: /etc/otterize
+              mountPath: /var/otterize/credentials
               readOnly: true
       volumes:
         - name: otterize-credentials

@@ -27,7 +27,7 @@ data:
     http.HandleFunc("/hello", helloHandler)
     
     // Create a CA certificate pool and add cert.pem to it
-    caCert, err := ioutil.ReadFile("/etc/otterize/bundle.pem")
+    caCert, err := ioutil.ReadFile("/var/otterize/credentials/bundle.pem")
     if err != nil {
       log.Fatal(err)
     }
@@ -48,5 +48,5 @@ data:
     }
     fmt.Println("Waiting for mTLS connections")
     // Listen to HTTPS connections with the server certificate and wait
-    log.Fatal(server.ListenAndServeTLS("/etc/otterize/svid.pem", "/etc/otterize/key.pem"))
+    log.Fatal(server.ListenAndServeTLS("/var/otterize/credentials/svid.pem", "/var/otterize/credentials/key.pem"))
     }

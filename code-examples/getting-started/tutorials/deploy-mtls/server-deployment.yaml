@@ -24,7 +24,7 @@ spec:
             - mountPath: /app/
               name: server-go
             - name: otterize-credentials
-              mountPath: /etc/otterize
+              mountPath: /var/otterize/credentials
               readOnly: true
       volumes:
         - name: server-go

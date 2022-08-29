@@ -6,7 +6,7 @@ sidebar_position: 2
 
 This tutorial will walk you through deploying mTLS certificates on a sample client-server deployment.
 We will install Otterize, look at a sample deployment and learn how Otterize resolves pod identities.
-We will follow by learning how to generate credentials and mount them to pods
+Next, we will generate credentials and mount them to pods
 and wrap it all up by deploying a sample project to practice all concepts in this tutorial.
 
 ```mdx-code-block
@@ -53,7 +53,7 @@ To read more about how Otterize resolves pod identities and how to manually cont
 
 ### Configure deployments
 
-To generate credentials for a pod we need to update the deployment by annotating it to generate and mount the
+To generate credentials for a pod we simply need to update the deployment by annotating it to generate and mount the
 credentials.
 
 ```yaml
@@ -71,7 +71,7 @@ spec:
           volumeMounts:
             # highlight-start
             - name: otterize-credentials
-              mountPath: /etc/otterize
+              mountPath: /var/otterize/credentials
               readOnly: true
             # highlight-end
       volumes:
@@ -107,7 +107,7 @@ spec:
           image: python
           volumeMounts:
             - name: otterize-credentials
-              mountPath: /etc/otterize
+              mountPath: /var/otterize/credentials
               readOnly: true
       volumes:
         - name: otterize-credentials
@@ -208,7 +208,7 @@ kubectl get secret -n otterize-tutorial-mtls client-credentials-secret -o jsonpa
   <TabItem value="secret-pod" label="K8s pod mount" default>
 
 ```shell
-kubectl exec -n otterize-tutorial-mtls -it deploy/client -- cat /etc/otterize/svid.pem > svid.pem
+kubectl exec -n otterize-tutorial-mtls -it deploy/client -- cat /var/otterize/credentials/svid.pem > svid.pem
 ```
 
 </TabItem>
