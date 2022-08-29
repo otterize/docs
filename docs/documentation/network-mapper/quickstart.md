@@ -4,7 +4,7 @@ sidebar_position: 1
 
 # Quickstart
 
-Deploy and try out the intents observer in less than 5 minutes.
+Deploy and try out the Network Mapper in less than 5 minutes.
 
 ## Getting Started
 

@@ -8,7 +8,7 @@ Install the Intents Operator.
 
 ## Getting Started
 
-Try out Otterize for Kubernetes NetworkPolicies, Otterize for Kafka or the Intents Observer.
+Try out Otterize for Kubernetes NetworkPolicies, Otterize for Kafka or the Network Mapper.
 
 ### What you'll need
 

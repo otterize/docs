@@ -12,7 +12,7 @@ import TOCInline from '@theme/TOCInline'
 <TOCInline toc={toc} />
 ```
 
-## Enable the Intents Observer
+## Enable the Network Mapper
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
@@ -120,7 +120,7 @@ otterize observer export -o yaml
 
 One of the benefits for using the network mapper is the ability to track changes over time for communication within your
 cluster.
-Let's add traffic to the cluster and see how the Intents Observer tracks it. You can do that by deploying our example
+Let's add traffic to the cluster and see how the Network Mapper tracks it. You can do that by deploying our example
 which
 consists of two pods: client and server, communicating over HTTP.
 

@@ -8,4 +8,4 @@ How we resolve services in Kubernetes.
 
 ### Additional resources
 
-References to Intents observer, SPIRE integration operator, and Intents operator.
+References to Network Mapper, SPIRE integration operator, and Intents operator.
