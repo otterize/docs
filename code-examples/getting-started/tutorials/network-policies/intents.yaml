@@ -1,0 +1,10 @@
+apiVersion: otterize.com/v1alpha1
+kind: Intents
+metadata:
+  name: client-allowed
+spec:
+  service:
+    name: client-allowed
+    calls:
+      - type: HTTP
+        server: server-allowed

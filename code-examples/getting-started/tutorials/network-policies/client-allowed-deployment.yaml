@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client-allowed
+spec:
+  selector:
+    matchLabels:
+      app: client-allowed
+  template:
+    metadata:
+      labels:
+        app: client-allowed
+    spec:
+      containers:
+        - name: client-allowed
+          image: alpine/curl
+          command: [ "/bin/sh", "-c", "--" ]
+          args: [ "while true; do curl -si server; sleep 2; done" ]
