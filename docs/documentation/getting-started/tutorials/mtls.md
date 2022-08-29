@@ -136,7 +136,10 @@ Our sample project consists of a client and server pods pair communicating with 
 kubectl create namespace otterize-tutorial-mtls && \
 kubectl apply -n otterize-tutorial-mtls -f code-examples/getting-started/tutorials/deploy-mtls
 ```
-```shell title="Output"
+<details>
+<summary>Output</summary>
+
+```shell
 namespace/otterize-tutorial-mtls created
 configmap/client-py created
 deployment.apps/client created
@@ -144,6 +147,7 @@ service/server created
 configmap/server-go created
 deployment.apps/server created
 ```
+</details>
 
 ### Test client and server
 
@@ -172,9 +176,13 @@ To remove the deployed resources run
 ```bash
 kubectl delete namespace otterize-tutorial-mtls
 ```
-```shell title="Output"
+<details>
+<summary>Output</summary>
+
+```shell
 namespace "otterize-tutorial-mtls" deleted
 ```
+</details>
 
 ## What's next
 

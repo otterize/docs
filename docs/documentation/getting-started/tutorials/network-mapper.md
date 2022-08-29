@@ -128,13 +128,16 @@ consists of two pods: client and server, communicating over HTTP.
 kubectl create namespace otterize-tutorial-mapper && \
 kubectl apply -n otterize-tutorial-mapper -f code-examples/getting-started/tutorials/network-mapper
 ```
+<details>
+<summary>Output</summary>
 
-```shell title="Output"
+```shell
 namespace/otterize-tutorial-mapper created
 deployment.apps/client created
 deployment.apps/server created
 service/server created
 ```
+</details>
 
 And now export the updated observed intents. There you will now see the client and server pods communication in addition
 to the previously observed traffic.
@@ -163,10 +166,13 @@ To remove the deployed resources run
 ```bash
 kubectl delete namespace otterize-tutorial-mapper
 ```
+<details>
+<summary>Output</summary>
 
 ```shell title="Output"
 namespace "otterize-tutorial-mapper" deleted
 ```
+</details>
 
 ## What's next
 
