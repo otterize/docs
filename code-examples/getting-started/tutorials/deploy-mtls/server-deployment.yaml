@@ -18,8 +18,7 @@ spec:
       containers:
         - name: server
           image: golang
-          command: [ "/bin/sh", "-c", "--" ]
-          args: [ "trap : TERM INT; sleep infinity & wait" ]
+          command: [ "go", "run", "/app/server.go" ]
           volumeMounts:
             - mountPath: /app/
               name: server-go

@@ -6,5 +6,5 @@ spec:
   service:
     name: client-allowed
     calls:
-      - type: HTTP
-        server: server-allowed
+      - server: server
+        type: HTTP

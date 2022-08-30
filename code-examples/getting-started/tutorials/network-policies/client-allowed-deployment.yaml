@@ -15,4 +15,4 @@ spec:
         - name: client-allowed
           image: alpine/curl
           command: [ "/bin/sh", "-c", "--" ]
-          args: [ "while true; do curl -si server; sleep 2; done" ]
+          args: [ "while true; do timeout 2 curl -si server || echo \"curl timed out\"; sleep 2; done" ]
