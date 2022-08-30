@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: client
+  namespace: otterize-tutorial-mtls
 spec:
   selector:
     matchLabels:
@@ -17,19 +18,19 @@ spec:
     spec:
       containers:
         - name: client
-          image: broadinstitute/python-requests
+          image: node
           command: [ "/bin/sh", "-c", "--" ]
-          args: [ " while true; do python /app/client.py; sleep 2; done;" ]
+          args: [ "while true; do node /app/client.js; sleep 2; done" ]
           volumeMounts:
             - mountPath: /app/
-              name: client-py
+              name: client-js
             - name: otterize-credentials
               mountPath: /var/otterize/credentials
               readOnly: true
       volumes:
-        - name: client-py
+        - name: client-js
           configMap:
-            name: client-py
+            name: client-js
         - name: otterize-credentials
           secret:
             secretName: client-credentials-secret

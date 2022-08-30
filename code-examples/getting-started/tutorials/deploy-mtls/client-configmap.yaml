@@ -1,12 +1,30 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: client-py
+  name: client-js
+  namespace: otterize-tutorial-mtls
 data:
-  client.py: |
-    import requests
+  client.js: |
+    const fs = require('fs');
+    const https = require('https');
     
-    resp = requests.get("https://server.otterize-tutorial-mtls/hello",
-                        cert=('/var/otterize/credentials/svid.pem', '/var/otterize/credentials/key.pem'),
-                        verify="/var/otterize/credentials/bundle.pem")
-    print(resp.text)
+    const options = {
+    hostname: 'server.otterize-tutorial-mtls',
+    port: 443,
+    path: '/hello',
+    method: 'GET',
+    cert: fs.readFileSync('/var/otterize/credentials/svid.pem'),
+    key: fs.readFileSync('/var/otterize/credentials/key.pem'),
+    ca: fs.readFileSync('/var/otterize/credentials/bundle.pem')
+    }
+      
+      const req = https.request(
+      options,
+      res => {
+      res.on('data', function (data) {
+      console.log(data.toString())
+      });
+    }
+    );
+    
+    req.end();

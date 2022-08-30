@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: server
+  namespace: otterize-tutorial-mtls
 spec:
   selector:
     matchLabels:
@@ -17,18 +18,18 @@ spec:
     spec:
       containers:
         - name: server
-          image: golang
-          command: [ "go", "run", "/app/server.go" ]
+          image: node
+          command: [ "node", "/app/server.js" ]
           volumeMounts:
             - mountPath: /app/
-              name: server-go
+              name: server-js
             - name: otterize-credentials
               mountPath: /var/otterize/credentials
               readOnly: true
       volumes:
-        - name: server-go
+        - name: server-js
           configMap:
-            name: server-go
+            name: server-js
         - name: otterize-credentials
           secret:
             secretName: server-credentials-secret
