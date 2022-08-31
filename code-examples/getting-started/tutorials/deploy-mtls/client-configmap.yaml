@@ -21,10 +21,10 @@ data:
       const req = https.request(
       options,
       res => {
-      res.on('data', function (data) {
-      console.log(data.toString())
-      });
-    }
+        res.on('data', function (data) {
+            console.log(data.toString())
+        });
+      }
     );
     
     req.end();

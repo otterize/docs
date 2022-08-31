@@ -1,39 +1,17 @@
 ---
-sidebar_position: 1
+sidebar_position: 2
 ---
-
-# Network Mapper
-
-Get started with Otterize.
-
-```mdx-code-block
-import TOCInline from '@theme/TOCInline'
-
-<TOCInline toc={toc} />
-```
-
-## Enable the Network Mapper
-
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-<Tabs>
-  <TabItem value="cli" label="Otterize CLI" default>
+# Tutorial for Network Mapper
 
-```bash
-otterize observer enable
-```
+The Network Mapper allows you to map pod-to-pod traffic within your K8s cluster. This tutorial will guide you
+through installing Otterize, mapping traffic and tracking changes.
 
-</TabItem>
-  <TabItem value="helm" label="Helm">
+## Install Otterize
 
-```bash
-helm repo add
-helm install
-```
-
-</TabItem>
-</Tabs>
+Module
 
 ## Concepts
 
@@ -52,7 +30,8 @@ Decide if we show mapped traffic by namespace or not. If not, then the explanati
 users as the output ignores namespace.
 :::
 
-## Demo
+## How to
+
 
 ### Show mapped traffic
 
@@ -65,11 +44,13 @@ You should see similar structured results on your cluster.
 <Tabs>
   <TabItem value="plain" label="Plain" default>
 
+1. Run the export command:
+
 ```shell
 otterize observer export
 ```
-
-```shell title="Output"
+2. You should get a result based on your existing traffic looking like this:
+```shell
 kafka calls:
   - zookeeper
 
@@ -80,9 +61,12 @@ checkout calls:
 </TabItem>
   <TabItem value="intents" label="Intents" default>
 
+1. Run the export command:
+
 ```shell
 otterize observer export -o intents
 ```
+2. You should get a result based on your existing traffic looking like this:
 
 ```shell title="Output"
 apiVersion: k8s.otterize.com/v1
@@ -109,44 +93,39 @@ spec:
 </TabItem>
   <TabItem value="json" label="JSON">
 
+1. Run the export command:
+
 ```shell
-otterize observer export -o yaml
+otterize observer export -o json
 ```
+2. You should get a result based on your existing traffic looking like this:
 
 </TabItem>
 </Tabs>
+
+:::info
+See the [Network Mapper documentation](/documentation/network-mapper/intro) for more details about the CLI.
+:::
 
 ### Change traffic -> Sniff&Diff
 
 One of the benefits for using the network mapper is the ability to track changes over time for communication within your
 cluster.
 Let's add traffic to the cluster and see how the Network Mapper tracks it. You can do that by deploying our example
-which
-consists of two pods: client and server, communicating over HTTP.
+which consists of two pods: client and server, communicating over HTTP.
 
+1. Deploy example:
 ```shell
 kubectl create namespace otterize-tutorial-mapper && \
 kubectl apply -n otterize-tutorial-mapper -f code-examples/getting-started/tutorials/network-mapper
 ```
-<details>
-<summary>Output</summary>
-
-```shell
-namespace/otterize-tutorial-mapper created
-deployment.apps/client created
-deployment.apps/server created
-service/server created
-```
-</details>
-
-And now export the updated observed intents. There you will now see the client and server pods communication in addition
-to the previously observed traffic.
-
+2. Export the updated observed intents.
 ```shell
 otterize observer export
 ```
-
-```shell title="Output"
+3. you will now see the client and server pods communication in addition
+   to the previously observed traffic.
+```shell
 # highlight-start
 client calls:
   - server
@@ -166,13 +145,6 @@ To remove the deployed resources run
 ```bash
 kubectl delete namespace otterize-tutorial-mapper
 ```
-<details>
-<summary>Output</summary>
-
-```shell title="Output"
-namespace "otterize-tutorial-mapper" deleted
-```
-</details>
 
 ## What's next
 

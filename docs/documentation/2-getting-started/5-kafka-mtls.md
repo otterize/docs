@@ -1,19 +1,13 @@
 ---
-sidebar_position: 2
+sidebar_position: 5
 ---
 
-# Deploy mTLS
+# Tutorial for Kafka + mTLS
 
-This tutorial will walk you through deploying mTLS certificates on a sample client-server deployment.
+This tutorial will walk you through deploying mTLS certificates on a sample client and a kafka deployment.
 We will install Otterize, look at a sample deployment and learn how Otterize resolves pod identities.
-Next, we will generate credentials and mount them to pods
+Next, we will generate credentials and mount them to the client pod and to the kafka server
 and wrap it all up by deploying a sample project to practice all concepts in this tutorial.
-
-```mdx-code-block
-import TOCInline from '@theme/TOCInline'
-
-<TOCInline toc={toc} />
-```
 
 ## Install Otterize (enable mTLS)
 
@@ -136,6 +130,7 @@ Our sample project consists of a client and server pods pair communicating with 
 kubectl create namespace otterize-tutorial-mtls && \
 kubectl apply -n otterize-tutorial-mtls -f code-examples/getting-started/tutorials/deploy-mtls
 ```
+
 <details>
 <summary>Output</summary>
 
@@ -147,6 +142,7 @@ service/server created
 configmap/server-go created
 deployment.apps/server created
 ```
+
 </details>
 
 ### Test client and server
@@ -157,6 +153,7 @@ You can run them as follows.
 ```bash title="go run server.go" footer="g"
 kubectl exec -n otterize-tutorial-mtls -it deploy/server -- go run /app/server.go
 ```
+
 ```shell title="Output"
 Waiting for mTLS connections
 GET /hello mTLS
@@ -165,6 +162,7 @@ GET /hello mTLS
 ```bash title="python client.py"
 kubectl exec -n otterize-tutorial-mtls -it deploy/client -- python /app/client.py
 ```
+
 ```shell title="Output"
 Hello, world over mTLS!
 ```
@@ -176,12 +174,14 @@ To remove the deployed resources run
 ```bash
 kubectl delete namespace otterize-tutorial-mtls
 ```
+
 <details>
 <summary>Output</summary>
 
 ```shell
 namespace "otterize-tutorial-mtls" deleted
 ```
+
 </details>
 
 ## What's next

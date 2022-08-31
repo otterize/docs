@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client
+  namespace:  otterize-demo-npol
+spec:
+  selector:
+    matchLabels:
+      app: client
+  template:
+    metadata:
+      labels:
+        app: client
+    spec:
+      containers:
+        - name: client
+          image: alpine/curl
+          command: [ "/bin/sh", "-c", "--" ]
+          args: [ "while true; do timeout 2 curl -si server || echo \"curl timed out\"; sleep 2; done" ]

@@ -12,7 +12,7 @@ spec:
       labels:
         app: server
       annotations:
-#        to rename credentials-secret-name
+#        to rename credentials-secret-nam   e
         otterize/tls-secret-name: server-credentials-secret
         otterize/cert-ttl: "2592000"
     spec:
