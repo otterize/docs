@@ -9,9 +9,14 @@ import TabItem from '@theme/TabItem';
 The Network Mapper allows you to map pod-to-pod traffic within your K8s cluster. This tutorial will guide you
 through installing Otterize, mapping traffic and tracking changes.
 
-## Install Otterize
+## Install Network Mapper
 
-Module
+```bash
+git clone git@github.com:otterize/network-mapper.git
+helm install -n otterize mapper helm/ -f helm/values.yaml
+cd src/cli/cmd/
+go build -o /usr/local/bin/otterize
+```
 
 ## Concepts
 
@@ -44,62 +49,88 @@ You should see similar structured results on your cluster.
 <Tabs>
   <TabItem value="plain" label="Plain" default>
 
-1. Run the export command:
+1. Run the list command:
 
-```shell
-otterize observer export
-```
+   ```shell
+   otterize intents list
+   ```
 2. You should get a result based on your existing traffic looking like this:
-```shell
-kafka calls:
-  - zookeeper
-
-checkout calls:
-  - kafka
-```
+   ```shell
+   kafka calls:
+     - zookeeper
+   
+   checkout calls:
+     - kafka
+   ```
 
 </TabItem>
   <TabItem value="intents" label="Intents" default>
 
 1. Run the export command:
 
-```shell
-otterize observer export -o intents
-```
+   ```shell
+   otterize intents export
+   ```
 2. You should get a result based on your existing traffic looking like this:
-
-```shell title="Output"
-apiVersion: k8s.otterize.com/v1
-kind: ClientIntents
-metadata:
-  name: kafka
-spec:
-  service:
-    name: kafka
-    calls:
-      - name: zookeeper
----
-apiVersion: k8s.otterize.com/v1
-kind: ClientIntents
-metadata:
-  name: checkout
-spec:
-  service:
-    name: checkout
-    calls:
-      - name: kafka
-```
+   ```shell title="Output"
+   apiVersion: k8s.otterize.com/v1alpha1
+   kind: Intents
+   metadata:
+     name: kafka
+   spec:
+     service:
+       name: kafka
+       calls:
+         - name: zookeeper
+   ---
+   apiVersion: k8s.otterize.com/v1alpha1
+   kind: Intents
+   metadata:
+     name: checkout
+   spec:
+     service:
+       name: checkout
+       calls:
+         - name: kafka
+   ```
 
 </TabItem>
   <TabItem value="json" label="JSON">
 
 1. Run the export command:
-
-```shell
-otterize observer export -o json
-```
+   ```shell
+   otterize intents export --format json
+   ```
 2. You should get a result based on your existing traffic looking like this:
-
+```json
+[
+   {
+      "kind": "ClientIntents",
+      "apiVersion": "k8s.otterize.com/v1alpha1",
+      "metadata": {
+         "name": "checkout",
+      },
+      "spec": {
+         "service": {
+            "name": "checkout",
+            "calls": [
+               {
+                  "name": "kafka"
+               }]}}},
+   {
+    "kind": "ClientIntents",
+    "apiVersion": "k8s.otterize.com/v1alpha1",
+    "metadata": {
+      "name": "kafka",
+    },
+    "spec": {
+      "service": {
+        "name": "kafka",
+        "calls": [
+          {
+            "name": "zookeeper"
+ }]}}}]
+```
 </TabItem>
 </Tabs>
 
@@ -115,28 +146,38 @@ Let's add traffic to the cluster and see how the Network Mapper tracks it. You c
 which consists of two pods: client and server, communicating over HTTP.
 
 1. Deploy example:
-```shell
-kubectl create namespace otterize-tutorial-mapper && \
-kubectl apply -n otterize-tutorial-mapper -f code-examples/getting-started/network-mapper
-```
-2. Export the updated observed intents.
-```shell
-otterize observer export
-```
-3. you will now see the client and server pods communication in addition
+   ```shell
+   kubectl create namespace otterize-tutorial-mapper
+   kubectl apply -n otterize-tutorial-mapper -f code-examples/getting-started/network-mapper
+   ```
+2. Check that the `client` and server `pods` were deployed
+   ```bash
+   kubectl get pods -n otterize-tutorial-mapper
+   ```
+   You should see
+   ```
+   NAME                      READY   STATUS    RESTARTS   AGE
+   client-756f7677f8-d6qdq   1/1     Running   0          45s
+   server-6698c58cbc-ssxvx   1/1     Running   0          45s
+   ```
+3. Export the updated observed intents.
+   ```shell
+   otterize intents list
+   ```
+   You will now see the client and server pods communication in addition
    to the previously observed traffic.
-```shell
-# highlight-start
-client calls:
-  - server
-# highlight-end
-
-kafka calls:
-  - zookeeper
-
-checkout calls:
-  - kafka
-```
+   ```shell
+   # highlight-start
+   client calls:
+     - server
+   # highlight-end
+   
+   kafka calls:
+     - zookeeper
+   
+   checkout calls:
+     - kafka
+   ```
 
 ### Teardown
 

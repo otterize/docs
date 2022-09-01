@@ -9,9 +9,34 @@ We will install Otterize, look at a sample deployment and learn how Otterize res
 Next, we will generate credentials and mount them to pods
 and wrap it all up by deploying a sample project to practice all concepts in this tutorial.
 
-## Install Otterize (enable mTLS)
+## Install Otterize
 
-Module
+:::note
+If you already have Otterize installed on your cluster you can skip this step.
+:::
+
+1. To install Otterize unr run the following commands
+   ```shell
+   helm repo add otterize-gh https://otterize.github.io/helm-charts
+   helm install -n otterize otterize otterize-gh/otterize-kubernetes
+   ```
+2. Verify all pods are in the `Ready` and `Running` with the following command
+   ```
+   kubectl get pods -n otterize
+   ```
+   You should see
+   ```bash
+   NAME                                                             READY   STATUS    RESTARTS      AGE
+   intents-operator-controller-manager-6b97596d54-5qxcw             2/2     Running   0             53s
+   otterize-spire-agent-9s8w7                                       1/1     Running   0             54s
+   otterize-spire-agent-np2wf                                       1/1     Running   1 (33s ago)   54s
+   otterize-spire-server-0                                          1/1     Running   0             53s
+   otterize-watcher-77db87cfcd-xhsrk                                1/1     Running   0             53s
+   spire-integration-operator-controller-manager-65b8bf57b5-mpltl   2/2     Running   0             53s
+   ```
+   :::note
+   It can take several minutes until all pods are in the `Ready` and `Running` states.
+   :::
 
 ## Concepts
 
@@ -70,7 +95,7 @@ We will use a JS client and server configured to use mTLS as follows.
 
 ### Configure deployments
 
-To generate credentials for a pod we simply need to update the deployment by annotating it. 
+To generate credentials for a pod we simply need to update the deployment by annotating it.
 Otterize will identify the annotation and follow by generating and mounting the credentials.
 
 ```yaml
@@ -125,20 +150,28 @@ To read more about how Otterize resolves pod identities and how to manually cont
 Our sample project consists of a client and server pods pair communicating with HTTP over mTLS.
 
 1. Deploy the client and server using `kubectl`.
-
-```bash
-kubectl create namespace otterize-tutorial-mtls && \
-kubectl apply -f code-examples/getting-started/deploy-mtls
-```
-
-2. Confirm that the client can successfully call the server using HTTP over mTLS with:
+   ```bash
+   kubectl create namespace otterize-tutorial-mtls
+   kubectl apply -f code-examples/getting-started/mtls
+   ```
+2. Check that the `client` and server `pods` were deployed
+   ```bash
+   kubectl get pods -n otterize-tutorial-mtls
+   ```
+   You should see
+   ```
+   NAME                      READY   STATUS    RESTARTS   AGE
+   client-5689997b5c-grlnt   1/1     Running   0          35s
+   server-6698c58cbc-v9n9b   1/1     Running   0          34s
+   ```
+3. Confirm that the client can successfully call the server using HTTP over mTLS with:
 
    ```bash
    kubectl logs --tail 1 -n otterize-tutorial-mtls deploy/client
    ```
-   
+
    You should see the following line
-   
+
    ```shell
    Hello world mTLS
    ```
@@ -156,7 +189,6 @@ We can use openssl to inspect the generated certificates. The certificates are s
    ```shell
    kubectl get secret -n otterize-tutorial-mtls client-credentials-secret -o jsonpath='{.data.svid\.pem}' | base64 -d > svid.pem
    ```
-
    </TabItem>
      <TabItem value="secret-pod" label="K8s pod mount" default>
 
@@ -172,7 +204,7 @@ We can use openssl to inspect the generated certificates. The certificates are s
    ```shell
    openssl x509 -in svid.pem -text | head -n 15
    ```
-   
+
    ```x509 title="Output"
    Certificate:
        Data:
@@ -191,6 +223,12 @@ We can use openssl to inspect the generated certificates. The certificates are s
                    pub:
    ```
 
+## What's next
+
+- Read about how to [integrate](/documentation/sdk-integration/credential-sdk-integration) mTLS into common SDKs and
+  frameworks
+- Enforce [secure Kafka access](/documentation/getting-started/kafka-mtls) with mTLS
+
 ### Teardown
 
 To remove the deployed resources run
@@ -198,11 +236,3 @@ To remove the deployed resources run
 ```bash
 kubectl delete namespace otterize-tutorial-mtls
 ```
-
-## What's next
-
-- Read about how to [integrate](/documentation/sdk-integration/credential-sdk-integration) mTLS into common SDKs and frameworks
-- Enforce [secure Kafka access](/documentation/getting-started/kafka-mtls) with mTLS
-
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';

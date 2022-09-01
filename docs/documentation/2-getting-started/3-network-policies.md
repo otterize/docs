@@ -12,7 +12,7 @@ This tutorial will walk you through managing Network Policies using Otterize int
 
 ## Install Otterize
 
-:::info
+:::note
 If you already have Otterize installed on your cluster you can skip this step.
 :::
 
