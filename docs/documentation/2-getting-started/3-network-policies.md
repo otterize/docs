@@ -15,7 +15,6 @@ This tutorial will walk you through managing Network Policies using Otterize int
 :::note
 If you already have Otterize installed on your cluster you can skip this step.
 :::
-
 1. To install Otterize unr run the following commands
    ```shell
    helm repo add otterize-gh https://otterize.github.io/helm-charts
@@ -39,6 +38,9 @@ If you already have Otterize installed on your cluster you can skip this step.
    It can take several minutes until all pods are in the `Ready` and `Running` states.
    :::
 
+:::caution
+This tutorial requires Calico to be deployed on your cluster. To install please follow the [instructions](https://projectcalico.docs.tigera.io/getting-started/kubernetes/helm).
+:::
 ## Concepts
 
 ### Otterize pod identity resolution
@@ -93,6 +95,10 @@ it.
    You should see the following line
    ```
    curl timed out
+   ```
+   or
+   ```
+   Terminated
    ```
    This is the expected outcome as we haven't configured a Network Policy using an intents file to allow it.
 5. The following `intetns file` allows traffic between the client and server pods:

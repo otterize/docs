@@ -37,7 +37,6 @@ users as the output ignores namespace.
 
 ## How to
 
-
 ### Show mapped traffic
 
 You can view mapped traffic by calling the CLI `export` command. It supports multiple output formats such as `intents`
@@ -102,13 +101,14 @@ You should see similar structured results on your cluster.
    otterize intents export --format json
    ```
 2. You should get a result based on your existing traffic looking like this:
+
 ```json
 [
    {
       "kind": "ClientIntents",
       "apiVersion": "k8s.otterize.com/v1alpha1",
       "metadata": {
-         "name": "checkout",
+         "name": "checkout"
       },
       "spec": {
          "service": {
@@ -116,21 +116,31 @@ You should see similar structured results on your cluster.
             "calls": [
                {
                   "name": "kafka"
-               }]}}},
+               }
+            ]
+         }
+      }
+   },
    {
-    "kind": "ClientIntents",
-    "apiVersion": "k8s.otterize.com/v1alpha1",
-    "metadata": {
-      "name": "kafka",
-    },
-    "spec": {
-      "service": {
-        "name": "kafka",
-        "calls": [
-          {
-            "name": "zookeeper"
- }]}}}]
+      "kind": "ClientIntents",
+      "apiVersion": "k8s.otterize.com/v1alpha1",
+      "metadata": {
+         "name": "kafka"
+      },
+      "spec": {
+         "service": {
+            "name": "kafka",
+            "calls": [
+               {
+                  "name": "zookeeper"
+               }
+            ]
+         }
+      }
+   }
+]
 ```
+
 </TabItem>
 </Tabs>
 
@@ -179,14 +189,6 @@ which consists of two pods: client and server, communicating over HTTP.
      - kafka
    ```
 
-### Teardown
-
-To remove the deployed resources run
-
-```bash
-kubectl delete namespace otterize-tutorial-mapper
-```
-
 ## What's next
 
 <!-- [Intents Operator](/documentation/intents-operator): -->
@@ -194,3 +196,11 @@ Now that we observed cluster intents we can use them with the Intents Operator.
 
 - Configure [Network Policies](/documentation/getting-started/network-policies)
 - Configure secure access for Kafka
+
+### Teardown
+
+To remove the deployed resources run
+
+```bash
+kubectl delete namespace otterize-tutorial-mapper
+```
