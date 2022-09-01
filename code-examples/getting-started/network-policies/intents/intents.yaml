@@ -2,7 +2,7 @@ apiVersion: otterize.com/v1alpha1
 kind: Intents
 metadata:
   name: client
-  namespace:  otterize-demo-npol
+  namespace:  otterize-tutorial-npol
 spec:
   service:
     name: client

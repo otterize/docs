@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: client
-  namespace:  otterize-demo-npol
+  namespace:  otterize-tutorial-npol
 spec:
   selector:
     matchLabels:

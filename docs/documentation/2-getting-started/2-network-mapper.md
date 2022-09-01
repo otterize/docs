@@ -117,7 +117,7 @@ which consists of two pods: client and server, communicating over HTTP.
 1. Deploy example:
 ```shell
 kubectl create namespace otterize-tutorial-mapper && \
-kubectl apply -n otterize-tutorial-mapper -f code-examples/getting-started/tutorials/network-mapper
+kubectl apply -n otterize-tutorial-mapper -f code-examples/getting-started/network-mapper
 ```
 2. Export the updated observed intents.
 ```shell

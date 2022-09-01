@@ -128,7 +128,7 @@ Our sample project consists of a client and server pods pair communicating with 
 
 ```bash
 kubectl create namespace otterize-tutorial-mtls && \
-kubectl apply -f code-examples/getting-started/tutorials/deploy-mtls
+kubectl apply -f code-examples/getting-started/deploy-mtls
 ```
 
 2. Confirm that the client can successfully call the server using HTTP over mTLS with:
