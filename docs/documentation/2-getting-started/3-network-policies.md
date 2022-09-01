@@ -153,7 +153,7 @@ it.
    You should see the following line
 
    ```
-   "hello world"
+   hello world
    ```
 
 Amazing! You have configured Network Policies to allow pod-to-pod communication using intents files.
