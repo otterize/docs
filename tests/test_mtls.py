@@ -1,7 +1,15 @@
 import base64
 import re
 
-from tests.utils import create_namespace, delete_namespace, get_log_line, run
+from tests.utils import create_namespace, delete_namespace, get_log_line, run, helm_install
+
+
+class TestHelmEnsure:
+    namespace = 'otterize'
+
+    def test_helm_setup(self):
+        create_namespace(self.namespace)
+        helm_install(self.namespace, "otterize")
 
 
 class TestMTLS:
@@ -18,7 +26,7 @@ class TestMTLS:
     def test_mtls_2_pod_startup(self):
         # Wait for pod startup
         for _ in range(3):
-            res = run(f'kubectl get pods -n {self.namespace}').decode()
+            res = run(f'kubectl get pods -n {self.namespace}')
             states = dict(re.findall('(\w+).*?\d+/\d+ *(\w+)', res))
             if states['client'] == 'Running' and states['server'] == 'Running':
                 break
@@ -35,14 +43,14 @@ class TestMTLS:
     def test_mtls_4_certificate(self):
         # Check SVIDs match
         secret_svid = base64.b64decode(run(
-            f"kubectl get secret -n {self.namespace}" + " client-credentials-secret -o jsonpath='{.data.svid\.pem}'").decode()).decode()
+            f"kubectl get secret -n {self.namespace}" + " client-credentials-secret -o jsonpath='{.data.svid\.pem}'")).decode()
         mounted_svid = run(
-            f"kubectl exec -n {self.namespace} -it deploy/client -- cat /var/otterize/credentials/svid.pem").decode()
+            f"kubectl exec -n {self.namespace} -it deploy/client -- cat /var/otterize/credentials/svid.pem")
         assert secret_svid == mounted_svid
 
         # Check certificate cname
         cname = re.findall("Subject: C = US, O = SPIRE, CN = (.*)?\\b",
-                           run("openssl x509 -in - -text", input=secret_svid.encode()).decode())[0]
+                           run("openssl x509 -in - -text", input=secret_svid.encode()))[0]
         assert cname == f"client.{self.namespace}"
 
     def test_mtls_teardown(self):
