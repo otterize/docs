@@ -9,7 +9,7 @@ class TestNetworkPoliciesMultipleNamespace:
     client2 = Deployment(namespace2)
     server = HttpServer(namespace1)
     server2 = HttpServer(namespace2)
-    intents = Intents(namespace1, from_service=client.name, to_services=[server.name])
+    intents = Intents(client, [server])
     ddnp1 = DefaultDenyNetworkPolicy(namespace1)
     ddnp2 = DefaultDenyNetworkPolicy(namespace2)
 

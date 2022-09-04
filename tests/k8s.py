@@ -120,17 +120,19 @@ spec:
 
 
 class Intents(K8sBase):
-    def __init__(self, namespace: str, name: str = None, from_service: str = None, to_services: list[str] = None):
-        super().__init__(namespace, name or from_service)
-        self.from_service = from_service
+    def __init__(self, client: K8sBase, to_services: list[K8sBase], custom_name: str = None):
+        super().__init__(client.namespace, custom_name or client.name)
+        self.client = client
         self.to_services = to_services
 
     def _yaml(self) -> str:
         called_services = ""
         for service in self.to_services:
+            namespace = "" if self.client.namespace == service.namespace else service.namespace
             called_services += \
                 f"""
-      - server: {service}
+      - server: {service.name}
+        namespace: {namespace}
         type: HTTP"""
         return f"""
 apiVersion: otterize.com/v1alpha1
@@ -140,7 +142,7 @@ metadata:
   namespace:  {self.namespace}
 spec:
   service:
-    name: {self.from_service}
+    name: {self.client.name}
     calls:
       {called_services}
 """.replace('\n\n', '\n')

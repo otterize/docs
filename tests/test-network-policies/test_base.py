@@ -6,7 +6,7 @@ class TestNetworkPoliciesBase:
     namespace = 'test-' + rand_name(5)
     client = Deployment(namespace)
     server = HttpServer(namespace)
-    intents = Intents(namespace, from_service=client.name, to_services=[server.name])
+    intents = Intents(client, [server])
     ddnp = DefaultDenyNetworkPolicy(namespace)
 
     def test_npol_setup(self):

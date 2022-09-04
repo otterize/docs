@@ -10,7 +10,7 @@ class TestNetworkPoliciesAdvancedWorkaround:
     client2 = Deployment(namespace, "zclient2")
     server = HttpServer(namespace, "server")
     server2 = HttpServer(namespace, "zserver2")
-    intents = Intents(namespace, from_service=client.name, to_services=[server.name])
+    intents = Intents(client, [server])
     ddnp = DefaultDenyNetworkPolicy(namespace)
 
     def test_npol_setup(self):
