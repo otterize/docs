@@ -13,10 +13,10 @@ class K8sBase(object):
         self.name = name
 
     def apply(self):
-        run(f"kubectl apply -f -", input=self._yaml().encode())
+        run(f"kubectl apply -f -", input=self._yaml().encode(), stderr=subprocess.STDOUT)
 
     def delete(self):
-        run(f"kubectl delete -f -", input=self._yaml().encode())
+        run(f"kubectl delete --ignore-not-found=true -f -", input=self._yaml().encode(), stderr=subprocess.STDOUT)
 
     def _yaml(self) -> str:
         raise NotImplementedError
@@ -120,12 +120,18 @@ spec:
 
 
 class Intents(K8sBase):
-    def __init__(self, namespace: str, name: str = None, from_service: str = None, to_service: str = None):
+    def __init__(self, namespace: str, name: str = None, from_service: str = None, to_services: list[str] = None):
         super().__init__(namespace, name or from_service)
         self.from_service = from_service
-        self.to_service = to_service
+        self.to_services = to_services
 
     def _yaml(self) -> str:
+        called_services = ""
+        for service in self.to_services:
+            called_services += \
+                f"""
+      - server: {service}
+        type: HTTP"""
         return f"""
 apiVersion: otterize.com/v1alpha1
 kind: Intents
@@ -136,13 +142,13 @@ spec:
   service:
     name: {self.from_service}
     calls:
-      - server: {self.to_service}
-        type: HTTP
-"""
+      {called_services}
+""".replace('\n\n', '\n')
 
 
 def check_connection(client: Deployment, server: HttpServer, should_work: bool):
+    namespace_suffix = f".{server.namespace}" if client.namespace != server.namespace else ""
     if should_work:
-        assert "Hello world" == client.exec(f"timeout 1 curl -s {server.name}").strip()
+        assert "Hello world" == client.exec(f"timeout 1 curl -s {server.name}{namespace_suffix}").strip()
     else:
-        assert "command terminated" in client.exec(f"timeout 1 curl -s {server.name}").strip()
+        assert "command terminated" in client.exec(f"timeout 1 curl -s {server.name}{namespace_suffix}").strip()
