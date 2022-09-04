@@ -13,7 +13,7 @@ sidebar_position: 5
 If you already have Otterize installed on your cluster you can skip this step.
 :::
 
-1. To install Otterize unr run the following commands
+1. To install Otterize run the following commands
    ```shell
    helm repo add otterize-gh https://otterize.github.io/helm-charts
    helm install -n otterize otterize otterize-gh/otterize-kubernetes
