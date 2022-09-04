@@ -40,7 +40,7 @@ If you already have Otterize installed on your cluster you can skip this step.
 
 ### Deploy
 
-Our sample project consists of a client and server pods pair communicating with HTTP over mTLS.
+Our sample project consists of a client connecting to Kafka over mTLS.
 
 1. Deploy a kafka chart configured to use `Otterize`-provided credentials.
     ```bash
@@ -56,9 +56,6 @@ Our sample project consists of a client and server pods pair communicating with 
     NAME      READY   STATUS    RESTARTS        AGE
     kafka-0   1/1     Running   1 (2m28s ago)   2m59s
     ```
-   :::danger
-   We need a deeper verification for to make sure it is running
-   :::
 2. Deploy a client connecting to Kafka
     ```bash
     kubectl create namespace otterize-tutorial-kafka-mtls
