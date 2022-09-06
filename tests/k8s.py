@@ -131,26 +131,27 @@ class Intents(K8sBase):
             namespace = "" if self.client.namespace == service.namespace else service.namespace
             called_services += \
                 f"""
-      - server: {service.name}
+      - name: {service.name}
         namespace: {namespace}
         type: HTTP"""
         return f"""
-apiVersion: otterize.com/v1alpha1
-kind: Intents
+apiVersion: k8s.otterize.com/v1alpha1
+kind: ClientIntents
 metadata:
   name: {self.name}
   namespace:  {self.namespace}
 spec:
   service:
     name: {self.client.name}
-    calls:
-      {called_services}
+  calls:
+    {called_services}
 """.replace('\n\n', '\n')
 
 
 def check_connection(client: Deployment, server: HttpServer, should_work: bool):
     namespace_suffix = f".{server.namespace}" if client.namespace != server.namespace else ""
+    resp = client.exec(f"timeout 1 curl -s {server.name}{namespace_suffix}").strip()
     if should_work:
-        assert "Hello world" == client.exec(f"timeout 1 curl -s {server.name}{namespace_suffix}").strip()
+        assert "Hello world" == resp
     else:
-        assert "command terminated" in client.exec(f"timeout 1 curl -s {server.name}{namespace_suffix}").strip()
+        assert "command terminated" in resp

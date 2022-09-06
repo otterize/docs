@@ -51,6 +51,6 @@ class TestNetworkPoliciesMultipleNamespace:
         check_connection(self.client2, self.server, False)
         check_connection(self.client2, self.server2, False)
 
-    def test_npol_teardown(self):
-        delete_namespace(self.namespace1)
-        delete_namespace(self.namespace2)
+    # def test_npol_teardown(self):
+    #     delete_namespace(self.namespace1)
+    #     delete_namespace(self.namespace2)

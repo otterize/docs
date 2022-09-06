@@ -35,16 +35,16 @@ def helm_uninstall(namespace: str, name: str):
             raise
 
     try:
-        run(f'helm repo remove otterize-gh', stderr=subprocess.STDOUT)
+        run(f'helm repo remove otterize', stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
-        if f'Error: no repo named "otterize-gh" found' not in e.output.decode():
+        if f'Error: no repo named "otterize" found' not in e.output.decode():
             raise
 
 
 def wait_for_availability(type, regex, names, namespace):
     for _ in range(15):
         res = run(f'kubectl get {type} -n {namespace}')
-        availability = {name: (avail, wanted) for name, avail, wanted in re.findall(regex, res) if
+        availability = {name: (int(avail), int(wanted)) for name, avail, wanted in re.findall(regex, res) if
                         name in names}
         print(availability)
         assert names.issubset(availability)
@@ -52,12 +52,13 @@ def wait_for_availability(type, regex, names, namespace):
             break
         time.sleep(5)
     else:
-        assert f"{type} availability error", availability
+        assert False, f"{type} availability error\n{availability}"
 
 
 def helm_install(namespace: str, name: str):
-    run(f'helm repo add otterize-gh https://otterize.github.io/helm-charts', stderr=subprocess.STDOUT)
-    run(f'helm upgrade --install -n {namespace} {name} otterize-gh/otterize-kubernetes', stderr=subprocess.STDOUT)
+    run(f'helm repo add otterize https://otterize.github.io/helm-charts', stderr=subprocess.STDOUT)
+    run(f'helm repo update', stderr=subprocess.STDOUT)
+    run(f'helm upgrade --install -n {namespace} {name} otterize/otterize-kubernetes', stderr=subprocess.STDOUT)
 
     deployments = {'intents-operator-controller-manager',
                    'otterize-watcher',
