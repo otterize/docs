@@ -4,7 +4,7 @@ sidebar_position: 2
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Tutorial for Network Mapper
+# Network Mapper
 
 The Network Mapper allows you to map pod-to-pod traffic within your K8s cluster. This tutorial will guide you
 through installing Otterize, mapping traffic and tracking changes.
@@ -72,25 +72,25 @@ You should see similar structured results on your cluster.
    ```
 2. You should get a result based on your existing traffic looking like this:
    ```shell title="Output"
-   apiVersion: k8s.otterize.com/v1alpha1
-   kind: Intents
+   apiVersion: k8s.k8s.otterize.com/v1
+   kind: ClientIntents
    metadata:
      name: kafka
    spec:
      service:
        name: kafka
-       calls:
-         - name: zookeeper
+     calls:
+       - name: zookeeper
    ---
-   apiVersion: k8s.otterize.com/v1alpha1
-   kind: Intents
+   apiVersion: k8s.k8s.otterize.com/v1
+   kind: ClientIntents
    metadata:
      name: checkout
    spec:
      service:
        name: checkout
-       calls:
-         - name: kafka
+     calls:
+       - name: kafka
    ```
 
 </TabItem>
@@ -106,7 +106,7 @@ You should see similar structured results on your cluster.
 [
    {
       "kind": "ClientIntents",
-      "apiVersion": "k8s.otterize.com/v1alpha1",
+      "apiVersion": "k8s.k8s.otterize.com/v1",
       "metadata": {
          "name": "checkout"
       },
@@ -123,7 +123,7 @@ You should see similar structured results on your cluster.
    },
    {
       "kind": "ClientIntents",
-      "apiVersion": "k8s.otterize.com/v1alpha1",
+      "apiVersion": "k8s.k8s.otterize.com/v1",
       "metadata": {
          "name": "kafka"
       },

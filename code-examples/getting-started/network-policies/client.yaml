@@ -1,3 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: otterize-tutorial-npol
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -16,4 +21,4 @@ spec:
         - name: client
           image: alpine/curl
           command: [ "/bin/sh", "-c", "--" ]
-          args: [ "while true; do timeout 2 curl -si server || echo \"curl timed out\"; sleep 2; done" ]
+          args: [ "while true; do timeout 2 curl -si server; sleep 2; done" ]

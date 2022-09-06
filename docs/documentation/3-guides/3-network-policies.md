@@ -4,7 +4,7 @@ sidebar_position: 3
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Tutorial for Network Policies
+# Network Policies
 
 Otterize helps you manage Network Policies within your cluster by abstracting the need to manage
 pod identities, pod labels for clients, servers and namespaces, and configure network policies.
@@ -66,7 +66,6 @@ it.
 1. Deploy the client and server using `kubectl`.
 
    ```shell
-   kubectl create namespace otterize-tutorial-npol
    kubectl apply -f code-examples/getting-started/network-policies
    ```
 2. Check that the `client` and server `pods` were deployed
@@ -94,17 +93,13 @@ it.
    ```
    You should see the following line
    ```
-   curl timed out
-   ```
-   or
-   ```
    Terminated
    ```
    This is the expected outcome as we haven't configured a Network Policy using an intents file to allow it.
 5. The following `intetns file` allows traffic between the client and server pods:
    ```yaml
-   apiVersion: otterize.com/v1alpha1
-   kind: Intents
+   apiVersion: k8s.otterize.com/v1
+   kind: ClientIntents
    metadata:
      name: client
      namespace:  otterize-tutorial-npol

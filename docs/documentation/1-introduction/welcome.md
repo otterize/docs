@@ -3,9 +3,15 @@ sidebar_position: 1
 slug: /
 ---
 
-# Welcome
+# Welcome to Otterize
 
-Let's try Otterize for Kubernetes out.
 
-# More about Otterize
+## What is Otterize
+Otterize makes authorization transparent.
 Our mission. How we tackle open source. Who you are. Other resources you might be interested in, such as IBAC.
+
+### IBAC
+### Oterize OSS
+### Otterize Cloud 
+## Where Otterize fits in your infrastructure
+## Getting started

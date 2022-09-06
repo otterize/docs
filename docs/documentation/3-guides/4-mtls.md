@@ -4,7 +4,7 @@ sidebar_position: 4
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Tutorial for mTLS
+# mTLS
 
 This tutorial will walk you through deploying mTLS certificates on a sample client-server deployment.
 We will install Otterize, look at a sample deployment and learn how Otterize resolves pod identities.
@@ -207,7 +207,7 @@ We can use openssl to inspect the generated certificates. The certificates are s
    openssl x509 -in svid.pem -text | head -n 15
    ```
 
-   ```x509 title="Output"
+   ```x509
    Certificate:
        Data:
            Version: 3 (0x2)

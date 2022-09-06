@@ -1,8 +1,8 @@
 ---
-sidebar_position: 1
+sidebar_position: 2
 ---
 
-# Installation
+# Writing an intent file
 
 Get started with Otterize.
 
