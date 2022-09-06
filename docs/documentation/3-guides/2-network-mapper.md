@@ -16,7 +16,7 @@ git clone git@github.com:otterize/network-mapper.git
 cd network-mapper
 helm install --create-namespace -n otterize mapper helm/ -f helm/values.yaml
 cd src/cli/cmd/
-go build -o /usr/local/bin/otterize
+go build -o /usr/local/bin/otterize .
 ```
 
 ## Concepts
