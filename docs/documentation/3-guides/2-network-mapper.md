@@ -13,7 +13,8 @@ through installing Otterize, mapping traffic and tracking changes.
 
 ```bash
 git clone git@github.com:otterize/network-mapper.git
-helm install -n otterize mapper helm/ -f helm/values.yaml
+cd network-mapper
+helm install --create-namespace -n otterize mapper helm/ -f helm/values.yaml
 cd src/cli/cmd/
 go build -o /usr/local/bin/otterize
 ```
@@ -194,7 +195,7 @@ which consists of two pods: client and server, communicating over HTTP.
 <!-- [Intents Operator](/documentation/intents-operator): -->
 Now that we observed cluster intents we can use them with the Intents Operator.
 
-- Configure [Network Policies](/documentation/getting-started/network-policies)
+- Configure [network policies](/documentation/getting-started/network-policies)
 - Configure secure access for Kafka
 
 ### Teardown

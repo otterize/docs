@@ -17,8 +17,9 @@ If you already have Otterize installed on your cluster you can skip this step.
 :::
 1. To install Otterize run the following commands
    ```shell
-   helm repo add otterize-gh https://otterize.github.io/helm-charts
-   helm install -n otterize otterize otterize-gh/otterize-kubernetes
+   helm repo add otterize https://otterize.github.io/helm-charts
+   helm repo update
+   helm install --create-namespace -n otterize otterize otterize/otterize-kubernetes
    ```
 2. Verify all pods are in the `Ready` and `Running` with the following command
    ```
