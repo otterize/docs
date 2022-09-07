@@ -239,6 +239,15 @@ We can use openssl to inspect the generated certificates. The certificates are s
 3. You can see that Otterize generated an x509 certificate using the pod's name [_client_] and namespace [_otterize-tutorial-mtls_].
 The certificate belongs to a chain of trust starting at the SPIRE server.
 
+## What happened behind the scenes
+1. We annotated the pods to let Otterize know it should generate mTLS credentials.
+2. The Otterize SPIRE integration operator
+   1. Created an entries for the annotated pods with the SPIRE server.
+   2. Generated matching mTLS credentials using the SPIRE server.
+   3. Stored the mTLS credentials into a K8s secrets.
+3. The secrets were mounted (separately) into each pod's container.
+4. The pods communicated with each other using HTTP of mutual TLS.
+
 ## What's next
 
 - Read about how to [integrate](/documentation/sdk-integration/credential-sdk-integration) mTLS into common SDKs and

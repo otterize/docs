@@ -178,6 +178,20 @@ Need to solve this.
     time="2022-09-04T11:52:48Z" level=info msg="Ensured topic" topicName=test
     ```
 
+## What happened behind the scenes
+3. We configured the Kafka helm chart to
+   1. Use the SSL protocol for its listeners
+   2. Annotated its pod to let Otterize know it should generate mTLS credentials in the Java Key Store and Java Trust Store format and store them as a K8s secret.
+   3. Use the K8s secret for mTLS by configuring Kafka's auth mechanism.
+4. We annotated the client pod to let Otterize know it should generate mTLS credentials in a PEM format.
+5. The Otterize SPIRE integration operator
+   1. For each of [Kafka, client]
+      1. Created an entries for the annotated pods with the SPIRE server.
+      2. Generated matching mTLS credentials using the SPIRE server.
+      3. Stored the mTLS credentials into a K8s secrets.
+6. The secrets were mounted (separately) into each pod's container.
+7. The client pod connected and authenticated to Kafka using mTLS. 
+
 ## Teardown
 
 To remove the deployed resources run
