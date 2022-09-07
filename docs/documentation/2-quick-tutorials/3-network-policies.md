@@ -240,6 +240,17 @@ To learn more about how Otterize + network policies work see
 details [here](/documentation/intents-operator/network-policies/in-depth)
 :::
 
+## What happened behind the scenes
+To generate network policies between two pods, for example called `client` and `server` running in namespace `otterize-tutorial-npol` we needed to:
+1. Label the `server` pod `label-server` - we will use this label in the network policy to apply it to all pods with this label (as an ingress rule).
+2. Label the `client` pod with `has-access-to-server`, saying that this specific pod has access to `server` - we will use this label in the network policy as a filter -- every
+pod that has the label saying [this pod can access the server] will be able to pass through the network policy.
+3. Label the `client`'s namespace `label-otterize-tutorial-npol` -- this is a requirement for the network policy as another filtering mechanism for pods.
+4. Generate a network policy saying that
+   1. Only pod with the label `has-access-to-server`
+   2. From the namespaces with the label `label-otterize-tutorial-npol`
+   3. Can access pods with the label `label-server`
+
 ## What's next
 
 <!-- [Intents Operator](/documentation/intents-operator): -->
