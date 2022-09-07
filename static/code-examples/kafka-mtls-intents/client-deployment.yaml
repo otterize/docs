@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: client
-  namespace: otterize-tutorial-kafka-mtls
+  namespace: otterize-tutorial-kafka-mtls-intents
 spec:
   selector:
     matchLabels:
