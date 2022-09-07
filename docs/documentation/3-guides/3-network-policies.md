@@ -1,31 +1,39 @@
 ---
 sidebar_position: 3
+title: Manage network policies
 ---
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Network Policies
+# Network policies
 
-Otterize helps you manage Network Policies within your cluster by abstracting the need to manage
+Otterize helps you manage network policies within your cluster by abstracting the need to manage
 pod identities, pod labels for clients, servers and namespaces, and configure network policies.
-This tutorial will walk you through managing Network Policies using Otterize intents files.
+This tutorial will walk you through managing network policies using Otterize intents files. We will
+
+- Install Otterize
+- Install Calico
+- Deploy client and server pods communicating over HTTP and block their communication with a default deny network policy
+- Use an intents file to easily manage network policies to allow the communication between the client and server pods
 
 ## Install Otterize
 
 :::note
 If you already have Otterize installed on your cluster you can skip this step.
 :::
+
 1. To install Otterize run the following commands
    ```shell
    helm repo add otterize https://otterize.github.io/helm-charts
    helm repo update
-   helm install --create-namespace -n otterize otterize otterize/otterize-kubernetes
+   helm upgrade --install --create-namespace -n otterize otterize otterize/otterize-kubernetes
    ```
-2. Verify all pods are in the `Ready` and `Running` with the following command
+2. It can take several minutes for the pods to **stabilize** into the `Ready` and `Running` states. You can monitor with
+   the following command:
    ```
    kubectl get pods -n otterize
    ```
-   You should see
+   After **stabilization** you should see:
    ```bash
    NAME                                                             READY   STATUS    RESTARTS      AGE
    intents-operator-controller-manager-6b97596d54-5qxcw             2/2     Running   0             53s
@@ -35,39 +43,95 @@ If you already have Otterize installed on your cluster you can skip this step.
    otterize-watcher-77db87cfcd-xhsrk                                1/1     Running   0             53s
    spire-integration-operator-controller-manager-65b8bf57b5-mpltl   2/2     Running   0             53s
    ```
-   :::note
-   It can take several minutes until all pods are in the `Ready` and `Running` states.
-   :::
 
-:::caution
-This tutorial requires Calico to be deployed on your cluster. To install please follow the [instructions](https://projectcalico.docs.tigera.io/getting-started/kubernetes/helm).
-:::
-## Concepts
+## Install Calico
 
-### Otterize pod identity resolution
-
-Otterize resolves pod identities automatically by using their `resource owner` (e.g. deployment) **name** and **
-namespace**.
-
-In this example the pod identity will be resolved to `client.tutorial`.
 :::note
-To read more about how Otterize resolves pod identities and how to manually control the process pleas read XXX.
+If you already have Calico installed on your cluster you can skip this step.
 :::
+To enforce network policies within your cluster you require a CNI to implement them.
+Calico is one of the CNIs you can use for this task. To install please follow
+the [instructions](https://projectcalico.docs.tigera.io/getting-started/kubernetes/helm).
 
-## How to
+## Deploy tutorial
 
-### Apply intents as Network Policies
+Let's deploy our example which consists of two pods: client and server,
+communicating over HTTP. At first the **client is blocked** from communicating with the server as we set a default deny
+ingress network policy.
+<details>
+<summary>Code examples</summary>
+<Tabs>
+<TabItem value="client-deployment.yaml" label="client-deployment.yaml" default>
 
-Let's add traffic to the cluster and see how the Network Policies can be easily configured on it with Otterize.
-You can do that by deploying our example which consists of two pods: client and server,
-communicating over HTTP. At first the **client is blocked** from communicating with the server as no `Network Policy`
-allows
-it.
+   ```yaml
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+     name: client
+     namespace: otterize-tutorial-npol
+   spec:
+     selector:
+       matchLabels:
+         app: client
+     template:
+       metadata:
+         labels:
+           app: client
+       spec:
+         containers:
+           - name: client
+             image: alpine/curl
+             command: [ "/bin/sh", "-c", "--" ]
+             args: [ "while true; do if ! timeout 2 curl -si server 2>/dev/null; then echo \"curl timed out\"; fi; sleep 2; done" ]
+   ```
 
-1. Deploy the client and server using `kubectl`.
+</TabItem>
+<TabItem value="server-deployment.yaml" label="server-deployment.yaml" default>
+
+   ```yaml
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+     name: server
+     namespace: otterize-tutorial-npol
+   spec:
+     selector:
+       matchLabels:
+         app: server
+     template:
+       metadata:
+         labels:
+           app: server
+       spec:
+         containers:
+           - name: server
+             image: hashicorp/http-echo
+             args: [ "-listen=:80", "-text=hello world" ]
+   ```
+
+</TabItem>
+<TabItem value="default-deny-network-policy.yaml" label="default-deny-network-policy.yaml" default>
+
+   ```yaml
+   apiVersion: networking.k8s.io/v1
+   kind: NetworkPolicy
+   metadata:
+     name: default-deny-ingress
+     namespace: otterize-tutorial-npol
+   spec:
+     podSelector: { }
+     policyTypes:
+       - Ingress
+   ```
+
+</TabItem>
+</Tabs>
+</details>
+
+1. Deploy the client, server, and the default deny network policy using `kubectl`.
 
    ```shell
-   kubectl apply -f code-examples/getting-started/network-policies
+   kubectl apply -f https://docs.otterize.com/code-examples/network-policies/all.yaml
    ```
 2. Check that the `client` and server `pods` were deployed
    ```bash
@@ -94,10 +158,13 @@ it.
    ```
    You should see the following line
    ```
-   Terminated
+   curl timed out
    ```
-   This is the expected outcome as we haven't configured a Network Policy using an intents file to allow it.
-5. The following `intetns file` allows traffic between the client and server pods:
+   This is the expected outcome as we haven't configured a network policy using an intents file to allow it.
+
+## Apply intents as network policies
+
+1. We will use the following `intetns file` allows traffic between the client and server pods:
    ```yaml
    apiVersion: k8s.otterize.com/v1
    kind: ClientIntents
@@ -107,19 +174,30 @@ it.
    spec:
      service:
        name: client
-       calls:
-         - server: server
-           type: HTTP
+     calls:
+       - server: server
+         type: HTTP
    ```
    :::tip
    Intents are onf of the cornerstones to how Otterize works and helps developers. Lean more here.
    :::
-6. Apply the intents file using using:
+2. We will monitor the change in real time with a **second terminal** to see how the effect takes place immediately. Run
+   the following monitoring command in your **second terminal**.
+   ```bash
+   kubectl logs -f --tail 1 -n otterize-tutorial-npol deploy/client
+   ```
+   At first you will see the client timing out when trying to call the server
+   ```
+   curl timed out
+   curl timed out
+   curl timed out
+   ```
+3. Apply the intents file on your **main terminal** using:
    <Tabs>
    <TabItem value="kubectl" label="Kubectl" default>
 
    ```shell
-   kubectl apply -f code-examples/getting-started/network-policies/intents/intents.yaml
+   kubectl apply -f https://docs.otterize.com/code-examples/network-policies/intents/intents.yaml
    ```
      </TabItem>
      <TabItem value="otterize" label="Otterize">
@@ -129,8 +207,24 @@ it.
    ```
      </TabItem>
    </Tabs>
+4. You should immidiatly see on the **second terminal** that `client` is now able to connect to `server` as the output
+   will start to show:
+   ```bash
+   curl timed out                              
+   curl timed out                              <- before applying the intents file
+   # highlight-start
+   HTTP/1.1 200 OK                             <- after applying the intents file
+   X-App-Name: http-echo
+   X-App-Version: 0.2.3
+   Date: Wed, 07 Sep 2022 13:51:34 GMT
+   Content-Length: 12
+   Content-Type: text/plain; charset=utf-8
+   
+   hello world
+   # highlight-end
+   ```
 
-7. Verify that a new network policy was created
+5. Verify that a new network policy was created
    ```bash
    kubectl get netpol -n otterize-tutorial-npol
    ```
@@ -140,21 +234,9 @@ it.
    access-to-server-from-otterize-tutorial-npol   otterize/server=server-otterize-tutorial-np-7e16db   6s
    default-deny-ingress                           <none>                                               28s
    ```
-   
-8. Check that `client` is now able to connect to `server`:
-   ```bash
-   kubectl logs --tail 1 -n otterize-tutorial-npol deploy/client
-   ```
 
-   You should see the following line
-
-   ```
-   hello world
-   ```
-
-Amazing! You have configured Network Policies to allow pod-to-pod communication using intents files.
 :::tip
-To learn more about how Otterize + Network Policies work see
+To learn more about how Otterize + network policies work see
 details [here](/documentation/intents-operator/network-policies/in-depth)
 :::
 
@@ -162,12 +244,14 @@ details [here](/documentation/intents-operator/network-policies/in-depth)
 
 <!-- [Intents Operator](/documentation/intents-operator): -->
 
-- Configure [Network Policies](/documentation/intents-operator/network-policies) for your existing deployments.
+- Configure [network policies](/documentation/intents-operator/network-policies) for your existing deployments.
 - Explore the [Network Mapper](/documentation/getting-started/network-mapper) to help you bootstrap intents you can
-  apply as Network Policies.
+  apply as network policies.
 
 ## Teardown
+
 To remove the deployed resources run
+
 ```bash
 kubectl delete namespace otterize-tutorial-npol
 ```

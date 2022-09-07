@@ -1,10 +1,9 @@
 ---
 sidebar_position: 2
+title: Map your cluster
 ---
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
-
-# Network Mapper
 
 The Network Mapper allows you to map pod-to-pod traffic within your K8s cluster. This tutorial will guide you
 through installing Otterize, mapping traffic and tracking changes.
@@ -14,22 +13,11 @@ through installing Otterize, mapping traffic and tracking changes.
 ```bash
 git clone git@github.com:otterize/network-mapper.git
 cd network-mapper
-helm install --create-namespace -n otterize mapper helm/ -f helm/values.yaml
+helm upgrade --install --create-namespace -n otterize mapper helm/ -f helm/values.yaml
 cd src/cli/cmd/
-go build -o /usr/local/bin/otterize .
+go build -o otterize .
+sudo cp ./otterize /usr/local/bin/
 ```
-
-## Concepts
-
-### Otterize pod identity resolution
-
-Otterize resolves pod identities automatically by using their `resource owner` (e.g. deployment) **name** and **
-namespace**.
-
-In this example the pod identity will be resolved to `client.tutorial`.
-:::note
-To read more about how Otterize resolves pod identities and how to manually control the process pleas read XXX.
-:::
 
 :::danger
 Decide if we show mapped traffic by namespace or not. If not, then the explanation about pod identities will confuse
@@ -56,10 +44,10 @@ You should see similar structured results on your cluster.
    ```
 2. You should get a result based on your existing traffic looking like this:
    ```shell
-   kafka calls:
-     - zookeeper
+   checkoutservice calls:
+     - orderservice
    
-   checkout calls:
+   orderservice calls:
      - kafka
    ```
 
@@ -72,24 +60,24 @@ You should see similar structured results on your cluster.
    otterize intents export
    ```
 2. You should get a result based on your existing traffic looking like this:
-   ```shell title="Output"
+   ```shell
    apiVersion: k8s.k8s.otterize.com/v1
    kind: ClientIntents
    metadata:
-     name: kafka
+     name: checkoutservice
    spec:
      service:
-       name: kafka
+       name: checkoutservice
      calls:
-       - name: zookeeper
+       - name: orderservice
    ---
    apiVersion: k8s.k8s.otterize.com/v1
    kind: ClientIntents
    metadata:
-     name: checkout
+     name: orderservice
    spec:
      service:
-       name: checkout
+       name: orderservice
      calls:
        - name: kafka
    ```
@@ -103,44 +91,44 @@ You should see similar structured results on your cluster.
    ```
 2. You should get a result based on your existing traffic looking like this:
 
-```json
-[
-   {
-      "kind": "ClientIntents",
-      "apiVersion": "k8s.k8s.otterize.com/v1",
-      "metadata": {
-         "name": "checkout"
-      },
-      "spec": {
+   ```json
+   [
+     {
+       "kind": "ClientIntents",
+       "apiVersion": "k8s.otterize.com/v1alpha1",
+       "metadata": {
+         "name": "checkoutservice"
+       },
+       "spec": {
          "service": {
-            "name": "checkout",
-            "calls": [
-               {
-                  "name": "kafka"
-               }
-            ]
-         }
-      }
-   },
-   {
-      "kind": "ClientIntents",
-      "apiVersion": "k8s.k8s.otterize.com/v1",
-      "metadata": {
-         "name": "kafka"
-      },
-      "spec": {
+           "name": "checkoutservice"
+         },
+         "calls": [
+           {
+             "name": "orderservice"
+           }
+         ]
+       }
+     },
+     {
+       "kind": "ClientIntents",
+       "apiVersion": "k8s.otterize.com/v1alpha1",
+       "metadata": {
+         "name": "orderservice"
+       },
+       "spec": {
          "service": {
-            "name": "kafka",
-            "calls": [
-               {
-                  "name": "zookeeper"
-               }
-            ]
-         }
-      }
-   }
-]
-```
+           "name": "orderservice"
+         },
+         "calls": [
+           {
+             "name": "kafka"
+           }
+         ]
+       }
+     }
+   ]
+   ```
 
 </TabItem>
 </Tabs>
@@ -158,8 +146,7 @@ which consists of two pods: client and server, communicating over HTTP.
 
 1. Deploy example:
    ```shell
-   kubectl create namespace otterize-tutorial-mapper
-   kubectl apply -n otterize-tutorial-mapper -f code-examples/getting-started/network-mapper
+   kubectl apply -n otterize-tutorial-mapper -f https://docs.otterize.com/code-examples/network-mapper/all.yaml
    ```
 2. Check that the `client` and server `pods` were deployed
    ```bash
@@ -183,10 +170,10 @@ which consists of two pods: client and server, communicating over HTTP.
      - server
    # highlight-end
    
-   kafka calls:
-     - zookeeper
+   checkoutservice calls:
+     - orderservice
    
-   checkout calls:
+   orderservice calls:
      - kafka
    ```
 
@@ -204,4 +191,5 @@ To remove the deployed resources run
 
 ```bash
 kubectl delete namespace otterize-tutorial-mapper
+helm uninstall -n otterize mapper
 ```

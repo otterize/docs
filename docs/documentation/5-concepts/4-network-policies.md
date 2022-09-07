@@ -1,7 +1,7 @@
 ---
-id: service
-title: Services
-sidebar_position: 3
+id: network-policies
+title: Network policies
+sidebar_position: 4
 ---
 # Services
 

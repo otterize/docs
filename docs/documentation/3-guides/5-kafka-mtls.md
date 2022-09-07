@@ -1,5 +1,6 @@
 ---
 sidebar_position: 5
+title: Deploy mTLS between pods and Kafka
 ---
 
 # Kafka + mTLS
@@ -17,25 +18,8 @@ If you already have Otterize installed on your cluster you can skip this step.
    ```shell
    helm repo add otterize https://otterize.github.io/helm-charts
    helm repo update
-   helm install --create-namespace -n otterize otterize otterize/otterize-kubernetes
+   helm upgrade --install --create-namespace -n otterize otterize otterize/otterize-kubernetes
    ```
-2. Verify all pods are in the `Ready` and `Running` with the following command
-   ```
-   kubectl get pods -n otterize
-   ```
-   You should see
-   ```bash
-   NAME                                                             READY   STATUS    RESTARTS      AGE
-   intents-operator-controller-manager-6b97596d54-5qxcw             2/2     Running   0             53s
-   otterize-spire-agent-9s8w7                                       1/1     Running   0             54s
-   otterize-spire-agent-np2wf                                       1/1     Running   1 (33s ago)   54s
-   otterize-spire-server-0                                          1/1     Running   0             53s
-   otterize-watcher-77db87cfcd-xhsrk                                1/1     Running   0             53s
-   spire-integration-operator-controller-manager-65b8bf57b5-mpltl   2/2     Running   0             53s
-   ```
-   :::note
-   It can take several minutes until all pods are in the `Ready` and `Running` states.
-   :::
 
 ## How to
 
@@ -45,8 +29,10 @@ Our sample project consists of a client connecting to Kafka over mTLS.
 
 1. Deploy a kafka chart configured to use `Otterize`-provided credentials.
     ```bash
-    helm dependency build code-examples/getting-started/kafka-mtls/helm
-    helm upgrade --install -n kafka kafka code-examples/getting-started/kafka-mtls/helm -f code-examples/getting-started/kafka-mtls/helm/values.yaml
+    helm repo add bitnami https://charts.bitnami.com/bitnami
+    helm upgrade --install --create-namespace -n kafka kafka \
+    --version 14.x.x bitnami/kafka \
+    -f https://docs.otterize.com/code-examples/kafka-mtls/helm/values.yaml
     ```
    Verify `Kafka` is running with
     ```bash
@@ -59,8 +45,7 @@ Our sample project consists of a client connecting to Kafka over mTLS.
     ```
 2. Deploy a client connecting to Kafka
     ```bash
-    kubectl create namespace otterize-tutorial-kafka-mtls
-    kubectl apply -f code-examples/getting-started/kafka-mtls
+    kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/all.yaml
     ```
 2. Check that the `client` `pods` was deployed
    ```bash
@@ -92,4 +77,5 @@ To remove the deployed resources run
 ```bash
 kubectl delete namespace otterize-tutorial-kafka-mtls
 helm uninstall -n kafka kafka
+helm repo remove bitnami
 ```
