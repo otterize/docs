@@ -27,8 +27,24 @@ If you already have Otterize installed on your cluster you can skip this step.
    helm repo update
    helm upgrade --install --create-namespace -n otterize otterize otterize/otterize-kubernetes
    ```
+2. It can take several minutes for the pods to **stabilize** into the `Ready` and `Running` states. You can monitor with
+   the following command:
+   ```
+   kubectl get pods -n otterize
+   ```
+   After **stabilization** you should see:
+   ```bash
+   NAME                                                             READY   STATUS    RESTARTS      AGE
+   intents-operator-controller-manager-6b97596d54-5qxcw             2/2     Running   0             53s
+   otterize-spire-agent-9s8w7                                       1/1     Running   0             54s
+   otterize-spire-agent-np2wf                                       1/1     Running   1 (33s ago)   54s
+   otterize-spire-server-0                                          1/1     Running   0             53s
+   otterize-watcher-77db87cfcd-xhsrk                                1/1     Running   0             53s
+   spire-integration-operator-controller-manager-65b8bf57b5-mpltl   2/2     Running   0             53s
+   ```
 
-## Pod annotation
+
+## Pod annotation  (explainer)
 
 To generate credentials for a pod we simply need to update the deployment by annotating it.
 The required steps are to
