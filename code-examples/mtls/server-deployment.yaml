@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: server
+  namespace: otterize-tutorial-mtls
+spec:
+  selector:
+    matchLabels:
+      app: server
+  template:
+    metadata:
+      labels:
+        app: server
+      annotations:
+#        to rename credentials-secret-nam   e
+        otterize/tls-secret-name: server-credentials-secret
+        otterize/cert-ttl: "2592000"
+    spec:
+      containers:
+        - name: server
+          image: node
+          command: [ "node", "/app/server.js" ]
+          volumeMounts:
+            - mountPath: /app/
+              name: server-js
+            - name: otterize-credentials
+              mountPath: /var/otterize/credentials
+              readOnly: true
+      volumes:
+        - name: server-js
+          configMap:
+            name: server-js
+        - name: otterize-credentials
+          secret:
+            secretName: server-credentials-secret
