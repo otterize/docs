@@ -4,14 +4,6 @@ import re
 from tests.utils import create_namespace, delete_namespace, get_log_line, run, helm_install
 
 
-class TestHelmEnsure:
-    namespace = 'otterize'
-
-    def test_helm_setup(self):
-        create_namespace(self.namespace)
-        helm_install(self.namespace, "otterize")
-
-
 class TestMTLS:
     namespace = 'otterize-tutorial-mtls'
 
