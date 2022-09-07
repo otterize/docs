@@ -189,18 +189,20 @@ https.createServer(options, (req, res) => {
 ## Inspect credentials
 
 We can use openssl to inspect the generated certificates. The certificates are stored as `K8s secrets` and are also
-`mounted inside pods`.
+`mounted` into containers.
 
-1. We will first retrieve them
+1. We will first retrieve them from one of the two options
 
    <Tabs>
      <TabItem value="secret-direct" label="K8s secret" default>
-
+   To retrieve the credentials from the K8s secrets store use:
+   
    ```shell
    kubectl get secret -n otterize-tutorial-mtls client-credentials-secret -o jsonpath='{.data.svid\.pem}' | base64 -d > svid.pem
    ```
    </TabItem>
-     <TabItem value="secret-pod" label="K8s pod mount" default>
+   <TabItem value="secret-pod" label="K8s pod mount" default>
+   To retrieve the credentials from the container mount use:
 
    ```shell
    kubectl exec -n otterize-tutorial-mtls -it deploy/client -- cat /var/otterize/credentials/svid.pem > svid.pem
@@ -209,30 +211,33 @@ We can use openssl to inspect the generated certificates. The certificates are s
    </TabItem>
    </Tabs>
 
-   1. And then inspect them with
+2. And then inspect them with
 
-      ```shell
-      openssl x509 -in svid.pem -text | head -n 15
-      ```
-      You should see a similar output to
-      ```x509
-      Certificate:
-          Data:
-              Version: 3 (0x2)
-              Serial Number:
-                  0b:eb:eb:4d:0e:02:7e:28:93:30:1c:55:26:22:8b:c7
-              Signature Algorithm: sha256WithRSAEncryption
-              Issuer: C = US, O = SPIRE
-              Validity
-                  Not Before: Aug 24 12:19:57 2022 GMT
-                  Not After : Sep 23 12:20:07 2022 GMT
-      # highlight-next-line
-              Subject: C = US, O = SPIRE, CN = client.otterize-tutorial-mtls       # the client's name
-              Subject Public Key Info:
-                  Public Key Algorithm: id-ecPublicKey
-                      Public-Key: (256 bit)
-                      pub:
-      ```
+   ```shell
+   openssl x509 -in svid.pem -text | head -n 15
+   ```
+   You should see a similar output to
+   ```x509
+   Certificate:
+       Data:
+           Version: 3 (0x2)
+           Serial Number:
+               0b:eb:eb:4d:0e:02:7e:28:93:30:1c:55:26:22:8b:c7
+           Signature Algorithm: sha256WithRSAEncryption
+           Issuer: C = US, O = SPIRE
+           Validity
+               Not Before: Aug 24 12:19:57 2022 GMT
+               Not After : Sep 23 12:20:07 2022 GMT
+   # highlight-next-line
+           Subject: C = US, O = SPIRE, CN = client.otterize-tutorial-mtls       # the client's name
+           Subject Public Key Info:
+               Public Key Algorithm: id-ecPublicKey
+                   Public-Key: (256 bit)
+                   pub:
+   ```
+
+3. You can see that Otterize generated an x509 certificate using the pod's name [_client_] and namespace [_otterize-tutorial-mtls_].
+The certificate belongs to a chain of trust starting at the SPIRE server.
 
 ## What's next
 
