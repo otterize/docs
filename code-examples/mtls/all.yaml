@@ -98,6 +98,7 @@ data:
         (req, res) => {
             const peerCert = req.connection.getPeerCertificate();
             const ownCert = req.connection.getCertificate();
+            console.log("Received request:");
             console.log(peerCert.subject.CN + ":\t" + req.method + " " + req.url);
             if (req.url === '/hello') {
                 res.writeHead(200);
