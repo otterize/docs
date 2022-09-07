@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: otterize-demo-mapper
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client
+  namespace: otterize-demo-mapper
+spec:
+  selector:
+    matchLabels:
+      app: client
+  template:
+    metadata:
+      labels:
+        app: client
+    spec:
+      containers:
+        - name: client
+          image: alpine/curl
+          command: [ "/bin/sh", "-c", "--" ]
+          args: [ "while true; do curl -si server; sleep 2; done" ]
