@@ -145,7 +145,7 @@ ingress network policy.
    ```
 3. Check that the default deny ingress Network Policy was deployed
    ```bash
-   kubectl get netpol -n otterize-tutorial-npol
+   kubectl get NetworkPolicies -n otterize-tutorial-npol
    ```
    You should see
    ```
@@ -226,7 +226,7 @@ ingress network policy.
 
 5. Verify that a new network policy was created
    ```bash
-   kubectl get netpol -n otterize-tutorial-npol
+   kubectl get NetworkPolicies -n otterize-tutorial-npol
    ```
    You should see
    ```
