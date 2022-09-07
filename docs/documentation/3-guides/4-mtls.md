@@ -136,15 +136,6 @@ Visit the [Behavior](/documentation/credential-operator/behavior) section to vie
 annotation for generating mTLS credentials.
 :::
 
-### Otterize pod identity resolution
-
-Otterize resolves pod identities automatically by using their `resource owner` (e.g. deployment) **name** and **
-namespace**.
-
-In this example the pod identity will be resolved to `client.otterize-tutorial-mtls`.
-:::note
-To read more about how Otterize resolves pod identities and how to manually control the process pleas read XXX.
-:::
 
 ## How to
 
@@ -154,8 +145,7 @@ Our sample project consists of a client and server pods pair communicating with 
 
 1. Deploy the client and server using `kubectl`.
    ```bash
-   kubectl create namespace otterize-tutorial-mtls
-   kubectl apply -f code-examples/getting-started/mtls
+   kubectl apply -f https://docs.otterize.com/code-examples/mtls/all.yaml
    ```
 2. Check that the `client` and server `pods` were deployed
    ```bash
