@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: client-js
+  namespace: otterize-tutorial-mtls
+data:
+  client.js: |
+    const fs = require('fs');
+    const https = require('https');
+    
+    const options = {
+        hostname: 'server.otterize-tutorial-mtls',
+        port: 443,
+        path: '/hello',
+        method: 'GET',
+        cert: fs.readFileSync('/var/otterize/credentials/svid.pem'),
+        key: fs.readFileSync('/var/otterize/credentials/key.pem'),
+        ca: fs.readFileSync('/var/otterize/credentials/bundle.pem')
+    }
+    
+    const req = https.request(
+        options,
+        res => {
+            res.on('data', function (data) {
+                console.log(data.toString())
+            });
+        }
+    );
+    
+    req.end();
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client
+  namespace: otterize-tutorial-mtls
+spec:
+  selector:
+    matchLabels:
+      app: client
+  template:
+    metadata:
+      labels:
+        app: client
+      annotations:
+        #        to rename credentials-secret-name
+        otterize/tls-secret-name: client-credentials-secret
+        otterize/cert-ttl: "2592000"
+    spec:
+      containers:
+        - name: client
+          image: node
+          command: [ "/bin/sh", "-c", "--" ]
+          args: [ "while true; do node /app/client.js; sleep 2; done" ]
+          volumeMounts:
+            - mountPath: /app/
+              name: client-js
+            - name: otterize-credentials
+              mountPath: /var/otterize/credentials
+              readOnly: true
+      volumes:
+        - name: client-js
+          configMap:
+            name: client-js
+        - name: otterize-credentials
+          secret:
+            secretName: client-credentials-secret

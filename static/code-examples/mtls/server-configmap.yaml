@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: server-js
+  namespace: otterize-tutorial-mtls
+data:
+  server.js: |
+    const https = require(`https`);
+    const fs = require(`fs`);
+    
+    const options = {
+        key: fs.readFileSync('/var/otterize/credentials/key.pem'),
+        cert: fs.readFileSync('/var/otterize/credentials/svid.pem'),
+        ca: fs.readFileSync('/var/otterize/credentials/bundle.pem'),
+        requestCert: true
+    };
+    
+    https.createServer(options, (req, res) => {
+        console.log(req.method + " " + req.url);
+        if (req.url === '/hello') {
+            res.writeHead(200);
+            res.end(`Hello world mTLS`);
+        } else {
+            res.end();
+        }
+    }).listen(443);
