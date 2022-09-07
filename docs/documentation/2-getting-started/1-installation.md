@@ -7,20 +7,24 @@ sidebar_position: 1
 Install Otterize on a Kubernetes cluster using helm.
 
 
-## How to
+## Install Otterize
 
-### Install Otterize
+:::note
+If you already have Otterize installed on your cluster you can skip this step.
+:::
+
 1. To install Otterize run the following commands
    ```shell
    helm repo add otterize https://otterize.github.io/helm-charts
    helm repo update
-   helm install --create-namespace -n otterize otterize otterize/otterize-kubernetes
+   helm upgrade --install --create-namespace -n otterize otterize otterize/otterize-kubernetes
    ```
-2. Verify all pods are in the `Ready` and `Running` with the following command
+2. It can take several minutes for the pods to **stabilize** into the `Ready` and `Running` states. You can monitor with
+   the following command:
    ```
    kubectl get pods -n otterize
    ```
-   You should see
+   After **stabilization** you should see:
    ```bash
    NAME                                                             READY   STATUS    RESTARTS      AGE
    intents-operator-controller-manager-6b97596d54-5qxcw             2/2     Running   0             53s
@@ -30,17 +34,21 @@ Install Otterize on a Kubernetes cluster using helm.
    otterize-watcher-77db87cfcd-xhsrk                                1/1     Running   0             53s
    spire-integration-operator-controller-manager-65b8bf57b5-mpltl   2/2     Running   0             53s
    ```
-   :::note
-   It can take several minutes until all pods are in the `Ready` and `Running` states.
-   :::
 
-:::caution
-This tutorial requires Calico to be deployed on your cluster. To install please follow the [instructions](https://projectcalico.docs.tigera.io/getting-started/kubernetes/helm).
+## Install Calico
+
+:::note
+If you already have Calico installed on your cluster you can skip this step.
 :::
+To enforce network policies within your cluster you require a CNI to implement them.
+Calico is one of the CNIs you can use for this task. To install please follow
+the [instructions](https://projectcalico.docs.tigera.io/getting-started/kubernetes/helm).
 
-### Install Calico (optional)
-Otterize can help users manage network policies easily using intents files. To 
-This tutorial requires Calico to be deployed on your cluster. To install please follow the [instructions](https://projectcalico.docs.tigera.io/getting-started/kubernetes/helm).
+## Uninstall Otterize
+```bash
+helm uninstall -n otterize otterize
+helm repo remove otterize
+```
 
 ## Getting Started
 
