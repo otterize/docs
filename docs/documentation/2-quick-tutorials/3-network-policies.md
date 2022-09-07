@@ -251,7 +251,7 @@ pod that has the label saying [this pod can access the server] will be able to p
    2. From the namespaces with the label `label-otterize-tutorial-npol`
    3. Can access pods with the label `label-server`
 
-And all of these were simply managed with a single intents file we applied to the cluster.   
+Otterize saved us from doing all this work by letting us simply manage network policies with client intents files instead.   
 ## What's next
 
 <!-- [Intents Operator](/documentation/intents-operator): -->
