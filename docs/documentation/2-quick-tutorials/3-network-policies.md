@@ -50,7 +50,7 @@ You can monitor progress with the following command:
    spire-integration-operator-controller-manager-65b8bf57b5-mpltl   2/2     Running   0             53s
    ```
 
-## Enforce network policies
+## Verify network policies are enforceable
 
 To enforce network policies, a Kubernetes cluster requires a CNI network plugin to be installed.
  
@@ -267,7 +267,8 @@ pod that has the label saying [this pod can access the server] will be able to p
    2. From the namespaces with the label `label-otterize-tutorial-npol`
    3. Can access pods with the label `label-server`
 
-Otterize saved us from doing all this work by letting us simply manage network policies with client intents files instead.   
+Otterize saved us from doing all this work by simply declaring the client's intents in `intents.yaml`,
+while the appropriate network policies were managed automatically behind the scenes.   
 ## What's next
 
 <!-- [Intents Operator](/documentation/intents-operator): -->
