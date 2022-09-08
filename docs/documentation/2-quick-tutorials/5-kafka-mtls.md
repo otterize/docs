@@ -43,7 +43,6 @@ If you already have Otterize installed on your cluster you can skip this step.
    spire-integration-operator-controller-manager-65b8bf57b5-mpltl   2/2     Running   0             53s
    ```
 
-
 ## Configure Kafka (explainer)
 
 We will deploy a Kafka cluster using bitnami's [chart](https://github.com/bitnami/charts/tree/master/bitnami/kafka)
@@ -54,20 +53,20 @@ To configure the chart to use the Otterize-provided credentials we need to confi
 3. Authenticate using mTLS credentials provided as a K8s secret
 
 ```yaml
-listeners:                                                  # 1. Use SSL for it's listeners
+listeners: # 1. Use SSL for it's listeners
   - "CLIENT://:9092"
   - "INTERNAL://:9093"
 advertisedListeners:
   - "CLIENT://:9092"
   - "INTERNAL://:9093"
 listenerSecurityProtocolMap: "INTERNAL:SSL,CLIENT:SSL"
-podAnnotations:                                             # 2. Annotations for Otterize to generate credentials
+podAnnotations: # 2. Annotations for Otterize to generate credentials
   otterize/cert-type: jks
   otterize/tls-secret-name: kafka-tls-secret
   otterize/truststore-file-name: kafka.truststore.jks
   otterize/keystore-file-name: kafka-keystore.jks
   otterize/dns-names: "kafka-0.kafka-headless.kafka.svc.cluster.local,kafka.kafka.svc.cluster.local"
-auth:                                                       # 3. Authenticate clients using mTLS
+auth: # 3. Authenticate clients using mTLS
   clientProtocol: mtls
   interBrokerProtocol: mtls
   tls:
@@ -89,6 +88,7 @@ The following command will deploy a Kafka cluster configured to use Otterize-pro
  --version 14.x.x bitnami/kafka \
  -f https://docs.otterize.com/code-examples/kafka-mtls/helm/values.yaml
  ```
+
 It can take several minutes for the pods to **stabilize** into the `Ready` and `Running` states. You can monitor with
 the following command:
 
@@ -165,6 +165,7 @@ annotation for generating mTLS credentials.
 Client logs require improvement. Client is compiling on startup so it can take some time before it's ready.
 Need to solve this.
 :::
+
 3. Check that the client succesfully connected to Kafka using mTLS
     ```bash
     kubectl logs --tail=5 -n otterize-tutorial-kafka-mtls deploy/client
@@ -179,18 +180,20 @@ Need to solve this.
     ```
 
 ## What happened behind the scenes
+
 3. We configured the Kafka helm chart to
-   1. Use the SSL protocol for its listeners
-   2. Annotated its pod to let Otterize know it should generate mTLS credentials in the Java Key Store and Java Trust Store format and store them as a K8s secret.
-   3. Use the K8s secret for mTLS by configuring Kafka's auth mechanism.
+    1. Use the SSL protocol for its listeners
+    2. Annotated its pod to let Otterize know it should generate mTLS credentials in the Java Key Store and Java Trust
+       Store format and store them as a K8s secret.
+    3. Use the K8s secret for mTLS by configuring Kafka's auth mechanism.
 4. We annotated the client pod to let Otterize know it should generate mTLS credentials in a PEM format.
 5. The Otterize SPIRE integration operator
-   1. For each of [Kafka, client]
-      1. Created an entries for the annotated pods with the SPIRE server.
-      2. Generated matching mTLS credentials using the SPIRE server.
-      3. Stored the mTLS credentials into a K8s secrets.
+    1. For each of [Kafka, client]
+        1. Created an entries for the annotated pods with the SPIRE server.
+        2. Generated matching mTLS credentials using the SPIRE server.
+        3. Stored the mTLS credentials into a K8s secrets.
 6. The secrets were mounted (separately) into each pod's container.
-7. The client pod connected and authenticated to Kafka using mTLS. 
+7. The client pod connected and authenticated to Kafka using mTLS.
 
 ## Teardown
 

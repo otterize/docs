@@ -5,7 +5,6 @@ title: Automate network policies
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-
 Otterize automates network policies within your cluster by abstracting away
 the management of pod identities, the labeling of clients, servers and namespaces,
 and the manual authoring of individual network policies.
@@ -35,7 +34,7 @@ You can skip this section if Otterize is already installed in your cluster.
    helm upgrade --install otterize otterize/otterize-kubernetes -n otterize --create-namespace
    ```
 2. It can take several minutes for the pods to be `Running` and all containers to be ready.
-You can monitor progress with the following command:
+   You can monitor progress with the following command:
    ```
    kubectl get pods -n otterize -w
    ```
@@ -53,12 +52,12 @@ You can monitor progress with the following command:
 ## Verify network policies are enforceable
 
 To enforce network policies, a Kubernetes cluster requires a CNI network plugin to be installed.
- 
+
 :::note
 You can skip this section if you already have a CNI (such as Calico) installed in your cluster.
 :::
 
-If you don't have a CNI installed, a popular choice is Calico by Tigera. 
+If you don't have a CNI installed, a popular choice is Calico by Tigera.
 To install it, please follow the [instructions](https://projectcalico.docs.tigera.io/getting-started/kubernetes/helm)
 and return to this tutorial.
 
@@ -66,7 +65,7 @@ and return to this tutorial.
 
 Our simple example consists of two pods: an HTTP server and a client that calls it.
 
-We also deploy a default-deny ingress network policy, 
+We also deploy a default-deny ingress network policy,
 blocking pods from accepting incoming calls unless another network policy explicitly allows them.
 
 <details>
@@ -177,7 +176,7 @@ blocking pods from accepting incoming calls unless another network policy explic
    default-deny-ingress   <none>         17s
    ```
 4. Let's monitor the client's attempts to call the server with a second terminal window,
-   so we can see the effects of our changes in real time. 
+   so we can see the effects of our changes in real time.
 
    **Open a second terminal window** and tail the client log:
    ```bash
@@ -257,18 +256,25 @@ details [here](/documentation/intents-operator/network-policies/in-depth)
 :::
 
 ## What happened behind the scenes
-To generate network policies between two pods, for example called `client` and `server` running in namespace `otterize-tutorial-npol` we needed to:
-1. Label the `server` pod `label-server` - we will use this label in the network policy to apply it to all pods with this label (as an ingress rule).
-2. Label the `client` pod with `has-access-to-server`, saying that this specific pod has access to `server` - we will use this label in the network policy as a filter -- every
-pod that has the label saying [this pod can access the server] will be able to pass through the network policy.
-3. Label the `client`'s namespace `label-otterize-tutorial-npol` -- this is a requirement for the network policy as another filtering mechanism for pods.
+
+To generate network policies between two pods, for example called `client` and `server` running in
+namespace `otterize-tutorial-npol` we needed to:
+
+1. Label the `server` pod `label-server` - we will use this label in the network policy to apply it to all pods with
+   this label (as an ingress rule).
+2. Label the `client` pod with `has-access-to-server`, saying that this specific pod has access to `server` - we will
+   use this label in the network policy as a filter -- every
+   pod that has the label saying [this pod can access the server] will be able to pass through the network policy.
+3. Label the `client`'s namespace `label-otterize-tutorial-npol` -- this is a requirement for the network policy as
+   another filtering mechanism for pods.
 4. Generate a network policy saying that
-   1. Only pod with the label `has-access-to-server`
-   2. From the namespaces with the label `label-otterize-tutorial-npol`
-   3. Can access pods with the label `label-server`
+    1. Only pod with the label `has-access-to-server`
+    2. From the namespaces with the label `label-otterize-tutorial-npol`
+    3. Can access pods with the label `label-server`
 
 Otterize saved us from doing all this work by simply declaring the client's intents in `intents.yaml`,
-while the appropriate network policies were managed automatically behind the scenes.   
+while the appropriate network policies were managed automatically behind the scenes.
+
 ## What's next
 
 <!-- [Intents Operator](/documentation/intents-operator): -->

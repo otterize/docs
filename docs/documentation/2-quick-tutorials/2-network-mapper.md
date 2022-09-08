@@ -148,7 +148,8 @@ cluster.
    ```
 
 
-2. And now we can add traffic to the cluster and see how the Network Mapper tracks it. You can do that by deploying our example
+2. And now we can add traffic to the cluster and see how the Network Mapper tracks it. You can do that by deploying our
+   example
    which consists of two pods: client and server, communicating over HTTP. Deploy example:
    ```shell
    kubectl apply -n otterize-tutorial-mapper -f https://docs.otterize.com/code-examples/network-mapper/all.yaml
