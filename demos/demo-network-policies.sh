@@ -63,11 +63,3 @@ prompt
 pei "kubectl logs --tail 0 -f -n otterize-tutorial-npol deploy/client | head -n 18"
 prompt
 pei "# That's how easy it is to manage network policies with Otterize 🦦"
-
-prompt
-pei "# hellpo"
-prompt
-pei "curl https://docs.otterize.com/code-examples/network-policies/intents/intents.yaml"
-echo
-prompt
-pei "# hellpo"
