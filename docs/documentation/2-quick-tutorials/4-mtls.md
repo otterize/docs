@@ -43,7 +43,6 @@ If you already have Otterize installed on your cluster you can skip this step.
    spire-integration-operator-controller-manager-65b8bf57b5-mpltl   2/2     Running   0             53s
    ```
 
-
 ## Pod annotation  (explainer)
 
 To generate credentials for a pod we simply need to update the deployment by annotating it.
@@ -163,7 +162,8 @@ https.createServer(options, (req, res) => {
    client-5689997b5c-grlnt   1/1     Running   0          35s
    server-6698c58cbc-v9n9b   1/1     Running   0          34s
    ```
-3. Confirm that the client can successfully call the server using HTTP over mTLS. The server will reply to the client with it's `own` certificate's `common name` and the `client`'s certificate `common name`.
+3. Confirm that the client can successfully call the server using HTTP over mTLS. The server will reply to the client
+   with it's `own` certificate's `common name` and the `client`'s certificate `common name`.
 
    ```bash
    kubectl logs --tail 3 -n otterize-tutorial-mtls deploy/client
@@ -180,12 +180,13 @@ https.createServer(options, (req, res) => {
    ```bash
    kubectl logs --tail 1 -n otterize-tutorial-mtls deploy/server
    ```
-   
+
    You should see the following line
-   
+
    ```shell
    client.otterize-tutorial-mtls:  GET /hello
    ```
+
 ## Inspect credentials
 
 We can use openssl to inspect the generated certificates. The certificates are stored as `K8s secrets` and are also
@@ -196,7 +197,7 @@ We can use openssl to inspect the generated certificates. The certificates are s
    <Tabs>
      <TabItem value="secret-direct" label="K8s secret" default>
    To retrieve the credentials from the K8s secrets store use:
-   
+
    ```shell
    kubectl get secret -n otterize-tutorial-mtls client-credentials-secret -o jsonpath='{.data.svid\.pem}' | base64 -d > svid.pem
    ```
@@ -236,15 +237,17 @@ We can use openssl to inspect the generated certificates. The certificates are s
                    pub:
    ```
 
-3. You can see that Otterize generated an x509 certificate using the pod's name [_client_] and namespace [_otterize-tutorial-mtls_].
-The certificate belongs to a chain of trust starting at the SPIRE server.
+3. You can see that Otterize generated an x509 certificate using the pod's name [_client_] and namespace [_
+   otterize-tutorial-mtls_].
+   The certificate belongs to a chain of trust starting at the SPIRE server.
 
 ## What happened behind the scenes
+
 1. We annotated the pods to let Otterize know it should generate mTLS credentials.
 2. The Otterize SPIRE integration operator
-   1. Created an entries for the annotated pods with the SPIRE server.
-   2. Generated matching mTLS credentials using the SPIRE server.
-   3. Stored the mTLS credentials into a K8s secrets.
+    1. Created an entries for the annotated pods with the SPIRE server.
+    2. Generated matching mTLS credentials using the SPIRE server.
+    3. Stored the mTLS credentials into a K8s secrets.
 3. The secrets were mounted (separately) into each pod's container.
 4. The pods communicated with each other using HTTP of mutual TLS.
 

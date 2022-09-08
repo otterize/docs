@@ -141,14 +141,20 @@ See the [Network Mapper documentation](/documentation/network-mapper/intro) for 
 
 One of the benefits for using the network mapper is the ability to track changes over time for communication within your
 cluster.
-Let's add traffic to the cluster and see how the Network Mapper tracks it. You can do that by deploying our example
-which consists of two pods: client and server, communicating over HTTP.
 
-1. Deploy example:
+1. Let's save the current state of traffic from the cluster into a file we will compare against later
+   ```shell
+   otterize intents list > intents-original.txt
+   ```
+
+
+2. And now we can add traffic to the cluster and see how the Network Mapper tracks it. You can do that by deploying our
+   example
+   which consists of two pods: client and server, communicating over HTTP. Deploy example:
    ```shell
    kubectl apply -n otterize-tutorial-mapper -f https://docs.otterize.com/code-examples/network-mapper/all.yaml
    ```
-2. Check that the `client` and server `pods` were deployed
+3. Check that the `client` and server `pods` were deployed
    ```bash
    kubectl get pods -n otterize-tutorial-mapper
    ```
@@ -158,7 +164,7 @@ which consists of two pods: client and server, communicating over HTTP.
    client-756f7677f8-d6qdq   1/1     Running   0          45s
    server-6698c58cbc-ssxvx   1/1     Running   0          45s
    ```
-3. Export the updated observed intents.
+4. Export the updated observed intents.
    ```shell
    otterize intents list
    ```
@@ -176,6 +182,25 @@ which consists of two pods: client and server, communicating over HTTP.
    orderservice calls:
      - kafka
    ```
+5. We can also compare both output to see the difference. We'll start by saving the updated state to a file with
+   ```bash
+   otterize intents list > intents-updated.txt
+   ```
+6. And compare the original file with the updated file using
+   ```bash
+   diff --color=always -y intents-original.txt intents-updated.txt;echo
+   ```
+   You should see a result looking like
+   ```bash
+                                         > client calls:
+                                         >   - server
+                                         >
+   checkoutservice calls:                  checkoutservice calls:
+     - orderservice                          - orderservice
+
+   orderservice calls:                     orderservice calls:
+     - kafka                                 - kafka
+      ```
 
 ## What's next
 
