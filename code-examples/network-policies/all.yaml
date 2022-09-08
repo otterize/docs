@@ -50,7 +50,7 @@ spec:
       containers:
         - name: server
           image: hashicorp/http-echo
-          args: [ "-listen=:80", "-text=hello world"]
+          args: [ "-listen=:80", "-text=Hi, I am the server, you called, may I help you?"]
 ---
 apiVersion: v1
 kind: Service
