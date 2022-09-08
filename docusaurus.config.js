@@ -63,12 +63,6 @@ const config = {
             label: 'Documentation',
           },
           {
-            type: 'doc',
-            docId: 'examples/intro',
-            position: 'left',
-            label: 'Examples',
-          },
-          {
             href: 'https://github.com/otterize',
             label: 'GitHub',
             position: 'right',
