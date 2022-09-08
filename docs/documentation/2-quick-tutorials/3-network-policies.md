@@ -91,7 +91,7 @@ blocking pods from accepting incoming calls unless another network policy explic
    kind: Deployment
    metadata:
      name: server
-     namespace: otterize-tutorial-npol
+     namespace:  otterize-tutorial-npol
    spec:
      selector:
        matchLabels:
@@ -104,8 +104,20 @@ blocking pods from accepting incoming calls unless another network policy explic
          containers:
            - name: server
              image: hashicorp/http-echo
-             args: [ "-listen=:80", "-text=Hi, I am the server, you called, may I help you?" ]
-   ```
+             args: [ "-listen=:80", "-text=Hi, I am the server, you called, may I help you?"]
+   ---
+   apiVersion: v1
+   kind: Service
+   metadata:
+     name: server
+     namespace:  otterize-tutorial-npol
+   spec:
+     selector:
+       app: server
+     ports:
+       - protocol: TCP
+         port: 80
+         targetPort: 80   ```
 
 </TabItem>
 <TabItem value="client.yaml" label="client.yaml" default>
