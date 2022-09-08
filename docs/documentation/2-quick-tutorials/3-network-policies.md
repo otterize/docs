@@ -209,7 +209,7 @@ blocking pods from accepting incoming calls unless another network policy explic
      service:
        name: client
      calls:
-       - server: server
+       - name: server
          type: HTTP
    ```
    :::tip
