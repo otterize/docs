@@ -70,8 +70,19 @@ We also deploy a default-deny ingress network policy,
 blocking pods from accepting incoming calls unless another network policy explicitly allows them.
 
 <details>
-<summary>Expand to see the details of this example</summary>
+<summary>Expand to see the details of this example...</summary>
 <Tabs>
+
+<TabItem value="namespace.yaml" label="namespace.yaml" default>
+
+   ```yaml
+   apiVersion: v1
+   kind: Namespace
+   metadata:
+     name: otterize-tutorial-npol
+   ```
+
+</TabItem>
 
 <TabItem value="server.yaml" label="server.yaml" default>
 
@@ -93,7 +104,7 @@ blocking pods from accepting incoming calls unless another network policy explic
          containers:
            - name: server
              image: hashicorp/http-echo
-             args: [ "-listen=:80", "-text=hello world" ]
+             args: [ "-listen=:80", "-text=Hi, I am the server, you called, may I help you?" ]
    ```
 
 </TabItem>
@@ -156,7 +167,7 @@ blocking pods from accepting incoming calls unless another network policy explic
    client-5689997b5c-grlnt   1/1     Running   0          35s
    server-6698c58cbc-v9n9b   1/1     Running   0          34s
    ```
-3. Check that the default deny ingress Network Policy was deployed
+3. Check that the default deny ingress network policy was deployed:
    ```bash
    kubectl get NetworkPolicies -n otterize-tutorial-npol
    ```
@@ -165,19 +176,29 @@ blocking pods from accepting incoming calls unless another network policy explic
    NAME                   POD-SELECTOR   AGE
    default-deny-ingress   <none>         17s
    ```
-4. We can now see that `client` _cannot_ connect to `server`:
+4. Let's monitor the client's attempts to call the server with a second terminal window,
+   so we can see the effects of our changes in real time. 
+
+   **Open a second terminal window** and tail the client log:
    ```bash
-   kubectl logs --tail 1 -n otterize-tutorial-npol deploy/client
+   kubectl logs -f --tail 1 -n otterize-tutorial-npol deploy/client
    ```
-   You should see the following line
+   At this point the client should be timing out when trying to call the server:
    ```
+   Calling server...
+   curl timed out
+   Calling server...
+   curl timed out
+   Calling server...
    curl timed out
    ```
-   This is the expected outcome as we haven't configured a network policy using an intents file to allow it.
+   This is the expected outcome since by default all pods' ingress are blocked by the default network policy.
+   Once the client declares its intents, Otterize will add a network policy to allow thhe intended calls.
+   Let's see that now...
 
-## Apply intents as network policies
+## Apply intents
 
-1. We will use the following `intetns file` allows traffic between the client and server pods:
+1. The client declares its intent to call the server with this `intents.yaml` file:
    ```yaml
    apiVersion: k8s.otterize.com/v1
    kind: ClientIntents
@@ -192,52 +213,34 @@ blocking pods from accepting incoming calls unless another network policy explic
          type: HTTP
    ```
    :::tip
-   Intents are onf of the cornerstones to how Otterize works and helps developers. Lean more here.
+   Client intents are the cornerstone of [intent-based access control](otterize.com/ibac).
    :::
-2. We will monitor the change in real time with a **second terminal** to see how the effect takes place immediately. Run
-   the following monitoring command in your **second terminal**.
-   ```bash
-   kubectl logs -f --tail 1 -n otterize-tutorial-npol deploy/client
-   ```
-   At first you will see the client timing out when trying to call the server
-   ```
-   curl timed out
-   curl timed out
-   curl timed out
-   ```
-3. Apply the intents file on your **main terminal** using:
-   <Tabs>
-   <TabItem value="kubectl" label="Kubectl" default>
 
+   Keep an eye on the logs being tailed in the **second terminal window**
+   while you apply this `intents.yaml` file in your **main terminal window** using:
    ```shell
    kubectl apply -f https://docs.otterize.com/code-examples/network-policies/intents/intents.yaml
    ```
-     </TabItem>
-     <TabItem value="otterize" label="Otterize">
-
-   ```shell
-   otterize apply intents
-   ```
-     </TabItem>
-   </Tabs>
-4. You should immidiatly see on the **second terminal** that `client` is now able to connect to `server` as the output
-   will start to show:
+2. You should quickly see in the **second terminal** that the client is now successfully calling the server:
    ```bash
-   curl timed out                              
+   Calling server...
+   curl timed out
+   Calling server...
    curl timed out                              <- before applying the intents file
    # highlight-start
-   HTTP/1.1 200 OK                             <- after applying the intents file
+   Calling server...                           <- after applying the intents file
+   HTTP/1.1 200 OK
    X-App-Name: http-echo
    X-App-Version: 0.2.3
    Date: Wed, 07 Sep 2022 13:51:34 GMT
    Content-Length: 12
    Content-Type: text/plain; charset=utf-8
    
-   hello world
+   Hi, I am the server, you called, may I help you?
    # highlight-end
    ```
 
-5. Verify that a new network policy was created
+3. If you check, you should see that a new network policy was created
    ```bash
    kubectl get NetworkPolicies -n otterize-tutorial-npol
    ```
