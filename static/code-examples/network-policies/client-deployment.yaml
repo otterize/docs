@@ -16,4 +16,4 @@ spec:
         - name: client
           image: alpine/curl
           command: [ "/bin/sh", "-c", "--" ]
-          args: [ "while true; do if ! timeout 2 curl -si server 2>/dev/null; then echo \"curl timed out\"; fi; sleep 2; done" ]
+          args: [ "while true; do echo \"Calling server...\"; if ! timeout 2 curl -si server 2>/dev/null; then echo \"curl timed out\"; fi; sleep 2; done" ]

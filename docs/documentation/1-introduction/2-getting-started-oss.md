@@ -4,11 +4,14 @@ slug: getting-started-oss
 title: Getting started with Otterize OSS
 ---
 
+Otterize OSS implements intent-based access control in a single Kubernetes cluster.
 
-It's easy to get started with Otterize, whether you have 5 minutes to go through a quick pre-built tutorial, 
+It's easy to get started with Otterize OSS, 
+whether you have 5 minutes to go through a quick pre-built tutorial, 
 or 10 minutes to try it on your own services. 
-And after that, it's also easy to gradually roll it out to your environments and your teams; 
-we do *not* recommend turning intent-based access control into a big, time-consuming project!
+
+And after that, it's also easy to *gradually* roll it out to your environments and your teams; 
+we do **not** recommend turning intent-based access control into a big, time-consuming project!
 
 # Got 5 minutes?
 
