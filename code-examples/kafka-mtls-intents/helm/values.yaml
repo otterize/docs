@@ -1,33 +1,33 @@
-kafka:
-  superUsers: "User:CN=kafka.kafka,O=SPIRE,C=US;User:CN=intents-operator.otterize,O=SPIRE,C=US"
-  livenessProbe:
-    initialDelaySeconds: 20
-  readinessProbe:
-    initialDelaySeconds: 20
-  listeners:
-    - "CLIENT://:9092"
-    - "INTERNAL://:9093"
-  advertisedListeners:
-    - "CLIENT://:9092"
-    - "INTERNAL://:9093"
-  listenerSecurityProtocolMap: "INTERNAL:SSL,CLIENT:SSL"
-  auth:
-    clientProtocol: mtls
-    interBrokerProtocol: mtls
-    tls:
-      type: jks
-      existingSecrets:
-        - kafka-tls-secret
-      password: password
-  authorizerClassName: kafka.security.authorizer.AclAuthorizer
-  allowEveryoneIfNoAclFound: false
-  podAnnotations:
-    otterize/cert-type: jks
-    otterize/tls-secret-name: kafka-tls-secret
-    otterize/truststore-file-name: kafka.truststore.jks
-    otterize/keystore-file-name: kafka-keystore.jks
-    otterize/dns-names: "kafka-0.kafka-headless.kafka.svc.cluster.local,kafka.kafka.svc.cluster.local"
-  resources:
-    requests:
-      cpu: 50m
-      memory: 256Mi
+superUsers: "User:CN=kafka.kafka,O=SPIRE,C=US;User:CN=intents-operator.otterize,O=SPIRE,C=US"
+livenessProbe:
+  initialDelaySeconds: 20
+readinessProbe:
+  initialDelaySeconds: 20
+listeners:
+  - "CLIENT://:9092"
+  - "INTERNAL://:9093"
+advertisedListeners:
+  - "CLIENT://:9092"
+  - "INTERNAL://:9093"
+listenerSecurityProtocolMap: "INTERNAL:SSL,CLIENT:SSL"
+auth:
+  clientProtocol: mtls
+  interBrokerProtocol: mtls
+  tls:
+    type: jks
+    existingSecrets:
+      - kafka-tls-secret
+    password: password
+authorizerClassName: kafka.security.authorizer.AclAuthorizer
+allowEveryoneIfNoAclFound: false
+podAnnotations:
+  otterize/cert-type: jks
+  otterize/tls-secret-name: kafka-tls-secret
+  otterize/truststore-file-name: kafka.truststore.jks
+  otterize/keystore-file-name: kafka-keystore.jks
+  otterize/dns-names: "kafka-0.kafka-headless.kafka.svc.cluster.local,kafka.kafka.svc.cluster.local"
+  otterize/cert-ttl: "31536000" # 1 year
+resources:
+  requests:
+    cpu: 50m
+    memory: 256Mi
