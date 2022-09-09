@@ -4,9 +4,6 @@ The following example shows the CLI output for a cluster running three pods: che
 
 You should see similar structured results on your cluster.
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
-
 <Tabs>
   <TabItem value="plain" label="Plain" default>
 

@@ -2,6 +2,8 @@
 sidebar_position: 2
 title: Mapping pod-to-pod calls
 ---
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 ## How to collect call traffic
 Otterize can help you collect pod-to-pod traffic within your cluster. You will need to install Otterize and the Otterize CLI by following
