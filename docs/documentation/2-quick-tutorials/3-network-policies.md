@@ -39,10 +39,7 @@ blocking pods from accepting incoming calls unless another network policy explic
 <TabItem value="namespace.yaml" label="namespace.yaml" default>
 
    ```yaml
-   apiVersion: v1
-   kind: Namespace
-   metadata:
-     name: otterize-tutorial-npol
+   {@include: ../../../static/code-examples/network-policies/namespace.yaml}
    ```
 
 </TabItem>
@@ -50,61 +47,16 @@ blocking pods from accepting incoming calls unless another network policy explic
 <TabItem value="server.yaml" label="server.yaml" default>
 
    ```yaml
-   apiVersion: apps/v1
-   kind: Deployment
-   metadata:
-     name: server
-     namespace:  otterize-tutorial-npol
-   spec:
-     selector:
-       matchLabels:
-         app: server
-     template:
-       metadata:
-         labels:
-           app: server
-       spec:
-         containers:
-           - name: server
-             image: hashicorp/http-echo
-             args: [ "-listen=:80", "-text=Hi, I am the server, you called, may I help you?"]
+  {@include: ../../../static/code-examples/network-policies/server-deployment.yaml}
    ---
-   apiVersion: v1
-   kind: Service
-   metadata:
-     name: server
-     namespace:  otterize-tutorial-npol
-   spec:
-     selector:
-       app: server
-     ports:
-       - protocol: TCP
-         port: 80
-         targetPort: 80   ```
+  {@include: ../../../static/code-examples/network-policies/server-service.yaml}
+  ```
 
 </TabItem>
 <TabItem value="client.yaml" label="client.yaml" default>
 
    ```yaml
-   apiVersion: apps/v1
-   kind: Deployment
-   metadata:
-     name: client
-     namespace: otterize-tutorial-npol
-   spec:
-     selector:
-       matchLabels:
-         app: client
-     template:
-       metadata:
-         labels:
-           app: client
-       spec:
-         containers:
-           - name: client
-             image: alpine/curl
-             command: [ "/bin/sh", "-c", "--" ]
-             args: [ "while true; do echo \"Calling server...\"; if ! timeout 2 curl -si server 2>/dev/null; then echo \"curl timed out\"; fi; sleep 2; done" ]
+   {@include: ../../../static/code-examples/network-policies/client-deployment.yaml}
    ```
 
 </TabItem>
@@ -112,15 +64,7 @@ blocking pods from accepting incoming calls unless another network policy explic
 <TabItem value="default-deny.yaml" label="default-deny.yaml" default>
 
    ```yaml
-   apiVersion: networking.k8s.io/v1
-   kind: NetworkPolicy
-   metadata:
-     name: default-deny-ingress
-     namespace: otterize-tutorial-npol
-   spec:
-     podSelector: { }
-     policyTypes:
-       - Ingress
+   {@include: ../../../static/code-examples/network-policies/default-deny-network-policy.yaml}
    ```
 
 </TabItem>
@@ -174,27 +118,18 @@ blocking pods from accepting incoming calls unless another network policy explic
 ## Apply intents
 
 1. The client declares its intent to call the server with this `intents.yaml` file:
+
    ```yaml
-   apiVersion: k8s.otterize.com/v1
-   kind: ClientIntents
-   metadata:
-     name: client
-     namespace:  otterize-tutorial-npol
-   spec:
-     service:
-       name: client
-     calls:
-       - name: server
-         type: HTTP
+   {@include: ../../../static/code-examples/network-policies/intents.yaml}
    ```
-   :::tip
-   Client intents are the cornerstone of [intent-based access control](otterize.com/ibac).
-   :::
+:::tip
+Client intents are the cornerstone of [intent-based access control](otterize.com/ibac).
+:::
 
    Keep an eye on the logs being tailed in the **second terminal window**
    while you apply this `intents.yaml` file in your **main terminal window** using:
    ```shell
-   kubectl apply -f https://docs.otterize.com/code-examples/network-policies/intents/intents.yaml
+   kubectl apply -f https://docs.otterize.com/code-examples/network-policies/intents.yaml
    ```
 2. You should quickly see in the **second terminal** that the client is now successfully calling the server:
    ```bash
@@ -256,7 +191,7 @@ while the appropriate network policies were managed automatically behind the sce
 <!-- [Intents Operator](/documentation/intents-operator): -->
 
 - Configure [network policies](/documentation/intents-operator/network-policies) for your existing deployments.
-- Explore the [Network Mapper](/documentation/getting-started/network-mapper) to help you bootstrap intents you can
+- Explore the [Network Mapper](/documentation/getting-started/network-policies) to help you bootstrap intents you can
   apply as network policies.
 
 ## Teardown

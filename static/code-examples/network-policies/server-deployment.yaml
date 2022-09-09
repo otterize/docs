@@ -16,16 +16,3 @@ spec:
         - name: server
           image: hashicorp/http-echo
           args: [ "-listen=:80", "-text=Hi, I am the server, you called, may I help you?"]
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: server
-  namespace:  otterize-tutorial-npol
-spec:
-  selector:
-    app: server
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 80
