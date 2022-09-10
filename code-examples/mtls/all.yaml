@@ -48,7 +48,6 @@ spec:
       labels:
         app: client
       annotations:
-        #        to rename credentials-secret-name
         otterize/tls-secret-name: client-credentials-secret
         otterize/cert-ttl: "2592000"
     spec:
