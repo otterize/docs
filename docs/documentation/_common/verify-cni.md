@@ -1,6 +1,7 @@
 ## Verify network policies are enforceable
 
-To enforce network policies, a Kubernetes cluster requires a CNI network plugin to be installed.
+To enforce network policies, a Kubernetes cluster requires a CNI supporting network policies to be
+installed.
 
 :::note
 You can skip this section if you already have a CNI (such as Calico) installed in your cluster.
