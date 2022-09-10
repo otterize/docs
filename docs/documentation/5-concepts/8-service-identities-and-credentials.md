@@ -77,10 +77,34 @@ This config only supports server TLS and not mTLS.
 {@include: ../../../static/code-examples/code/mtls/kafka/client.js}
 ```
 </TabItem>
-<TabItem value="py" label="Python" default>
+<TabItem value="go" label="GO">
+
+```python
+{@include: ../../../static/code-examples/code/mtls/kafka/client.go}
+```
+</TabItem>
+<TabItem value="python" label="Python">
 
 ```python
 {@include: ../../../static/code-examples/code/mtls/kafka/client.py}
 ```
+</TabItem>
+<TabItem value="bash" label="Bash" default>
+You can use Kafka's builtin kafka-console-consumer.sh script to connect to Kafka. The script requires the credentials
+to be generated in the JKS format.
+<Tabs>
+<TabItem value="bash" label="Bash" default>
+
+```bash
+{@include: ../../../static/code-examples/code/mtls/kafka/client.sh}
+```
+</TabItem>
+<TabItem value="client.properties" label="client.properties">
+
+```properties
+{@include: ../../../static/code-examples/code/mtls/kafka/client.properties}
+```
+</TabItem>
+</Tabs>
 </TabItem>
 </Tabs>
