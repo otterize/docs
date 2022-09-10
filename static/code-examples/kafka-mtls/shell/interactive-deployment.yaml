@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: interactive
+  namespace: otterize-tutorial-kafka-mtls
+spec:
+  selector:
+    matchLabels:
+      app: interactive
+  template:
+    metadata:
+      labels:
+        app: interactive
+      annotations:
+#        to rename credentials-secret-name
+        otterize/tls-secret-name: interactive-credentials-secret
+        otterize/cert-type: jks
+        otterize/truststore-file-name: kafka.truststore.jks
+        otterize/keystore-file-name: kafka.keystore.jks
+        otterize/cert-ttl: "2592000"
+    spec:
+      containers:
+        - name: interactive
+          image: bitnami/kafka
+          command: [ "/bin/sh", "-c", "--" ]
+          args: [ "sleep infinity" ]
+          volumeMounts:
+            - mountPath: /app
+              name: interactive-properties
+            - name: otterize-credentials
+              mountPath: /var/otterize/credentials
+              readOnly: true
+      volumes:
+        - name: interactive-properties
+          configMap:
+            name: interactive-properties
+        - name: otterize-credentials
+          secret:
+            secretName: interactive-credentials-secret
