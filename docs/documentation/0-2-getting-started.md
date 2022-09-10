@@ -3,20 +3,14 @@ sidebar_position: 2
 title: Getting started with Otterize
 ---
 
-<!--
-We're still building out Otterize Cloud, including its documentation.
-
-In the meantime, you can read more about it in our [product page](https://otterize.com/product), or...
--->
-
 Otterize OSS implements intent-based access control in a single Kubernetes cluster.
+
+**Coming soon**: Otterize Cloud adds visibility and operationalization, and supports multiple Kubernetes clusters 
+as well as non-Kubernetes infrastructures. Read more in our [product page](https://otterize.com/product).
 
 It's easy to get started with Otterize OSS, 
 whether you have 5 minutes to go through a quick pre-built tutorial, 
-or 10 minutes to try it on your own services. 
-
-And after that, it's also easy to *gradually* roll it out to your environments and your teams; 
-we do **not** recommend turning intent-based access control into a big, time-consuming project!
+or 10 minutes to try it on your own services.
 
 # Got 5 minutes?
 
@@ -24,14 +18,19 @@ All you need is a Kubernetes cluster where you have admin rights, along with the
 * `kubectl`
 * Helm
 
-And with that -- onwards to our quick tutorials!
+And with that -- [onwards to our quick tutorials](/documentation/2-quick-tutorials/README.mdx)!
 
-:::danger
-How do I get a DocCardList that generates DocCards from a *different* category --
-namely, the Quick Tutorials category?
-:::
-<!--
-import DocCardList from '@theme/DocCardList'
-import {findSidebarCategory} from '@docusaurus/theme-common'
-<DocCardList items={findSidebarCategory({href: "quick-tutorials"}).items}/>
--->
+# Got 10 minutes?
+
+Try it out with your own services, or use our larger reference "lab" example.
+Again, you just need the standard tools:
+* `kubectl`
+* Helm
+
+Then proceed to [the usecase that's interesting to you](/documentation/2-quick-tutorials/README.mdx).
+
+# Then what?
+
+Once you've played around with Otterize, see how easy it is to [*bootstrap* and *gradually* roll it out](/documentation/3-guides/6-implementing-ibac) 
+to your environments and your teams. We do **not** recommend turning intent-based access control into a big, time-consuming project!
+
