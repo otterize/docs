@@ -1,6 +1,6 @@
 ---
 sidebar_position: 3
-title: IBAC via network policies
+title: IBAC in Kubernetes via network policies
 ---
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';

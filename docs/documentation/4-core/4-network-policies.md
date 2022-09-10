@@ -1,5 +1,4 @@
 ---
-id: network-policies
 title: Network policies
 sidebar_position: 4
 ---

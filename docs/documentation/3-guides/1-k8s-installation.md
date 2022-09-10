@@ -1,8 +1,7 @@
 ---
 sidebar_position: 1
+title: Installing Otterize in Kubernetes
 ---
-
-# Installation
 
 Install Otterize on a Kubernetes cluster using helm.
 

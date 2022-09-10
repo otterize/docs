@@ -1,8 +1,13 @@
 ---
 sidebar_position: 2
-slug: getting-started-oss
-title: Getting started with Otterize OSS
+title: Getting started with Otterize
 ---
+
+<!--
+We're still building out Otterize Cloud, including its documentation.
+
+In the meantime, you can read more about it in our [product page](https://otterize.com/product), or...
+-->
 
 Otterize OSS implements intent-based access control in a single Kubernetes cluster.
 

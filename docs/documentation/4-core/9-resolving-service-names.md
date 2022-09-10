@@ -1,5 +1,4 @@
 ---
-id: resolving-service-names-in-k8s
 title: Resolving service names in Kubernetes
 sidebar_position: 9
 ---

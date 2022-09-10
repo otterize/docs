@@ -1,5 +1,4 @@
 ---
-id: ibac
 title: IBAC
 sidebar_position: 2
 ---

@@ -1,6 +1,6 @@
 ---
 sidebar_position: 2
-title: Mapping pod-to-pod calls
+title: Mapping pod-to-pod calls in Kubernetes
 ---
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';

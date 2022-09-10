@@ -1,5 +1,4 @@
 ---
-id: service
 title: Services
 sidebar_position: 3
 ---

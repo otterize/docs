@@ -1,5 +1,4 @@
 ---
-id: service-identities-and-credentials
 title: Service identities and credentials
 sidebar_position: 8
 ---

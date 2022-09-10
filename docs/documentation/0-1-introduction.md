@@ -1,6 +1,7 @@
 ---
 sidebar_position: 1
 slug: /
+title: Introduction to Otterize
 ---
 
 # Welcome to Otterize

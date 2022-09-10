@@ -1,0 +1,21 @@
+---
+title: Guides
+---
+
+These guides take you through [installing](/documentation/3-guides/1-k8s-installation.md) and using Otterize.
+
+Some of these guides walk you through solving specific use cases,
+such as [network mapping your K8s cluster to see what services call what other services](/documentation/3-guides/2-k8s-mapping-pod-to-pod-calls.md),
+[automatically controlling K8s pod-to-pod access via network policies](/documentation/3-guides/3-k8s-ibac-via-network-policies.md),
+or [rolling out mTLS for pod-to-pod authentication](/documentation/3-guides/5-k8s-mtls.md)
+or to [automate securely accessing Kafka](/documentation/3-guides/4-ibac-for-k8s-kafka/README.mdx).
+
+You'll also find a guide for [implementing intent-based access control](/documentation/3-guides/6-implementing-ibac.md) in general,
+for any use case, including bootstrapping intents files to get your team started,
+and gradually rolling it out service-by-service or team-by-team.
+
+
+import DocCardList from '@theme/DocCardList'
+import {useCurrentSidebarCategory} from '@docusaurus/theme-common'
+
+<DocCardList items={useCurrentSidebarCategory().items}/>
