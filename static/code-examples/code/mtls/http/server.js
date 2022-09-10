@@ -1,0 +1,24 @@
+const https = require(`https`);
+const fs = require(`fs`);
+
+const options = {
+    key: fs.readFileSync('/var/otterize/credentials/key.pem'),
+    cert: fs.readFileSync('/var/otterize/credentials/svid.pem'),
+    ca: fs.readFileSync('/var/otterize/credentials/bundle.pem'),
+    requestCert: true
+};
+
+https.createServer(
+    options,
+    (req, res) => {
+        const peerCert = req.connection.getPeerCertificate();
+        const ownCert = req.connection.getCertificate();
+        console.log("Received request:");
+        console.log(peerCert.subject.CN + ":\t" + req.method + " " + req.url);
+        if (req.url === '/hello') {
+            res.writeHead(200);
+            res.end('mTLS hello world\nfrom: ' + ownCert.subject.CN + '\nto client: ' + peerCert.subject.CN);
+        } else {
+            res.end();
+        }
+    }).listen(443);
