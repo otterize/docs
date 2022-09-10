@@ -74,6 +74,12 @@ This config only supports server TLS and not mTLS.
 <TabItem value="js" label="JS" default>
 
 ```python
+{@include: ../../../static/code-examples/code/mtls/kafka/client.js}
+```
+</TabItem>
+<TabItem value="py" label="Python" default>
+
+```python
 {@include: ../../../static/code-examples/code/mtls/kafka/client.py}
 ```
 </TabItem>
