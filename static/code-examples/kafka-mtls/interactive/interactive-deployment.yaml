@@ -12,7 +12,6 @@ spec:
       labels:
         app: interactive
       annotations:
-#        to rename credentials-secret-name
         otterize/tls-secret-name: interactive-credentials-secret
         otterize/cert-type: jks
         otterize/truststore-file-name: kafka.truststore.jks
