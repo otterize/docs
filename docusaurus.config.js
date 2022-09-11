@@ -33,6 +33,13 @@ const config = {
         [
             'docusaurus-plugin-hotjar',
             {}
+        ],
+        [
+            '@docusaurus/plugin-google-gtag',
+            {
+                trackingID: 'G-2EG876ZREF',
+                anonymizeIP: false,
+            },
         ]
     ],
     presets: [
