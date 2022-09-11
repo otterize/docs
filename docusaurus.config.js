@@ -4,7 +4,7 @@
 const lightCodeTheme = require('prism-react-renderer/themes/github');
 const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
-/** @type {import('@docusaurus/types').Config} */
+// /** @type {import('@docusaurus/types').Config} */
 const config = {
     title: 'Otterize',
     url: 'https://docs.otterize.com',
@@ -30,6 +30,10 @@ const config = {
             'docusaurus-plugin-includes',
             {},
         ],
+        [
+            'docusaurus-plugin-hotjar',
+            {}
+        ]
     ],
     presets: [
         [
@@ -54,6 +58,9 @@ const config = {
     themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
         ({
+            hotjar: {
+                applicationId: '3152141',
+            },
             navbar: {
                 logo: {
                     alt: 'Otterize',
