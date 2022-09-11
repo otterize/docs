@@ -57,7 +57,7 @@ Though SSL was replaced by TLS, Kafka still uses the term SSL internally.
    ```yaml
    podAnnotations:
      otterize/cert-type: jks
-     otterize/tls-secret-name: kafka-tls-secret
+     spire-integration.otterize.com/tls-secret-name: kafka-tls-secret
      otterize/truststore-file-name: kafka.truststore.jks
      otterize/keystore-file-name: kafka-keystore.jks
      otterize/dns-names: "kafka-0.kafka-headless.kafka.svc.cluster.local,kafka.kafka.svc.cluster.local"
@@ -88,7 +88,7 @@ authorizerClassName: kafka.security.authorizer.AclAuthorizer
 allowEveryoneIfNoAclFound: true
 podAnnotations:
   otterize/cert-type: jks
-  otterize/tls-secret-name: kafka-tls-secret
+  spire-integration.otterize.com/tls-secret-name: kafka-tls-secret
   otterize/truststore-file-name: kafka.truststore.jks
   otterize/keystore-file-name: kafka-keystore.jks
   otterize/dns-names: "kafka-0.kafka-headless.kafka.svc.cluster.local,kafka.kafka.svc.cluster.local"
@@ -109,20 +109,20 @@ and using the popular [kafka-console-producer](https://kafka.apache.org/quicksta
 <TabItem value="namespace.yaml" label="namespace.yaml" default>
 
    ```yaml
-   {@include: ../../../static/code-examples/kafka-mtls/interactive/namespace.yaml}
+   {@include: ../../../../static/code-examples/kafka-mtls/interactive/namespace.yaml}
    ```
 
 </TabItem>
 <TabItem value="interactive.yaml" label="interactive.yaml" default>
 
    ```yaml
-   {@include: ../../../static/code-examples/kafka-mtls/interactive/interactive-deployment.yaml}
+   {@include: ../../../../static/code-examples/kafka-mtls/interactive/interactive-deployment.yaml}
    ```
 </TabItem>
 <TabItem value="interactive-configmap.yaml" label="interactive-configmap.yaml" default>
 
    ```yaml
-   {@include: ../../../static/code-examples/kafka-mtls/interactive/interactive-configmap.yaml}
+   {@include: ../../../../static/code-examples/kafka-mtls/interactive/interactive-configmap.yaml}
    ```
 
 </TabItem>

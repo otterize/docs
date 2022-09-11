@@ -35,11 +35,11 @@ advertisedListeners:
   - "INTERNAL://:9093"
 listenerSecurityProtocolMap: "INTERNAL:SSL,CLIENT:SSL"
 podAnnotations: # 2. Annotations for Otterize to generate credentials
-  otterize/cert-type: jks
-  otterize/tls-secret-name: kafka-tls-secret
-  otterize/truststore-file-name: kafka.truststore.jks
-  otterize/keystore-file-name: kafka-keystore.jks
-  otterize/dns-names: "kafka-0.kafka-headless.kafka.svc.cluster.local,kafka.kafka.svc.cluster.local"
+  spire-integration.otterize.com/cert-type: jks
+  spire-integration.otterize.com/tls-secret-name: kafka-tls-secret
+  spire-integration.otterize.com/truststore-file-name: kafka.truststore.jks
+  spire-integration.otterize.com/keystore-file-name: kafka-keystore.jks
+  spire-integration.otterize.com/dns-names: "kafka-0.kafka-headless.kafka.svc.cluster.local,kafka.kafka.svc.cluster.local"
 auth: # 3. Authenticate clients using mTLS
   clientProtocol: mtls
   interBrokerProtocol: mtls

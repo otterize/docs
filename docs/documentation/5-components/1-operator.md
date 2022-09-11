@@ -20,7 +20,7 @@ See [configuration] for details about how to configure Otterize to work with you
 
 ## Credentials
 ### Lifecycle
-- On `Pod Start` if it is annotated with `otterize/tls-secret-name` credentials are generated and stored in a K8s secret named as the value of the annotation
+- On `Pod Start` if it is annotated with `spire-integration.otterize.com/tls-secret-name` credentials are generated and stored in a K8s secret named as the value of the annotation
 
 ### Types
 x509 credentials can be generated in two flavors:
