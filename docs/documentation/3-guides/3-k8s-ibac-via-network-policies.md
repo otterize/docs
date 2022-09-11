@@ -12,9 +12,10 @@ can use for traffic shaping within K8s clusters. They allow us to shape traffic 
 and L4 identifiers. To enforce network policies, a Kubernetes cluster requires a CNI supporting network policies to be
 installed. Some popular options are Calico and Cilium.
 
+### How a network policy looks like
 Let's take a look at an example showing a network policy allowing traffic
 
-- _from_ pods labeled `app:backend` belonging to namespaces labeled `env:production`
+- _from_ pods labeled `app:backend` in namespaces labeled `env:production`
 - _to_ pods labeled `app:db` in the namespace  `production-db`
 
 ```yaml
@@ -151,22 +152,32 @@ server via network policies:
   ```bash
   kubectl describe networkpolicies -n otterize-tutorial-npol access-to-server-from-otterize-tutorial-npol
   ```
-  You should see
+  You should see (without the comments)
   ```yaml
   Name:         access-to-server-from-otterize-tutorial-npol
-  Namespace:    otterize-tutorial-npol                                          # [Target filter] namespace
+  # [Target filter] namespace
+  # highlight-next-line
+  Namespace:    otterize-tutorial-npol
   Created on:   2022-09-08 19:12:24 +0300 IDT
-  Labels:       otterize/network-policy=true
+  Labels:       intents.otterize.com/network-policy=true
   Annotations:  <none>
   Spec:
-    PodSelector:     otterize/server=server-otterize-tutorial-np-7e16db         # [Target filter] pods with this label
+    # [Target filter] pods with this label
+    # highlight-next-line
+    PodSelector:     intents.otterize.com/server=server-otterize-tutorial-np-7e16db
     Allowing ingress traffic:
       To Port: <any> (traffic allowed to all ports)
       From:
-        NamespaceSelector: otterize/namespace-name=otterize-tutorial-npol       # [Source filter] namespaces with this label
-        PodSelector: otterize/access-server-otterize-tutorial-np-7e16db=true    # [Source filter] pods with this label
+        # [Source filter] namespaces with this label
+        # highlight-next-line
+        NamespaceSelector: intents.otterize.com/namespace-name=otterize-tutorial-npol
+        # [Source filter] pods with this label
+        # highlight-next-line
+        PodSelector: intents.otterize.com/access-server-otterize-tutorial-np-7e16db=true
     Not affecting egress traffic
-    Policy Types: Ingress                                                       # [Direction]
+    # [Direction]
+    # highlight-next-line
+    Policy Types: Ingress
   ```
 2. And we can see that the client and server pods are labeled
   ```bash
@@ -174,25 +185,22 @@ server via network policies:
   ```
   You should see
   ```bash
-  NAME                      READY   STATUS    RESTARTS   AGE   LABELS
-  client-5cb67b748-zxkxj    1/1     Running   0          28h   app=client,otterize/access-server-otterize-tutorial-np-7e16db=true,otterize/client=true,otterize/server=client-otterize-tutorial-np-699302,otterize/spire-integration-operator.service-name=client,pod-template-hash=5cb67b748
-  server-564b56f596-cl4gl   1/1     Running   0          28h   app=server,otterize/server=server-otterize-tutorial-np-7e16db,otterize/spire-integration-operator.service-name=server,pod-template-hash=564b56f596
+  NAME                      READY   STATUS    RESTARTS   AGE     LABELS
+  client-5cb67b748-l25vg    1/1     Running   0          7m57s   app=client,intents.otterize.com/access-server-otterize-tutorial-np-7e16db=true,intents.otterize.com/client=true,intents.otterize.com/server=client-otterize-tutorial-np-699302,pod-template-hash=5cb67b748,spire-integration.otterize.com/service-name=client
+  server-564b56f596-54str   1/1     Running   0          7m56s   app=server,intents.otterize.com/server=server-otterize-tutorial-np-7e16db,pod-template-hash=564b56f596,spire-integration.otterize.com/service-name=server
   ```
 
 The key labels are
-- For the server - otterize/server=server-otterize-tutorial-np-7e16db
-- For the client - otterize/access-server-otterize-tutorial-np-7e16db=true
-
-The naming convention is that target pods are labeled with
-- otterize/server=             # prefix for target pods
-- server-otterize-tutorial-np- # target {pod inferred name}-{pod namespace} truncated
-- 7e16db                       # a hash over both attributes (name, namespace)
-
-And source pods are labeled with
-- otterize/access-             # prefix for source pods
-- server-otterize-tutorial-np- # target {pod inferred name}-{pod namespace} truncated
-- 7e16db                       # a hash over both attributes (name, namespace)
-- =true                        # marker for **allowed** access
+- For the server - <span style={{color:'gray'}}>intents.otterize.com/server</span>=<span style={{color:'magenta'}}>server</span>-<span style={{color:'red'}}>otterize-tutorial-np</span>-<span style={{color:'green'}}>7e16db</span>
+  - <span style={{color:'gray'}}>intents.otterize.com/server</span> - Otterize label prefix 
+  - <span style={{color:'magenta'}}>server</span> - Server pod name
+  - <span style={{color:'red'}}>otterize-tutorial-np</span> - Server pod namespace (might be truncated)
+  - <span style={{color:'green'}}>7e16db</span> - Hash for server pod name and and namespace 
+- For the client - <span style={{color:'gray'}}>intents.otterize.com/access</span>-<span style={{color:'magenta'}}>server</span>-<span style={{color:'red'}}>otterize-tutorial-np</span>-<span style={{color:'green'}}>7e16db</span>=true
+  - <span style={{color:'gray'}}>intents.otterize.com/server</span> - Otterize label prefix
+  - <span style={{color:'magenta'}}>server</span> - Server pod name
+  - <span style={{color:'red'}}>otterize-tutorial-np</span> - Server pod namespace (might be truncated)
+  - <span style={{color:'green'}}>7e16db</span> - Hash for server pod name and and namespace
 
 ## …
 
