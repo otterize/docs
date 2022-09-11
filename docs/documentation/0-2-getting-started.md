@@ -7,7 +7,7 @@ export const LinkButton = (props) => (
   <a
     {...props}
     style={{
-      backgroundColor: 'green',
+      backgroundColor: 'var(--ifm-color-primary)',
       color: 'white',
       borderRadius: 5,
       paddingLeft: 5,
