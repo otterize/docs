@@ -77,7 +77,7 @@ spec:
 ## Deep dive - how intents translate to network policies.
 Let's follow an example scenario and track how Otterize configures network policies when we apply intents.
 ### Deploy example
-Our simple example consists of two pods: an HTTP server and a client that calls it. We also deploy a default-deny ingress network policy,
+Our example consists of two pods: an HTTP server and a client that calls it. We also deploy a default-deny ingress network policy,
 blocking pods from accepting incoming calls unless another network policy explicitly allows them.
 
 <Tabs>
@@ -144,11 +144,11 @@ blocking pods from accepting incoming calls unless another network policy explic
 ### Track artifacts
 After applying the intents file Otterize generated multiple artifacts to configure access from the client to
 server via network policies:
-- A network policy allowing traffic from the [client, namespace -labeled] pods to [server-labeled] pods
-- Create label and apply it to the client pod
-- Create label and apply it to the server pod
-- Create label and apply it to the client pod's namespace
-1. Let's look at the network policy
+- Create a network policy allowing traffic from the [client, namespace -labeled] pods to [server-labeled] pods
+- Label the client pods
+- Label the client pod namespaces
+- Label the server pods
+1. Let's look at the generated network policy
   ```bash
   kubectl describe networkpolicies -n otterize-tutorial-npol access-to-server-from-otterize-tutorial-npol
   ```
@@ -179,7 +179,7 @@ server via network policies:
     # highlight-next-line
     Policy Types: Ingress
   ```
-2. And we can see that the client and server pods are labeled
+2. And we can also see that the client and server pods are now labeled
   ```bash
   kubectl get pods -n otterize-tutorial-npol --show-labels
   ```
@@ -189,19 +189,28 @@ server via network policies:
   client-5cb67b748-l25vg    1/1     Running   0          7m57s   app=client,intents.otterize.com/access-server-otterize-tutorial-np-7e16db=true,intents.otterize.com/client=true,intents.otterize.com/server=client-otterize-tutorial-np-699302,pod-template-hash=5cb67b748,spire-integration.otterize.com/service-name=client
   server-564b56f596-54str   1/1     Running   0          7m56s   app=server,intents.otterize.com/server=server-otterize-tutorial-np-7e16db,pod-template-hash=564b56f596,spire-integration.otterize.com/service-name=server
   ```
-
-The key labels are
-- For the server - <span style={{color:'gray'}}>intents.otterize.com/server</span>=<span style={{color:'magenta'}}>server</span>-<span style={{color:'red'}}>otterize-tutorial-np</span>-<span style={{color:'green'}}>7e16db</span>
-  - <span style={{color:'gray'}}>intents.otterize.com/server</span> - Otterize label prefix 
-  - <span style={{color:'magenta'}}>server</span> - Server pod name
-  - <span style={{color:'red'}}>otterize-tutorial-np</span> - Server pod namespace (might be truncated)
-  - <span style={{color:'green'}}>7e16db</span> - Hash for server pod name and and namespace 
-- For the client - <span style={{color:'gray'}}>intents.otterize.com/access</span>-<span style={{color:'magenta'}}>server</span>-<span style={{color:'red'}}>otterize-tutorial-np</span>-<span style={{color:'green'}}>7e16db</span>=true
-  - <span style={{color:'gray'}}>intents.otterize.com/server</span> - Otterize label prefix
-  - <span style={{color:'magenta'}}>server</span> - Server pod name
-  - <span style={{color:'red'}}>otterize-tutorial-np</span> - Server pod namespace (might be truncated)
-  - <span style={{color:'green'}}>7e16db</span> - Hash for server pod name and and namespace
-
+  
+  The key labels are
+    - For the server - <span style={{color:'gray'}}>intents.otterize.com/server</span>=<span style={{color:'magenta'}}>server</span>-<span style={{color:'red'}}>otterize-tutorial-np</span>-<span style={{color:'green'}}>7e16db</span>
+      - <span style={{color:'gray'}}>intents.otterize.com/server</span> - Otterize label prefix 
+      - <span style={{color:'magenta'}}>server</span> - Server pod name
+      - <span style={{color:'red'}}>otterize-tutorial-np</span> - Server pod namespace (might be truncated)
+      - <span style={{color:'green'}}>7e16db</span> - Hash for server pod name and and namespace 
+    - For the client - <span style={{color:'gray'}}>intents.otterize.com/access</span>-<span style={{color:'magenta'}}>server</span>-<span style={{color:'red'}}>otterize-tutorial-np</span>-<span style={{color:'green'}}>7e16db</span>=true
+      - <span style={{color:'gray'}}>intents.otterize.com/server</span> - Otterize label prefix
+      - <span style={{color:'magenta'}}>server</span> - Server pod name
+      - <span style={{color:'red'}}>otterize-tutorial-np</span> - Server pod namespace (might be truncated)
+      - <span style={{color:'green'}}>7e16db</span> - Hash for server pod name and and namespace
+3. Finally, let's look at the namespace label with
+  ```bash
+  kubectl get namespace otterize-tutorial-npol --show-labels
+  ```
+  You should see
+  ```bash
+  NAME                     STATUS   AGE   LABELS
+otterize-tutorial-npol   Active   36s   intents.otterize.com/namespace-name=otterize-tutorial-npol,kubernetes.io/metadata.name=otterize-tutorial-npol
+  ```
+  With the new label add by otterize - `intents.otterize.com/namespace-name=otterize-tutorial-npol`
 ## …
 
 ## Practical notes
