@@ -43,8 +43,8 @@ spec:
       labels:
         app: client
       annotations:
-        otterize/tls-secret-name: client-credentials-secret
-        otterize/cert-ttl: "2592000"
+        spire-integration.otterize.com/tls-secret-name: client-credentials-secret
+        spire-integration.otterize.com/cert-ttl: "2592000"
     spec:
       containers:
         - name: client

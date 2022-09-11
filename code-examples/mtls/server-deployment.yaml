@@ -13,8 +13,8 @@ spec:
         app: server
       annotations:
 #        to rename credentials-secret-nam   e
-        otterize/tls-secret-name: server-credentials-secret
-        otterize/cert-ttl: "2592000"
+        spire-integration.otterize.com/tls-secret-name: server-credentials-secret
+        spire-integration.otterize.com/cert-ttl: "2592000"
     spec:
       containers:
         - name: server
