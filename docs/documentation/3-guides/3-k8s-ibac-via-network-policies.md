@@ -45,6 +45,59 @@ spec:
               app: backend            # [Source filter] Policy filters source pods from with this label
 ```
 
+## Applying intents on an existing cluster
+To apply intents on an existing cluster you will need to install Otterize with the network policies
+option enabled. You can follow the [complete installation](/documentation/guides/k8s-installation) or
+install only the [network policy components](/documentation/guides/k8s-installation#network-policies-only).
+
+The following sections refer to a demo deployment we will deploy at first and then start configuring intents for.
+
+### Deploying the demo
+Let's explore how a gradual rollout looks like. For our demo environment
+we will use the Google microservices [demo](https://github.com/GoogleCloudPlatform/microservices-demo)
+which simulates an e-commerce application running on K8s built from multiple services, tech stack and programming languages.
+
+The application layout is as follows
+![Demo e-commerce](https://github.com/GoogleCloudPlatform/microservices-demo/raw/main/docs/img/architecture-diagram.png)
+
+2. To deploy the demo run
+    ```bash
+    kubectl create namespace otterize-ecom-demo
+    kubectl apply -n otterize-ecom-demo -f https://raw.githubusercontent.com/GoogleCloudPlatform/microservices-demo/main/release/kubernetes-manifests.yaml
+    ```
+3. You can check that the cluster was deployed using
+   ```bash
+   kubectl get pods -n otterize-ecom-demo
+   ```
+   You should see
+   ```bash
+    NAME                                     READY   STATUS    RESTARTS   AGE
+    adservice-694f4ff98-cz4nn                1/1     Running   0          23m
+    cartservice-85f8bc44fd-45cbk             1/1     Running   0          23m
+    checkoutservice-8fc47bbbd-9lhfv          1/1     Running   0          23m
+    currencyservice-597bdf576b-8hftc         1/1     Running   0          23m
+    emailservice-d5c6f74dd-qlwc4             1/1     Running   0          23m
+    frontend-7ffbf49884-j9rhz                1/1     Running   0          23m
+    loadgenerator-65779994db-tgdxk           1/1     Running   0          23m
+    paymentservice-76b9c8b87d-ktfcd          1/1     Running   0          23m
+    productcatalogservice-6969d4f5fd-xdw99   1/1     Running   0          23m
+    recommendationservice-58798d5c8-2f4rz    1/1     Running   0          23m
+    redis-cart-6f65887b5d-xwpz5              1/1     Running   0          23m
+    shippingservice-ff5f4d7d-qcjw8           1/1     Running   0          23m
+    ```
+4. To get the load balancer address run
+    ```bash
+    kubectl get service -n otterize-ecom-demo frontend-external -o json | jq -r .status.loadBalancer.ingress[0].hostname
+    ```
+   And you should get a result similar to (if running on EKS)
+   ```
+   a11843075fd254f8099a986467098647-1889474685.us-east-1.elb.amazonaws.com
+   ```
+   Go ahead and browse the website to get a feel for its behavior.
+   :::note
+   The load balancer address might take some time to populate across dns servers.
+   :::
+
 ### Setting security scope via default network policies
 
 Two common approaches for working with network policies are
@@ -52,13 +105,15 @@ Two common approaches for working with network policies are
 - Allow all traffic between pods, protect some pods by applying ingress network policies to them.
 - Block all traffic between pods except allowed traffic by network policies.
 
-Note
+You can apply both approaches (allow/block all) within your cluster (e.g. by applying network policies based on 
+namespaces).
 
-- Applying an ingress network policy to a pod will automatically block all communications to it except those allowed by
-  network policies.
-- You can apply both approaches (allow/block all) within your cluster (e.g. by applying network policies based on
-  namespaces).
+:::caution 
+Applying an ingress network policy to a pod will automatically block all communications to it except those allowed by 
+network policies.
+:::
 
+#### Default deny netwrk policy
 To block all traffic within a namespace (e.g. _production_) you can apply a default deny network policy like the
 following example
 
@@ -73,6 +128,53 @@ spec:
   policyTypes:
     - Ingress
 ```
+
+### Auto generating network policies for ingress
+:::caution
+Otterize defaults to automatically generate network policies for LoadBalancer, NodePort, and Ingress traffic
+when an intent will generate a network policy that can block existing traffic. To disable this feature XXX
+:::
+
+
+Let's look at an example from our demo. We have a `frontend` service being accessed from multiple source
+- `loadgenerator` calls it from within the cluster to generate traffic
+- `frontend-external` is a `LoadBalancer` directing traffic from outside the cluster to the `frontend`
+
+Be applying the following intents file
+```yaml
+apiVersion: k8s.otterize.com/v1alpha1
+kind: ClientIntents
+metadata:
+  name: loadgenerator
+spec:
+  service:
+    name: loadgenerator
+  calls:
+    - name: frontend
+      type: HTTP
+```
+Otterize will generate a network policy allowing access from the `loadgenerator` to the `frontend`.
+If left unhandled, any other traffic not allowed by existing network policies to the `frontend` will get blocked. In our
+case that means that the `frontend-external` `LoadBalancer` won't be able to communicate with with `frontend`.
+
+To overcome this, Otterize will automatically generate a network policy to allow traffic from `frontend-external`
+to `frontend` by relying on the existence of the ingress (in this case `LoadBalancer`) as an intent between the two.
+
+FAQ:
+- Why can't Otterize always generate network policies for ingress types?
+  - If no network policies exist, automatically generating a network policy to allow `frontend-external` -> `frontend` will
+  block existing traffic like `loadgenerator` -> `frontend`.
+
+### Walkthrough - applying the first intent
+From looking at the e-commerce application diagram we can see that the `productcatalog` service is being called from two
+services: `checkout` and `recommendation`.
+
+If we apply an intent only for the `recommendation` to call the `productcatalog` a matching network policy will be generated
+to allow it. **But**, since we haven't applied an intent for the `checkout` service to call the `productcatalog` then the
+`checkout` service will be blocked.
+
+1. Let's see this state in action. First we'll apply the intent for `recommendation`->`productcatalog`
+
 
 ## Deep dive - how intents translate to network policies.
 Let's follow an example scenario and track how Otterize configures network policies when we apply intents.

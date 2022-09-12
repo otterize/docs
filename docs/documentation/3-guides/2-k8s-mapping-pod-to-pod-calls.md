@@ -7,8 +7,11 @@ import TabItem from '@theme/TabItem';
 
 ## How to collect call traffic
 Otterize can help you collect pod-to-pod traffic within your cluster. You will need to install Otterize and the Otterize CLI by following
-the [installation](/documentation/guides/installation) guide.
-
+the [installation](/documentation/guides/k8s-installation) guide.
+:::note
+If you wish to only work with the network mapper and enforce network policies you can
+install Otterize with only the network policy component enabled by following this [guide](/documentation/guides/k8s-installation#network-policies-only).
+:::
 ## Retrieving the network map (list, YAML intents, and JSON)
 
 {@include: ../_common/network-mapper/intents-list-export.md}

@@ -1,10 +1,9 @@
-## Install Otterize
-
 1. Use Helm to install the latest version of Otterize:
    ```shell
    helm repo add otterize https://otterize.github.io/helm-charts
    helm repo update
-   helm upgrade --install otterize otterize/otterize-kubernetes -n otterize --create-namespace
+   helm upgrade --install otterize otterize/otterize-kubernetes -n otterize --create-namespace \
+   --set otterize.kafka="true"
    ```
 2. It can take several minutes for the pods to be `Running` and all containers to be ready.
    You can monitor progress with the following command:

@@ -15,6 +15,9 @@ We will:
 - Deploy client and server pods communicating over HTTPS and provision credentials to them
 - Inspect the credentials
 
+:::note
+You can skip this section if Otterize is already installed in your cluster.
+:::
 {@include: ../_common/install-otterize.md}
 
 ## Pod annotation  (explainer)
@@ -224,6 +227,11 @@ We can use openssl to inspect the generated certificates. The certificates are s
     3. Stored the mTLS credentials into a K8s secrets.
 3. The secrets were mounted (separately) into each pod's container.
 4. The pods communicated with each other using HTTP of mutual TLS.
+
+:::note
+Otterize defaults to generating credentials with an expiry time of 1 month. For a custom expiry
+time you can set the `spire-integration.otterize.com/cert-ttl` annotation for your pods. Read more at [Behavior](/documentation/components/behavior)
+:::
 
 ## What's next
 
