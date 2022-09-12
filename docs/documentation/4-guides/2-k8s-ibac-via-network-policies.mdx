@@ -5,6 +5,101 @@ title: IBAC in Kubernetes via network policies
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
+One of the easiest ways to realize intent-based access control in Kubernetes is by leveraging network policies.
+
+Network policies are built into Kubernetes itself, and while their enforcement is not, all that's required
+is a Kubernetes CNI network plugin; most Kubernetes clusters either have a CNI installed or can add one easily.
+
+Enforcement through network policies is limited to pod-to-pod access control, not finer-grained access control:
+you cannot limit access to certain paths and methods in HTTP, or to certain topics and operations in Kafka, for example.
+On the other hand, implementing network policy access control requires no code changes so it might be a great
+first step, and it might entirely satisfy some use cases.
+
+Authoring network policies manually can be complicated and tedious, especially because you need to think at a network
+level vs functionally, and because you need to carefully coordinate labels across separate pod (e.g. deployment) resources
+and network policy resources to achieve any specific outcome.
+
+Of course, Otterize eliminates all of that. Let's see how.
+
+## First, choose a Kubernetes cluster and set of services
+
+You can use this guide with your own set of services, e.g. first in a Kubernetes cluster running dev or lab services,
+and eventually in a staging or production cluster.
+
+Or you can start by populating a Kubernetes cluster with our reference lab,
+which is based on the [Google microservices demo](https://github.com/GoogleCloudPlatform/microservices-demo)
+simulating an e-commerce application.
+
+For the sake of illustration, we'll refer to the reference lab example in this guide. But if you're using
+your own services, just apply the same steps and adjust the logic to your needs.
+
+### Reference lab example
+
+:::note TOMER
+Remember to modify to show pictorially (in 1 picture) the overall picture,
+with a circle overlay or other color coding showing the initial set of services which will begin our gradual rollout.
+:::
+
+The reference e-commerce application architecture is as follows
+![Demo e-commerce](https://github.com/GoogleCloudPlatform/microservices-demo/raw/main/docs/img/architecture-diagram.png)
+
+By default, any service is allowed to call any other service, though their code only makes the calls marked with arrows
+-- i.e. *the arrows indicate the intended traffic*.
+
+The purpose of IBAC is to *automatically turn those design-time intents
+into runtime constraints, declaratively*: only declared intents will be allowed,
+while all other calls -- e.g. ones made by mistake, or ones due to
+security breaches -- will be blocked.
+
+### Deploying the reference lab
+
+```bash
+kubectl create namespace otterize-ecom-demo
+kubectl apply -n otterize-ecom-demo -f https://raw.githubusercontent.com/GoogleCloudPlatform/microservices-demo/main/release/kubernetes-manifests.yaml
+```
+You can check that the cluster was deployed using
+```bash
+kubectl get pods -n otterize-ecom-demo
+```
+You should see
+```bash
+NAME                                     READY   STATUS    RESTARTS   AGE
+adservice-694f4ff98-cz4nn                1/1     Running   0          23m
+cartservice-85f8bc44fd-45cbk             1/1     Running   0          23m
+checkoutservice-8fc47bbbd-9lhfv          1/1     Running   0          23m
+currencyservice-597bdf576b-8hftc         1/1     Running   0          23m
+emailservice-d5c6f74dd-qlwc4             1/1     Running   0          23m
+frontend-7ffbf49884-j9rhz                1/1     Running   0          23m
+loadgenerator-65779994db-tgdxk           1/1     Running   0          23m
+paymentservice-76b9c8b87d-ktfcd          1/1     Running   0          23m
+productcatalogservice-6969d4f5fd-xdw99   1/1     Running   0          23m
+recommendationservice-58798d5c8-2f4rz    1/1     Running   0          23m
+redis-cart-6f65887b5d-xwpz5              1/1     Running   0          23m
+shippingservice-ff5f4d7d-qcjw8           1/1     Running   0          23m
+```
+
+### Testing that the reference lab works
+
+To get the externally-accessible URL where your demo front end is available, run:
+```bash
+kubectl get service -n otterize-ecom-demo frontend-external -o json | jq -r .status.loadBalancer.ingress[0].hostname
+```
+And you should get a result similar to (if running on EKS)
+```
+a11843075fd254f8099a986467098647-1889474685.us-east-1.elb.amazonaws.com
+```
+Go ahead and browse to the URL above to get a feel for the reference lab's behavior.
+
+:::tip
+The load balancer address might take some time to populate across DNS servers.
+:::
+
+## Next, install Otterize into your Kubernetes cluster
+
+:::note TOMER
+Installation of Otterize goes here
+:::
+
 ## Recap: K8s network policies and CNI network plugins
 
 [Network policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) are one of the tools we
@@ -51,52 +146,6 @@ option enabled. You can follow the [complete installation](/documentation/guides
 install only the [network policy components](/documentation/guides/k8s-installation#network-policies-only).
 
 The following sections refer to a demo deployment we will deploy at first and then start configuring intents for.
-
-### Deploying the demo
-Let's explore how a gradual rollout looks like. For our demo environment
-we will use the Google microservices [demo](https://github.com/GoogleCloudPlatform/microservices-demo)
-which simulates an e-commerce application running on K8s built from multiple services, tech stack and programming languages.
-
-The application layout is as follows
-![Demo e-commerce](https://github.com/GoogleCloudPlatform/microservices-demo/raw/main/docs/img/architecture-diagram.png)
-
-2. To deploy the demo run
-    ```bash
-    kubectl create namespace otterize-ecom-demo
-    kubectl apply -n otterize-ecom-demo -f https://raw.githubusercontent.com/GoogleCloudPlatform/microservices-demo/main/release/kubernetes-manifests.yaml
-    ```
-3. You can check that the cluster was deployed using
-   ```bash
-   kubectl get pods -n otterize-ecom-demo
-   ```
-   You should see
-   ```bash
-    NAME                                     READY   STATUS    RESTARTS   AGE
-    adservice-694f4ff98-cz4nn                1/1     Running   0          23m
-    cartservice-85f8bc44fd-45cbk             1/1     Running   0          23m
-    checkoutservice-8fc47bbbd-9lhfv          1/1     Running   0          23m
-    currencyservice-597bdf576b-8hftc         1/1     Running   0          23m
-    emailservice-d5c6f74dd-qlwc4             1/1     Running   0          23m
-    frontend-7ffbf49884-j9rhz                1/1     Running   0          23m
-    loadgenerator-65779994db-tgdxk           1/1     Running   0          23m
-    paymentservice-76b9c8b87d-ktfcd          1/1     Running   0          23m
-    productcatalogservice-6969d4f5fd-xdw99   1/1     Running   0          23m
-    recommendationservice-58798d5c8-2f4rz    1/1     Running   0          23m
-    redis-cart-6f65887b5d-xwpz5              1/1     Running   0          23m
-    shippingservice-ff5f4d7d-qcjw8           1/1     Running   0          23m
-    ```
-4. To get the load balancer address run
-    ```bash
-    kubectl get service -n otterize-ecom-demo frontend-external -o json | jq -r .status.loadBalancer.ingress[0].hostname
-    ```
-   And you should get a result similar to (if running on EKS)
-   ```
-   a11843075fd254f8099a986467098647-1889474685.us-east-1.elb.amazonaws.com
-   ```
-   Go ahead and browse the website to get a feel for its behavior.
-   :::note
-   The load balancer address might take some time to populate across dns servers.
-   :::
 
 ### Setting security scope via default network policies
 
