@@ -94,7 +94,7 @@ The result should be similar to (if running on EKS):
 a11843075fd254f8099a986467098647-1889474685.us-east-1.elb.amazonaws.com
 ```
 Go ahead and browse to the URL above to "shop" and get a feel for the reference lab's behavior.
-(The URL might take some time to populate across DNS servers.)
+(The URL might take some time to populate across DNS servers. Note that we are accessing an HTTP and not an HTTPS website.)
 
 <img src="https://github.com/GoogleCloudPlatform/microservices-demo/raw/main/docs/img/online-boutique-frontend-1.png" />
 
@@ -152,10 +152,10 @@ Here's the intents file of the `recommendationservice` (remember to adjust if yo
 
 2. And check in on our lab by adding an item to your cart and placing an order.
 
-    ![Demo e-commerce](/resources/lab/place-order.png)
+    ![Place order](/resources/lab/place-order.png)
 3. You will notice that the site hangs as the `checkoutservice` tries to call the `productcatalogservice` but is being blocked
    by the network policies set in the previous stage. When the `checkoutservice` times out you will see.
-    ![Demo e-commerce](/resources/lab/checkoutservice-timeout.png)
+    ![Checkout service timed out](/resources/lab/checkoutservice-timeout.png)
 
 ### Add a second client's intents
 
@@ -169,7 +169,7 @@ Now let's add the intents file of the `checkoutservice` (remember to adjust if y
    kubectl apply -f static/code-examples/lab/checkoutservice-productcatalogservice.yaml
    ```
 2. Go ahead and place an order on the side, you will see all functions correctly.
-
+    ![Order complete](/resources/lab/order-complete.png)
 :::note TOMER
 Add updated lab image
 :::

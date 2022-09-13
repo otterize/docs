@@ -68,10 +68,10 @@ def helm_install(namespace: str, name: str):
     wait_for_availability('daemonset', '(.*?) *(\d+) *\d+ *(\d+)', daemonsets, namespace)
 
 
-def get_log_line(namespace, deployment, times=3) -> str:
+def get_log_line(namespace, deployment, times=3, count=1) -> str:
     for _ in range(times):
         log_line = run(
-            f"kubectl logs --tail 1 -n {namespace} deploy/{deployment}")
+            f"kubectl logs --tail {count} -n {namespace} deploy/{deployment}")
         if log_line:
             break
     return log_line

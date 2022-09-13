@@ -12,7 +12,7 @@ class TestNetworkPolicies:
 
     def test_npol_1_deploy(self):
         # Deploy tutorial
-        run('kubectl apply -f ../code-examples/getting-started/network-policies')
+        run('kubectl apply -f ../../static/code-examples/network-policies')
 
     def test_npol_2_pod_startup(self):
         # Wait for pod startup
@@ -33,7 +33,7 @@ class TestNetworkPolicies:
 
     def test_npol_4_apply_intents(self):
         run(
-            f"kubectl apply -f ../code-examples/getting-started/network-policies/intents/intents.yaml")
+            f"kubectl apply -f ../../static/code-examples/network-policies/intents/intents.yaml")
         # Check that a Network Policy was generated
         assert f'name: access-to-server-from-{self.namespace}' in run(
             f"kubectl get netpol -n otterize-tutorial-npol --output yaml")

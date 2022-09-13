@@ -1,5 +1,6 @@
 import base64
 import re
+import time
 
 from tests.utils import create_namespace, delete_namespace, get_log_line, run, helm_install
 
@@ -13,7 +14,7 @@ class TestMTLS:
 
     def test_mtls_1_deploy(self):
         # Deploy tutorial
-        run('kubectl apply -f ../code-examples/getting-started/mtls')
+        run('kubectl apply -f ../static/code-examples/mtls')
 
     def test_mtls_2_pod_startup(self):
         # Wait for pod startup
@@ -27,10 +28,11 @@ class TestMTLS:
 
     def test_mtls_3_logs(self):
         # Check client logs
-        assert "Hello world mTLS\n" == get_log_line(self.namespace, "client")
+        expected = "mTLS hello world\nfrom: server.otterize-tutorial-mtls\nto client: client.otterize-tutorial-mtls\n"
+        assert expected == get_log_line(self.namespace, "client", count=3)
 
         # Check server logs
-        assert "GET /hello\n" == get_log_line(self.namespace, "server")
+        assert "client.otterize-tutorial-mtls:\tGET /hello\n" == get_log_line(self.namespace, "server")
 
     def test_mtls_4_certificate(self):
         # Check SVIDs match
