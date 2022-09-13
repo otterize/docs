@@ -1,5 +1,3 @@
-## Verify network policies are enforceable
-
 To enforce network policies, a Kubernetes cluster requires a CNI supporting network policies to be
 installed.
 

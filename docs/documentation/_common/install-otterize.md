@@ -1,12 +1,14 @@
-## Install Otterize
-
-1. Use Helm to install the latest version of Otterize:
+Use Helm to install the latest version of Otterize:
    ```shell
    helm repo add otterize https://otterize.github.io/helm-charts
    helm repo update
    helm upgrade --install otterize otterize/otterize-kubernetes -n otterize --create-namespace
    ```
-2. It can take several minutes for the pods to be `Running` and all containers to be ready.
+<details>
+  <summary>Optional: check deployment status</summary>
+  <div>
+
+ It can take several minutes for the pods to be `Running` and all containers to be ready.
    You can monitor progress with the following command:
    ```
    kubectl get pods -n otterize -w
@@ -21,3 +23,5 @@
    otterize-watcher-77db87cfcd-xhsrk                                1/1     Running   0             53s
    spire-integration-operator-controller-manager-65b8bf57b5-mpltl   2/2     Running   0             53s
    ```
+</div>
+</details>

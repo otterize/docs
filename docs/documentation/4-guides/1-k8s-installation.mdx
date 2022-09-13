@@ -4,9 +4,10 @@ title: Installing Otterize in Kubernetes
 ---
 
 Install Otterize on a Kubernetes cluster using helm.
-
+## Install Otterize
 {@include: ../_common/install-otterize.md}
 
+## Verify network policies are enforceable
 {@include: ../_common/verify-cni.md}
 
 ## Install Otterize components separately
@@ -14,16 +15,20 @@ You can install Otterize components using one of the following commands.
 For a complete list of the helm chart flags look at [broken link](/documentation)
 :::danger Update reference
 :::
-### Network policies only
+
+### Network policies
 {@include: ../_common/install-otterize-network-policies.md}
-### Kafka only
+
+#### Verify network policies are enforceable
+{@include: ../_common/verify-cni.md}
+
+### Kafka/mTLS
 {@include: ../_common/install-otterize-kafka.md}
 
 
 ## Uninstall Otterize
 ```bash
 helm uninstall -n otterize otterize
-helm repo remove otterize
 ```
 
 ## Getting Started
