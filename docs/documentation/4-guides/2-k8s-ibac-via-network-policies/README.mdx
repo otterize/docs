@@ -137,31 +137,42 @@ the client that will declare its intent to call that server and still go through
 and the client that will now be blocked (until it declares its intent too).
 :::
 
-- The `productcatalog` *serves* product information;
+- The `productcatalogservice` *serves* product information;
   - The `checkoutservice` needs to *call it* when checking out;
   - The `recommendationservice` needs to call it to generate recommendations.
 
-Here's the intents file of the `checkoutservice` (remember to adjust if you have a different service):
-...
+Here's the intents file of the `recommendationservice` (remember to adjust if you have a different service):
+```yaml
+{@include: ../../../../static/code-examples/lab/recommendationservice-productcatalogservice.yaml}
+```
+1. Let's apply this intents file, as a developer or a CI/CD process would do:
+    ```bash
+    kubectl apply -f static/code-examples/lab/recommendationservice-productcatalogservice.yaml
+    ```
 
-Let's apply this intents file, as a developer or a CI/CD process would do:
-...
+2. And check in on our lab by adding an item to your cart and placing an order.
 
-And let's check in on our lab:
-...
-
-Note that ...
+    ![Demo e-commerce](/resources/lab/place-order.png)
+3. You will notice that the site hangs as the `checkoutservice` tries to call the `productcatalogservice` but is being blocked
+   by the network policies set in the previous stage. When the `checkoutservice` times out you will see.
+    ![Demo e-commerce](/resources/lab/checkoutservice-timeout.png)
 
 ### Add a second client's intents
 
-Now let's add the intents file of the `recommendationservice` (remember to adjust if you have a different service):
-...
+Now let's add the intents file of the `checkoutservice` (remember to adjust if you have a different service):
+```yaml
+{@include: ../../../../static/code-examples/lab/checkoutservice-productcatalogservice.yaml}
+```
 
-Again, apply it to see what happens when it declares its intents:
-...
+1. Again, apply it to see what happens when it declares its intents:
+   ```bash
+   kubectl apply -f static/code-examples/lab/checkoutservice-productcatalogservice.yaml
+   ```
+2. Go ahead and place an order on the side, you will see all functions correctly.
 
-How's the lab doing?
-...
+:::note TOMER
+Add updated lab image
+:::
 
 ## Lather, rinse, repeat
 

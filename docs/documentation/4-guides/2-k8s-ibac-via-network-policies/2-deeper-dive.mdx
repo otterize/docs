@@ -2,14 +2,15 @@
 sidebar_position: 2
 title: Deeper dive into network policies
 ---
-## Recap: K8s network policies and CNI network plugins
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 [Network policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) are one of the tools we
 can use for traffic shaping within K8s clusters. They allow us to shape traffic using selectors, policies, and L3
 and L4 identifiers. To enforce network policies, a Kubernetes cluster requires a CNI supporting network policies to be
 installed. Some popular options are Calico and Cilium.
 
-### How a network policy looks like
+## How a network policy looks like
 Let's take a look at an example showing a network policy allowing traffic
 
 - _from_ pods labeled `app:backend` in namespaces labeled `env:production`
@@ -42,14 +43,7 @@ spec:
               app: backend            # [Source filter] Policy filters source pods from with this label
 ```
 
-## Applying intents on an existing cluster
-To apply intents on an existing cluster you will need to install Otterize with the network policies
-option enabled. You can follow the [complete installation](/documentation/guides/k8s-installation) or
-install only the [network policy components](/documentation/guides/k8s-installation#network-policies-only).
-
-The following sections refer to a demo deployment we will deploy at first and then start configuring intents for.
-
-### Setting security scope via default network policies
+## Setting security scope via default network policies
 
 Two common approaches for working with network policies are
 
@@ -59,12 +53,7 @@ Two common approaches for working with network policies are
 You can apply both approaches (allow/block all) within your cluster (e.g. by applying network policies based on
 namespaces).
 
-:::caution
-Applying an ingress network policy to a pod will automatically block all communications to it except those allowed by
-network policies.
-:::
-
-#### Default deny netwrk policy
+## Default deny network policy
 To block all traffic within a namespace (e.g. _production_) you can apply a default deny network policy like the
 following example
 
@@ -80,10 +69,10 @@ spec:
     - Ingress
 ```
 
-### Auto generating network policies for ingress
-:::caution
+## Auto generating network policies for external traffic
+:::note
 Otterize defaults to automatically generate network policies for LoadBalancer, NodePort, and Ingress traffic
-when an intent will generate a network policy that can block existing traffic. To disable this feature XXX
+when an intent will generate a network policy that can block external traffic. To disable this feature XXX
 :::
 
 
@@ -124,12 +113,14 @@ Let's follow an example scenario and track how Otterize configures network polic
 Our example consists of two pods: an HTTP server and a client that calls it. We also deploy a default-deny ingress network policy,
 blocking pods from accepting incoming calls unless another network policy explicitly allows them.
 
+<details>
+<summary>Expand to see the details of this example...</summary>
 <Tabs>
 
 <TabItem value="namespace.yaml" label="namespace.yaml" default>
 
    ```yaml
-   {@include: ../../../static/code-examples/network-policies/namespace.yaml}
+   {@include: ../../../../static/code-examples/network-policies/namespace.yaml}
    ```
 
 </TabItem>
@@ -137,16 +128,16 @@ blocking pods from accepting incoming calls unless another network policy explic
 <TabItem value="server.yaml" label="server.yaml" default>
 
    ```yaml
-  {@include: ../../../static/code-examples/network-policies/server-deployment.yaml}
+  {@include: ../../../../static/code-examples/network-policies/server-deployment.yaml}
    ---
-  {@include: ../../../static/code-examples/network-policies/server-service.yaml}
+  {@include: ../../../../static/code-examples/network-policies/server-service.yaml}
   ```
 
 </TabItem>
 <TabItem value="client.yaml" label="client.yaml" default>
 
    ```yaml
-   {@include: ../../../static/code-examples/network-policies/client-deployment.yaml}
+   {@include: ../../../../static/code-examples/network-policies/client-deployment.yaml}
    ```
 
 </TabItem>
@@ -154,11 +145,12 @@ blocking pods from accepting incoming calls unless another network policy explic
 <TabItem value="default-deny.yaml" label="default-deny.yaml" default>
 
    ```yaml
-   {@include: ../../../static/code-examples/network-policies/default-deny-network-policy.yaml}
+   {@include: ../../../../static/code-examples/network-policies/default-deny-network-policy.yaml}
    ```
 
 </TabItem>
 </Tabs>
+</details>
 
 1. Deploy the client, server, and the default deny network policy using `kubectl`.
 
@@ -179,7 +171,7 @@ blocking pods from accepting incoming calls unless another network policy explic
 3. The client intents to call the server are declared with this `intents.yaml` file:
 
    ```yaml
-   {@include: ../../../static/code-examples/network-policies/intents.yaml}
+   {@include: ../../../../static/code-examples/network-policies/intents.yaml}
    ```
    Let's apply it:
    ```shell
@@ -234,14 +226,14 @@ server via network policies:
   server-564b56f596-54str   1/1     Running   0          7m56s   app=server,intents.otterize.com/server=server-otterize-tutorial-np-7e16db,pod-template-hash=564b56f596,spire-integration.otterize.com/service-name=server
   ```
 
-  The key labels are
+  And when we break down the label structure we can see
     - For the server - <span style={{color:'gray'}}>intents.otterize.com/server</span>=<span style={{color:'magenta'}}>server</span>-<span style={{color:'red'}}>otterize-tutorial-np</span>-<span style={{color:'green'}}>7e16db</span>
-      - <span style={{color:'gray'}}>intents.otterize.com/server</span> - Otterize label prefix
+      - <span style={{color:'gray'}}>intents.otterize.com/server</span> - Label prefix for servers
       - <span style={{color:'magenta'}}>server</span> - Server pod name
       - <span style={{color:'red'}}>otterize-tutorial-np</span> - Server pod namespace (might be truncated)
       - <span style={{color:'green'}}>7e16db</span> - Hash for server pod name and and namespace
     - For the client - <span style={{color:'gray'}}>intents.otterize.com/access</span>-<span style={{color:'magenta'}}>server</span>-<span style={{color:'red'}}>otterize-tutorial-np</span>-<span style={{color:'green'}}>7e16db</span>=true
-      - <span style={{color:'gray'}}>intents.otterize.com/server</span> - Otterize label prefix
+      - <span style={{color:'gray'}}>intents.otterize.com/access</span> - Label prefix for clients
       - <span style={{color:'magenta'}}>server</span> - Server pod name
       - <span style={{color:'red'}}>otterize-tutorial-np</span> - Server pod namespace (might be truncated)
       - <span style={{color:'green'}}>7e16db</span> - Hash for server pod name and and namespace
