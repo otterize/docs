@@ -107,7 +107,7 @@ FAQ:
 
 
 
-## Deep dive - how intents translate to network policies.
+## How intents translate to network policies.
 Let's follow an example scenario and track how Otterize configures network policies when we apply intents.
 ### Deploy example
 Our example consists of two pods: an HTTP server and a client that calls it. We also deploy a default-deny ingress network policy,
@@ -247,4 +247,3 @@ server via network policies:
 otterize-tutorial-npol   Active   36s   intents.otterize.com/namespace-name=otterize-tutorial-npol,kubernetes.io/metadata.name=otterize-tutorial-npol
   ```
   With the new label add by otterize - `intents.otterize.com/namespace-name=otterize-tutorial-npol`
-## …
