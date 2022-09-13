@@ -5,8 +5,8 @@ metadata:
   namespace: otterize-tutorial-kafka-mtls
 data:
   client.go: |
-	package main
-  
+    package main
+    
     import (
     "crypto/tls"
     "crypto/x509"
@@ -30,7 +30,7 @@ data:
     if err != nil {
     return nil, fmt.Errorf("failed loading x509 key pair: %w", err)
     }
-
+    
     pool := x509.NewCertPool()
     rootCAPEM, err := ioutil.ReadFile(rootCAFile)
     if err != nil {
@@ -43,7 +43,7 @@ data:
     RootCAs:      pool,
     }, nil
     }
-
+    
     func loop_kafka() error {
     addrs := []string{kafkaAddr}
     
@@ -73,7 +73,7 @@ data:
     if err != nil {
     return err
     }
-
+    
     consumer, err := sarama.NewConsumerFromClient(client)
     if err != nil {
     return err
@@ -90,19 +90,20 @@ data:
     return err
     }
     fmt.Printf("Sent message - %s\n", msg)
+    time.Sleep(1 * time.Second)
     }
-
+    
     partConsumer, err := consumer.ConsumePartition(testTopicName, 0, 0)
     if err != nil {
     return err
     }
-
+    
     for msg := range partConsumer.Messages() {
     fmt.Printf("Read message - %s\n", msg.Value)
     }
     return nil
     }
-
+    
     func main() {
     for {
     err := loop_kafka()
@@ -111,7 +112,7 @@ data:
     time.Sleep(2 * time.Second)
     }
     }
-
+      
 
   go.mod: |
     module main
