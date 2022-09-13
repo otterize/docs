@@ -5,7 +5,22 @@ title: Intent-based access control for Kafka in Kubernetes
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-## Recap: controlling access to Kafka (incl. mTLS or tokens, users and ACLs, different ports)
+We can realize intent-based access control in Kubernetes is by leveraging the built-in capabilities
+Kafka offers for enforcement using its ACL mechanism, coupled with K8s identities Otterize can easily bake
+intro mTLS certificates.
+
+:::note to complete
+:::
+
+Of course, Otterize eliminates all of that. Let's see how.
+
+## Choose a Kubernetes cluster, Kafka and services
+
+You can use this guide with your own set of services, e.g. first in a Kubernetes cluster running dev or lab services,
+and eventually in a staging or production cluster. You'll need admin access.
+
+You can also use an existing Kafka deployment or use our provided deployment for ease of use.
+
 
 ## Configuring Kafka for secure access
 
@@ -85,7 +100,6 @@ auth:
       - kafka-tls-secret
     password: password
 authorizerClassName: kafka.security.authorizer.AclAuthorizer
-allowEveryoneIfNoAclFound: true
 podAnnotations:
   otterize/cert-type: jks
   spire-integration.otterize.com/tls-secret-name: kafka-tls-secret
@@ -95,6 +109,36 @@ podAnnotations:
   otterize/cert-ttl: "31536000" # 1 year
 ```
 
+</details>
+
+The following command will deploy a Kafka cluster configured to use Otterize-provided mTLS credentials
+with permissions for Otterize to configure ACLs.
+ ```bash
+ helm repo add bitnami https://charts.bitnami.com/bitnami
+ helm upgrade --install --create-namespace -n kafka kafka \
+ --version 14.x.x bitnami/kafka \
+ -f https://docs.otterize.com/code-examples/kafka-mtls-intents/helm/values.yaml
+ ```
+
+<details>
+<summary>Optional: check deployment status</summary>
+<div>
+
+It can take several minutes for the pods to **stabilize** into the `Ready` and `Running` states. You can monitor with
+the following command:
+
+ ```bash
+kubectl get pods -n kafka -w
+ ```
+
+After **stabilization** you should see:
+
+ ```bash
+ NAME                READY   STATUS    RESTARTS      AGE
+kafka-0             1/1     Running   1 (25s ago)   45s
+kafka-zookeeper-0   1/1     Running   0             56s
+ ```
+</div>
 </details>
 
 ### Testing secure connection to Kafka
@@ -131,7 +175,7 @@ and using the popular [kafka-console-producer](https://kafka.apache.org/quicksta
 
 1. Deploy a pod configured for the interactive session connecting to Kafka
     ```bash
-    kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/shell/all.yaml
+    kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/interactive/all.yaml
     ```
 2. Check that the `pod` was deployed
    ```bash
