@@ -22,54 +22,39 @@ You can skip this section if Otterize is already installed in your cluster.
 ## Install Otterize
 {@include: ../_common/install-otterize.md}
 
-## Pod annotation  (explainer)
 
-To generate credentials for a pod we simply need to update the deployment by annotating it.
-The required steps are to
-
-1. Annotate the pod - Otterize automatically identifies the `otterize/credentials-secret-name` annotation, generates
-   mTLS credentials, and stores them as K8s secret named as the annotation value.
-2. Mount the credentials stored as a K8s secret as a volume
-3. Mount the volume into the container
-
-```yaml
-spec:
-  template:
-    metadata:
-      ...
-      annotations:
-        # highlight-next-line
-        otterize/credentials-secret-name: client-credentials-secret       # 1 Generate credentials
-    spec:
-      volumes:
-        # highlight-start
-        - name: otterize-credentials
-          secret:
-            secretName: client-credentials-secret                      # 2 Mount credentials as a volume
-            # highlight-end
-      containers:
-        - name: client
-        ...
-        volumeMounts:
-          # highlight-start
-          - name: otterize-credentials
-            mountPath: /var/otterize/credentials                      # 3 Mount volume into container 
-            readOnly: true
-            # highlight-end
-```
-
-:::info
-Visit the [Behavior](/documentation/credential-operator/behavior) section to view all parameters available as pod
-annotation for generating mTLS credentials.
-:::
-
-## Deploy tutorial
+## Deploy
 
 Our example consists of two pods: client and server communicating over HTTPS using credentials
 provisioned by Otterize.
+
 <details>
-<summary>Code</summary>
+<summary>Expand to see the details of this example...</summary>
 <Tabs>
+
+<TabItem value="namespace.yaml" label="namespace.yaml" default>
+
+   ```yaml
+   {@include: ../../../static/code-examples/kafka-mtls/namespace.yaml}
+   ```
+
+</TabItem>
+
+<TabItem value="client-deployment.yaml" label="client-deployment.yaml">
+
+   ```yaml
+  {@include: ../../../static/code-examples/kafka-mtls/client-deployment.yaml}
+  ```
+
+</TabItem>
+
+<TabItem value="client-configmap.yaml" label="client-configmap.yaml">
+
+   ```yaml
+  {@include: ../../../static/code-examples/kafka-mtls/client-configmap.yaml}
+  ```
+
+</TabItem>
 <TabItem value="client.js" label="client.js" default>
 
    ```js
@@ -126,6 +111,47 @@ https.createServer(options, (req, res) => {
 </TabItem>
 </Tabs>
 </details>
+
+
+To generate credentials for the pod we simply need to update the deployment by annotating it.
+The required steps are to
+1. Annotate the pod - Otterize automatically identifies the `otterize/credentials-secret-name` annotation, generates
+mTLS credentials, and stores them as K8s secret named as the annotation value.
+2. Mount the credentials stored as a K8s secret as a volume
+3. Mount the volume into the container
+
+<details>
+<summary>Expand to see a detailed explanation for the annotations</summary>
+
+```yaml
+spec:
+  template:
+    metadata:
+      ...
+      annotations:
+        # highlight-next-line
+        otterize/credentials-secret-name: client-credentials-secret       # 1 Generate credentials
+    spec:
+      volumes:
+        # highlight-start
+        - name: otterize-credentials
+          secret:
+            secretName: client-credentials-secret                         # 2 Mount credentials as a volume
+            # highlight-end
+      containers:
+        - name: client
+        ...
+        volumeMounts:
+          # highlight-start
+          - name: otterize-credentials
+            mountPath: /var/otterize/credentials                          # 3 Mount volume into container
+            readOnly: true
+            # highlight-end
+```
+</details>
+
+
+
 
 1. Deploy the `client` and `server` using `kubectl`.
    ```bash
@@ -231,7 +257,8 @@ We can use openssl to inspect the generated certificates. The certificates are s
 4. The pods communicated with each other using HTTP of mutual TLS.
 
 :::note
-Otterize defaults to generating credentials with an expiry time of 1 month. For a custom expiry
+Otterize defaults to generating credentials with an expiry time of 1 day. The certificates are
+automatically refreshed before expiring. For a custom expiry
 time you can set the `spire-integration.otterize.com/cert-ttl` annotation for your pods. Read more at [Behavior](/documentation/components/behavior)
 :::
 
@@ -246,5 +273,5 @@ time you can set the `spire-integration.otterize.com/cert-ttl` annotation for yo
 To remove the deployed resources run
 
 ```bash
-kubectl delete namespace otterize-tutorial-mtls
+kubectl delete -f https://docs.otterize.com/code-examples/mtls/all.yaml
 ```

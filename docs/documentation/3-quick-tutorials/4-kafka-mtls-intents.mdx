@@ -28,39 +28,39 @@ You can skip this section if Otterize is already installed in your cluster.
 
 ## Install Kafka
 
-The following command will deploy a Kafka cluster using bitnami's [chart](https://github.com/bitnami/charts/tree/master/bitnami/kafka)
-configured to use Otterize-provided mTLS credentials.
+We will deploy a Kafka cluster using bitnami's [chart](https://github.com/bitnami/charts/tree/master/bitnami/kafka)
+To configure the chart to use the Otterize-provided credentials we need to configure it to
+and trust Otterize to configure ACLs:
 
- ```bash
- helm repo add bitnami https://charts.bitnami.com/bitnami
- helm upgrade --install --create-namespace -n kafka kafka \
- --version 14.x.x bitnami/kafka \
- -f https://docs.otterize.com/code-examples/kafka-mtls-intents/helm/values.yaml
- ```
+1. Configure Otterize as a super user to grant it access to configure ACLs
+2. Use SSL for it's listeners
+3. Tell Otterize using pod annotations how it requires it's credentials
+4. Authenticate using mTLS credentials provided as a K8s secret
 
 <details>
 <summary>Expand to see the configuration details...</summary>
-To configure the chart to use the Otterize-provided credentials we need to configure it to
 
-1. Use SSL for it's listeners
-2. Tell Otterize using pod annotations how it requires it's credentials
-3. Authenticate using mTLS credentials provided as a K8s secret
 
 ```yaml
-listeners: # 1. Use SSL for it's listeners
+# 1. Configure Otterize as a super user to grant it access to configure ACLs
+superUsers: "User:CN=kafka.kafka,O=SPIRE,C=US;User:CN=intents-operator-controller-manager.otterize,O=SPIRE,C=US"
+# 2. Use SSL for it's listeners
+listeners:
   - "CLIENT://:9092"
   - "INTERNAL://:9093"
 advertisedListeners:
   - "CLIENT://:9092"
   - "INTERNAL://:9093"
 listenerSecurityProtocolMap: "INTERNAL:SSL,CLIENT:SSL"
-podAnnotations: # 2. Annotations for Otterize to generate credentials
+# 3. Annotations for Otterize to generate credentials
+podAnnotations:
   spire-integration.otterize.com/cert-type: jks
   spire-integration.otterize.com/tls-secret-name: kafka-tls-secret
   spire-integration.otterize.com/truststore-file-name: kafka.truststore.jks
   spire-integration.otterize.com/keystore-file-name: kafka-keystore.jks
   spire-integration.otterize.com/dns-names: "kafka-0.kafka-headless.kafka.svc.cluster.local,kafka.kafka.svc.cluster.local"
-auth: # 3. Authenticate clients using mTLS
+# 4. Authenticate clients using mTLS
+auth:
   clientProtocol: mtls
   interBrokerProtocol: mtls
   tls:
@@ -69,15 +69,27 @@ auth: # 3. Authenticate clients using mTLS
       - kafka-tls-secret
     password: password
 authorizerClassName: kafka.security.authorizer.AclAuthorizer
-allowEveryoneIfNoAclFound: true
 ```
 </details>
+
+The following command will deploy a Kafka cluster configured to use Otterize-provided mTLS credentials
+with permissions for Otterize to configure ACLs.
+ ```bash
+ helm repo add bitnami https://charts.bitnami.com/bitnami
+ helm upgrade --install --create-namespace -n kafka kafka \
+ --version 14.x.x bitnami/kafka \
+ -f https://docs.otterize.com/code-examples/kafka-mtls-intents/helm/values.yaml
+ ```
+
+<details>
+<summary>Optional: check deployment status</summary>
+<div>
 
 It can take several minutes for the pods to **stabilize** into the `Ready` and `Running` states. You can monitor with
 the following command:
 
  ```bash
-kubectl get pods -n kafka
+kubectl get pods -n kafka -w
  ```
 
 After **stabilization** you should see:
@@ -87,51 +99,50 @@ After **stabilization** you should see:
 kafka-0             1/1     Running   1 (25s ago)   45s
 kafka-zookeeper-0   1/1     Running   0             56s
  ```
+</div>
+</details>
 
-## Pod annotation  (explainer)
 
-To generate credentials for a pod we simply need to update the deployment by annotating it.
+## Deploy
+
+To generate credentials for the pod we simply need to update the deployment by annotating it.
 The required steps are to
-
 1. Annotate the pod - Otterize automatically identifies the `otterize/credentials-secret-name` annotation, generates
-   mTLS credentials, and stores them as K8s secret named as the annotation value.
+mTLS credentials, and stores them as K8s secret named as the annotation value.
 2. Mount the credentials stored as a K8s secret as a volume
 3. Mount the volume into the container
 
-```yaml
-spec:
-  template:
-    metadata:
-      ...
-      annotations:
-        # highlight-next-line
-        otterize/credentials-secret-name: client-credentials-secret       # 1 Generate credentials
+<details>
+    <summary>Expand to see a detailed explanation for the annotations</summary>
+
+    ```yaml
     spec:
-      volumes:
-        # highlight-start
-        - name: otterize-credentials
-          secret:
-            secretName: client-credentials-secret                      # 2 Mount credentials as a volume
-            # highlight-end
-      containers:
-        - name: client
-        ...
-        volumeMounts:
-          # highlight-start
-          - name: otterize-credentials
-            mountPath: /var/otterize/credentials                      # 3 Mount volume into container 
-            readOnly: true
-            # highlight-end
-```
+    template:
+    metadata:
+    ...
+    annotations:
+    # highlight-next-line
+    otterize/credentials-secret-name: client-credentials-secret       # 1 Generate credentials
+    spec:
+    volumes:
+    # highlight-start
+    - name: otterize-credentials
+    secret:
+    secretName: client-credentials-secret                         # 2 Mount credentials as a volume
+    # highlight-end
+    containers:
+    - name: client
+    ...
+    volumeMounts:
+    # highlight-start
+    - name: otterize-credentials
+    mountPath: /var/otterize/credentials                          # 3 Mount volume into container
+    readOnly: true
+    # highlight-end
+    ```
+</details>
 
-:::info
-Visit the [Behavior](/documentation/credential-operator/behavior) section to view all parameters available as pod
-annotation for generating mTLS credentials.
-:::
-
-## Deploy the server, client, and default network policy
-
-Our simple example consists of single Kafka client pod.
+Our simple example consists of single client pod and a Kafka.
 
 We also deploy a Kafka server config to block access to a specific topic unless intents are set
 to allow access. At first, we expect the client to be blocked from accessing the specific topic.
@@ -176,8 +187,6 @@ We will follow by applying an intent to allow access.
 </details>
 
 1. Deploy the client and the Kafka config using `kubectl`.
-    :::danger fixme
-    :::
     ```bash
     kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls-intents/all.yaml
     ```
@@ -215,9 +224,10 @@ We will follow by applying an intent to allow access.
    Connecting to Kafka
    Creating a producer and a consumer
    Sending messages
-   Loop exited
    time="2022-09-13T10:41:07Z" level=info error="kafka server: The client is not authorized to access this topic"
+   Loop exited
    ```
+
    This is the expected outcome since we configured Kafka to require intents fo access to this topic.
    Once the client declares its intents, Otterize will add an ACL to Kafka to allow the intended calls.
    Let's see that now...
@@ -241,7 +251,7 @@ Client intents are the cornerstone of [intent-based access control](otterize.com
    kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls-intents/client-intents.yaml
    ```
 
-2. Check that the client succesfully connected to Kafka using mTLS
+2. You should quickly see in the **second terminal** that the client is now successfully producing and consuming messages
     ```bash
     kubectl logs --tail=5 -n otterize-tutorial-kafka-mtls deploy/client
     ```
@@ -297,6 +307,7 @@ Client intents are the cornerstone of [intent-based access control](otterize.com
 To remove the deployed resources run
 
 ```bash
+kubectl delete -f https://docs.otterize.com/code-examples/kafka-mtls-intents/client-intents.yaml
 kubectl delete -f https://docs.otterize.com/code-examples/kafka-mtls-intents/all.yaml
 helm uninstall -n kafka kafka
 helm repo remove bitnami
