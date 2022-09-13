@@ -53,6 +53,10 @@ func main() {
 		logrus.WithError(err).Panic()
 	}
 
+	producer, err := NewSyncProducerFromClient(client)
+	if err != nil {
+		logrus.WithError(err).Panic()
+	}
 	consumer, err := sarama.NewConsumerFromClient(client)
 	if err != nil {
 		logrus.WithError(err).Panic()
