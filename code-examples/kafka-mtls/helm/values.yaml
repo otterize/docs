@@ -18,6 +18,7 @@ auth:
       - kafka-tls-secret
     password: password
 authorizerClassName: kafka.security.authorizer.AclAuthorizer
+allowEveryoneIfNoAclFound: true
 podAnnotations:
   spire-integration.otterize.com/cert-type: jks
   spire-integration.otterize.com/tls-secret-name: kafka-tls-secret
