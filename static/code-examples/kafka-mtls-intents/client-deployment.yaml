@@ -12,7 +12,6 @@ spec:
       labels:
         app: client
       annotations:
-#        to rename credentials-secret-name
         spire-integration.otterize.com/tls-secret-name: client-credentials-secret
         spire-integration.otterize.com/cert-ttl: "2592000"
     spec:

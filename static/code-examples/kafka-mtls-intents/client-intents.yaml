@@ -7,9 +7,9 @@ spec:
   service:
     name: client
   calls:
-    - server: kafka
+    - name: kafka
       namespace: kafka
-      type: kafka
+      type: Kafka
       topics:
-        - name: test3
+        - name: mytopic
           operation: all
