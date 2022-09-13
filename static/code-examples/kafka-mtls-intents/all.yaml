@@ -112,8 +112,8 @@ data:
     func main() {
         for {
             err := loop_kafka()
-            fmt.Println("Loop exited")
             logrus.WithError(err).Println()
+            fmt.Println("Loop exited")
             time.Sleep(2 * time.Second)
         }
     }
