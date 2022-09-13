@@ -80,7 +80,7 @@ blocking pods from accepting incoming calls unless another network policy explic
    ```shell
    kubectl apply -f https://docs.otterize.com/code-examples/network-policies/all.yaml
    ```
-2. Check that the `client` and server `pods` were deployed
+2. Check that the `client` and `server` `pods` were deployed
    ```bash
    kubectl get pods -n otterize-tutorial-npol
    ```
@@ -116,7 +116,7 @@ blocking pods from accepting incoming calls unless another network policy explic
    curl timed out
    ```
    This is the expected outcome since by default all pods' ingress are blocked by the default network policy.
-   Once the client declares its intents, Otterize will add a network policy to allow thhe intended calls.
+   Once the client declares its intents, Otterize will add a network policy to allow the intended calls.
    Let's see that now...
 
 ## Apply intents
