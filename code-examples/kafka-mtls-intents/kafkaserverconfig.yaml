@@ -1,0 +1,17 @@
+apiVersion: k8s.otterize.com/v1alpha1
+kind: KafkaServerConfig
+metadata:
+  name: kafkaserverconfig
+  namespace: kafka
+spec:
+  serverName: kafka
+  addr: kafka.kafka:9092
+  tls:
+    certFile: /etc/spifferize/svid.pem
+    keyFile: /etc/spifferize/key.pem
+    rootCAFile: /etc/spifferize/bundle.pem
+  topics:
+    - topic: "mytopic"
+      pattern: literal
+      clientIdentityRequired: true
+      intentsRequired: true

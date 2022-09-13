@@ -14,14 +14,12 @@ data:
     "github.com/Shopify/sarama"
     "github.com/sirupsen/logrus"
     "io/ioutil"
-    "log"
-    "os"
+    "time"
     )
     
     const (
     kafkaAddr     = "kafka.kafka:9092"
-    tlsEnabled    = true
-    testTopicName = "test"
+    testTopicName = "mytopic"
     certFile      = "/var/otterize/credentials/svid.pem"
     keyFile       = "/var/otterize/credentials/key.pem"
     rootCAFile    = "/var/otterize/credentials/bundle.pem"
@@ -32,87 +30,89 @@ data:
     if err != nil {
     return nil, fmt.Errorf("failed loading x509 key pair: %w", err)
     }
-  
-      pool := x509.NewCertPool()
-      rootCAPEM, err := ioutil.ReadFile(rootCAFile)
-      if err != nil {
+    
+    pool := x509.NewCertPool()
+    rootCAPEM, err := ioutil.ReadFile(rootCAFile)
+    if err != nil {
     return nil, fmt.Errorf("failed loading root CA PEM file: %w ", err)
     }
-      pool.AppendCertsFromPEM(rootCAPEM)
-      
-      return &tls.Config{
+    pool.AppendCertsFromPEM(rootCAPEM)
+    
+    return &tls.Config{
     Certificates: []tls.Certificate{cert},
     RootCAs:      pool,
     }, nil
     }
-
-    func ensureKafkaTopic(client sarama.Client, topic string) error {
-    logrus.WithField("topicName", testTopicName).Info("Ensuring topic")
     
-    admin, err := sarama.NewClusterAdminFromClient(client)
-    if err != nil {
-    return err
-    }
-  
-      topics, err := admin.ListTopics()
-      if err != nil {
-    return fmt.Errorf("failed listing topics: %w", err)
-    }
-  
-      if _, found := topics[topic]; !found {
-      err = admin.CreateTopic(topic, &sarama.TopicDetail{
-    NumPartitions:     1,
-    ReplicationFactor: 1,
-    }, false)
-      if err != nil {
-    return fmt.Errorf("failed creating topic: %w", err)
-    }
-    }
-  
-      _, err = admin.DescribeTopics([]string{topic})
-      if err != nil {
-    return fmt.Errorf("failed describing topic: %w", err)
-    }
-      logrus.WithField("topicName", testTopicName).Info("Ensured topic")
-      return nil
-    }
-
-    func main() {
-    logrus.WithField("addr", kafkaAddr).Info("Connecting to kafka server")
+    func loop_kafka() error {
     addrs := []string{kafkaAddr}
     
     config := sarama.NewConfig()
-    config.Version = sarama.V2_0_0_0
-    config.ClientID = "Client"
-    
-    config.Net.TLS.Enable = tlsEnabled
-    if tlsEnabled {
+    fmt.Println("Loading mTLS certificates")
+    config.Net.TLS.Enable = true
     tlsConfig, err := getTLSConfig()
     if err != nil {
-    logrus.WithError(err).Panic()
+    return err
     }
-      config.Net.TLS.Config = tlsConfig
+    config.Net.TLS.Config = tlsConfig
+    fmt.Println("Connecting to Kafka")
+    config.Net.DialTimeout = 5 * time.Second
+    config.Net.ReadTimeout = 5 * time.Second
+    config.Net.WriteTimeout = 5 * time.Second
+    client, err := sarama.NewClient(addrs, config)
+    if err != nil {
+    return err
     }
-      
-      sarama.Logger = log.New(os.Stdout, "[sarama] ", log.LstdFlags)
-      
-      client, err := sarama.NewClient(addrs, config)
-      if err != nil {
-      logrus.WithError(err).Panic()
-    }
-      
-      topics, err := client.Topics()
-      if err != nil {
-      logrus.WithError(err).Panic()
+    fmt.Println("Creating a producer and a consumer")
+    config.Producer.Return.Successes = true
+    config.Producer.Timeout = 5 * time.Second
+    config.Consumer.MaxWaitTime = 5 * time.Second
+    config.Producer.Return.Errors = true
+    config.Consumer.Return.Errors = true
+    producer, err := sarama.NewSyncProducerFromClient(client)
+    if err != nil {
+    return err
     }
     
-    logrus.WithField("topics", topics).Info("Topics")
+    consumer, err := sarama.NewConsumerFromClient(client)
+    if err != nil {
+    return err
+    }
+    fmt.Println("Sending messages")
+    for i := 1; i <= 5; i++ {
+    msg := fmt.Sprintf("Message %d", i)
+    _, _, err = producer.SendMessage(&sarama.ProducerMessage{
+    Topic:     testTopicName,
+    Partition: -1,
+    Value:     sarama.StringEncoder(msg),
+    })
+    if err != nil {
+    return err
+    }
+    fmt.Printf("Sent message - %s\n", msg)
+    time.Sleep(1 * time.Second)
+    }
     
-    if err := ensureKafkaTopic(client, testTopicName); err != nil {
-    logrus.WithError(err).Panic()
+    partConsumer, err := consumer.ConsumePartition(testTopicName, 0, 0)
+    if err != nil {
+    return err
+    }
+    
+    for msg := range partConsumer.Messages() {
+    fmt.Printf("Read message - %s\n", msg.Value)
+    }
+    return nil
+    }
+    
+    func main() {
+    for {
+    err := loop_kafka()
+    fmt.Println("Loop exited")
+    logrus.WithError(err).Println()
+    time.Sleep(2 * time.Second)
+    }
     }
       
-    }
 
   go.mod: |
     module main
