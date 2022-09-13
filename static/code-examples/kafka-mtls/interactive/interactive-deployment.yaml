@@ -16,7 +16,6 @@ spec:
         spire-integration.otterize.com/cert-type: jks
         spire-integration.otterize.com/truststore-file-name: kafka.truststore.jks
         spire-integration.otterize.com/keystore-file-name: kafka.keystore.jks
-        spire-integration.otterize.com/cert-ttl: "2592000"
     spec:
       containers:
         - name: interactive

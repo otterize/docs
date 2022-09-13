@@ -14,7 +14,6 @@ spec:
       annotations:
 #        to rename credentials-secret-nam   e
         spire-integration.otterize.com/tls-secret-name: server-credentials-secret
-        spire-integration.otterize.com/cert-ttl: "2592000"
     spec:
       containers:
         - name: server
