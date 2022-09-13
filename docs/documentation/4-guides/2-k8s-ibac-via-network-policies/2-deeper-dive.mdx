@@ -1,105 +1,7 @@
 ---
 sidebar_position: 2
-title: IBAC in Kubernetes via network policies
+title: Deeper dive into network policies
 ---
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
-
-One of the easiest ways to realize intent-based access control in Kubernetes is by leveraging network policies.
-
-Network policies are built into Kubernetes itself, and while their enforcement is not, all that's required
-is a Kubernetes CNI network plugin; most Kubernetes clusters either have a CNI installed or can add one easily.
-
-Enforcement through network policies is limited to pod-to-pod access control, not finer-grained access control:
-you cannot limit access to certain paths and methods in HTTP, or to certain topics and operations in Kafka, for example.
-On the other hand, implementing network policy access control requires no code changes so it might be a great
-first step, and it might entirely satisfy some use cases.
-
-Authoring network policies manually can be complicated and tedious, especially because you need to think at a network
-level vs functionally, and because you need to carefully coordinate labels across separate pod (e.g. deployment) resources
-and network policy resources to achieve any specific outcome.
-
-Of course, Otterize eliminates all of that. Let's see how.
-
-## First, choose a Kubernetes cluster and set of services
-
-You can use this guide with your own set of services, e.g. first in a Kubernetes cluster running dev or lab services,
-and eventually in a staging or production cluster.
-
-Or you can start by populating a Kubernetes cluster with our reference lab,
-which is based on the [Google microservices demo](https://github.com/GoogleCloudPlatform/microservices-demo)
-simulating an e-commerce application.
-
-For the sake of illustration, we'll refer to the reference lab example in this guide. But if you're using
-your own services, just apply the same steps and adjust the logic to your needs.
-
-### Reference lab example
-
-:::note TOMER
-Remember to modify to show pictorially (in 1 picture) the overall picture,
-with a circle overlay or other color coding showing the initial set of services which will begin our gradual rollout.
-:::
-
-The reference e-commerce application architecture is as follows
-![Demo e-commerce](https://github.com/GoogleCloudPlatform/microservices-demo/raw/main/docs/img/architecture-diagram.png)
-
-By default, any service is allowed to call any other service, though their code only makes the calls marked with arrows
--- i.e. *the arrows indicate the intended traffic*.
-
-The purpose of IBAC is to *automatically turn those design-time intents
-into runtime constraints, declaratively*: only declared intents will be allowed,
-while all other calls -- e.g. ones made by mistake, or ones due to
-security breaches -- will be blocked.
-
-### Deploying the reference lab
-
-```bash
-kubectl create namespace otterize-ecom-demo
-kubectl apply -n otterize-ecom-demo -f https://raw.githubusercontent.com/GoogleCloudPlatform/microservices-demo/main/release/kubernetes-manifests.yaml
-```
-You can check that the cluster was deployed using
-```bash
-kubectl get pods -n otterize-ecom-demo
-```
-You should see
-```bash
-NAME                                     READY   STATUS    RESTARTS   AGE
-adservice-694f4ff98-cz4nn                1/1     Running   0          23m
-cartservice-85f8bc44fd-45cbk             1/1     Running   0          23m
-checkoutservice-8fc47bbbd-9lhfv          1/1     Running   0          23m
-currencyservice-597bdf576b-8hftc         1/1     Running   0          23m
-emailservice-d5c6f74dd-qlwc4             1/1     Running   0          23m
-frontend-7ffbf49884-j9rhz                1/1     Running   0          23m
-loadgenerator-65779994db-tgdxk           1/1     Running   0          23m
-paymentservice-76b9c8b87d-ktfcd          1/1     Running   0          23m
-productcatalogservice-6969d4f5fd-xdw99   1/1     Running   0          23m
-recommendationservice-58798d5c8-2f4rz    1/1     Running   0          23m
-redis-cart-6f65887b5d-xwpz5              1/1     Running   0          23m
-shippingservice-ff5f4d7d-qcjw8           1/1     Running   0          23m
-```
-
-### Testing that the reference lab works
-
-To get the externally-accessible URL where your demo front end is available, run:
-```bash
-kubectl get service -n otterize-ecom-demo frontend-external -o json | jq -r .status.loadBalancer.ingress[0].hostname
-```
-And you should get a result similar to (if running on EKS)
-```
-a11843075fd254f8099a986467098647-1889474685.us-east-1.elb.amazonaws.com
-```
-Go ahead and browse to the URL above to get a feel for the reference lab's behavior.
-
-:::tip
-The load balancer address might take some time to populate across DNS servers.
-:::
-
-## Next, install Otterize into your Kubernetes cluster
-
-:::note TOMER
-Installation of Otterize goes here
-:::
-
 ## Recap: K8s network policies and CNI network plugins
 
 [Network policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) are one of the tools we
@@ -154,11 +56,11 @@ Two common approaches for working with network policies are
 - Allow all traffic between pods, protect some pods by applying ingress network policies to them.
 - Block all traffic between pods except allowed traffic by network policies.
 
-You can apply both approaches (allow/block all) within your cluster (e.g. by applying network policies based on 
+You can apply both approaches (allow/block all) within your cluster (e.g. by applying network policies based on
 namespaces).
 
-:::caution 
-Applying an ingress network policy to a pod will automatically block all communications to it except those allowed by 
+:::caution
+Applying an ingress network policy to a pod will automatically block all communications to it except those allowed by
 network policies.
 :::
 
@@ -214,15 +116,6 @@ FAQ:
   - If no network policies exist, automatically generating a network policy to allow `frontend-external` -> `frontend` will
   block existing traffic like `loadgenerator` -> `frontend`.
 
-### Walkthrough - applying the first intent
-From looking at the e-commerce application diagram we can see that the `productcatalog` service is being called from two
-services: `checkout` and `recommendation`.
-
-If we apply an intent only for the `recommendation` to call the `productcatalog` a matching network policy will be generated
-to allow it. **But**, since we haven't applied an intent for the `checkout` service to call the `productcatalog` then the
-`checkout` service will be blocked.
-
-1. Let's see this state in action. First we'll apply the intent for `recommendation`->`productcatalog`
 
 
 ## Deep dive - how intents translate to network policies.
@@ -340,13 +233,13 @@ server via network policies:
   client-5cb67b748-l25vg    1/1     Running   0          7m57s   app=client,intents.otterize.com/access-server-otterize-tutorial-np-7e16db=true,intents.otterize.com/client=true,intents.otterize.com/server=client-otterize-tutorial-np-699302,pod-template-hash=5cb67b748,spire-integration.otterize.com/service-name=client
   server-564b56f596-54str   1/1     Running   0          7m56s   app=server,intents.otterize.com/server=server-otterize-tutorial-np-7e16db,pod-template-hash=564b56f596,spire-integration.otterize.com/service-name=server
   ```
-  
+
   The key labels are
     - For the server - <span style={{color:'gray'}}>intents.otterize.com/server</span>=<span style={{color:'magenta'}}>server</span>-<span style={{color:'red'}}>otterize-tutorial-np</span>-<span style={{color:'green'}}>7e16db</span>
-      - <span style={{color:'gray'}}>intents.otterize.com/server</span> - Otterize label prefix 
+      - <span style={{color:'gray'}}>intents.otterize.com/server</span> - Otterize label prefix
       - <span style={{color:'magenta'}}>server</span> - Server pod name
       - <span style={{color:'red'}}>otterize-tutorial-np</span> - Server pod namespace (might be truncated)
-      - <span style={{color:'green'}}>7e16db</span> - Hash for server pod name and and namespace 
+      - <span style={{color:'green'}}>7e16db</span> - Hash for server pod name and and namespace
     - For the client - <span style={{color:'gray'}}>intents.otterize.com/access</span>-<span style={{color:'magenta'}}>server</span>-<span style={{color:'red'}}>otterize-tutorial-np</span>-<span style={{color:'green'}}>7e16db</span>=true
       - <span style={{color:'gray'}}>intents.otterize.com/server</span> - Otterize label prefix
       - <span style={{color:'magenta'}}>server</span> - Server pod name
@@ -363,21 +256,3 @@ otterize-tutorial-npol   Active   36s   intents.otterize.com/namespace-name=otte
   ```
   With the new label add by otterize - `intents.otterize.com/namespace-name=otterize-tutorial-npol`
 ## …
-
-## Practical notes
-
-### Avoiding drift
-
-### Avoiding blocking of essential services
-
-Otterize automatically generates network policies, when needed, to allow load balancers, ingresses and other XXX to
-communicate with their intended targets within the cluster.
-Think of the following scenario
-
-- There's an internet facing load balancer calling the frontend service
-- There's an internal load generator service also calling the frontend service
-- The user created an intents file with an intent to call the frontend service from the load generator service
-- Otterize will then generate a network policy for [load generator service->frontend service]
-- That network policy will block traffic from the load balancer unless we take action
-- That is why Otterize will also identify this case and generate another network policy to allow traffic from the load
-  balancer to the frontend.
