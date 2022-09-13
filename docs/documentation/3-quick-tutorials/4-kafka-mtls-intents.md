@@ -1,5 +1,5 @@
 ---
-sidebar_position: 5
+sidebar_position: 4
 title: Deploy mTLS between pods and Kafka + intents
 ---
 import Tabs from '@theme/Tabs';
@@ -7,7 +7,7 @@ import TabItem from '@theme/TabItem';
 
 # Kafka + mTLS
 
-This tutorial will walk you through deploying mTLS certificates between a client and a Kafka cluster
+This tutorial will walk you through applying intents and deploying mTLS certificates between a client and a Kafka cluster
 and configuring intents for one of its clients.
 We will:
 
