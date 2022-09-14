@@ -66,10 +66,10 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
         ({
             algolia: {
-                apiKey: '126a90612c37712ff44925fff5ac44b6',
-                indexName: 'docs.otterize.com',
-                appId: 'GP6YEIC49H', // Optional, if you run the DocSearch crawler on your own
-                algoliaOptions: {} // Optional, if provided by Algolia
+                apiKey: '0f80eacea40a917650f73d6eee3e9bb3',
+                indexName: 'otterize',
+                appId: '69PZ47MO2R',
+                algoliaOptions: {}
             },
             hotjar: {
                 applicationId: '3152141',
