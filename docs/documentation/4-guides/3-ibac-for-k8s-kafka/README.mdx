@@ -87,30 +87,7 @@ Though SSL was replaced by TLS, Kafka still uses the term SSL internally.
 <summary>Expand to see the complete YAML of this example...</summary>
 
 ```yaml
-superUsers: "User:CN=kafka.kafka,O=SPIRE,C=US;User:CN=intents-operator.otterize,O=SPIRE,C=US"
-listeners:
-  - "CLIENT://:9092"
-  - "INTERNAL://:9093"
-advertisedListeners:
-  - "CLIENT://:9092"
-  - "INTERNAL://:9093"
-listenerSecurityProtocolMap: "INTERNAL:SSL,CLIENT:SSL"
-auth:
-  clientProtocol: mtls
-  interBrokerProtocol: mtls
-  tls:
-    type: jks
-    existingSecrets:
-      - kafka-tls-secret
-    password: password
-authorizerClassName: kafka.security.authorizer.AclAuthorizer
-podAnnotations:
-  otterize/cert-type: jks
-  spire-integration.otterize.com/tls-secret-name: kafka-tls-secret
-  otterize/truststore-file-name: kafka.truststore.jks
-  otterize/keystore-file-name: kafka-keystore.jks
-  otterize/dns-names: "kafka-0.kafka-headless.kafka.svc.cluster.local,kafka.kafka.svc.cluster.local"
-  otterize/cert-ttl: "31536000" # 1 year
+{@include: ../../../../static/code-examples/kafka-mtls-intents/helm/values.yaml}
 ```
 
 </details>
@@ -223,7 +200,8 @@ and using the popular [kafka-console-producer](https://kafka.apache.org/quicksta
 
 ## Configure Otterize to manage Kafka ACLs
 To allow Otterize to configure ACLs for Kafka we need to create and apply a `KafkaServerConfig`.
-The basic configuration only allows Otterize to configure Kafka ACLs upon new applied intents.
+The basic configuration allows Otterize to configure Kafka ACLs upon new applied intents and sets
+a default allow policy for all topics.
 We will later show how to add fine-grained control over topics.
 
 ```yaml
@@ -235,12 +213,21 @@ You can apply it with
 kubectl apply -f https://docs.otterize.com/code-examples/ibac-for-kafka/kafkaserverconfig.yaml
 ```
 
-## Setting security scope via ACLs
-To set a security scope for topic access we need to define
-- Default access permission level for topics
-- Per topic access permission level
+## Setting security scope
+Security scopes are set by setting topics selectors and setting permission levels.
 
-Available access permission levels are
+An example configuration would be
+```yaml
+topic: "mytopic"
+pattern: literal
+clientIdentityRequired: ture
+intentsRequired: ture
+```
+
+Topic selectors can be set by using a `prefix` match or a `literal` match pattern.
+Read more [here](https://docs.confluent.io/platform/current/kafka/authorization.html#prefixed-acls).
+
+Permission levels are set by
 - Unauthenticated - client identity not required
    ```bash
    clientIdentityRequired: false
@@ -257,41 +244,62 @@ Available access permission levels are
    intentsRequired: ture
    ```
 
-Topic selectors can be set by using a `prefix` match or a `literal` match pattern. Read more [here](https://docs.confluent.io/platform/current/kafka/authorization.html#prefixed-acls).
+To set a security scope for topic access we need to define
+- Default access permission level for topics
+- Per topic access permission level
+
+
 ### Setting the default security scope
 To set the default security scope for topics we will use the following `topic` and `pattern`:
 ```
     - topic: "*"
       pattern: prefix
 ```
-Alongside
-To set permissions we need
-prefix
-literal
+
+### What happens when we apply a security scope
+Security scopes translate directly into Kafka ACLs. Otterize uses the security scope parameters
+(topic, pattern, clientIdentityRequired, and intentsRequired) to configure them.
+
+
+## Otterize identities, intents and Kafka ACLs
+Our example is built of a single client (`myclient`) running in the namespace `otterize-tutorial-kafka-mtls-intents`
+and an intent to access a single topic (`mytopic`).
+
+<details>
+<summary>Expand to see the details of this example...</summary>
+<Tabs>
+
+<TabItem value="deployment.yaml" label="deployment.yaml" default>
 
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha1
-kind: KafkaServerConfig
-metadata:
-  name: kafkaserverconfig
-  namespace: kafka
-spec:
-  serverName: kafka
-  addr: kafka.kafka:9092
-  tls:
-    certFile: /etc/spifferize/svid.pem
-    keyFile: /etc/spifferize/key.pem
-    rootCAFile: /etc/spifferize/bundle.pem
-  topics:
-    - topic: "mytopic"
-      pattern: literal
-      clientIdentityRequired: true
-      intentsRequired: true
+{@include: ../../../../static/code-examples/kafka-mtls-intents/client-deployment.yaml}
 ```
 
-## Otterize identities and Kafka ACLs
+</TabItem>
 
-## …
+<TabItem value="client-intents.yaml" label="client-intents.yaml">
+
+```yaml
+{@include: ../../../../static/code-examples/kafka-mtls-intents/client-intents.yaml}
+```
+
+</TabItem>
+
+</Tabs>
+</details>
+
+### Generating credentials
+By annotating the pod with `spire-integration.otterize.com/tls-secret-name: myclient-credentials-secret` Otterize
+automatically generates mTLS credentials for the pod named `myclient`.
+
+The certificate's `CN` is set to be `myclient.otterize-tutorial-kafka-mtls-intents`. This value will be used in the
+following step when applying intents.
+
+### Applying intents
+When an intent is applied, in our case it would be for `myclient` to access `mytopic` on Kafka, Otterize automatically
+generates an ACL to match the same `CN` value, that is `myclient.otterize-tutorial-kafka-mtls-intents`, and to allow it
+to access the topic for the desired operation.
+
 
 ## Practical notes
 
