@@ -1,0 +1,20 @@
+apiVersion: k8s.otterize.com/v1alpha1
+kind: ClientIntents
+metadata:
+  name: checkoutservice
+spec:
+  service:
+    name: checkoutservice
+  calls:
+    - name: emailservice
+      type: http
+    - name: orderservice
+      type: http
+      resources:
+        - path: /orders/*
+          methods: [ get, post ]
+    - name: ecomm-events
+      type: kafka
+      topics:
+        - name: orders
+          operations: [ produce ]
