@@ -56,7 +56,7 @@ def wait_for_availability(type, regex, names, namespace):
 
 
 def helm_install(namespace: str, name: str):
-    run(f'helm repo add otterize https://otterize.github.io/helm-charts', stderr=subprocess.STDOUT)
+    run(f'helm repo add otterize https://helm.otterize.com', stderr=subprocess.STDOUT)
     run(f'helm repo update', stderr=subprocess.STDOUT)
     run(f'helm upgrade --install -n {namespace} {name} otterize/otterize-kubernetes', stderr=subprocess.STDOUT)
 
