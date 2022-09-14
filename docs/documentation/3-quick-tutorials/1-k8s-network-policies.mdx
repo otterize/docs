@@ -81,31 +81,37 @@ blocking pods from accepting incoming calls unless another network policy explic
 </Tabs>
 </details>
 
-1. Deploy the client, server, and the default deny network policy using `kubectl`.
+Deploy the client, server, and the default deny network policy using `kubectl`.
 
    ```shell
    kubectl apply -f https://docs.otterize.com/code-examples/network-policies/all.yaml
    ```
-2. Check that the `client` and `server` `pods` were deployed
-   ```bash
-   kubectl get pods -n otterize-tutorial-npol
-   ```
-   You should see
-   ```
-   NAME                      READY   STATUS    RESTARTS   AGE
-   client-5689997b5c-grlnt   1/1     Running   0          35s
-   server-6698c58cbc-v9n9b   1/1     Running   0          34s
-   ```
-3. Check that the default deny ingress network policy was deployed:
-   ```bash
-   kubectl get NetworkPolicies -n otterize-tutorial-npol
-   ```
-   You should see
-   ```
-   NAME                   POD-SELECTOR   AGE
-   default-deny-ingress   <none>         17s
-   ```
-4. Let's monitor the client's attempts to call the server with a second terminal window,
+
+<details>
+<summary>Optional: check deployment status</summary>
+Check that the client and server pods were deployed
+
+```bash
+kubectl get pods -n otterize-tutorial-npol
+```
+You should see
+```
+NAME                      READY   STATUS    RESTARTS   AGE
+client-5689997b5c-grlnt   1/1     Running   0          35s
+server-6698c58cbc-v9n9b   1/1     Running   0          34s
+```
+Check that the default deny ingress network policy was deployed:
+
+```bash
+kubectl get NetworkPolicies -n otterize-tutorial-npol
+```
+You should see
+```
+NAME                   POD-SELECTOR   AGE
+default-deny-ingress   none           17s
+```
+</details>
+Let's monitor the client's attempts to call the server with a second terminal window,
    so we can see the effects of our changes in real time.
 
    **Open a second terminal window** and tail the client log:

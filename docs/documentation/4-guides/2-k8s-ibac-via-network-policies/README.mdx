@@ -147,7 +147,7 @@ Here's the intents file of the `recommendationservice` (remember to adjust if yo
 ```
 1. Let's apply this intents file, as a developer or a CI/CD process would do:
     ```bash
-    kubectl apply -f static/code-examples/lab/recommendationservice-productcatalogservice.yaml
+    kubectl apply -f https://docs.otterize.com/code-examples/lab/recommendationservice-productcatalogservice.yaml
     ```
 
 2. And check in on our lab by adding an item to your cart and placing an order.
@@ -166,7 +166,7 @@ Now let's add the intents file of the `checkoutservice` (remember to adjust if y
 
 1. Again, apply it to see what happens when it declares its intents:
    ```bash
-   kubectl apply -f static/code-examples/lab/checkoutservice-productcatalogservice.yaml
+   kubectl apply -f https://docs.otterize.com/code-examples/lab/checkoutservice-productcatalogservice.yaml
    ```
 2. Go ahead and place an order on the side, you will see all functions correctly.
     ![Order complete](/resources/lab/order-complete.png)
@@ -186,21 +186,35 @@ simply install the Otterize network mapper into some cluster where all the calls
 actually happening, and watch as it detects them and generates a complete set of client intents files that
 reflect all those calls.
 
+
 <details>
   <summary>Optional bootstrapping exercise: </summary>
   <div>
 
 To see the potential of the network mapper in bootstrapping IBAC, try this:
 1. Run the network mapper while generating enough traffic in your cluster to capture all calls, and
-   export them as intents files.
-   (We've already done that for you if you're using the reference lab: LINK TO EXAMPLE IN GITHUB.)
-2. Create a "default-deny-ingress" network policy in your cluster;
+      export them as intents files.
+    ```bash
+    otterize intents export -n otterize-ecom-demo > intents.yaml
+    ```
+    Or, if you're using the reference lab we've already done that for you
+    ```bash
+    wget https://docs.otterize.com/code-examples/lab/intents.yaml
+    ```
+2. Create and apply a "default-deny-ingress" network policy in your cluster for the selected namespace;
    all pods will now have at least one ingress policy so *all* undeclared calls will be blocked.
-   WE NEED TO EXPLAIN HOW TO DO THIS, PERHAPS BY SHOWING THE YAML AND THEN APPLYING IT
-   FROM OUR STATIC EXAMPLES AREA.
+   ```yaml
+   {@include: ../../../../static/code-examples/lab/default-deny-network-policy.yaml}
+   ```
+   if you're using the reference lab we've already done that for you
+   ```bash
+   kubectl apply -f https://docs.otterize.com/code-examples/lab/default-deny-network-policy.yaml
+   ```
 3. See that most services are now blocked. For example, the reference lab will stop working.
 4. Now apply all the intents you captured in the first step.
-   (For the lab, simply run `kubectl apply -f LINK TO AGGREGATED EXAMPLE`.)
+   ```bash
+   kubectl apply -f intents.yaml
+   ```
 5. Your cluster should now roar back to life, fully functioning *and now secured*!
 
 
