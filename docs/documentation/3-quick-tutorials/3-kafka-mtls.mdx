@@ -78,6 +78,36 @@ kafka-zookeeper-0   1/1     Running   0             56s
 
 
 ## Protect a Kafka topic
+Let's protect a single kafka topic (`mytopic`) by applying a `KafkaServerConfig` with
+```bash
+kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls-intents/kafkaserverconfig.yaml
+```
+<details>
+<summary>Expand to see the details of this example...</summary>
+<Tabs>
+
+<TabItem value="kafkaserverconfig.yaml" label="kafkaserverconfig.yaml">
+
+```yaml
+{@include: ../../../static/code-examples/kafka-mtls-intents/kafkaserverconfig.yaml}
+```
+
+</TabItem>
+</Tabs>
+</details>
+
+If you check, you should see that an ACL was configured on Kafka to deny anonymous access to the topic
+
+```bash
+kubectl logs -n kafka statefulset/kafka | grep "Processing Acl change" | grep mytopic | tail -n 1
+   ```
+You should see
+```
+[2022-09-13 10:58:32,052] INFO Processing Acl change notification for ResourcePattern
+(resourceType=TOPIC, name=mytopic, patternType=LITERAL), versionedAcls :
+Set(User:ANONYMOUS has DENY permission for operations: ALL from hosts: *), zkVersion : 9
+(kafka.security.authorizer.AclAuthorizer)
+```
 
 ## Deploy clients
 
@@ -151,14 +181,6 @@ We will follow by applying an intent to allow access.
 
 </TabItem>
 
-<TabItem value="kafkaserverconfig.yaml" label="kafkaserverconfig.yaml">
-
-   ```yaml
-  {@include: ../../../static/code-examples/kafka-mtls-intents/kafkaserverconfig.yaml}
-  ```
-
-</TabItem>
-
 </Tabs>
 </details>
 
@@ -175,18 +197,7 @@ We will follow by applying an intent to allow access.
    NAME                      READY   STATUS    RESTARTS   AGE
     client-5d9d5c8d7b-7dlzb   1/1     Running   0          24s
    ```
-3. If you check, you should see that an ACL was configured on Kafka to deny anonymous access to the topic
-   
-   ```bash
-   kubectl logs -n kafka statefulset/kafka | grep "Processing Acl change" | grep mytopic | tail -n 1
-   ```
-   You should see
-   ```
-   [2022-09-13 10:58:32,052] INFO Processing Acl change notification for ResourcePattern
-   (resourceType=TOPIC, name=mytopic, patternType=LITERAL), versionedAcls : 
-   Set(User:ANONYMOUS has DENY permission for operations: ALL from hosts: *), zkVersion : 9 
-   (kafka.security.authorizer.AclAuthorizer)
-   ```
+
 4. Let's monitor the client's attempts to access the Kafka topic with a second terminal window,
    so we can see the effects of our changes in real time.
 
