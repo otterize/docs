@@ -4,7 +4,8 @@ metadata:
   name: kafkaserverconfig
   namespace: kafka
 spec:
-  serverName: kafka
+  service:
+    name: kafka
   addr: kafka.kafka:9092
   tls:
     certFile: /etc/spifferize/svid.pem
