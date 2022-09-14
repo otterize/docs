@@ -1,0 +1,81 @@
+apiVersion: k8s.otterize.com/v1alpha1
+kind: ClientIntents
+metadata:
+  name: cartservice
+  namespace: otterize-ecom-demo
+spec:
+  service:
+    name: cartservice
+  calls:
+    - name: redis-cart
+      type: HTTP
+---
+apiVersion: k8s.otterize.com/v1alpha1
+kind: ClientIntents
+metadata:
+  name: checkoutservice
+  namespace: otterize-ecom-demo
+spec:
+  service:
+    name: checkoutservice
+  calls:
+    - name: cartservice
+      type: HTTP
+    - name: currencyservice
+      type: HTTP
+    - name: emailservice
+      type: HTTP
+    - name: paymentservice
+      type: HTTP
+    - name: productcatalogservice
+      type: HTTP
+    - name: shippingservice
+      type: HTTP
+---
+apiVersion: k8s.otterize.com/v1alpha1
+kind: ClientIntents
+metadata:
+  name: frontend
+  namespace: otterize-ecom-demo
+spec:
+  service:
+    name: frontend
+  calls:
+    - name: adservice
+      type: HTTP
+    - name: cartservice
+      type: HTTP
+    - name: checkoutservice
+      type: HTTP
+    - name: currencyservice
+      type: HTTP
+    - name: productcatalogservice
+      type: HTTP
+    - name: recommendationservice
+      type: HTTP
+    - name: shippingservice
+      type: HTTP
+---
+apiVersion: k8s.otterize.com/v1alpha1
+kind: ClientIntents
+metadata:
+  name: loadgenerator
+  namespace: otterize-ecom-demo
+spec:
+  service:
+    name: loadgenerator
+  calls:
+    - name: frontend
+      type: HTTP
+---
+apiVersion: k8s.otterize.com/v1alpha1
+kind: ClientIntents
+metadata:
+  name: recommendationservice
+  namespace: otterize-ecom-demo
+spec:
+  service:
+    name: recommendationservice
+  calls:
+    - name: productcatalogservice
+      type: HTTP
