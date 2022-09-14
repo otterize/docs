@@ -19,7 +19,7 @@ The intents operator automatically creates, updates and deletes network policies
 
 In the example above, the `checkoutservice` intends to call the `shippingservice`. When the CRD is applied through `kubectl apply`, the intents operator labels the `checkoutservice` and `shippingservice` pods, and creates a network policy for the ingress of the `shippingservice` that references these labels and allows calls to the `shippingservice` from the `checkoutservice`.
 
-See [service names and pod labels](/documentation/7-services/README.mdx) to learn how the right service names are inferred for pods, and how pods are labeled.
+See [service names and pod labels](/documentation/service-identities) to learn how the right service names are inferred for pods, and how pods are labeled.
 
 ### Kafka mTLS & ACLs
 The intents operator automatically creates, updates, and deletes ACLs in Kafka clusters running within your Kubernetes cluster. It works together with SPIRE and the [Otterize SPIRE integration operator](/documentation/components/spire-integration-operator) to easily enable secure access to Kafka from client pods, all in your Kubernetes cluster.
