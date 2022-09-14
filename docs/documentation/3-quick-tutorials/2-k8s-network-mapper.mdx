@@ -11,12 +11,11 @@ through installing Otterize, mapping traffic and tracking changes.
 ## Install Network Mapper
 
 ```bash
-git clone git@github.com:otterize/network-mapper.git
-cd network-mapper
-helm upgrade --install -n otterize mapper helm/ -f helm/values.yaml --create-namespace
-cd src/cli/cmd/
-go build -o otterize .
-sudo cp ./otterize /usr/local/bin/
+helm repo add otterize https://helm.otterize.com
+helm repo update
+helm upgrade --install -n otterize --create-namespace otterize/network-mapper
+Download and extract the appropriate CLI for you: https://github.com/otterize/otterize-cli/releases/tag/v0.1.0
+(TODO Tomer: replace with separate link and instructions for Windows, Mac, Linux)
 ```
 
 :::danger
