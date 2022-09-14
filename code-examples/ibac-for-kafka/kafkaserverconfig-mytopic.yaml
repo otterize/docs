@@ -13,5 +13,9 @@ spec:
   topics:
     - topic: "*"
       pattern: prefix
-      clientIdentityRequired: false
+      clientIdentityRequired: true
+      intentsRequired: true
+    - topic: "mytopic"
+      pattern: literal
+      clientIdentityRequired: true
       intentsRequired: false
