@@ -21,9 +21,13 @@ and eventually in a staging or production cluster. You'll need admin access.
 
 You can also use an existing Kafka deployment or use our provided deployment for ease of use.
 
+## Install Otterize into your Kubernetes
+To apply intents on an existing cluster you will need to install Otterize with the network policies
+option enabled. Follow the [instructions](/documentation/guides/k8s-installation) to install Otterize or
+install only the [Kafka/mTLS components](/documentation/guides/k8s-installation#kafkamtls) for Otterize.
 
-## Configuring Kafka for secure access
 
+## Configure kafka for secure access
 To configure kafka for secure access we have multiple areas we need to modify in its configuration to prepare for secure
 access and another where we add annotations to let Otterize know it needs to generate credentials for secure access.
 
@@ -141,7 +145,9 @@ kafka-zookeeper-0   1/1     Running   0             56s
 </div>
 </details>
 
-### Testing secure connection to Kafka
+
+
+### Optional - Testing secure connection to Kafka
 
 You can set up an interactive session that securely connects to Kafka by deploying a pod configured to get credentials
 and using the popular [kafka-console-producer](https://kafka.apache.org/quickstart#quickstart_send) and
@@ -215,7 +221,73 @@ and using the popular [kafka-console-producer](https://kafka.apache.org/quicksta
    Hello there consumer, this is the producer!
    ```
 
-## Setting security scope via…
+## Configure Otterize to manage Kafka ACLs
+To allow Otterize to configure ACLs for Kafka we need to create and apply a `KafkaServerConfig`.
+The basic configuration only allows Otterize to configure Kafka ACLs upon new applied intents.
+We will later show how to add fine-grained control over topics.
+
+```yaml
+{@include: ../../../../static/code-examples/ibac-for-kafka/kafkaserverconfig.yaml}
+```
+
+You can apply it with
+```bash
+kubectl apply -f https://docs.otterize.com/code-examples/ibac-for-kafka/kafkaserverconfig.yaml
+```
+
+## Setting security scope via ACLs
+To set a security scope for topic access we need to define
+- Default access permission level for topics
+- Per topic access permission level
+
+Available access permission levels are
+- Unauthenticated - client identity not required
+   ```bash
+   clientIdentityRequired: false
+   intentsRequired: false
+   ```
+- Authenticated - client identity required
+   ```bash
+   clientIdentityRequired: true
+   intentsRequired: false
+   ```
+- Authorized - client identity and an intent are required
+   ```bash
+   clientIdentityRequired: ture
+   intentsRequired: ture
+   ```
+
+Topic selectors can be set by using a `prefix` match or a `literal` match pattern. Read more [here](https://docs.confluent.io/platform/current/kafka/authorization.html#prefixed-acls).
+### Setting the default security scope
+To set the default security scope for topics we will use the following `topic` and `pattern`:
+```
+    - topic: "*"
+      pattern: prefix
+```
+Alongside
+To set permissions we need
+prefix
+literal
+
+```yaml
+apiVersion: k8s.otterize.com/v1alpha1
+kind: KafkaServerConfig
+metadata:
+  name: kafkaserverconfig
+  namespace: kafka
+spec:
+  serverName: kafka
+  addr: kafka.kafka:9092
+  tls:
+    certFile: /etc/spifferize/svid.pem
+    keyFile: /etc/spifferize/key.pem
+    rootCAFile: /etc/spifferize/bundle.pem
+  topics:
+    - topic: "mytopic"
+      pattern: literal
+      clientIdentityRequired: true
+      intentsRequired: true
+```
 
 ## Otterize identities and Kafka ACLs
 
