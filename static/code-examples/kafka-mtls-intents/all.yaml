@@ -6,10 +6,10 @@ metadata:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: client-go
+  name: myclient-go
   namespace: otterize-tutorial-kafka-mtls-intents
 data:
-  client.go: |
+  myclient.go: |
     package main
     
     import (
@@ -68,7 +68,7 @@ data:
         if err != nil {
             return err
         }
-        fmt.Println("Creating a producer and a consumer")
+        fmt.Println("Creating a producer and a consumer for -", testTopicName)
         config.Producer.Return.Successes = true
         config.Producer.Timeout = 5 * time.Second
         config.Consumer.MaxWaitTime = 5 * time.Second
@@ -154,21 +154,21 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: client
+  name: myclient
   namespace: otterize-tutorial-kafka-mtls-intents
 spec:
   selector:
     matchLabels:
-      app: client
+      app: myclient
   template:
     metadata:
       labels:
-        app: client
+        app: myclient
       annotations:
-        spire-integration.otterize.com/tls-secret-name: client-credentials-secret
+        spire-integration.otterize.com/tls-secret-name: myclient-credentials-secret
     spec:
       containers:
-        - name: client
+        - name: myclient
           image: golang
           command: [ "/bin/sh", "-c", "--" ]
           args: [ "while true; do cd /app; cp src/* .; go get main; go run .; sleep infinity; done" ]
@@ -176,16 +176,16 @@ spec:
             - name: ephemeral
               mountPath: /app
             - mountPath: /app/src
-              name: client-go
+              name: myclient-go
             - name: otterize-credentials
               mountPath: /var/otterize/credentials
               readOnly: true
       volumes:
-        - name: client-go
+        - name: myclient-go
           configMap:
-            name: client-go
+            name: myclient-go
         - name: otterize-credentials
           secret:
-            secretName: client-credentials-secret
+            secretName: myclient-credentials-secret
         - name: ephemeral
           emptyDir: { }

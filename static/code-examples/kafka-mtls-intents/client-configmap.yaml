@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: client-go
+  name: myclient-go
   namespace: otterize-tutorial-kafka-mtls-intents
 data:
-  client.go: |
+  myclient.go: |
     package main
     
     import (
@@ -63,7 +63,7 @@ data:
     if err != nil {
     return err
     }
-    fmt.Println("Creating a producer and a consumer")
+    fmt.Println("Creating a producer and a consumer for -", testTopicName)
     config.Producer.Return.Successes = true
     config.Producer.Timeout = 5 * time.Second
     config.Consumer.MaxWaitTime = 5 * time.Second

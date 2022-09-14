@@ -209,7 +209,7 @@ We will follow by applying an intent to allow access.
    ```
    Loading mTLS certificates
    Connecting to Kafka
-   Creating a producer and a consumer
+   Creating a producer and a consumer for - mytopic
    Sending messages
    time="2022-09-13T10:41:07Z" level=info error="kafka server: The client is not authorized to access this topic"
    Loop exited
@@ -246,7 +246,7 @@ Client intents are the cornerstone of [intent-based access control](otterize.com
     ```bash
     Loading mTLS certificates
     Connecting to Kafka
-    Creating a producer and a consumer
+    Creating a producer and a consumer for - mytopic
     Sending messages
     Sent message - Message 1
     Sent message - Message 2
@@ -268,7 +268,7 @@ Client intents are the cornerstone of [intent-based access control](otterize.com
    [2022-09-13 10:44:52,803] INFO Processing Acl change notification for
    ResourcePattern(resourceType=TOPIC, name=mytopic, patternType=LITERAL), 
    versionedAcls : Set(User:ANONYMOUS has DENY permission for operations: 
-   ALL from hosts: *, User:CN=client.otterize-tutorial-kafka-mtls-intents,O=SPIRE,C=US has ALLOW permission 
+   ALL from hosts: *, User:CN=myclient.otterize-tutorial-kafka-mtls-intents,O=SPIRE,C=US has ALLOW permission
    for operations: ALL from hosts: *), zkVersion : 6 (kafka.security.authorizer.AclAuthorizer)
    ```
 
