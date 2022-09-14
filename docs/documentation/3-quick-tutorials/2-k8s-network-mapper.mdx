@@ -13,7 +13,7 @@ through installing Otterize, mapping traffic and tracking changes.
 ```bash
 git clone git@github.com:otterize/network-mapper.git
 cd network-mapper
-helm upgrade --install --create-namespace -n otterize mapper helm/ -f helm/values.yaml
+helm upgrade --install -n otterize mapper helm/ -f helm/values.yaml --create-namespace
 cd src/cli/cmd/
 go build -o otterize .
 sudo cp ./otterize /usr/local/bin/

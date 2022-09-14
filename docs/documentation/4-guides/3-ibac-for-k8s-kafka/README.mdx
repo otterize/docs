@@ -119,9 +119,9 @@ The following command will deploy a Kafka cluster configured to use Otterize-pro
 with permissions for Otterize to configure ACLs.
  ```bash
  helm repo add bitnami https://charts.bitnami.com/bitnami
- helm upgrade --install --create-namespace -n kafka kafka \
+ helm upgrade --install -n kafka kafka \
  --version 14.x.x bitnami/kafka \
- -f https://docs.otterize.com/code-examples/kafka-mtls-intents/helm/values.yaml
+ -f https://docs.otterize.com/code-examples/kafka-mtls-intents/helm/values.yaml --create-namespace
  ```
 
 <details>
