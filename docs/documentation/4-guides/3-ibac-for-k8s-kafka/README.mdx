@@ -87,7 +87,7 @@ Though SSL was replaced by TLS, Kafka still uses the term SSL internally.
 <summary>Expand to see the complete YAML of this example...</summary>
 
 ```yaml
-{@include: ../../../../static/code-examples/kafka-mtls-intents/helm/values.yaml}
+{@include: ../../../../static/code-examples/kafka-mtls/helm/values.yaml}
 ```
 
 </details>
@@ -98,7 +98,7 @@ with permissions for Otterize to configure ACLs.
  helm repo add bitnami https://charts.bitnami.com/bitnami
  helm upgrade --install -n kafka kafka \
  --version 14.x.x bitnami/kafka \
- -f https://docs.otterize.com/code-examples/kafka-mtls-intents/helm/values.yaml --create-namespace
+ -f https://docs.otterize.com/code-examples/kafka-mtls/helm/values.yaml --create-namespace
  ```
 
 <details>
@@ -262,7 +262,7 @@ Security scopes translate directly into Kafka ACLs. Otterize uses the security s
 
 
 ## Otterize identities, intents and Kafka ACLs
-Our example is built of a single client (`myclient`) running in the namespace `otterize-tutorial-kafka-mtls-intents`
+Our example is built of a single client (`myclient`) running in the namespace `otterize-tutorial-kafka-mtls`
 and an intent to access a single topic (`mytopic`).
 
 <details>
@@ -272,7 +272,7 @@ and an intent to access a single topic (`mytopic`).
 <TabItem value="deployment.yaml" label="deployment.yaml" default>
 
 ```yaml
-{@include: ../../../../static/code-examples/kafka-mtls-intents/client-deployment.yaml}
+{@include: ../../../../static/code-examples/kafka-mtls/client-deployment.yaml}
 ```
 
 </TabItem>
@@ -280,7 +280,7 @@ and an intent to access a single topic (`mytopic`).
 <TabItem value="client-intents.yaml" label="client-intents.yaml">
 
 ```yaml
-{@include: ../../../../static/code-examples/kafka-mtls-intents/client-intents.yaml}
+{@include: ../../../../static/code-examples/kafka-mtls/client-intents.yaml}
 ```
 
 </TabItem>
@@ -292,12 +292,12 @@ and an intent to access a single topic (`mytopic`).
 By annotating the pod with `spire-integration.otterize.com/tls-secret-name: myclient-credentials-secret` Otterize
 automatically generates mTLS credentials for the pod named `myclient`.
 
-The certificate's `CN` is set to be `myclient.otterize-tutorial-kafka-mtls-intents`. This value will be used in the
+The certificate's `CN` is set to be `myclient.otterize-tutorial-kafka-mtls`. This value will be used in the
 following step when applying intents.
 
 ### Applying intents
 When an intent is applied, in our case it would be for `myclient` to access `mytopic` on Kafka, Otterize automatically
-generates an ACL to match the same `CN` value, that is `myclient.otterize-tutorial-kafka-mtls-intents`, and to allow it
+generates an ACL to match the same `CN` value, that is `myclient.otterize-tutorial-kafka-mtls`, and to allow it
 to access the topic for the desired operation.
 
 

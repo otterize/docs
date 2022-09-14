@@ -12,7 +12,7 @@ spec:
     keyFile: /etc/spifferize/key.pem
     rootCAFile: /etc/spifferize/bundle.pem
   topics:
-    - topic: "mytopic"
+    - topic: "tomer"
       pattern: literal
       clientIdentityRequired: true
       intentsRequired: true

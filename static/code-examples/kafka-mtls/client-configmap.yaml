@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: myclient-go
-  namespace: otterize-tutorial-kafka-mtls-intents
+  namespace: otterize-tutorial-kafka-mtls
 data:
   myclient.go: |
     package main

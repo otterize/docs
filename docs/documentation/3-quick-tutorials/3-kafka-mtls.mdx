@@ -38,11 +38,11 @@ and trust Otterize to configure ACLs:
 4. Authenticate using mTLS credentials provided as a K8s secret
 
 <details>
-<summary>Expand to see the config: `kafka-mtls-intents/helm/values.yaml`</summary>
+<summary>Expand to see the config: `kafka-mtls/helm/values.yaml`</summary>
 
 
 ```yaml
-{@include: ../../../static/code-examples/kafka-mtls-intents/helm/values.yaml}
+{@include: ../../../static/code-examples/kafka-mtls/helm/values.yaml}
 ```
 </details>
 
@@ -52,7 +52,7 @@ with permissions for Otterize to configure ACLs.
  helm repo add bitnami https://charts.bitnami.com/bitnami
  helm upgrade --install --create-namespace -n kafka kafka \
    --version 14.x.x bitnami/kafka \
-   -f https://docs.otterize.com/code-examples/kafka-mtls-intents/helm/values.yaml
+   -f https://docs.otterize.com/code-examples/kafka-mtls/helm/values.yaml
  ```
 
 <details>
@@ -80,7 +80,7 @@ kafka-zookeeper-0   1/1     Running   0             56s
 ## Protect a Kafka topic
 Let's protect a single kafka topic (`mytopic`) by applying a `KafkaServerConfig` with
 ```bash
-kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls-intents/kafkaserverconfig.yaml
+kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/kafkaserverconfig.yaml
 ```
 <details>
 <summary>Expand to see the details of this example...</summary>
@@ -89,7 +89,7 @@ kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls-intents/kafk
 <TabItem value="kafkaserverconfig.yaml" label="kafkaserverconfig.yaml">
 
 ```yaml
-{@include: ../../../static/code-examples/kafka-mtls-intents/kafkaserverconfig.yaml}
+{@include: ../../../static/code-examples/kafka-mtls/kafkaserverconfig.yaml}
 ```
 
 </TabItem>
@@ -160,7 +160,7 @@ We will follow by applying an intent to allow access.
 <TabItem value="namespace.yaml" label="namespace.yaml" default>
 
    ```yaml
-   {@include: ../../../static/code-examples/kafka-mtls-intents/namespace.yaml}
+   {@include: ../../../static/code-examples/kafka-mtls/namespace.yaml}
    ```
 
 </TabItem>
@@ -168,7 +168,7 @@ We will follow by applying an intent to allow access.
 <TabItem value="client-deployment.yaml" label="client-deployment.yaml">
 
    ```yaml
-  {@include: ../../../static/code-examples/kafka-mtls-intents/client-deployment.yaml}
+  {@include: ../../../static/code-examples/kafka-mtls/client-deployment.yaml}
   ```
 
 </TabItem>
@@ -176,7 +176,7 @@ We will follow by applying an intent to allow access.
 <TabItem value="client-configmap.yaml" label="client-configmap.yaml">
 
    ```yaml
-  {@include: ../../../static/code-examples/kafka-mtls-intents/client-configmap.yaml}
+  {@include: ../../../static/code-examples/kafka-mtls/client-configmap.yaml}
   ```
 
 </TabItem>
@@ -186,11 +186,11 @@ We will follow by applying an intent to allow access.
 
 1. Deploy the client and the Kafka config using `kubectl`.
     ```bash
-    kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls-intents/all.yaml
+    kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/all.yaml
     ```
 2. Check that the `client` `pod` was deployed
    ```bash
-   kubectl get pods -n otterize-tutorial-kafka-mtls-intents
+   kubectl get pods -n otterize-tutorial-kafka-mtls
    ```
    You should see
    ```
@@ -203,7 +203,7 @@ We will follow by applying an intent to allow access.
 
    **Open a second terminal window** and tail the client log:
    ```bash
-   kubectl logs -f --tail 1 -n otterize-tutorial-kafka-mtls-intents deploy/client
+   kubectl logs -f --tail 1 -n otterize-tutorial-kafka-mtls deploy/myclient
    ```
    At this point the client should log an error saying it is not authorized to access the topic:
    ```
@@ -226,7 +226,7 @@ Need to solve this.
 1. The client declares its intent to call the server with this `intents.yaml` file:
 
    ```yaml
-   {@include: ../../../static/code-examples/kafka-mtls-intents/client-intents.yaml}
+   {@include: ../../../static/code-examples/kafka-mtls/client-intents.yaml}
    ```
 :::tip
 Client intents are the cornerstone of [intent-based access control](otterize.com/ibac).
@@ -235,7 +235,7 @@ Client intents are the cornerstone of [intent-based access control](otterize.com
    Keep an eye on the logs being tailed in the **second terminal window**
    while you apply this `intents.yaml` file in your **main terminal window** using:
    ```shell
-   kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls-intents/client-intents.yaml
+   kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/client-intents.yaml
    ```
 
 2. You should quickly see in the **second terminal** that the client is now successfully producing and consuming messages
@@ -268,7 +268,7 @@ Client intents are the cornerstone of [intent-based access control](otterize.com
    [2022-09-13 10:44:52,803] INFO Processing Acl change notification for
    ResourcePattern(resourceType=TOPIC, name=mytopic, patternType=LITERAL), 
    versionedAcls : Set(User:ANONYMOUS has DENY permission for operations: 
-   ALL from hosts: *, User:CN=myclient.otterize-tutorial-kafka-mtls-intents,O=SPIRE,C=US has ALLOW permission
+   ALL from hosts: *, User:CN=myclient.otterize-tutorial-kafka-mtls,O=SPIRE,C=US has ALLOW permission
    for operations: ALL from hosts: *), zkVersion : 6 (kafka.security.authorizer.AclAuthorizer)
    ```
 
@@ -302,8 +302,8 @@ TODO
 To remove the deployed resources run
 
 ```bash
-kubectl delete -f https://docs.otterize.com/code-examples/kafka-mtls-intents/client-intents.yaml
-kubectl delete -f https://docs.otterize.com/code-examples/kafka-mtls-intents/all.yaml
+kubectl delete -f https://docs.otterize.com/code-examples/kafka-mtls/client-intents.yaml
+kubectl delete -f https://docs.otterize.com/code-examples/kafka-mtls/all.yaml
 helm uninstall -n kafka kafka
 helm repo remove bitnami
 ```

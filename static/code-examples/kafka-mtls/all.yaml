@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: otterize-tutorial-kafka-mtls-intents
+  name: otterize-tutorial-kafka-mtls
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: myclient-go
-  namespace: otterize-tutorial-kafka-mtls-intents
+  namespace: otterize-tutorial-kafka-mtls
 data:
   myclient.go: |
     package main
@@ -155,7 +155,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: myclient
-  namespace: otterize-tutorial-kafka-mtls-intents
+  namespace: otterize-tutorial-kafka-mtls
 spec:
   selector:
     matchLabels:

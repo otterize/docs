@@ -13,7 +13,7 @@ through installing Otterize, mapping traffic and tracking changes.
 ```bash
 helm repo add otterize https://helm.otterize.com
 helm repo update
-helm upgrade --install -n otterize --create-namespace otterize/network-mapper
+helm upgrade --install -n otterize network-mapper otterize/otterize-network-mapper --create-namespace
 Download and extract the appropriate CLI for you: https://github.com/otterize/otterize-cli/releases/tag/v0.1.0
 (TODO Tomer: replace with separate link and instructions for Windows, Mac, Linux)
 ```
