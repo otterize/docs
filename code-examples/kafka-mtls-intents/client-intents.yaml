@@ -1,11 +1,11 @@
 apiVersion: k8s.otterize.com/v1alpha1
 kind: ClientIntents
 metadata:
-  name: client
+  name: myclient
   namespace:  otterize-tutorial-kafka-mtls-intents
 spec:
   service:
-    name: client
+    name: myclient
   calls:
     - name: kafka
       namespace: kafka
