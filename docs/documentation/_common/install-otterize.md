@@ -5,7 +5,7 @@ Use Helm to install the latest version of Otterize:
    helm upgrade --install otterize otterize/otterize-kubernetes -n otterize --create-namespace
    ```
 <details>
-  <summary>Optional: check deployment status</summary>
+  <summary>Optional: check installation status</summary>
   <div>
 
  It can take several minutes for the pods to be `Running` and all containers to be ready.
