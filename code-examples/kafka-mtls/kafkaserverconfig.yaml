@@ -6,6 +6,7 @@ metadata:
 spec:
   service:
     name: kafka
+  noAutoCreateIntentsForOperator: true
   addr: kafka.kafka:9092
   tls:
     certFile: /etc/spifferize/svid.pem
