@@ -1,0 +1,177 @@
+---
+sidebar_position: 9
+title: CLI command reference
+---
+
+The following are the commands offered by the Otterize command line interface (CLI).
+
+This CLI is open-source software. To see its source, and to download binaries or build it yourself,
+see [https://github.com/otterize/otterize-cli](https://github.com/otterize/otterize-cli).
+
+## Command structure
+
+Most CLI commands are of the form `otterize OBJECT ACTION`. Because there are multiple objects
+which each have multiple operations, this order makes the auto-completion and documentation built into the CLI
+easy to access on the fly.
+
+- `otterize -h` or `otterize --help` offers help on the various objects
+- `otterize OBJECT -h` or `otterize OBJECT --help` offers help on the specified object
+- `otterize OBJECT OPERATION -h` or `otterize OBJECT OPERATION --help` offers help on the specified operation
+
+`otterize completion` offers instruction for generating command completions in various shells.
+
+## Intents
+
+### `otterize intents convert [-f PATH]`
+
+Convert client intents files in plain YAML format to Kubernetes ClientIntents resource format.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| `-f` or `--filename` | `'.'` | The client intents filename, or a directory containing client intents files. |
+
+#### Returns
+
+Here's the result of converting a directory containing two client intents file in plain YAML format.
+The result is YAML describing two Kubernetes resources separated with the YAML `---` separator.
+
+```shell
+apiVersion: k8s.otterize.com/v1alpha1
+kind: ClientIntents
+metadata:
+  name: cartservice
+  namespace: otterize-ecom-demo
+spec:
+  service:
+    name: cartservice
+  calls:
+    - name: redis-cart
+      type: http
+---
+apiVersion: k8s.otterize.com/v1alpha1
+kind: ClientIntents
+metadata:
+  name: checkoutservice
+  namespace: otterize-ecom-demo
+spec:
+  service:
+    name: checkoutservice
+  calls:
+    - name: cartservice
+      type: http
+    - name: currencyservice
+      type: http
+```
+
+## Network mapper
+
+All `otterize mapper` commands share a set of optional flags which will not be repeated in the documentation
+for each command.
+
+#### Common options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| `--mapper-namespace` | `otterize` | Specifies the namespace where the mapper service was installed. |
+| `--mapper-service-name` | `otterize-network-mapper` | Specifies the name of the mapper service as it was installed. |
+| `--mapper-service-name` | `otterize-service-port` | Specifies the port on which the mapper service is listening. |
+
+
+### `otterize mapper start`
+
+Starts building the network map, in memory. The data being built up can be listed or exported at any point in time.
+
+### `otterize mapper stop`
+
+Stops building the network map. The data built up so far can be listed or exported.
+
+### `otterize mapper reset`
+
+Resets the network mapper by deleting all map information built up so far in memory.
+
+### `otterize mapper list`
+
+Return the network map built by the network mapper since it started, or since it was reset,
+as a list of clients and the servers they call.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| `-n` or `--namespaces` |  | Export only clients in these namespaces (comma-separated) |
+
+#### Returns
+
+Here's a partial output from `otterize mapper list -n otterize-ecom-demo`:
+
+```shell
+cartservice in namespace otterize-ecom-demo calls:
+  - redis-cart
+checkoutservice in namespace otterize-ecom-demo calls:
+  - cartservice
+  - currencyservice
+  - emailservice
+  - paymentservice
+  - productcatalogservice
+  - shippingservice
+frontend in namespace otterize-ecom-demo calls:
+  - adservice
+  - cartservice
+  - checkoutservice
+  - currencyservice
+  - productcatalogservice
+  - recommendationservice
+  - shippingservice
+loadgenerator in namespace otterize-ecom-demo calls:
+  - frontend
+recommendationservice in namespace otterize-ecom-demo calls:
+  - productcatalogservice
+```
+
+### `otterize mapper export`
+
+Return the network map built by the network mapper since it started, or since it was reset,
+as client intents file(s) in various formats.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| `--format` | `yaml` | Specifies the format for the export: 'yaml' or 'json'. |
+| `-n` or `--namespaces` |  | Export only clients in these namespaces (comma-separated) |
+| `-o` or `--output` | `STDOUT` | Filename or directory for redirecting the output |
+| `--output-type` | `single-file` | Whether the output should be written as a single file ('single-file') or as multiple files in a directory ('dir') |
+
+#### Returns
+
+Here's a partial output from `otterize mapper export -n otterize-ecom-demo`:
+
+```shell
+apiVersion: k8s.otterize.com/v1alpha1
+kind: ClientIntents
+metadata:
+  name: cartservice
+  namespace: otterize-ecom-demo
+spec:
+  service:
+    name: cartservice
+  calls:
+    - name: redis-cart
+      type: http
+---
+apiVersion: k8s.otterize.com/v1alpha1
+kind: ClientIntents
+metadata:
+  name: checkoutservice
+  namespace: otterize-ecom-demo
+spec:
+  service:
+    name: checkoutservice
+  calls:
+    - name: cartservice
+      type: http
+    - name: currencyservice
+      type: http
+```
