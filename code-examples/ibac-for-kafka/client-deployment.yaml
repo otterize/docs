@@ -18,21 +18,4 @@ spec:
         - name: myclient
           image: golang
           command: [ "/bin/sh", "-c", "--" ]
-          args: [ "while true; do cd /app; cp src/* .; go get main; go run .; sleep infinity; done" ]
-          volumeMounts:
-            - name: ephemeral
-              mountPath: /app
-            - mountPath: /app/src
-              name: myclient-go
-            - name: otterize-credentials
-              mountPath: /var/otterize/credentials
-              readOnly: true
-      volumes:
-        - name: myclient-go
-          configMap:
-            name: myclient-go
-        - name: otterize-credentials
-          secret:
-            secretName: myclient-credentials-secret
-        - name: ephemeral
-          emptyDir: { }
+          args: [ "sleep infinity" ]
