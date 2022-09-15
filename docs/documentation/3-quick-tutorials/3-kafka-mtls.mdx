@@ -311,6 +311,7 @@ To remove the deployed resources run
 ```bash
 kubectl delete -f https://docs.otterize.com/code-examples/kafka-mtls/client-intents.yaml
 kubectl delete -f https://docs.otterize.com/code-examples/kafka-mtls/all.yaml
+kubectl delete -f https://docs.otterize.com/code-examples/kafka-mtls/kafkaserverconfig.yaml
 helm uninstall -n kafka kafka
 helm repo remove bitnami
 ```
