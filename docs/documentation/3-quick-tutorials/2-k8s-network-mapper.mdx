@@ -8,22 +8,15 @@ import TabItem from '@theme/TabItem';
 The Network Mapper allows you to map pod-to-pod traffic within your K8s cluster. This tutorial will guide you
 through installing Otterize, mapping traffic and tracking changes.
 
-## Install Network Mapper
 
-```bash
-helm repo add otterize https://helm.otterize.com
-helm repo update
-helm upgrade --install -n otterize network-mapper otterize/otterize-network-mapper --create-namespace
-```
-:::danger
-Download and extract the appropriate CLI for you: https://github.com/otterize/otterize-cli/releases/tag/v0.1.0
-(TODO Tomer: replace with separate link and instructions for Windows, Mac, Linux)
-:::
 
-:::danger
-Decide if we show mapped traffic by namespace or not. If not, then the explanation about pod identities will confuse
-users as the output ignores namespace.
-:::
+## Install the network mapper
+
+{@include: ../_common/install-otterize-network-mapper.md}
+
+## Install the Otterize CLI
+
+{@include: ../_common/install-otterize-cli.md}
 
 ## How to
 
