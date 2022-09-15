@@ -87,7 +87,7 @@ shippingservice-ff5f4d7d-qcjw8           1/1     Running   0          23m
 
 To get the externally-accessible URL where your demo front end is available, run:
 ```bash
-kubectl get service -n otterize-ecom-demo frontend-external -o json | jq -r .status.loadBalancer.ingress[0].hostname
+kubectl get service -n otterize-ecom-demo frontend-external -o json | jq -r '.status.loadBalancer.ingress[0].hostname'
 ```
 The result should be similar to (if running on EKS):
 ```
