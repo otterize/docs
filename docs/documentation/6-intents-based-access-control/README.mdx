@@ -7,8 +7,8 @@ At Otterize, we believe service-to-service access control should become not only
 
 These are the principles of **intent-based access control (IBAC)**, a modern, declarative approach to granting access automatically, responsibly, and scalably. **The developer simply declares, in a *client intents file* alongside their code, what other services the code intends to call.** If the code passes review, so does its intents file, and access is granted automatically to make those calls, regardless of the type of call, the target infrastructure and location, and the enforcement mechanism. Credentials for declared access are automatically managed and supplied to the developer for use in their code, if needed. Any undeclared access is automatically blocked.
 
-Here is an example of the client intents file for the "checkoutservice".
-It declares that it will call the "emailservice", the "orderservice", and the "ecomm-events" Kafka service.
+Here is an example of the client intents file for the `checkoutservice`.
+It declares that it will call the `emailservice`, the `orderservice`, and the `ecomm-events` Kafka service.
 It also provides more granular information for some of the calls:
 ```yaml
 {@include: ../../../static/resources/example-intents.yaml}

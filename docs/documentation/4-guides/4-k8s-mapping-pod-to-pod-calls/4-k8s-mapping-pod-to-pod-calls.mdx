@@ -30,6 +30,12 @@ One of the CLI's more useful flags is the namespace filter. You can query the ma
 otterize mapper list -n {NAMESPACE}
 ```
 
+### Resting the mapper state
+The Otterize network mapper keeps track of active connections as long as its running. You can clear its state by calling
+```bash
+otterize mapper mapper reset
+```
+
 For the complete list of the otterize network mapper capabilities as read the [CLI command reference](/documentation/cli/#network-mapper).
 
 ## Change traffic -> Sniff&Diff
