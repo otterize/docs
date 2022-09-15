@@ -1,26 +1,8 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: otterize-tutorial-kafka-mtls
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: interactive-properties
-  namespace: otterize-tutorial-kafka-mtls
-data:
-  client.properties: |
-    security.protocol=SSL
-    ssl.keystore.location=/var/otterize/credentials/kafka.keystore.jks
-    ssl.keystore.password=password
-    ssl.truststore.location=/var/otterize/credentials/kafka.truststore.jks
-    ssl.truststore.password=password
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: interactive
-  namespace: otterize-tutorial-kafka-mtls
+  namespace: ibac-for-kafka
 spec:
   selector:
     matchLabels:
