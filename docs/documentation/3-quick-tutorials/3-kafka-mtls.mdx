@@ -188,17 +188,20 @@ We will follow by applying an intent to allow access.
     ```bash
     kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/all.yaml
     ```
-2. Check that the `client` `pod` was deployed
-   ```bash
-   kubectl get pods -n otterize-tutorial-kafka-mtls
-   ```
-   You should see
-   ```
-   NAME                      READY   STATUS    RESTARTS   AGE
-    client-5d9d5c8d7b-7dlzb   1/1     Running   0          24s
-   ```
 
-4. Let's monitor the client's attempts to access the Kafka topic with a second terminal window,
+<details>
+<summary>Optional: check deployment status</summary>
+Check that the `client` `pod` was deployed
+```bash
+kubectl get pods -n otterize-tutorial-kafka-mtls
+```
+You should see
+```
+NAME                      READY   STATUS    RESTARTS   AGE
+client-5d9d5c8d7b-7dlzb   1/1     Running   0          24s
+```
+</details>
+2. Let's monitor the client's attempts to access the Kafka topic with a second terminal window,
    so we can see the effects of our changes in real time.
 
    **Open a second terminal window** and tail the client log:
@@ -240,11 +243,14 @@ Client intents are the cornerstone of [intent-based access control](otterize.com
 
 2. You should quickly see in the **second terminal** that the client is now successfully producing and consuming messages
     ```bash
-    kubectl logs --tail=5 -n otterize-tutorial-kafka-mtls deploy/client
-    ```
-   You should get
-    ```bash
     Loading mTLS certificates
+    Connecting to Kafka
+    Creating a producer and a consumer for - mytopic
+    Sending messages
+    time="2022-09-13T10:41:07Z" level=info error="kafka server: The client is not authorized to access this topic"
+    Loop exited                                   <- before applying the intents file
+    # highlight-start
+    Loading mTLS certificates                     <- after applying the intents file
     Connecting to Kafka
     Creating a producer and a consumer for - mytopic
     Sending messages
@@ -258,6 +264,7 @@ Client intents are the cornerstone of [intent-based access control](otterize.com
     Read message - Message 3
     Read message - Message 4
     Read message - Message 5
+   # highlight-end
     ```
 3. If you check, you should see that an ACL was configured on Kafka
    ```bash

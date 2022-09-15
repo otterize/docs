@@ -14,10 +14,10 @@ You should see similar structured results on your cluster.
    ```
 2. You should get a result based on your existing traffic looking like this:
    ```shell
-   checkoutservice calls:
+   checkoutservice in namespace ecom-demo calls:
      - orderservice
    
-   orderservice calls:
+   orderservice in namespace ecom-demo calls:
      - kafka
    ```
 
@@ -35,6 +35,7 @@ You should see similar structured results on your cluster.
    kind: ClientIntents
    metadata:
      name: checkoutservice
+     namespace: ecom-demo
    spec:
      service:
        name: checkoutservice
@@ -45,6 +46,7 @@ You should see similar structured results on your cluster.
    kind: ClientIntents
    metadata:
      name: orderservice
+     namespace: ecom-demo
    spec:
      service:
        name: orderservice
@@ -67,7 +69,8 @@ You should see similar structured results on your cluster.
        "kind": "ClientIntents",
        "apiVersion": "k8s.otterize.com/v1alpha1",
        "metadata": {
-         "name": "checkoutservice"
+         "name": "checkoutservice",
+         "namespace": "ecom-demo"
        },
        "spec": {
          "service": {
@@ -84,7 +87,8 @@ You should see similar structured results on your cluster.
        "kind": "ClientIntents",
        "apiVersion": "k8s.otterize.com/v1alpha1",
        "metadata": {
-         "name": "orderservice"
+         "name": "orderservice",
+         "namespace": "ecom-demo"
        },
        "spec": {
          "service": {

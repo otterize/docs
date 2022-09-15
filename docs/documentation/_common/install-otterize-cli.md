@@ -1,3 +1,4 @@
+All versions are avaiable to the Otterize CLI [GitHub repo](https://github.com/otterize/otterize-cli/releases/tag/v0.1.0).
 <Tabs groupId="operating-systems">
 
 

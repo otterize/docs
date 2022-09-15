@@ -157,17 +157,22 @@ spec:
    ```bash
    kubectl apply -f https://docs.otterize.com/code-examples/mtls/all.yaml
    ```
-2. Check that the `client` and server `pods` were deployed
-   ```bash
-   kubectl get pods -n otterize-tutorial-mtls
-   ```
-   You should see
-   ```
-   NAME                      READY   STATUS    RESTARTS   AGE
-   client-5689997b5c-grlnt   1/1     Running   0          35s
-   server-6698c58cbc-v9n9b   1/1     Running   0          34s
-   ```
-3. Confirm that the client can successfully call the server using HTTP over mTLS. The server will reply to the client
+
+<details>
+<summary>Optional: check deployment status</summary>
+
+```bash
+kubectl get pods -n otterize-tutorial-mtls
+```
+You should see
+```
+NAME                      READY   STATUS    RESTARTS   AGE
+client-5689997b5c-grlnt   1/1     Running   0          35s
+server-6698c58cbc-v9n9b   1/1     Running   0          34s
+```
+</details>
+
+2. Confirm that the client can successfully call the server using HTTP over mTLS. The server will reply to the client
    with it's `own` certificate's `common name` and the `client`'s certificate `common name`.
 
    ```bash
