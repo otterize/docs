@@ -10,7 +10,7 @@ You should see similar structured results on your cluster.
 1. Run the list command:
 
    ```shell
-   otterize intents list
+   otterize mapper list
    ```
 2. You should get a result based on your existing traffic looking like this:
    ```shell
@@ -27,7 +27,7 @@ You should see similar structured results on your cluster.
 1. Run the export command:
 
    ```shell
-   otterize intents export
+   otterize mapper export
    ```
 2. You should get a result based on your existing traffic looking like this:
    ```shell
@@ -59,7 +59,7 @@ You should see similar structured results on your cluster.
 
 1. Run the export command:
    ```shell
-   otterize intents export --format json
+   otterize mapper export --format json
    ```
 2. You should get a result based on your existing traffic looking like this:
 

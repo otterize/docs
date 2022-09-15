@@ -27,7 +27,7 @@ See the [Network Mapper documentation](/documentation/network-mapper/intro) for 
 ### Filtering by namespace
 One of the CLI's more useful flags is the namespace filter. You can query the mapper for calls originating only from a specific namespace with
 ```bash
-otterize intents list -n {NAMESPACE}
+otterize mapper list -n {NAMESPACE}
 ```
 
 For the complete list of the otterize network mapper capabilities as read the [CLI command reference](/documentation/cli/#network-mapper).
@@ -39,7 +39,7 @@ cluster.
 
 1. Let's save the current state of traffic from the cluster into a file we will compare against later
    ```shell
-   otterize intents list > intents-original.txt
+   otterize mapper list > intents-original.txt
    ```
 
 2. And now we can add traffic to the cluster and see how the Network Mapper tracks it. You can do that by deploying our
@@ -65,7 +65,7 @@ server-6698c58cbc-ssxvx   1/1     Running   0          45s
 
 3. Export the updated observed intents.
    ```shell
-   otterize intents list
+   otterize mapper list
    ```
    You will now see the client and server pods communication in addition
    to the previously observed traffic.
@@ -83,7 +83,7 @@ server-6698c58cbc-ssxvx   1/1     Running   0          45s
    ```
 5. We can also compare both output to see the difference. We'll start by saving the updated state to a file with
    ```bash
-   otterize intents list > intents-updated.txt
+   otterize mapper list > intents-updated.txt
    ```
 6. And compare the original file with the updated file using
    ```bash
@@ -127,7 +127,7 @@ Checkout this blog by Evyatar Meged about how we implemented this feature.
 ## Network mapping for bootstrapping access controls
 Otterize network mapper can export captured traffic as intents by calling
 ```bash
-otterize intents export
+otterize mapper export
 ```
 Which exports intents as concatenated ClientIntents CRDs looking like this
 ```yaml
