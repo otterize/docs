@@ -37,13 +37,13 @@ Developers might even think about IBAC as “SSO for services”: with just one 
 - **Responsible**: Intents files are managed with the code, go through the same approvals process, and can be augmented by rules before access is automatically granted.
 - **Scalable**: The intents file of a service just declares the calls the service needs to make **as a client of other services**, because this is what the developer knows when building the service (rather than what will need to call their service). When the service changes, its intents file is updated. IBAC then uses the information in all the client intents files to derive the authorization rules on the server side, without the server team needing to constantly update access controls.
 
-Otterize is advancing IBAC by also making it:
+Ideally, IBAC is also:
 
-- **Automatic**: Once client intents are known, server permissions are knowable and therefore automatable. Otterize provides the platform and tools needed to automate and realize IBAC within modern software development practices, with a focus on cloud-native infrastructures and software stacks.
+- **Automatic**: Once client intents are known, server permissions are knowable and therefore automatable.
 
-### IBAC with Otterize
+### Realizing IBAC
 
-Otterize implements IBAC not by introducing yet another layer of access infrastructure, but rather by **integrating with existing infrastructures and enforcement points** (Kafka ACLs, K8s network policies, AWS security groups, API gateways, etc.) to configure their built-in enforcement mechanisms.
+Otterize realizes IBAC by **integrating with existing infrastructures and enforcement points** (Kafka ACLs, K8s network policies, AWS security groups, API gateways, etc.) to configure their built-in enforcement mechanisms.
 
 The result is the least possible overhead and friction:
 
