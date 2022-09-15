@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myclient
+  namespace: ibac-for-kafka
+spec:
+  selector:
+    matchLabels:
+      app: myclient
+  template:
+    metadata:
+      labels:
+        app: myclient
+      annotations:
+        spire-integration.otterize.com/tls-secret-name: myclient-credentials-secret
+    spec:
+      containers:
+        - name: myclient
+          image: golang
+          command: [ "/bin/sh", "-c", "--" ]
+          args: [ "while true; do cd /app; cp src/* .; go get main; go run .; sleep infinity; done" ]
+          volumeMounts:
+            - name: ephemeral
+              mountPath: /app
+            - mountPath: /app/src
+              name: myclient-go
+            - name: otterize-credentials
+              mountPath: /var/otterize/credentials
+              readOnly: true
+      volumes:
+        - name: myclient-go
+          configMap:
+            name: myclient-go
+        - name: otterize-credentials
+          secret:
+            secretName: myclient-credentials-secret
+        - name: ephemeral
+          emptyDir: { }
