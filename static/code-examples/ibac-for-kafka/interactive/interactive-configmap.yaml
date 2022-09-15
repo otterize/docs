@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: interactive-properties
-  namespace: otterize-tutorial-kafka-mtls
+  namespace: ibac-for-kafka
 data:
   client.properties: |
     security.protocol=SSL

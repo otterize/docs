@@ -1,0 +1,15 @@
+apiVersion: k8s.otterize.com/v1alpha1
+kind: ClientIntents
+metadata:
+  name: interactive
+  namespace:  ibac-for-kafka
+spec:
+  service:
+    name: interactive
+  calls:
+    - name: kafka
+      namespace: kafka
+      type: Kafka
+      topics:
+        - name: mytopic-intended
+          operation: all
