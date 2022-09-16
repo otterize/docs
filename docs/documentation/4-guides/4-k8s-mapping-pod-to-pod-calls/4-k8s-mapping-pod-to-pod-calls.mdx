@@ -121,7 +121,7 @@ DNS is a common network protocol used for service discovery. When a `pod` [check
 read [here](https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/).
 
 By tracking only DNS responses Otterize lowers computational requirements as it only processes packets with relevant
-data -- DNS answers (e.g. [order-service] is located at address [X.X.X.X]).
+data &mdash; DNS answers (e.g. [order-service] is located at address [X.X.X.X]).
 
 Connections are then mapped and resolved back to pod-level (human-readable) identities (e.g. `checkoutservice` calls the `orderservice`).
 

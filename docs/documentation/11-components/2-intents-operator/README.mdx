@@ -7,8 +7,8 @@ The Otterize intents operator is an open source Kubernetes operator for easily m
 by declaring the calls each service needs to make, using [client intents files](/documentation/6-intents-based-access-control/README.mdx).
 The intents operator uses these files to configure network policies, Kafka ACLs, and other enforcement points (in the future) to allow just the intended calls.
 
-If credentials such as X509 certificates are needed for authentication and authorization -- for example,
-to connect to Kafka with mTLS -- the Otterize intents operator works with SPIRE and the
+If credentials such as X509 certificates are needed for authentication and authorization &mdash; for example,
+to connect to Kafka with mTLS &mdash; the Otterize intents operator works with SPIRE and the
 [SPIRE integration operator](/documentation/components/spire-integration-operator) to automatically establish pod service identities, generate trusted credentials for each client service, and deliver them to the pod in a locally-mounted volume.
 
 

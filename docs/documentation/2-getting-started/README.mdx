@@ -1,6 +1,6 @@
 ---
 sidebar_position: 2
-title: Getting started with Otterize
+title: Getting started
 ---
 
 export const LinkButton = (props) => (
@@ -19,40 +19,51 @@ export const LinkButton = (props) => (
   />
 );
 
+### Otterize OSS
 
 Otterize OSS implements intent-based access control in a single Kubernetes cluster.
 
-:::tip Coming soon
+It consists of a Kubernetes operator which handle client intents, and has plugins to control
+access &mdash; at the moment, through network policies and through Kafka ACLs. It also
+includes a Kubernetes operator for integrating with SPIFFE/SPIRE to handle pod identities
+and manage certificates. And it includes a network mapper to sniff pod-to-pod traffic
+and build a map, that may be exported to client intents files.
 
-Otterize Cloud adds visibility and operationalization, and supports multiple Kubernetes clusters 
-as well as non-Kubernetes infrastructures. Read more in our [product page](https://otterize.com/product).
+### Otterize Cloud <div class="coming-soon-h2">Coming soon</div>
 
-:::
+While Otterize OSS operates within a Kubernetes cluster,
+Otterize Cloud adds a unified control plane that offers visibility and operationalization,
+and spans multiple Kubernetes clusters as well as non-Kubernetes infrastructures.
+
+Read more in our [product page](https://otterize.com/product).
+
+### Otterize CLI
+
+Otterize OSS works within the common Kubernetes tool ecosystem, such as `kubectl` and
+Helm and `k9s`; e.g., you can directly `kubectl apply` client intents files that are
+formatted as Kubernetes resources. The Otterize CLI provides commands for working with non-Kubernetes client
+intents files, for controlling the network mapper, and for interfacing with the Otterize Cloud.
+
+## Getting started with Otterize OSS
 
 It's easy to get started with Otterize OSS, 
 whether you have 5 minutes to go through a quick pre-built tutorial, 
 or 10 minutes to try it on your own services or on our "lab".
 
-# Got 5 minutes?
+### Got 5 minutes?
 
 Try it out with our simple pre-built examples. All you need is a Kubernetes cluster where you have admin rights, along with the standard Kubernetes toolset:
 * `kubectl`
 * Helm
 
-And with that -- <LinkButton href="/documentation/quick-tutorials/k8s-network-policies">onwards to the first tutorial</LinkButton>!
+And with that &mdash; <LinkButton href="/documentation/quick-tutorials/k8s-network-policies">onwards to the first tutorial</LinkButton>!
 
-# Got 10 minutes?
+### Got 10 minutes?
 
 Try it out with your own services, or use our larger reference "lab" example.
 Again, you just need the standard tools:
 * `kubectl`
 * Helm
 
-Then proceed to <LinkButton href="/documentation/guides">the usecase that's interesting to you</LinkButton>.
-
-# Then what?
-
-Once you've played around with Otterize, see how easy it is to 
-[**bootstrap and gradually roll it out**](/documentation/4-guides/6-implementing-ibac.mdx)
-to your environments and your teams. We do **not** recommend turning intent-based access control into a big, time-consuming project!
+Then just start with <LinkButton href="/documentation/guides">the usecase that's interesting to you</LinkButton>.
 

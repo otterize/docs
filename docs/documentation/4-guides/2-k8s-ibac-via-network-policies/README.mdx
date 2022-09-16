@@ -39,12 +39,12 @@ The reference e-commerce application architecture is as follows
 ![Demo e-commerce](https://github.com/GoogleCloudPlatform/microservices-demo/raw/main/docs/img/architecture-diagram.png)
 
 By default, any service is allowed to call any other service, though their code only makes the calls marked with arrows
--- i.e. *the arrows indicate the intended traffic*.
+&mdash; i.e. *the arrows indicate the intended traffic*.
 
 The purpose of IBAC is to *automatically turn those design-time intents
 into runtime constraints*: all calls declared to be intended will be allowed,
-while all other calls -- e.g. ones made by mistake, or ones due to
-security breaches -- will be blocked.
+while all other calls &mdash; e.g. ones made by mistake, or ones due to
+security breaches &mdash; will be blocked.
 
 ### Deploying the reference lab
 
@@ -126,7 +126,7 @@ from *any* undeclared calls.
 
 So, let's pick a service that accepts calls (i.e. a server), and a client that intends to call it, and declare
 that client's intent. When we `kubectl apply` that intent, we'll expect that the client can still call that server,
-but all other callers of that server will be blocked. All other *servers* will be untouched -- it's a *gradual* rollout
+but all other callers of that server will be blocked. All other *servers* will be untouched &mdash; it's a *gradual* rollout
 rather than trying to protect all servers at once.
 
 Here's what it looks like for the reference lab. If you're using your own services, adjust accordingly.
@@ -221,9 +221,8 @@ To see the potential of the network mapper in bootstrapping IBAC, try this:
   </div>
 </details>
 
-For more on how to roll out IBAC, see the [guide to implementing IBAC](/documentation/4-guides/6-implementing-ibac.mdx).
 
-SUGGEST OTHER NEXT STEPS AND FINISH BELOW
+SUGGEST NEXT STEPS AND FINISH BELOW
 
 ## Practical notes
 
