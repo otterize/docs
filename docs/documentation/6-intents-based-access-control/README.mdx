@@ -30,6 +30,8 @@ so it can be applied directly via `kubectl apply`:
 
 Intent-based access control realizes shift-left for access control. The necessary access is defined by the developer themselves declaring, when the code is created, what calls will be made. Nobody knows better than them what their code needs. And those declarations, living in source control as client intents files along with the code, stay in sync with the code — as opposed to access permissions that live elsewhere, e.g. on a server, where they’re likely to get stale rapidly. Intents are approved along with the code: if it makes sense to approve the code that makes the calls, it should make sense to approve access to what’s being called.
 
+<img src="/img/ibac-is-client-oriented.png" />
+
 Developers might even think about IBAC as “SSO for services”: with just one intents file, they can securely access any target service, running on any technology, on any infrastructure and in any environment. And when new services, technologies and infrastructures are added, or new security or compliance requirements arise, developers don’t have to change what they do at all.
 
 ### Intent-based access control is:
@@ -41,9 +43,9 @@ Ideally, IBAC is also:
 
 - **Automatic**: Once client intents are known, server permissions are knowable and therefore automatable.
 
-### Realizing IBAC
+### Automating IBAC
 
-Otterize realizes IBAC by **integrating with existing infrastructures and enforcement points** (Kafka ACLs, K8s network policies, AWS security groups, API gateways, etc.) to configure their built-in enforcement mechanisms.
+Otterize automates IBAC by **integrating with existing infrastructures and enforcement points** (Kafka ACLs, K8s network policies, AWS security groups, API gateways, etc.) to configure their built-in enforcement mechanisms.
 
 The result is the least possible overhead and friction:
 
@@ -63,6 +65,8 @@ another server might be a Kafka server with its built-in enforcement of operatio
 Otterize, as an IBAC platform, will configure the available enforcement points to reflect as closely as possible the
 desired access state, but in any case the actual access state forms another layer of the access graph:
 the **enforced access layer**.
+
+<img src="/img/access-graph.png" />
 
 To implement IBAC across heterogeneous environments, IBAC must also solve for the problem of heterogeneous service identities. (Intents-based access control incorporates identity-based access control.) Since IBAC does not require developers to know about identity mechanisms any more than about authorization mechanisms, there is the requirement to **bridge the identity** of the client service to identities recognized by the target service’s infrastructures and enforcement mechanisms. Otterize builds in identity bridging mechanisms into all its integrations.
 
