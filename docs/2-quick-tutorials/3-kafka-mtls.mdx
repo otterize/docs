@@ -1,0 +1,319 @@
+---
+sidebar_position: 3
+title: Deploy mTLS between pods and Kafka
+---
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Kafka + mTLS
+
+This tutorial will walk you through applying intents and deploying mTLS certificates between a client and a Kafka cluster
+and configuring intents for one of its clients.
+We will:
+
+- Install Otterize
+- Learn how to configure bitnami's kafka chart to use Otterize-provided mTLS credentials
+- Deploy a Kafka cluster
+- Learn how to annotate pods for automatic credentials generation
+- Deploy a client connecting to Kafka with mTLS
+- Apply intents to configure Kafka ACLs
+- Inspect the credentials
+
+:::note
+You can skip this section if Otterize is already installed in your cluster.
+:::
+## Install Otterize
+{@include: ../_common/install-otterize.md}
+
+
+## Install Kafka
+
+We will deploy a Kafka cluster using bitnami's [chart](https://github.com/bitnami/charts/tree/master/bitnami/kafka)
+To configure the chart to use the Otterize-provided credentials we need to configure it to
+and trust Otterize to configure ACLs:
+
+1. Configure Otterize as a super user to grant it access to configure ACLs
+2. Use SSL for it's listeners
+3. Tell Otterize using pod annotations how it requires it's credentials
+4. Authenticate using mTLS credentials provided as a K8s secret
+
+<details>
+<summary>Expand to see the config: `kafka-mtls/helm/values.yaml`</summary>
+
+
+```yaml
+{@include: ../../../static/code-examples/kafka-mtls/helm/values.yaml}
+```
+</details>
+
+The following command will deploy a Kafka cluster configured to use Otterize-provided mTLS credentials
+with permissions for Otterize to configure ACLs.
+ ```bash
+ helm repo add bitnami https://charts.bitnami.com/bitnami
+ helm upgrade --install --create-namespace -n kafka kafka \
+   --version 14.x.x bitnami/kafka \
+   -f https://docs.otterize.com/code-examples/kafka-mtls/helm/values.yaml
+ ```
+
+<details>
+<summary>Optional: check deployment status</summary>
+<div>
+
+It can take several minutes for the pods to **stabilize** into the `Ready` and `Running` states. You can monitor with
+the following command:
+
+ ```bash
+kubectl get pods -n kafka -w
+ ```
+
+After **stabilization** you should see:
+
+ ```bash
+ NAME                READY   STATUS    RESTARTS      AGE
+kafka-0             1/1     Running   1 (25s ago)   45s
+kafka-zookeeper-0   1/1     Running   0             56s
+ ```
+</div>
+</details>
+
+
+## Protect a Kafka topic
+Let's protect a single kafka topic (`mytopic`) by applying a `KafkaServerConfig` with
+```bash
+kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/kafkaserverconfig.yaml
+```
+<details>
+<summary>Expand to see the details of this example...</summary>
+<Tabs>
+
+<TabItem value="kafkaserverconfig.yaml" label="kafkaserverconfig.yaml">
+
+```yaml
+{@include: ../../../static/code-examples/kafka-mtls/kafkaserverconfig.yaml}
+```
+
+</TabItem>
+</Tabs>
+</details>
+
+If you check, you should see that an ACL was configured on Kafka to deny anonymous access to the topic
+
+```bash
+kubectl logs -n kafka statefulset/kafka | grep "Processing Acl change" | grep mytopic | tail -n 1
+   ```
+You should see
+```
+[2022-09-13 10:58:32,052] INFO Processing Acl change notification for ResourcePattern
+(resourceType=TOPIC, name=mytopic, patternType=LITERAL), versionedAcls :
+Set(User:ANONYMOUS has DENY permission for operations: ALL from hosts: *), zkVersion : 9
+(kafka.security.authorizer.AclAuthorizer)
+```
+
+## Deploy clients
+
+To generate credentials for the pod we simply need to update the deployment by annotating it.
+The required steps are to
+1. Annotate the pod - Otterize automatically identifies the `otterize/credentials-secret-name` annotation, generates
+mTLS credentials, and stores them as K8s secret named as the annotation value.
+2. Mount the credentials stored as a K8s secret as a volume
+3. Mount the volume into the container
+
+<details>
+    <summary>Expand to see a detailed explanation for the annotations</summary>
+
+    ```yaml
+    spec:
+    template:
+    metadata:
+    ...
+    annotations:
+    # highlight-next-line
+    otterize/credentials-secret-name: client-credentials-secret       # 1 Generate credentials
+    spec:
+    volumes:
+    # highlight-start
+    - name: otterize-credentials
+    secret:
+    secretName: client-credentials-secret                         # 2 Mount credentials as a volume
+    # highlight-end
+    containers:
+    - name: client
+    ...
+    volumeMounts:
+    # highlight-start
+    - name: otterize-credentials
+    mountPath: /var/otterize/credentials                          # 3 Mount volume into container
+    readOnly: true
+    # highlight-end
+    ```
+</details>
+
+Our simple example consists of single client pod and a Kafka.
+
+We also deploy a Kafka server config to block access to a specific topic unless intents are set
+to allow access. At first, we expect the client to be blocked from accessing the specific topic.
+We will follow by applying an intent to allow access.
+<details>
+<summary>Expand to see the details of this example...</summary>
+<Tabs>
+
+<TabItem value="namespace.yaml" label="namespace.yaml" default>
+
+   ```yaml
+   {@include: ../../../static/code-examples/kafka-mtls/namespace.yaml}
+   ```
+
+</TabItem>
+
+<TabItem value="client-deployment.yaml" label="client-deployment.yaml">
+
+   ```yaml
+  {@include: ../../../static/code-examples/kafka-mtls/client-deployment.yaml}
+  ```
+
+</TabItem>
+
+<TabItem value="client-configmap.yaml" label="client-configmap.yaml">
+
+   ```yaml
+  {@include: ../../../static/code-examples/kafka-mtls/client-configmap.yaml}
+  ```
+
+</TabItem>
+
+</Tabs>
+</details>
+
+1. Deploy the client and the Kafka config using `kubectl`.
+    ```bash
+    kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/all.yaml
+    ```
+
+<details>
+<summary>Optional: check deployment status</summary>
+Check that the `client` `pod` was deployed
+```bash
+kubectl get pods -n otterize-tutorial-kafka-mtls
+```
+You should see
+```
+NAME                      READY   STATUS    RESTARTS   AGE
+client-5d9d5c8d7b-7dlzb   1/1     Running   0          24s
+```
+</details>
+2. Let's monitor the client's attempts to access the Kafka topic with a second terminal window,
+   so we can see the effects of our changes in real time.
+
+   **Open a second terminal window** and tail the client log:
+   ```bash
+   kubectl logs -f --tail 1 -n otterize-tutorial-kafka-mtls deploy/myclient
+   ```
+   At this point the client should log an error saying it is not authorized to access the topic:
+   ```
+   Loading mTLS certificates
+   Connecting to Kafka
+   Creating a producer and a consumer for - mytopic
+   Sending messages
+   time="2022-09-13T10:41:07Z" level=info error="kafka server: The client is not authorized to access this topic"
+   Loop exited
+   ```
+
+   This is the expected outcome since we configured Kafka to require intents fo access to this topic.
+   Once the client declares its intents, Otterize will add an ACL to Kafka to allow the intended calls.
+   Let's see that now...
+:::note
+Client logs require improvement. Client is compiling on startup so it can take some time before it's ready.
+Need to solve this.
+:::
+## Apply intents
+1. The client declares its intent to call the server with this `intents.yaml` file:
+
+   ```yaml
+   {@include: ../../../static/code-examples/kafka-mtls/client-intents.yaml}
+   ```
+:::tip
+Client intents are the cornerstone of [intent-based access control](otterize.com/ibac).
+:::
+
+   Keep an eye on the logs being tailed in the **second terminal window**
+   while you apply this `intents.yaml` file in your **main terminal window** using:
+   ```shell
+   kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/client-intents.yaml
+   ```
+
+2. You should quickly see in the **second terminal** that the client is now successfully producing and consuming messages
+    ```bash
+    Loading mTLS certificates
+    Connecting to Kafka
+    Creating a producer and a consumer for - mytopic
+    Sending messages
+    time="2022-09-13T10:41:07Z" level=info error="kafka server: The client is not authorized to access this topic"
+    Loop exited                                   <- before applying the intents file
+    # highlight-start
+    Loading mTLS certificates                     <- after applying the intents file
+    Connecting to Kafka
+    Creating a producer and a consumer for - mytopic
+    Sending messages
+    Sent message - Message 1
+    Sent message - Message 2
+    Sent message - Message 3
+    Sent message - Message 4
+    Sent message - Message 5
+    Read message - Message 1
+    Read message - Message 2
+    Read message - Message 3
+    Read message - Message 4
+    Read message - Message 5
+   # highlight-end
+    ```
+3. If you check, you should see that an ACL was configured on Kafka
+   ```bash
+   kubectl logs -n kafka statefulset/kafka | grep "Processing Acl change" | grep mytopic | tail -n 1
+   ```
+   You should see
+   ```
+   [2022-09-13 10:44:52,803] INFO Processing Acl change notification for
+   ResourcePattern(resourceType=TOPIC, name=mytopic, patternType=LITERAL), 
+   versionedAcls : Set(User:ANONYMOUS has DENY permission for operations: 
+   ALL from hosts: *, User:CN=myclient.otterize-tutorial-kafka-mtls,O=SPIRE,C=US has ALLOW permission
+   for operations: ALL from hosts: *), zkVersion : 6 (kafka.security.authorizer.AclAuthorizer)
+   ```
+
+:::danger Uri: write celebration
+TODO
+:::
+
+<details>
+<summary>Expand to see what happened behind the scenes</summary>
+
+1. We configured the Kafka helm chart to
+1. Use the SSL protocol for its listeners
+2. Annotated its pod to let Otterize know it should generate mTLS credentials in the Java Key Store and Java Trust Store format and store them as a K8s secret.
+3. Use the K8s secret for mTLS by configuring Kafka's auth mechanism.
+2. We annotated the client pod to let Otterize know it should generate mTLS credentials in a PEM format.
+3. The Otterize SPIRE integration operator
+1. Created an entry for the annotated client pod with the SPIRE server.
+2. Generated matching mTLS credentials using the SPIRE server.
+3. Stored the mTLS credentials into a K8s secrets.
+4. The secret was mounted into the client pod's container.
+5. We configured Kafka to only allow intended access to the specific topic.
+6. The client pod connected and authenticated to Kafka using mTLS but couldn't access the topic.
+7. We applied intents to allow the client to access the topic.
+8. The client pod connected and authenticated to Kafka using mTLS but and accessed the topic successfully.
+
+</details>
+
+## What's next
+- Read about how to gradually rollout [secure access for Kafka](/guides/ibac-for-k8s-kafka/) on your existing infrastructure.
+
+## Teardown
+
+To remove the deployed resources run
+
+```bash
+kubectl delete -f https://docs.otterize.com/code-examples/kafka-mtls/client-intents.yaml
+kubectl delete -f https://docs.otterize.com/code-examples/kafka-mtls/all.yaml
+kubectl delete -f https://docs.otterize.com/code-examples/kafka-mtls/kafkaserverconfig.yaml
+helm uninstall -n kafka kafka
+helm repo remove bitnami
+```
