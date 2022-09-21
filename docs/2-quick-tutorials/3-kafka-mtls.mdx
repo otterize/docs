@@ -42,7 +42,7 @@ and trust Otterize to configure ACLs:
 
 
 ```yaml
-{@include: ../../../static/code-examples/kafka-mtls/helm/values.yaml}
+{@include: ../../static/code-examples/kafka-mtls/helm/values.yaml}
 ```
 </details>
 
@@ -89,7 +89,7 @@ kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/kafkaserverc
 <TabItem value="kafkaserverconfig.yaml" label="kafkaserverconfig.yaml">
 
 ```yaml
-{@include: ../../../static/code-examples/kafka-mtls/kafkaserverconfig.yaml}
+{@include: ../../static/code-examples/kafka-mtls/kafkaserverconfig.yaml}
 ```
 
 </TabItem>
@@ -119,33 +119,33 @@ mTLS credentials, and stores them as K8s secret named as the annotation value.
 3. Mount the volume into the container
 
 <details>
-    <summary>Expand to see a detailed explanation for the annotations</summary>
+<summary>Expand to see a detailed explanation for the annotations</summary>
 
-    ```yaml
-    spec:
-    template:
-    metadata:
-    ...
-    annotations:
-    # highlight-next-line
-    otterize/credentials-secret-name: client-credentials-secret       # 1 Generate credentials
-    spec:
-    volumes:
-    # highlight-start
-    - name: otterize-credentials
-    secret:
-    secretName: client-credentials-secret                         # 2 Mount credentials as a volume
-    # highlight-end
-    containers:
-    - name: client
-    ...
-    volumeMounts:
-    # highlight-start
-    - name: otterize-credentials
-    mountPath: /var/otterize/credentials                          # 3 Mount volume into container
-    readOnly: true
-    # highlight-end
-    ```
+```yaml
+spec:
+template:
+metadata:
+...
+annotations:
+# highlight-next-line
+otterize/credentials-secret-name: client-credentials-secret       # 1 Generate credentials
+spec:
+volumes:
+# highlight-start
+- name: otterize-credentials
+secret:
+secretName: client-credentials-secret                         # 2 Mount credentials as a volume
+# highlight-end
+containers:
+- name: client
+...
+volumeMounts:
+# highlight-start
+- name: otterize-credentials
+mountPath: /var/otterize/credentials                          # 3 Mount volume into container
+readOnly: true
+# highlight-end
+```
 </details>
 
 Our simple example consists of single client pod and a Kafka.
@@ -160,7 +160,7 @@ We will follow by applying an intent to allow access.
 <TabItem value="namespace.yaml" label="namespace.yaml" default>
 
    ```yaml
-   {@include: ../../../static/code-examples/kafka-mtls/namespace.yaml}
+   {@include: ../../static/code-examples/kafka-mtls/namespace.yaml}
    ```
 
 </TabItem>
@@ -168,7 +168,7 @@ We will follow by applying an intent to allow access.
 <TabItem value="client-deployment.yaml" label="client-deployment.yaml">
 
    ```yaml
-  {@include: ../../../static/code-examples/kafka-mtls/client-deployment.yaml}
+  {@include: ../../static/code-examples/kafka-mtls/client-deployment.yaml}
   ```
 
 </TabItem>
@@ -176,7 +176,7 @@ We will follow by applying an intent to allow access.
 <TabItem value="client-configmap.yaml" label="client-configmap.yaml">
 
    ```yaml
-  {@include: ../../../static/code-examples/kafka-mtls/client-configmap.yaml}
+  {@include: ../../static/code-examples/kafka-mtls/client-configmap.yaml}
   ```
 
 </TabItem>
@@ -229,7 +229,7 @@ Need to solve this.
 1. The client declares its intent to call the server with this `intents.yaml` file:
 
    ```yaml
-   {@include: ../../../static/code-examples/kafka-mtls/client-intents.yaml}
+   {@include: ../../static/code-examples/kafka-mtls/client-intents.yaml}
    ```
 :::tip
 Client intents are the cornerstone of [intent-based access control](otterize.com/ibac).

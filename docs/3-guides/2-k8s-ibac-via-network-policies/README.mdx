@@ -143,7 +143,7 @@ and the client that will now be blocked (until it declares its intent too).
 
 Here's the intents file of the `recommendationservice` (remember to adjust if you have a different service):
 ```yaml
-{@include: ../../../../static/code-examples/lab/recommendationservice-productcatalogservice.yaml}
+{@include: ../../../static/code-examples/lab/recommendationservice-productcatalogservice.yaml}
 ```
 1. Let's apply this intents file, as a developer or a CI/CD process would do:
     ```bash
@@ -161,7 +161,7 @@ Here's the intents file of the `recommendationservice` (remember to adjust if yo
 
 Now let's add the intents file of the `checkoutservice` (remember to adjust if you have a different service):
 ```yaml
-{@include: ../../../../static/code-examples/lab/checkoutservice-productcatalogservice.yaml}
+{@include: ../../../static/code-examples/lab/checkoutservice-productcatalogservice.yaml}
 ```
 
 1. Again, apply it to see what happens when it declares its intents:
@@ -204,7 +204,7 @@ To see the potential of the network mapper in bootstrapping IBAC, try this:
 2. Create and apply a "default-deny-ingress" network policy in your cluster for the selected namespace;
    all pods will now have at least one ingress policy so *all* undeclared calls will be blocked.
    ```yaml
-   {@include: ../../../../static/code-examples/lab/default-deny-network-policy.yaml}
+   {@include: ../../../static/code-examples/lab/default-deny-network-policy.yaml}
    ```
    if you're using the reference lab we've already done that for you
    ```bash

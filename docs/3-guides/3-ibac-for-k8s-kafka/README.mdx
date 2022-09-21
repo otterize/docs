@@ -22,9 +22,13 @@ and eventually in a staging or production cluster. You'll need admin access.
 You can also use an existing Kafka deployment or use our provided deployment for ease of use.
 
 ## Install Otterize into your Kubernetes
-To apply intents on an existing cluster you will need to install Otterize with the network policies
-option enabled. Follow the [instructions](/guides/k8s-installation) to install Otterize or
-install only the [Kafka/mTLS components](/guides/k8s-installation#kafkamtls) for Otterize.
+To apply intents on an existing cluster you will need to install Otterize with the Kafka/mTLS
+option enabled. Follow the [Kafka/mTLS components](/guides/k8s-installation#kafkamtls) installation
+instructions to or these [instructions](/guides/k8s-installation) for a complete installation.
+:::note
+We recommend working with the [Kafka/mTLS components](/guides/k8s-installation#kafkamtls) installation when following this guide to avoid conflicts
+with Network Policies applied alongside Kafka ACLs.
+:::
 
 
 ## Configure kafka for secure access
@@ -87,7 +91,7 @@ Though SSL was replaced by TLS, Kafka still uses the term SSL internally.
 <summary>Expand to see the complete YAML of this example...</summary>
 
 ```yaml
-{@include: ../../../../static/code-examples/kafka-mtls/helm/values.yaml}
+{@include: ../../../static/code-examples/kafka-mtls/helm/values.yaml}
 ```
 
 </details>
@@ -136,20 +140,20 @@ and using the popular [kafka-console-producer](https://kafka.apache.org/quicksta
 <TabItem value="namespace.yaml" label="namespace.yaml" default>
 
    ```yaml
-   {@include: ../../../../static/code-examples/ibac-for-kafka/interactive/namespace.yaml}
+   {@include: ../../../static/code-examples/ibac-for-kafka/interactive/namespace.yaml}
    ```
 
 </TabItem>
 <TabItem value="interactive.yaml" label="interactive.yaml" default>
 
    ```yaml
-   {@include: ../../../../static/code-examples/ibac-for-kafka/interactive/interactive-deployment.yaml}
+   {@include: ../../../static/code-examples/ibac-for-kafka/interactive/interactive-deployment.yaml}
    ```
 </TabItem>
 <TabItem value="interactive-configmap.yaml" label="interactive-configmap.yaml" default>
 
    ```yaml
-   {@include: ../../../../static/code-examples/ibac-for-kafka/interactive/interactive-configmap.yaml}
+   {@include: ../../../static/code-examples/ibac-for-kafka/interactive/interactive-configmap.yaml}
    ```
 
 </TabItem>
@@ -205,7 +209,7 @@ a default allow policy for all topics.
 We will later show how to add fine-grained control over topics.
 
 ```yaml
-{@include: ../../../../static/code-examples/ibac-for-kafka/kafkaserverconfig.yaml}
+{@include: ../../../static/code-examples/ibac-for-kafka/kafkaserverconfig.yaml}
 ```
 
 You can apply it with
@@ -269,7 +273,7 @@ The following KafkaServerConfig sets
 - restricts access to `mytopic` to authenticated clients
 - restricts access to `mytopic-intended` for authenticated clients with applied intents:
 ```yaml
-{@include: ../../../../static/code-examples/ibac-for-kafka/kafkaserverconfig-mytopic.yaml}
+{@include: ../../../static/code-examples/ibac-for-kafka/kafkaserverconfig-mytopic.yaml}
 ```
 
 ### Optional - Testing security scopes
@@ -291,20 +295,20 @@ and using the popular [kafka-console-producer](https://kafka.apache.org/quicksta
 <TabItem value="namespace.yaml" label="namespace.yaml" default>
 
 ```yaml
-{@include: ../../../../static/code-examples/ibac-for-kafka/interactive/namespace.yaml}
+{@include: ../../../static/code-examples/ibac-for-kafka/interactive/namespace.yaml}
 ```
 
 </TabItem>
 <TabItem value="interactive.yaml" label="interactive.yaml" default>
 
 ```yaml
-{@include: ../../../../static/code-examples/ibac-for-kafka/interactive/interactive-deployment.yaml}
+{@include: ../../../static/code-examples/ibac-for-kafka/interactive/interactive-deployment.yaml}
 ```
 </TabItem>
 <TabItem value="interactive-configmap.yaml" label="interactive-configmap.yaml" default>
 
 ```yaml
-{@include: ../../../../static/code-examples/ibac-for-kafka/interactive/interactive-configmap.yaml}
+{@include: ../../../static/code-examples/ibac-for-kafka/interactive/interactive-configmap.yaml}
 ```
 
 </TabItem>
@@ -402,7 +406,7 @@ You can close the two terminal windows.
 #### Apply client intents for the `interactive` pod to access `mytopic-intended`
 Apply the following intents
 ```yaml
-{@include: ../../../../static/code-examples/ibac-for-kafka/interactive/interactive-intents.yaml}
+{@include: ../../../static/code-examples/ibac-for-kafka/interactive/interactive-intents.yaml}
 ```
 With
 ```bash
@@ -518,7 +522,7 @@ and an intent to access a single topic (`mytopic`).
 <TabItem value="deployment.yaml" label="deployment.yaml" default>
 
 ```yaml
-{@include: ../../../../static/code-examples/ibac-for-kafka/client-deployment.yaml}
+{@include: ../../../static/code-examples/ibac-for-kafka/client-deployment.yaml}
 ```
 
 </TabItem>
@@ -526,7 +530,7 @@ and an intent to access a single topic (`mytopic`).
 <TabItem value="client-intents.yaml" label="client-intents.yaml">
 
 ```yaml
-{@include: ../../../../static/code-examples/ibac-for-kafka/client-intents.yaml}
+{@include: ../../../static/code-examples/ibac-for-kafka/client-intents.yaml}
 ```
 
 </TabItem>
