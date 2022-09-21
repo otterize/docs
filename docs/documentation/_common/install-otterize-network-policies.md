@@ -3,7 +3,7 @@ Use Helm to install the latest version of Otterize:
    helm repo add otterize https://helm.otterize.com
    helm repo update
    helm upgrade --install otterize otterize/otterize-kubernetes -n otterize --create-namespace \
-   --set otterize.network-policies="true"
+   --set deployment.spire=false --set deployment.spireIntegrationOperator=false --set intentsOperator.operator.autoGenerateTLSUsingSpireIntegration=false
    ```
 <details>
   <summary>Optional: check installation status</summary>

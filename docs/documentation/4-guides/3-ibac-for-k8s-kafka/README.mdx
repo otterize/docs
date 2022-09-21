@@ -267,7 +267,7 @@ To set the default security scope for topics we will use the following `topic` a
 The following KafkaServerConfig sets
 - a default allow unauthenticated access to all topics
 - restricts access to `mytopic` to authenticated clients
-- restricts access to `` for authenticated clients with applied intents:
+- restricts access to `mytopic-intended` for authenticated clients with applied intents:
 ```yaml
 {@include: ../../../../static/code-examples/ibac-for-kafka/kafkaserverconfig-mytopic.yaml}
 ```

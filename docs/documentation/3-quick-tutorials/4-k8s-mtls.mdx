@@ -256,7 +256,8 @@ We can use openssl to inspect the generated certificates. The certificates are s
    otterize-tutorial-mtls_].
    The certificate belongs to a chain of trust starting at the SPIRE server.
 
-## What happened behind the scenes
+<details>
+<summary>Expand to see what happened behind the scenes</summary>
 
 1. We annotated the pods to let Otterize know it should generate mTLS credentials.
 2. The Otterize SPIRE integration operator
@@ -265,6 +266,8 @@ We can use openssl to inspect the generated certificates. The certificates are s
     3. Stored the mTLS credentials into a K8s secrets.
 3. The secrets were mounted (separately) into each pod's container.
 4. The pods communicated with each other using HTTP of mutual TLS.
+
+</details>
 
 :::note
 Otterize defaults to generating credentials with an expiry time of 1 day. The certificates are

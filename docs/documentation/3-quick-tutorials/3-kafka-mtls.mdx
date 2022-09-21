@@ -283,26 +283,28 @@ Client intents are the cornerstone of [intent-based access control](otterize.com
 TODO
 :::
 
-## What's next
-- Read about how to gradually rollout [secure access for Kafka](/documentation/guides/ibac-for-k8s-kafka/) on your existing infrastructure.
-
-## What happened behind the scenes
+<details>
+<summary>Expand to see what happened behind the scenes</summary>
 
 1. We configured the Kafka helm chart to
-    1. Use the SSL protocol for its listeners
-    2. Annotated its pod to let Otterize know it should generate mTLS credentials in the Java Key Store and Java Trust
-       Store format and store them as a K8s secret.
-    3. Use the K8s secret for mTLS by configuring Kafka's auth mechanism.
+1. Use the SSL protocol for its listeners
+2. Annotated its pod to let Otterize know it should generate mTLS credentials in the Java Key Store and Java Trust Store format and store them as a K8s secret.
+3. Use the K8s secret for mTLS by configuring Kafka's auth mechanism.
 2. We annotated the client pod to let Otterize know it should generate mTLS credentials in a PEM format.
 3. The Otterize SPIRE integration operator
-   1. Created an entry for the annotated client pod with the SPIRE server.
-   2. Generated matching mTLS credentials using the SPIRE server.
-   3. Stored the mTLS credentials into a K8s secrets.
+1. Created an entry for the annotated client pod with the SPIRE server.
+2. Generated matching mTLS credentials using the SPIRE server.
+3. Stored the mTLS credentials into a K8s secrets.
 4. The secret was mounted into the client pod's container.
 5. We configured Kafka to only allow intended access to the specific topic.
 6. The client pod connected and authenticated to Kafka using mTLS but couldn't access the topic.
 7. We applied intents to allow the client to access the topic.
 8. The client pod connected and authenticated to Kafka using mTLS but and accessed the topic successfully.
+
+</details>
+
+## What's next
+- Read about how to gradually rollout [secure access for Kafka](/documentation/guides/ibac-for-k8s-kafka/) on your existing infrastructure.
 
 ## Teardown
 

@@ -194,12 +194,10 @@ To learn more about how Otterize + network policies work see
 details [here](/documentation/intents-operator/network-policies/in-depth)
 :::
 
-## What happened behind the scenes
-:::danger requires re-write, labels aren't correct.
-This is the [updated](/documentation/guides/k8s-ibac-via-network-policies#track-artifacts) version
-:::
+<details>
+<summary>Expand to see what happened behind the scenes</summary>
 To generate network policies between two pods, for example called `client` and `server` running in
-namespace `otterize-tutorial-npol` we needed to:
+namespace `otterize-tutorial-npol` we needed to (in a simplified form):
 
 1. Label the `server` pod `label-server` - we will use this label in the network policy to apply it to all pods with
    this label (as an ingress rule).
@@ -215,6 +213,9 @@ namespace `otterize-tutorial-npol` we needed to:
 
 Otterize saved us from doing all this work by simply declaring the client's intents in `intents.yaml`,
 while the appropriate network policies were managed automatically behind the scenes.
+
+You can read the detailed explanation about how Otterize manages labels for network policies [here](/documentation/guides/k8s-ibac-via-network-policies/deeper-dive#track-artifacts).
+</details>
 
 ## What's next
 
