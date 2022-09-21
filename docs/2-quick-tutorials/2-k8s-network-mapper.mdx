@@ -24,7 +24,7 @@ through installing Otterize, mapping traffic and tracking changes.
 
 :::info
 <!-- FIXME -->
-See the [Network Mapper documentation](/network-mapper/intro) for more details about the CLI.
+See the [Network Mapper documentation](/components/network-mapper/readme) for more details about the CLI.
 :::
 
 ### Change traffic -> Sniff&Diff
@@ -32,7 +32,7 @@ See the [Network Mapper documentation](/network-mapper/intro) for more details a
 One of the benefits for using the network mapper is the ability to track changes over time for communication within your
 cluster.
 
-1. Let's save the current state of traffic from the cluster into a file we will compare against later
+1. Let's save the current state of traffic from the cluster into a file we will compare against later:
    ```shell
    otterize mapper list > intents-original.txt
    ```
@@ -58,7 +58,7 @@ server-6698c58cbc-ssxvx   1/1     Running   0          45s
 ```
 </details>
 
-3. Export the updated observed intents.
+3. Export the updated observed intents:
    ```shell
    otterize mapper list
    ```
@@ -76,15 +76,15 @@ server-6698c58cbc-ssxvx   1/1     Running   0          45s
    orderservice in namespace ecom-demo calls:
      - kafka
    ```
-5. We can also compare both output to see the difference. We'll start by saving the updated state to a file with
+5. We can also compare both output to see the difference. We'll start by saving the updated state to a file with:
    ```bash
    otterize mapper list > intents-updated.txt
    ```
-6. And compare the original file with the updated file using
+6. And compare the original file with the updated file using:
    ```bash
    diff --color=always -y intents-original.txt intents-updated.txt;echo
    ```
-   You should see a result looking like
+   You should see a result looking like the following:
    ```bash
                                                        > client in namespace otterize-tutorial-mapper calls:
                                                        >   - server
@@ -98,16 +98,16 @@ server-6698c58cbc-ssxvx   1/1     Running   0          45s
 
 ## What's next
 
-Now that we observed cluster intents we can use them with the Intents Operator.
+Now that we've observed cluster intents we can enforce them with the Intents Operator.
 
 - Configure [network policies](/quick-tutorials/k8s-network-policies).
 - Configure [secure access for Kafka](/quick-tutorials/kafka-mtls).
 
 ### Teardown
 
-To remove the deployed resources run
+To remove the deployed resources run:
 
 ```bash
 kubectl delete namespace otterize-tutorial-mapper
-helm uninstall -n otterize mapper
+helm uninstall -n otterize-system network-mapper
 ```

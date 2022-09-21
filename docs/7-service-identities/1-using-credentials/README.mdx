@@ -6,38 +6,38 @@ title: Using credentials
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Credential SDK integration
+# Using mTLS credentials
 
-## mTLS credentials
+## Mounting mTLS credentials into pods
 
-To mount mTLS credentials please follow the [guide](/guides/k8s-mtls/).
+To learn how to mount mTLS credentials please follow the [guide](/guides/k8s-mtls/).
 
 ## HTTP
 ### Client
 
 <Tabs>
-<TabItem value="js" label="JS" default>
+<TabItem value="js" label="JavaScript" default>
 
 ```js
-{@include: ../../../../static/code-examples/code/mtls/http/client.js}
+{@include: ../../../static/code-examples/code/mtls/http/client.js}
 ```
 </TabItem>
-<TabItem value="go" label="GO">
+<TabItem value="go" label="Go">
 
 ```go
-{@include: ../../../../static/code-examples/code/mtls/http/client.go}
+{@include: ../../../static/code-examples/code/mtls/http/client.go}
 ```
 </TabItem>
 <TabItem value="python" label="Python">
 
 ```python
-{@include: ../../../../static/code-examples/code/mtls/http/client.py}
+{@include: ../../../static/code-examples/code/mtls/http/client.py}
 ```
 </TabItem>
 <TabItem value="curl" label="cURL">
 
 ```shell
-{@include: ../../../../static/code-examples/code/mtls/http/client.sh}
+{@include: ../../../static/code-examples/code/mtls/http/client.sh}
 ```
 </TabItem>
 </Tabs>
@@ -45,16 +45,16 @@ To mount mTLS credentials please follow the [guide](/guides/k8s-mtls/).
 ### Server
 
 <Tabs>
-<TabItem value="js" label="JS" default>
+<TabItem value="js" label="JavaScript" default>
 
 ```js
-{@include: ../../../../static/code-examples/code/mtls/http/server.js}
+{@include: ../../../static/code-examples/code/mtls/http/server.js}
 ```
 </TabItem>
-<TabItem value="go" label="GO">
+<TabItem value="go" label="Go">
 
 ```go
-{@include: ../../../../static/code-examples/code/mtls/http/server.go}
+{@include: ../../../static/code-examples/code/mtls/http/server.go}
 ```
 </TabItem>
 <TabItem value="python" label="Python">
@@ -64,7 +64,7 @@ This config only supports server TLS and not mTLS.
 :::
 
 ```python
-{@include: ../../../../static/code-examples/code/mtls/http/server.py}
+{@include: ../../../static/code-examples/code/mtls/http/server.py}
 ```
 </TabItem>
 </Tabs>
@@ -74,19 +74,19 @@ This config only supports server TLS and not mTLS.
 <TabItem value="js" label="JS" default>
 
 ```python
-{@include: ../../../../static/code-examples/code/mtls/kafka/client.js}
+{@include: ../../../static/code-examples/code/mtls/kafka/client.js}
 ```
 </TabItem>
 <TabItem value="go" label="GO">
 
 ```python
-{@include: ../../../../static/code-examples/code/mtls/kafka/client.go}
+{@include: ../../../static/code-examples/code/mtls/kafka/client.go}
 ```
 </TabItem>
 <TabItem value="python" label="Python">
 
 ```python
-{@include: ../../../../static/code-examples/code/mtls/kafka/client.py}
+{@include: ../../../static/code-examples/code/mtls/kafka/client.py}
 ```
 </TabItem>
 <TabItem value="bash" label="Bash" default>
@@ -96,13 +96,13 @@ to be generated in the JKS format.
 <TabItem value="bash" label="Bash" default>
 
 ```bash
-{@include: ../../../../static/code-examples/code/mtls/kafka/client.sh}
+{@include: ../../../static/code-examples/code/mtls/kafka/client.sh}
 ```
 </TabItem>
 <TabItem value="client.properties" label="client.properties">
 
 ```properties
-{@include: ../../../../static/code-examples/code/mtls/kafka/client.properties}
+{@include: ../../../static/code-examples/code/mtls/kafka/client.properties}
 ```
 </TabItem>
 </Tabs>

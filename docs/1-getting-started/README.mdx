@@ -24,10 +24,9 @@ export const LinkButton = (props) => (
 
 Otterize OSS implements intent-based access control in a single Kubernetes cluster.
 
-It consists of a Kubernetes operator which handle client intents, and has plugins to control
-access &mdash; at the moment, through network policies and through Kafka ACLs. It also
-includes a Kubernetes operator for integrating with SPIFFE/SPIRE to handle pod identities
-and manage certificates. And it includes a network mapper to sniff pod-to-pod traffic
+It consists of the [Intents Operator](intents-operator), a Kubernetes operator which handles client intents, and translates those intents to effective access control &mdash; at the moment, through network policies and through Kafka ACLs. It also
+includes the [SPIRE Integration Operator](spire-integration-operator), a Kubernetes operator for integrating with SPIFFE/SPIRE to handle pod identities
+and manage certificates. Finally, we have the [Network Mapper](network-mapper) to sniff pod-to-pod traffic
 and build a map, that may be exported to client intents files.
 
 ### Otterize Cloud <div class="coming-soon-h2">Coming soon</div>
@@ -41,9 +40,9 @@ Read more in our [product page](https://otterize.com/product).
 ### Otterize CLI
 
 Otterize OSS works within the common Kubernetes tool ecosystem, such as `kubectl` and
-Helm and `k9s`; e.g., you can directly `kubectl apply` client intents files that are
-formatted as Kubernetes resources. The Otterize CLI provides commands for working with non-Kubernetes client
-intents files, for controlling the network mapper, and for interfacing with the Otterize Cloud.
+Helm; e.g., you can directly `kubectl apply` client intents files that are
+formatted as Kubernetes resources. The Otterize CLI is used to control the network mapper, work with non-Kubernetes client
+intents files (optional when working with Otterize OSS), and for interfacing with the Otterize Cloud.
 
 ## Getting started with Otterize OSS
 

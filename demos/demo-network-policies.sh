@@ -49,7 +49,7 @@ pei "# Let's apply an intents file which Otterize will use"
 prompt
 pei "# to automatically configure network policies"
 prompt
-pei "# The intents file is a CRD you can apply directly to your K8s cluster"
+pei "# The intents file is a Custom Resource you can apply directly to your K8s cluster"
 prompt
 pei "# It looks as follows"
 prompt

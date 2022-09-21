@@ -70,17 +70,15 @@ spec:
 ```
 
 ## Auto generating network policies for external traffic
-:::note
-Otterize defaults to automatically generate network policies for LoadBalancer, NodePort, and Ingress traffic
-when an intent will generate a network policy that can block external traffic. To disable this feature XXX
-:::
+The Intents Operator defaults to automatically generate network policies for `Service` (type `LoadBalancer` and `NodePort`), and Ingress traffic
+when an intent will generate a network policy that can block external traffic. To disable this feature, consult the FIXME [documentation for the Intents Operator](/components/intents-operator)
 
 
-Let's look at an example from our demo. We have a `frontend` service being accessed from multiple source
-- `loadgenerator` calls it from within the cluster to generate traffic
-- `frontend-external` is a `LoadBalancer` directing traffic from outside the cluster to the `frontend`
+Let's look at an example from our demo. We have a `frontend` service being accessed from multiple sources
+- `loadgenerator` calls it from within the cluster to generate traffic, by accessing the `frontend` `ClusterIP Service`.
+- `frontend-external` is a `Service` with type `LoadBalancer` directing traffic from outside the cluster to the frontend pods. The `LoadBalancer` type means that a cloud provider load balancer will be created and point traffic from the Internet to these pods.
 
-Be applying the following intents file
+By applying the following intents file:
 ```yaml
 apiVersion: k8s.otterize.com/v1alpha1
 kind: ClientIntents
@@ -91,14 +89,13 @@ spec:
     name: loadgenerator
   calls:
     - name: frontend
-      type: HTTP
 ```
-Otterize will generate a network policy allowing access from the `loadgenerator` to the `frontend`.
-If left unhandled, any other traffic not allowed by existing network policies to the `frontend` will get blocked. In our
-case that means that the `frontend-external` `LoadBalancer` won't be able to communicate with with `frontend`.
+Otterize will generate a network policy allowing access from the `loadgenerator` service to the `frontend` service.
+Once a single network policy matches a pod, other traffic not allowed by existing network policies to the `frontend` will get blocked. In our
+case that means that the `frontend-external` `LoadBalancer` won't be able to communicate with `frontend`.
 
 To overcome this, Otterize will automatically generate a network policy to allow traffic from `frontend-external`
-to `frontend` by relying on the existence of the ingress (in this case `LoadBalancer`) as an intent between the two.
+to `frontend` by relying on the existence of the `LoadBalancer Service` as an indicator of intent between the two.
 
 FAQ:
 - Why can't Otterize always generate network policies for ingress types?
@@ -114,13 +111,13 @@ Our example consists of two pods: an HTTP server and a client that calls it. We 
 blocking pods from accepting incoming calls unless another network policy explicitly allows them.
 
 <details>
-<summary>Expand to see the details of this example...</summary>
+<summary>Expand to see the details of this example</summary>
 <Tabs>
 
 <TabItem value="namespace.yaml" label="namespace.yaml" default>
 
    ```yaml
-   {@include: ../../../../static/code-examples/network-policies/namespace.yaml}
+   {@include: ../../../static/code-examples/network-policies/namespace.yaml}
    ```
 
 </TabItem>
@@ -128,16 +125,16 @@ blocking pods from accepting incoming calls unless another network policy explic
 <TabItem value="server.yaml" label="server.yaml" default>
 
    ```yaml
-  {@include: ../../../../static/code-examples/network-policies/server-deployment.yaml}
+  {@include: ../../../static/code-examples/network-policies/server-deployment.yaml}
    ---
-  {@include: ../../../../static/code-examples/network-policies/server-service.yaml}
+  {@include: ../../../static/code-examples/network-policies/server-service.yaml}
   ```
 
 </TabItem>
 <TabItem value="client.yaml" label="client.yaml" default>
 
    ```yaml
-   {@include: ../../../../static/code-examples/network-policies/client-deployment.yaml}
+   {@include: ../../../static/code-examples/network-policies/client-deployment.yaml}
    ```
 
 </TabItem>
@@ -145,7 +142,7 @@ blocking pods from accepting incoming calls unless another network policy explic
 <TabItem value="default-deny.yaml" label="default-deny.yaml" default>
 
    ```yaml
-   {@include: ../../../../static/code-examples/network-policies/default-deny-network-policy.yaml}
+   {@include: ../../../static/code-examples/network-policies/default-deny-network-policy.yaml}
    ```
 
 </TabItem>
@@ -171,20 +168,19 @@ blocking pods from accepting incoming calls unless another network policy explic
 3. The client intents to call the server are declared with this `intents.yaml` file:
 
    ```yaml
-   {@include: ../../../../static/code-examples/network-policies/intents.yaml}
+   {@include: ../../../static/code-examples/network-policies/intents.yaml}
    ```
    Let's apply it:
    ```shell
    kubectl apply -f https://docs.otterize.com/code-examples/network-policies/intents.yaml
    ```
 ### Track artifacts
-After applying the intents file Otterize generated multiple artifacts to configure access from the client to
-server via network policies:
+After applying the intents file Otterize performed multiple actions to allow access from the client to the server using network policies:
 - Create a network policy allowing traffic from the [client, namespace -labeled] pods to [server-labeled] pods
 - Label the client pods
 - Label the client pod namespaces
 - Label the server pods
-1. Let's look at the generated network policy
+1. Let's look at the generated network policy:
   ```bash
   kubectl describe networkpolicies -n otterize-tutorial-npol access-to-server-from-otterize-tutorial-npol
   ```
@@ -215,15 +211,15 @@ server via network policies:
     # highlight-next-line
     Policy Types: Ingress
   ```
-2. And we can also see that the client and server pods are now labeled
+2. And we can also see that the client and server pods are now labeled:
   ```bash
   kubectl get pods -n otterize-tutorial-npol --show-labels
   ```
   You should see
   ```bash
   NAME                      READY   STATUS    RESTARTS   AGE     LABELS
-  client-5cb67b748-l25vg    1/1     Running   0          7m57s   app=client,intents.otterize.com/access-server-otterize-tutorial-np-7e16db=true,intents.otterize.com/client=true,intents.otterize.com/server=client-otterize-tutorial-np-699302,pod-template-hash=5cb67b748,spire-integration.otterize.com/service-name=client
-  server-564b56f596-54str   1/1     Running   0          7m56s   app=server,intents.otterize.com/server=server-otterize-tutorial-np-7e16db,pod-template-hash=564b56f596,spire-integration.otterize.com/service-name=server
+  client-5cb67b748-l25vg    1/1     Running   0          7m57s   intents.otterize.com/access-server-otterize-tutorial-np-7e16db=true,intents.otterize.com/client=true,intents.otterize.com/server=client-otterize-tutorial-np-699302,pod-template-hash=5cb67b748,spire-integration.otterize.com/service-name=client
+  server-564b56f596-54str   1/1     Running   0          7m56s   intents.otterize.com/server=server-otterize-tutorial-np-7e16db,pod-template-hash=564b56f596,spire-integration.otterize.com/service-name=server
   ```
 
   And when we break down the label structure we can see
@@ -237,13 +233,13 @@ server via network policies:
       - <span style={{color:'magenta'}}>server</span> - Server pod name
       - <span style={{color:'red'}}>otterize-tutorial-np</span> - Server pod namespace (might be truncated)
       - <span style={{color:'green'}}>7e16db</span> - Hash for server pod name and and namespace
-3. Finally, let's look at the namespace label with
+3. Finally, let's look at the namespace label with:
   ```bash
   kubectl get namespace otterize-tutorial-npol --show-labels
   ```
-  You should see
+  You should see:
   ```bash
   NAME                     STATUS   AGE   LABELS
 otterize-tutorial-npol   Active   36s   intents.otterize.com/namespace-name=otterize-tutorial-npol,kubernetes.io/metadata.name=otterize-tutorial-npol
   ```
-  With the new label add by otterize - `intents.otterize.com/namespace-name=otterize-tutorial-npol`
+  With the new label added by Otterize - `intents.otterize.com/namespace-name=otterize-tutorial-npol`

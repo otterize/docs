@@ -2,6 +2,7 @@
 sidebar_position: 1
 title: Automate network policies
 ---
+import CodeBlock from "@theme/CodeBlock";
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
@@ -12,10 +13,10 @@ and the manual authoring of individual network policies.
 With intent-based access control, you just declare what client calls will be needed,
 and everything is automatically wired together so only intended calls are allowed.
 
-In this tutorial, we will
+In this tutorial, we will:
 
 - Install Otterize in your Kubernetes cluster.
-- Make sure your Kubernetes cluster has a CNI network plugin
+- Make sure your Kubernetes cluster has a CNI network plugin that handles network policies
 - Deploy a server pod, and a client pod that calls it
 - Deploy a "default deny" network policy to block undeclared calls
 - Declare that the client pod intends to call the server pod
@@ -33,7 +34,7 @@ You can skip this section if Otterize is already installed in your cluster.
 
 {@include: ../_common/verify-cni.md}
 
-If you're not sure whether you have a CNI, you can just continue &mdash; it'll soon become clear ;-).
+If you're not sure whether your cluster's CNI plugin supports network policies, you can just continue &mdash; it'll soon become clear ;-).
 
 ## Deploy the server, client, and default network policy
 
@@ -43,13 +44,13 @@ We also deploy a default-deny ingress network policy,
 blocking pods from accepting incoming calls unless another network policy explicitly allows them.
 
 <details>
-<summary>Expand to see the details of this example...</summary>
+<summary>Expand to see the details of this example</summary>
 <Tabs>
 
 <TabItem value="namespace.yaml" label="namespace.yaml" default>
 
    ```yaml
-   {@include: ../../../static/code-examples/network-policies/namespace.yaml}
+   {@include: ../../static/code-examples/network-policies/namespace.yaml}
    ```
 
 </TabItem>
@@ -57,16 +58,16 @@ blocking pods from accepting incoming calls unless another network policy explic
 <TabItem value="server.yaml" label="server.yaml" default>
 
    ```yaml
-  {@include: ../../../static/code-examples/network-policies/server-deployment.yaml}
+  {@include: ../../static/code-examples/network-policies/server-deployment.yaml}
    ---
-  {@include: ../../../static/code-examples/network-policies/server-service.yaml}
+  {@include: ../../static/code-examples/network-policies/server-service.yaml}
   ```
 
 </TabItem>
 <TabItem value="client.yaml" label="client.yaml" default>
 
    ```yaml
-   {@include: ../../../static/code-examples/network-policies/client-deployment.yaml}
+   {@include: ../../static/code-examples/network-policies/client-deployment.yaml}
    ```
 
 </TabItem>
@@ -74,7 +75,7 @@ blocking pods from accepting incoming calls unless another network policy explic
 <TabItem value="default-deny.yaml" label="default-deny.yaml" default>
 
    ```yaml
-   {@include: ../../../static/code-examples/network-policies/default-deny-network-policy.yaml}
+   {@include: ../../static/code-examples/network-policies/default-deny-network-policy.yaml}
    ```
 
 </TabItem>
@@ -129,25 +130,37 @@ Let's monitor the client's attempts to call the server with a second terminal wi
    ```
 
 :::tip
-   If the client isn't timing out, then you may not have a CNI installed, or your CNI may not support network policies.
-   Consult the docs for your Kubernetes distribution.
-   For example, vanilla minikube does not start by default with a CNI that supports network policies
+   If the client isn't timing out, then the installed CNI plugin likely does not support network policies.
+   Consult the docs for your Kubernetes distribution or head back to the [Calico installation section](#make-sure-you-have-a-cni-network-plugin) to install one.
+   For example, minikube does not start by default with a CNI that supports network policies
    but you can ask it to start with one that does, such as Calico.
 :::
 
-   The client failing like that is the expected outcome since by default all pods' ingress are blocked by the default network policy.
+   The client failing like that is the expected outcome since by default all pods' ingress are blocked by the default network policy:
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace:  otterize-tutorial-npol
+spec:
+  podSelector: {} # selects all pods in the namespace
+  # the lack of a `from` field means no pod is allowed to access
+  policyTypes: # this policy applies to ingress and doesn't apply to egress
+    - Ingress
+```
    Once the client declares its intents, Otterize will add a network policy to allow the intended calls.
-   Let's see that now...
+   Let's see that now.
 
 ## Apply intents
 
 1. The client declares its intent to call the server with this `intents.yaml` file:
 
    ```yaml
-   {@include: ../../../static/code-examples/network-policies/intents.yaml}
+   {@include: ../../static/code-examples/network-policies/intents.yaml}
    ```
 :::tip
-Client intents are the cornerstone of [intent-based access control](otterize.com/ibac).
+Client intents are the cornerstone of [intent-based access control](https://otterize.com/ibac).
 :::
 
    Keep an eye on the logs being tailed in the **second terminal window**
@@ -160,9 +173,9 @@ Client intents are the cornerstone of [intent-based access control](otterize.com
    Calling server...
    curl timed out
    Calling server...
-   curl timed out                              <- before applying the intents file
+   curl timed out                              # <- before applying the intents file
    # highlight-start
-   Calling server...                           <- after applying the intents file
+   Calling server...                           # <- after applying the intents file
    HTTP/1.1 200 OK
    X-App-Name: http-echo
    X-App-Version: 0.2.3
@@ -174,11 +187,11 @@ Client intents are the cornerstone of [intent-based access control](otterize.com
    # highlight-end
    ```
 
-3. If you check, you should see that a new network policy was created
+3. You should see that a new network policy was created:
    ```bash
    kubectl get NetworkPolicies -n otterize-tutorial-npol
    ```
-   You should see
+   will output:
    ```
    NAME                                           POD-SELECTOR                                         AGE
    access-to-server-from-otterize-tutorial-npol   otterize/server=server-otterize-tutorial-np-7e16db   6s
@@ -196,20 +209,20 @@ details [here](/intents-operator/network-policies/in-depth)
 
 <details>
 <summary>Expand to see what happened behind the scenes</summary>
+
 To generate network policies between two pods, for example called `client` and `server` running in
 namespace `otterize-tutorial-npol` we needed to (in a simplified form):
 
-1. Label the `server` pod `label-server` - we will use this label in the network policy to apply it to all pods with
+1. Label the `server` pod with `otterize/server` and a unique value that represents this server - we will use this label in the network policy to apply it to all pods with
    this label (as an ingress rule).
-2. Label the `client` pod with `has-access-to-server`, saying that this specific pod has access to `server` - we will
+2. Label the `client` pod with `otterize/access-to-server`, saying that this specific pod has access to `server` - we will
    use this label in the network policy as a filter &mdash; every
    pod that has the label saying [this pod can access the server] will be able to pass through the network policy.
-3. Label the `client`'s namespace `label-otterize-tutorial-npol` &mdash; this is a requirement for the network policy as
-   another filtering mechanism for pods.
+3. Label the `client`'s namespace `otterize/namespace-name` with value `otterize-tutorial-npol` &mdash; this is used when intents refer to services in other namespaces.
 4. Generate a network policy saying that
-    1. Only pod with the label `has-access-to-server`
-    2. From the namespaces with the label `label-otterize-tutorial-npol`
-    3. Can access pods with the label `label-server`
+    1. Only pod with the label `otterize/access-to-server`
+    2. From the namespaces with the label `otterize/namespace-name` and value `otterize-tutorial-npol`
+    3. Can access pods with the label `otterize/server` and that matches this server
 
 Otterize saved us from doing all this work by simply declaring the client's intents in `intents.yaml`,
 while the appropriate network policies were managed automatically behind the scenes.
@@ -225,7 +238,7 @@ You can read the detailed explanation about how Otterize manages labels for netw
 
 ## Teardown
 
-To remove the deployed resources run
+To remove the deployed resources run:
 
 ```bash
 kubectl delete namespace otterize-tutorial-npol
