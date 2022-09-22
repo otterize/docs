@@ -4,7 +4,7 @@
 
 
 ![build](https://github.com/otterize/docs/actions/workflows/deploy.yml/badge.svg)
-[![community](https://img.shields.io/badge/slack-Otterize_Slack-orange.svg?logo=slack)](https://joinslack.otterize.com/)
+[![community](https://img.shields.io/badge/slack-Otterize_Slack-purple.svg?logo=slack)](https://joinslack.otterize.com/)
 
 [About](#about) | [Contributing](#contributing) | [Slack](#slack)
 
