@@ -8,4 +8,3 @@ spec:
     name: checkoutservice
   calls:
     - name: productcatalogservice
-      type: HTTP
