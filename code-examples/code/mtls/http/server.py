@@ -1,4 +1,5 @@
 from flask import Flask
+import ssl
 
 app = Flask(__name__)
 
@@ -9,7 +10,8 @@ def hello():
 
 
 if __name__ == "__main__":
-    app.run(port=443,
-            ssl_context=(
-                '/var/otterize/credentials/svid.pem',
-                '/var/otterize/credentials/key.pem'))
+    context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+    context.verify_mode = ssl.CERT_REQUIRED
+    context.load_verify_locations('/var/otterize/credentials/bundle.pem')
+    context.load_cert_chain('/var/otterize/credentials/svid.pem', '/var/otterize/credentials/key.pem')
+    app.run(port=443, ssl_context=context)
