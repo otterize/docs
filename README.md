@@ -6,15 +6,11 @@
 ![build](https://github.com/otterize/docs/actions/workflows/deploy.yml/badge.svg)
 [![community](https://img.shields.io/badge/slack-Otterize_Slack-orange.svg?logo=slack)](https://join.slack.com/t/otterizeworkspace/shared_invite/zt-1fnbnl1lf-ub6wler4QrW6ZzIn2U9x1A)
 
-[About](#about) | [Slack](#slack) | [Contributing](#contributing)
+[About](#about) | [Contributing](#contributing) | [Slack](#slack)
 
 ## About
 
 This is the repo for the documentation website at https://docs.otterize.com.
-
-## Slack
-[Join the Otterize Slack!](https://join.slack.com/t/otterizeworkspace/shared_invite/zt-1fnbnl1lf-ub6wler4QrW6ZzIn2U9x1A)
-
 
 ## Contributing
 1. Feel free to fork and open a pull request!
@@ -43,3 +39,6 @@ $ yarn build
 ```
 
 This command generates static content into the `build` directory and can be served using any static contents hosting service.
+
+## Slack
+[Join the Otterize Slack!](https://join.slack.com/t/otterizeworkspace/shared_invite/zt-1fnbnl1lf-ub6wler4QrW6ZzIn2U9x1A)
