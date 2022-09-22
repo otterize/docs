@@ -1,0 +1,120 @@
+---
+sidebar_position: 2
+title: Configuring Kafka brokers
+---
+
+The intents operator is able to create network policies with zero configuration. But in order to apply Kafka ACLs to a Kafka broker, the operator must know how to connect.
+
+To tell the operator how to do so, you must create a `KafkaServerConfig` resource. It is recommended to create this resource in the same namespace as the Kafka broker,
+and manage its lifespan alongside the broker. If you deploy a chart that deploys a Kafka broker, or another resource that deploys a broker, you should deploy this `KafkaServerConfig` alongside those.
+
+Here is an annotated example of a `KafkaServerConfig`, followed by an in-depth explanation for each section.
+
+## Full annotated example
+```yaml
+apiVersion: k8s.otterize.com/v1alpha1
+kind: KafkaServerConfig
+metadata:
+  name: kafkabroker  # the name of the KafkaServerConfig resource
+spec:
+  service:
+    name: ecomm-events # the name of the Otterize service, as it would appear in ClientIntents as the destination.
+  addr: ecommevents.namespace:9092 # the address the intents operator will connect to in order to apply ACLs to this broker
+  tls: # this section informs the operator where to find the credentials to authenticate with the broker via mTLS. The values here are the defaults set by the otterize-kubernetes chart.
+    certFile: /etc/otterize-spire/svid.pem
+    keyFile: /etc/otterize-spire/key.pem
+    rootCAFile: /etc/otterize-spire/bundle.pem
+  topics: # configuration for topic scope - how ACLs should be applied to each topic or set of topics.
+    - topic: "*" # A specific topic or a prefix. Can be "*" for all.
+      pattern: prefix # Prefix or literal. Use prefix for "*".
+      clientIdentityRequired: false # Whether client identity is required. If set to true to, access by anonymous users will be denied.
+      intentsRequired: false # Whether intents are required - if set to true, all access will be denied unless intents are declared
+```
+
+### Service name
+The name of the service as it appears in ClientIntents.
+For example:
+```yaml
+apiVersion: k8s.otterize.com/v1alpha1
+kind: ClientIntents
+[...]
+spec:
+[...]
+  calls:
+    - name: ecomm-events # here!
+      type: Kafka
+```
+
+### Address (`addr`)
+The address the intents operator will connect to in order to apply and remove ACLs resulting from `ClientIntents` and the KafkaServerConfig's `topics` section.
+
+### TLS
+Where the intents operator will find credentials mounted to its pod to authenticate with the Kafka broker.
+If using the `otterize-kubernetes` chart, the values in the example above are correct.
+
+### Topic scope
+
+Using topic scope, you can gradually roll out Otterize to your Kafka cluster. Select a subset of topics to apply mTLS and/or intents to and start with those, without affecting the rest.
+
+Here are example configurations for topic scope and the resulting ACLs.
+
+#### Allow unauthenticated access to all topics
+```yaml title="Topic scope"
+- topic: "*"
+  pattern: prefix
+  clientIdentityRequired: false
+  intentsRequired: false
+```
+```yaml title="Kafka ACL"
+(none)
+```
+
+#### Allow authenticated access to `mytopic` (or deny all unauthenticated access)
+```yaml title="Topic scope"
+- topic: "mytopic"
+  pattern: literal
+  clientIdentityRequired: true
+  intentsRequired: false
+```
+```yaml title="Kafka ACL"
+ResourcePattern(resourceType=TOPIC, name=mytopic, patternType=LITERAL), versionedAcls :
+Set(User:ANONYMOUS has DENY permission for operations: ALL from hosts: *,
+    User:* has ALLOW permission for operations: ALL from hosts: *)
+```
+
+#### Allow intended access to `mytopic-intended` with a `topic scope` and an `intent`
+Otterize generates two ACLs for this access pattern
+- The topic scope will block all access to the topic at first
+- The intent will set a specific ACL to allow the caller to access the topic
+```yaml title="Topic scope"
+- topic: "mytopic-intended"
+  pattern: literal
+  clientIdentityRequired: true
+  intentsRequired: true
+```
+Translates into
+```yaml title="Kafka ACL"
+ResourcePattern(resourceType=TOPIC, name=mytopic-intended, patternType=LITERAL), versionedAcls :
+Set(User:ANONYMOUS has DENY permission for operations: ALL from hosts: *)
+```
+And
+```yaml title="Intent"
+service:
+    name: interactive
+  calls:
+    - name: kafka
+      namespace: kafka
+      type: Kafka
+      topics:
+        - name: mytopic-intended
+          operation: all
+```
+Translates into
+```yaml title="Kafka ACL"
+ResourcePattern(resourceType=TOPIC, name=mytopic-intended, patternType=LITERAL), versionedAcls :
+Set(User:ANONYMOUS has DENY permission for operations: ALL from hosts: *,
+    User:CN=interactive.ibac-for-kafka,O=SPIRE,C=US has ALLOW permission for operations: ALL from hosts: *)
+```
+
+Both of these ACLs will enforce intended access where as - only clients that have applied intents will be able to access
+the specific topc.

@@ -418,76 +418,10 @@ Hello there consumer, this is the producer!
 You can close the two terminal windows.
 
 ### What happens when we apply a security scope
-Security scopes translate directly into Kafka ACLs. Otterize uses the security scope parameters
-(topic, pattern, clientIdentityRequired, and intentsRequired) to configure them.
-
-Following are some examples to how security scopes translate into Kafka ACLs
-
-#### Allow unauthenticated access to all topics
-```yaml title="Topic scope"
-- topic: "*"
-  pattern: prefix
-  clientIdentityRequired: false
-  intentsRequired: false
-```
-```yaml title="Kafka ACL"
-ResourcePattern(resourceType=GROUP, name=*, patternType=LITERAL), versionedAcls :
-Set(User:* has ALLOW permission for operations: DESCRIBE from hosts: *,
-    User:* has ALLOW permission for operations: READ from hosts: *)
-```
-
-#### Allow authenticated access to `mytopic`
-```yaml title="Topic scope"
-- topic: "mytopic"
-  pattern: literal
-  clientIdentityRequired: true
-  intentsRequired: false
-```
-```yaml title="Kafka ACL"
-ResourcePattern(resourceType=TOPIC, name=mytopic, patternType=LITERAL), versionedAcls :
-Set(User:ANONYMOUS has DENY permission for operations: ALL from hosts: *,
-    User:* has ALLOW permission for operations: ALL from hosts: *)
-```
-
-#### Allow intended access to `mytopic-intended` with a `topic scope` and an `intent`
-Otterize generates two ACLs for this access pattern
-- The topic scope will block all access to the topic at first
-- The intent will set a specific ACL to allow the caller to access the topic
-```yaml title="Topic scope"
-- topic: "mytopic-intended"
-  pattern: literal
-  clientIdentityRequired: true
-  intentsRequired: true
-```
-Translates into
-```yaml title="Kafka ACL"
-ResourcePattern(resourceType=TOPIC, name=mytopic-intended, patternType=LITERAL), versionedAcls :
-Set(User:ANONYMOUS has DENY permission for operations: ALL from hosts: *)
-```
-And
-```yaml title="Intent"
-service:
-    name: interactive
-  calls:
-    - name: kafka
-      namespace: kafka
-      type: Kafka
-      topics:
-        - name: mytopic-intended
-          operation: all
-```
-Translates into
-```yaml title="Kafka ACL"
-ResourcePattern(resourceType=TOPIC, name=mytopic-intended, patternType=LITERAL), versionedAcls :
-Set(User:ANONYMOUS has DENY permission for operations: ALL from hosts: *,
-    User:CN=interactive.ibac-for-kafka,O=SPIRE,C=US has ALLOW permission for operations: ALL from hosts: *)
-```
-
-Both of these ACLs will enforce intended access where as - only clients that have applied intents will be able to access
-the specific topc.
+Security scopes translate directly into Kafka ACLs. You can use the parameters `topic`, `pattern`, `clientIdentityRequired` and `intentsRequired` to configure them. With those, you can choose whether on which topics you'd like to require an identity (enforce mTLS), on which you'd like to require intents, and on which you require none of those. [Read more about Kafka configuration](/components/intents-operator/configuration).
 
 ## Otterize identities, intents and Kafka ACLs
-The following eur example is built of a single client (`myclient`) running in the namespace `ibac-for-kafka`
+In the following example, there is a single client (`myclient`) running in the namespace `ibac-for-kafka`
 and an intent to access a single topic (`mytopic`).
 
 <details>
@@ -516,9 +450,9 @@ and an intent to access a single topic (`mytopic`).
 
 ### Generating credentials
 By annotating the pod with `spire-integration.otterize.com/tls-secret-name: myclient-credentials-secret` Otterize
-automatically generates mTLS credentials for the pod named `myclient`.
+automatically generates mTLS credentials for the pod.
 
-The certificate's `CN` is set to be `myclient.ibac-for-kafka`. This value will be used in the
+The certificate's `CN` is set to be `myclient.ibac-for-kafka`. This is determined by taking the [Otterize service name](/service-identities) and appending the namespace. This value will be used in the
 following step when applying intents.
 
 You can deploy the client with
