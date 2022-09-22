@@ -1,0 +1,15 @@
+---
+sidebar_position: 11
+title: Troubleshooting
+---
+
+## Troubleshooting common errors
+
+- Kubernetes Pod status
+  - My pod is stuck on **ContainerCreating**
+    - Describe the Pod (i.e. `kubectl describe`) and consult the Events section:
+      - **MountVolume.SetUp** failed for volume "otterize-credentials" : secret "XXX" not found
+      
+          Credentials were not generated and stored in the K8s `secret`. Please verify
+          - Otterize is installed with the **SPIRE integration operator** enabled.
+          - Pod is annotated with `spire-integration.otterize.com/tls-secret-name`.

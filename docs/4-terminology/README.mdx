@@ -11,22 +11,25 @@ If you think a term is missing here, please [let us know](https://github.com/ott
 ## Basics
 
 ### Service
-
-### SDK
+An Otterize service is either a client or a server, and is referred to by client intents. [Learn how service identity resolution happens](/service-identities).
 
 ### CLI
-
+The Otterize CLI is a command-line utility used to control and interact with the Otterize network mapper, manipulate local Intents files, and (coming soon!) interact with Otterize Cloud.
 
 ## Identity
 
 ### PKI
+PKI stands for public key infrastructure, and refers to the infrastructure used to provision X.509 credentials, in our case - used for mTLS.
 
 ### mTLS
+mTLS stands for mutual TLS, and is a form of TLS where both the client and server are authenticated - or in other words, TLS with mutual authentication.
 
-### JWT
+In regular TLS, only the server is authenticated - such as when you connect to google.com, and your browser authenticates google.com using its certificate, but google.com does not authenticate you as the client with your certificate.
 
 ## Enforcement
 
 ### Network Policies
+Kubernetes network policies can be used to control network access between pods in a Kubernetes cluster, and require the installation of a Kubernetes network plugin that supports network policy enforcement. One commonly supported CNI is Calico. [Read more about network policies in the official documentation](https://kubernetes.io/docs/concepts/services-networking/network-policies/).
 
 ### Kafka ACLs
+Kafka ACLs stand for Access Control Lists, a built-in mechanism in Kafka for authorizing access to Kafka resources such as topics. [Read more about Kafka ACLs in the official documentation](https://docs.confluent.io/platform/current/kafka/authorization.html#authorization-using-acls).
