@@ -24,7 +24,7 @@ through installing Otterize, mapping traffic and tracking changes.
 
 :::info
 <!-- FIXME -->
-See the [Network Mapper documentation](/components/network-mapper/readme) for more details about the CLI.
+See the [network mapper documentation](/components/network-mapper/readme) for more details about the CLI.
 :::
 
 ### Change traffic -> Sniff&Diff
@@ -37,7 +37,7 @@ cluster.
    otterize mapper list > intents-original.txt
    ```
 
-2. And now we can add traffic to the cluster and see how the Network Mapper tracks it. You can do that by deploying our
+2. And now we can add traffic to the cluster and see how the network mapper tracks it. You can do that by deploying our
    example
    which consists of two pods: client and server, communicating over HTTP. Deploy example:
    ```shell
@@ -76,7 +76,7 @@ server-6698c58cbc-ssxvx   1/1     Running   0          45s
    orderservice in namespace ecom-demo calls:
      - kafka
    ```
-5. We can also compare both output to see the difference. We'll start by saving the updated state to a file with:
+5. We can also compare both outputs to see the difference. We'll start by saving the updated state to a file with:
    ```bash
    otterize mapper list > intents-updated.txt
    ```
@@ -84,7 +84,7 @@ server-6698c58cbc-ssxvx   1/1     Running   0          45s
    ```bash
    diff --color=always -y intents-original.txt intents-updated.txt;echo
    ```
-   You should see a result looking like the following:
+   You should see a result looking like:
    ```bash
                                                        > client in namespace otterize-tutorial-mapper calls:
                                                        >   - server
@@ -98,7 +98,7 @@ server-6698c58cbc-ssxvx   1/1     Running   0          45s
 
 ## What's next
 
-Now that we've observed cluster intents we can enforce them with the Intents Operator.
+Now that we've observed cluster intents we can enforce them with the intents operator.
 
 - Configure [network policies](/quick-tutorials/k8s-network-policies).
 - Configure [secure access for Kafka](/quick-tutorials/kafka-mtls).

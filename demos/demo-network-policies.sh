@@ -19,7 +19,7 @@ pei "# Let's play with network policies"
 prompt
 pei "# We'll start by deploying"
 prompt
-pei "# - client and server pods communicating over hTTP"
+pei "# - client and server pods communicating over HTTP"
 prompt
 pei "# - a default deny network policy to block the communication between them"
 prompt
@@ -49,7 +49,7 @@ pei "# Let's apply an intents file which Otterize will use"
 prompt
 pei "# to automatically configure network policies"
 prompt
-pei "# The intents file is a Custom Resource you can apply directly to your K8s cluster"
+pei "# The intents file is a custom resource you can apply directly to your K8s cluster"
 prompt
 pei "# It looks as follows"
 prompt

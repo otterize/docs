@@ -35,7 +35,7 @@ and trust Otterize to configure ACLs:
 
 1. Configure Otterize as a super user to grant it access to configure ACLs
 2. Use SSL for its listeners
-3. Using pod annotations, tell the SPIRE Integration Operator how the credentials should be created
+3. Using pod annotations, tell the SPIRE integration operator how the credentials should be created
 4. Authenticate connecting clients using mTLS credentials provided as a K8s secret
 
 <details>
@@ -48,7 +48,7 @@ and trust Otterize to configure ACLs:
 </details>
 
 The following command will deploy a Kafka cluster configured to use Otterize-provided mTLS credentials
-with permissions for the Intents Operator to configure ACLs:
+with permissions for the intents operator to configure ACLs:
  ```bash
  helm repo add bitnami https://charts.bitnami.com/bitnami
  helm install --create-namespace -n kafka \
@@ -95,7 +95,7 @@ Set(User:ANONYMOUS has DENY permission for operations: ALL from hosts: *), zkVer
 
 To generate credentials for the pod we simply need to update the deployment by annotating it.
 The required steps are to
-1. Annotate the pod - Otterize automatically identifies the `otterize/credentials-secret-name` annotation, generates
+1. Annotate the pod; Otterize automatically identifies the `otterize/credentials-secret-name` annotation, generates
 mTLS credentials, and stores them as a K8s secret, where the name of the secret is specified by the annotation.
 2. Mount the credentials stored as a K8s secret as a volume
 3. Mount the volume into the container
@@ -173,7 +173,7 @@ We will follow up by applying an intent to allow access.
 
 <details>
 <summary>Optional: check deployment status</summary>
-Check that the `client` `pod` was deployed:
+Check that the `client` pod was deployed:
 ```bash
 kubectl get pods -n otterize-tutorial-kafka-mtls
 ```
@@ -200,7 +200,7 @@ client-5d9d5c8d7b-7dlzb   1/1     Running   0          24s
    Loop exited
    ```
 
-   This is the expected outcome since we configured Kafka to require intents fo access to this topic.
+   This is the expected outcome since we configured Kafka to require ACLs for access to this topic.
    Once the client declares its intents, Otterize will add an ACL to Kafka to allow the intended calls.
    Let's see that now...
 
@@ -211,7 +211,7 @@ client-5d9d5c8d7b-7dlzb   1/1     Running   0          24s
    {@include: ../../static/code-examples/kafka-mtls/client-intents.yaml}
    ```
 :::tip
-Client intents are the cornerstone of [intent-based access control](otterize.com/ibac).
+Client intents are the cornerstone of [intent-based access control](https://otterize.com/ibac).
 :::
 
    Keep an eye on the logs being tailed in the **second terminal window**
@@ -245,7 +245,7 @@ Client intents are the cornerstone of [intent-based access control](otterize.com
     Read message - Message 5
    # highlight-end
     ```
-3. Observe that an ACL for this client was configured on the Kafka broker
+3. Observe that an ACL for this client was configured on the Kafka broker:
    ```bash
    kubectl logs -n kafka statefulset/kafka | grep "Processing Acl change" | grep mytopic | tail -n 1
    ```
@@ -271,7 +271,7 @@ We configured the Kafka helm chart to:
 3. We annotated the client pod to let Otterize know it should generate mTLS credentials in a PEM format.
 4. Configured the Kafka broker to use the K8s secret for its credentials.
 
-The Otterize SPIRE Integration Operator:
+The Otterize SPIRE integration operator:
 1. Created an entry for the annotated client pod with the SPIRE server.
 2. Generated matching mTLS credentials using the SPIRE server.
 3. Stored the mTLS credentials into a K8s secrets.
@@ -290,9 +290,9 @@ The Otterize SPIRE Integration Operator:
 
 
 :::caution
-Take care to remove the intents before removing the KafkaServerConfig or the Kafka broker, as the Operator will not know how to remove
+Take care to remove the intents before removing the KafkaServerConfig or the Kafka broker, as the operator will not know how to remove
 the intents if you first make it forget about the Kafka broker or it can't access the broker.
-If it's unable to remove the ACLs for the intents, the Operator will prevent the intents from being deleted until
+If it's unable to remove the ACLs for the intents, the operator will prevent the intents from being deleted until
 it is able to do so.
 :::end
 
