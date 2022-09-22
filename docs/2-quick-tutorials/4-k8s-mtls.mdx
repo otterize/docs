@@ -26,7 +26,7 @@ You can skip this section if Otterize is already installed in your cluster.
 ## Deploy the example
 
 Our example consists of two pods: client and server communicating over HTTPS using credentials
-provisioned by the Otterize SPIRE Integration Operator.
+provisioned by the Otterize SPIRE integration operator.
 
 <details>
 <summary>Expand to see the details of this example</summary>
@@ -118,7 +118,7 @@ https.createServer(
 </details>
 
 
-For credentials to be generated for a pod, it must be annotated to inform the SPIRE Integration Operator of the desired secret name.
+For credentials to be generated for a pod, it must be annotated to inform the SPIRE integration operator of the desired secret name.
 
 We'll be performing the following steps:
 1. Annotate the pod - Otterize looks for the `otterize/credentials-secret-name` annotation, generates
@@ -261,7 +261,7 @@ We can use openssl to inspect the generated credentials. The credentials are sto
 Otterize defaults to generating credentials with an expiry time of 1 day. The certificates are
 automatically refreshed before expiring, and you must take care to always read the credentials from file, rather than caching them for this reason.
 
-To set a longer expiration time, set the `spire-integration.otterize.com/cert-ttl` annotation for your pods. FIXME For more information, see the documentation for the [SPIRE Integration Operator](/components/spire-integration-operator)
+To set a longer expiration time, set the `spire-integration.otterize.com/cert-ttl` annotation for your pods. FIXME For more information, see the documentation for the [SPIRE integration operator](/components/spire-integration-operator)
 :::
 
 ## What's next
