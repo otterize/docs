@@ -2,7 +2,7 @@ Use Helm to install the latest version of Otterize:
    ```shell
    helm repo add otterize https://helm.otterize.com
    helm repo update
-   helm upgrade --install -n otterize-system --create-namespace \
+   helm install -n otterize-system --create-namespace \
    --set intentsOperator.operator.enableNetworkPolicyCreation=false otterize otterize/otterize-kubernetes
    ```
 
