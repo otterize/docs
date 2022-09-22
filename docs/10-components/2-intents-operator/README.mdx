@@ -12,6 +12,21 @@ to connect to Kafka with mTLS &mdash; the Otterize intents operator works with S
 [SPIRE integration operator](/components/spire-integration-operator) to automatically establish pod service identities, generate trusted credentials for each client service, and deliver them to the pod in a locally-mounted volume.
 
 
+## Deploying the intents operator
+To deploy the operator, [use the Helm chart](helm-chart).
+
+## Controlling access using the intents operator
+To learn how to use the intents operator to control access, consult the guides for [managing network policies using intents](/guides/k8s-ibac-via-network-policies) and [Kafka ACLs using intents](/guides/ibac-for-k8s-kafka).
+
+## Pod annotations
+
+You can override the service name the intents operator uses when it computes network policies and Kafka ACLs with a pod annotation.
+
+
+| Annotation                          | Description                                                                                                                                          | Default                                       |
+|-------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------|
+| `intents.otterize.com/service-name` | Otterize-wide override for this service's name. Used by the operator when computing a pod's service name for use in network policies and Kafka ACLs. | See [Service identities](/service-identities) |
+
 ## Supported enforcement types
 
 ### Network policies
