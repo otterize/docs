@@ -56,6 +56,23 @@ If using the `otterize-kubernetes` chart, the values in the example above are co
 
 Using topic scope, you can gradually roll out Otterize to your Kafka cluster. Select a subset of topics to apply mTLS and/or intents to and start with those, without affecting the rest.
 
+- Unauthenticated - client identity not required
+ ```bash
+ clientIdentityRequired: false
+ intentsRequired: false
+   ```
+- Authenticated - client identity required
+ ```bash
+ clientIdentityRequired: true
+ intentsRequired: false
+   ```
+- Authorized - client identity and an intent are required
+ ```bash
+ clientIdentityRequired: ture
+ intentsRequired: ture
+   ```
+
+
 Here are example configurations for topic scope and the resulting ACLs.
 
 #### Allow unauthenticated access to all topics
