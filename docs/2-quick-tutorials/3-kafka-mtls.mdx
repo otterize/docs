@@ -21,11 +21,11 @@ We will:
 
 ## Install Otterize
 :::note
-You can skip this section if Otterize is already installed in your cluster.
+For this tutorial, we'll disable the network policy component, so that our communications to the Kafka broker don't get blocked -
+and we can see the Kafka ACL authorization mechanism in action.
+If you already have Otterize installed, redeploy it like so
 :::
-{@include: ../_common/install-otterize.md}
-
-If you'd like to disable network policies creation and _only_ use Otterize for Kafka ACLs, pass `--set intentsOperator.operator.enableNetworkPolicyCreation=false` to Helm.
+{@include: ../_common/install-otterize-kafka.md}
 
 ## Install Kafka
 
@@ -51,7 +51,7 @@ The following command will deploy a Kafka cluster configured to use Otterize-pro
 with permissions for the intents operator to configure ACLs:
  ```bash
  helm repo add bitnami https://charts.bitnami.com/bitnami
- helm install --create-namespace -n kafka \
+ helm upgrade --install --create-namespace -n kafka \
    --version 14.x.x \
    -f https://docs.otterize.com/code-examples/kafka-mtls/helm/values.yaml kafka bitnami/kafka
  ```
@@ -167,13 +167,15 @@ We will follow up by applying an intent to allow access.
 </details>
 
 1. Deploy the client and the Kafka config using `kubectl`.
-    ```bash
-    kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/all.yaml
-    ```
+```bash
+kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/all.yaml
+```
 
 <details>
 <summary>Optional: check deployment status</summary>
+
 Check that the `client` pod was deployed:
+
 ```bash
 kubectl get pods -n otterize-tutorial-kafka-mtls
 ```

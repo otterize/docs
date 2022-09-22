@@ -25,11 +25,11 @@ You can also use an existing Kafka deployment or use our provided deployment for
 
 ## Install Otterize
 :::note
-You can skip this section if Otterize is already installed in your cluster.
+For this guide's examples, we'll disable the network policy component, so that our communications to the Kafka broker don't get blocked -
+and we can see the Kafka ACL authorization mechanism in action.
+If you already have Otterize installed, redeploy it like so
 :::
-{@include: ../../_common/install-otterize.md}
-
-If you'd like to disable network policies creation and _only_ use Otterize for Kafka ACLs, pass `--set intentsOperator.operator.enableNetworkPolicyCreation=false` to Helm.
+{@include: ../../_common/install-otterize-kafka.md}
 
 
 ## Configure Kafka for secure access
@@ -96,7 +96,7 @@ The following commands will deploy a Kafka cluster configured to use Otterize-pr
 with permissions for Otterize to configure ACLs:
  ```bash
  helm repo add bitnami https://charts.bitnami.com/bitnami
- helm install -n kafka \
+ helm upgrade --install -n kafka \
  --version 14.x.x \
  -f https://docs.otterize.com/code-examples/kafka-mtls/helm/values.yaml --create-namespace kafka bitnami/kafka
  ```
@@ -141,7 +141,7 @@ You can set up an interactive session that securely connects to Kafka by deployi
     ```
 2. Verify that the pod was deployed
    ```bash
-   kubectl get pods -n otterize-tutorial-kafka-mtls -l app=interactive
+   kubectl get pods -n ibac-for-kafka -l app=interactive
    ```
    You should see the following output:
    ```
@@ -153,7 +153,7 @@ You can set up an interactive session that securely connects to Kafka by deployi
    the messages sent and received in real time:
 
    ```bash title="Producer terminal"
-   kubectl exec -n otterize-tutorial-kafka-mtls -it deploy/interactive -- bash \
+   kubectl exec -n ibac-for-kafka -it deploy/interactive -- bash \
    /opt/bitnami/kafka/bin/kafka-console-producer.sh \
    --bootstrap-server kafka.kafka:9092 \
    -topic mytopic \
@@ -161,7 +161,7 @@ You can set up an interactive session that securely connects to Kafka by deployi
    ```
 
    ```bash title="Consumer terminal"
-   kubectl exec -n otterize-tutorial-kafka-mtls -it deploy/interactive -- bash \
+   kubectl exec -n ibac-for-kafka -it deploy/interactive -- bash \
    /opt/bitnami/kafka/bin/kafka-console-consumer.sh \
    --bootstrap-server kafka.kafka:9092 \
    -topic mytopic \
@@ -487,7 +487,7 @@ Both of these ACLs will enforce intended access where as - only clients that hav
 the specific topc.
 
 ## Otterize identities, intents and Kafka ACLs
-The following eur example is built of a single client (`myclient`) running in the namespace `otterize-tutorial-kafka-mtls`
+The following eur example is built of a single client (`myclient`) running in the namespace `ibac-for-kafka`
 and an intent to access a single topic (`mytopic`).
 
 <details>
