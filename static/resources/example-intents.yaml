@@ -7,12 +7,9 @@ calls:
     type: http
     resources:
       - path: /orders/*
-        methods:
-          - get
-          - post
+        methods: [ get, post ]
   - name: ecomm-events
     type: kafka
     topics:
       - name: orders
-        operations:
-          - produce
+        operations: [ produce ]
