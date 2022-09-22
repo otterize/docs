@@ -35,7 +35,7 @@ and trust Otterize to configure ACLs:
 
 1. Configure Otterize as a super user to grant it access to configure ACLs
 2. Use SSL for its listeners
-3. Using pod annotations, tell the SPIRE Integration Operator how the credentials should be created
+3. Using pod annotations, tell the SPIRE integration operator how the credentials should be created
 4. Authenticate connecting clients using mTLS credentials provided as a K8s secret
 
 <details>
@@ -271,7 +271,7 @@ We configured the Kafka helm chart to:
 3. We annotated the client pod to let Otterize know it should generate mTLS credentials in a PEM format.
 4. Configured the Kafka broker to use the K8s secret for its credentials.
 
-The Otterize SPIRE Integration Operator:
+The Otterize SPIRE integration operator:
 1. Created an entry for the annotated client pod with the SPIRE server.
 2. Generated matching mTLS credentials using the SPIRE server.
 3. Stored the mTLS credentials into a K8s secrets.
@@ -290,9 +290,9 @@ The Otterize SPIRE Integration Operator:
 
 
 :::caution
-Take care to remove the intents before removing the KafkaServerConfig or the Kafka broker, as the Operator will not know how to remove
+Take care to remove the intents before removing the KafkaServerConfig or the Kafka broker, as the operator will not know how to remove
 the intents if you first make it forget about the Kafka broker or it can't access the broker.
-If it's unable to remove the ACLs for the intents, the Operator will prevent the intents from being deleted until
+If it's unable to remove the ACLs for the intents, the operator will prevent the intents from being deleted until
 it is able to do so.
 :::end
 
