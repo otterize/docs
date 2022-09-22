@@ -15,21 +15,21 @@ We will:
 - Deploy client and server pods communicating over HTTPS and provision credentials to them
 - Inspect the credentials
 
+
+## Install Otterize
 :::note
 You can skip this section if Otterize is already installed in your cluster.
 :::
-
-## Install Otterize
 {@include: ../_common/install-otterize.md}
 
 
-## Deploy
+## Deploy the example
 
 Our example consists of two pods: client and server communicating over HTTPS using credentials
-provisioned by Otterize.
+provisioned by the Otterize SPIRE integration operator.
 
 <details>
-<summary>Expand to see the details of this example...</summary>
+<summary>Expand to see the details of this example</summary>
 <Tabs>
 
 <TabItem value="namespace.yaml" label="namespace.yaml" default>
@@ -118,15 +118,16 @@ https.createServer(
 </details>
 
 
-To generate credentials for the pod we simply need to update the deployment by annotating it.
-The required steps are to
-1. Annotate the pod - Otterize automatically identifies the `otterize/credentials-secret-name` annotation, generates
+For credentials to be generated for a pod, it must be annotated to inform the SPIRE integration operator of the desired secret name.
+
+We'll be performing the following steps:
+1. Annotate the pod - Otterize looks for the `otterize/credentials-secret-name` annotation, generates
 mTLS credentials, and stores them as K8s secret named as the annotation value.
 2. Mount the credentials stored as a K8s secret as a volume
 3. Mount the volume into the container
 
 <details>
-<summary>Expand to see a detailed explanation for the annotations</summary>
+<summary>Expand to see a detailed explanation for the configuration deployed below</summary>
 
 ```yaml
 spec:
@@ -177,26 +178,28 @@ server-6698c58cbc-v9n9b   1/1     Running   0          34s
 ```
 </details>
 
-2. Confirm that the client can successfully call the server using HTTP over mTLS. The server will reply to the client
-   with it's `own` certificate's `common name` and the `client`'s certificate `common name`.
+## Watch it in action
+
+1. Confirm that the client can successfully call the server using HTTP over mTLS. The client makes requests, and the server replies
+   with the server's certificate's `common name` as well as the `client`'s certificate `common name`.
 
    ```bash
    kubectl logs --tail 3 -n otterize-tutorial-mtls deploy/client
    ```
 
-   You should see the following line
+   You should see the following line:
 
    ```shell
    mTLS hello world
    from: server.otterize-tutorial-mtls          # server's common name in the certificate
    to client: client.otterize-tutorial-mtls     # client's common name in the certificate
    ```
-4. You can also follow the server's output log with
+2. You can also follow the server's output log with:
    ```bash
    kubectl logs --tail 1 -n otterize-tutorial-mtls deploy/server
    ```
 
-   You should see the following line
+   You should see the following output:
 
    ```shell
    client.otterize-tutorial-mtls:  GET /hello
@@ -204,35 +207,21 @@ server-6698c58cbc-v9n9b   1/1     Running   0          34s
 
 ## Inspect credentials
 
-We can use openssl to inspect the generated certificates. The certificates are stored as `K8s secrets` and are also
-`mounted` into containers.
+We can use openssl to inspect the generated credentials. The credentials are stored as a K8s secret and are then mounted as a file into the container.
 
-1. We will first retrieve them from one of the two options
-
-   <Tabs>
-     <TabItem value="secret-direct" label="K8s secret" default>
-   To retrieve the credentials from the K8s secrets store use:
+1.
+   To retrieve the credentials from the K8s secret, run the following:
 
    ```shell
    kubectl get secret -n otterize-tutorial-mtls client-credentials-secret -o jsonpath='{.data.svid\.pem}' | base64 -d > svid.pem
    ```
-   </TabItem>
-   <TabItem value="secret-pod" label="K8s pod mount" default>
-   To retrieve the credentials from the container mount use:
 
-   ```shell
-   kubectl exec -n otterize-tutorial-mtls -it deploy/client -- cat /var/otterize/credentials/svid.pem > svid.pem
-   ```
-
-   </TabItem>
-   </Tabs>
-
-2. And then inspect them with
+2. And then inspect them with:
 
    ```shell
    openssl x509 -in svid.pem -text | head -n 15
    ```
-   You should see a similar output to
+   You should see output similar to:
    ```x509
    Certificate:
        Data:
@@ -252,8 +241,7 @@ We can use openssl to inspect the generated certificates. The certificates are s
                    pub:
    ```
 
-3. You can see that Otterize generated an x509 certificate using the pod's name [_client_] and namespace [_
-   otterize-tutorial-mtls_].
+3. You can see that Otterize generated an X.509 keypair using the pod's name `client` and namespace `otterize-tutorial-mtls`: `client.otterize-tutorial-mtls`.
    The certificate belongs to a chain of trust starting at the SPIRE server.
 
 <details>
@@ -263,27 +251,31 @@ We can use openssl to inspect the generated certificates. The certificates are s
 2. The Otterize SPIRE integration operator
     1. Created an entries for the annotated pods with the SPIRE server.
     2. Generated matching mTLS credentials using the SPIRE server.
-    3. Stored the mTLS credentials into a K8s secrets.
+    3. Stored the mTLS credentials into a K8s secret.
 3. The secrets were mounted (separately) into each pod's container.
-4. The pods communicated with each other using HTTP of mutual TLS.
+4. The pods communicated with each other using mutual TLS-authenticated HTTPS.
 
 </details>
 
 :::note
 Otterize defaults to generating credentials with an expiry time of 1 day. The certificates are
-automatically refreshed before expiring. For a custom expiry
-time you can set the `spire-integration.otterize.com/cert-ttl` annotation for your pods. Read more at [Behavior](/components/behavior)
+automatically refreshed before expiring, and therefore you must always read the credentials from file rather than caching them.
+
+To set a longer expiration time, set the `spire-integration.otterize.com/cert-ttl` annotation for your pods. FIXME For more information, see the documentation for the [SPIRE integration operator](/components/spire-integration-operator)
 :::
 
 ## What's next
 
+<!--
+FIXME: Missing documentation
 - Read about how to [integrate](/sdk-integration/credential-sdk-integration) mTLS into common SDKs and
   frameworks.
+--->
 - Enforce [secure Kafka access](/quick-tutorials/kafka-mtls) with mTLS.
 
 ## Teardown
 
-To remove the deployed resources run
+To remove the deployed resources run:
 
 ```bash
 kubectl delete -f https://docs.otterize.com/code-examples/mtls/all.yaml

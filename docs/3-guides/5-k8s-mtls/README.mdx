@@ -7,10 +7,15 @@ import TabItem from '@theme/TabItem';
 
 Otterize can automatically provision mTLS credentials by baking exiting K8s workload identities into certificates.
 
+<!-- FIXME
 :::note to complete
 :::
+-->
 
 ## Install Otterize
+:::note
+You can skip this section if Otterize is already installed in your cluster.
+:::
 {@include: ../../_common/install-otterize.md}
 
 ## Choose a Kubernetes cluster and services
@@ -26,7 +31,7 @@ Our example consists of two pods: client and server communicating over HTTPS usi
 provisioned by Otterize.
 
 <details>
-<summary>Expand to see the details of this example...</summary>
+<summary>Expand to see the details of this example</summary>
 <Tabs>
 
 <TabItem value="namespace.yaml" label="namespace.yaml" default>
@@ -183,7 +188,10 @@ The following annotations control different aspects of the credential generation
 - `spire-integration.otterize.com/dns-names` - A comma-separated list of additional dns names to be registered as part of the
 - `spire-integration.otterize.com/cert-ttl` - The certificate TTL. Defaults to SPIRE-server's configured default TTL
 :::note
-Otterize defaults to generating credentials with an expiry time of 1 day. The certificates are automatically refreshed before expiring.
+Otterize defaults to generating credentials with an expiry time of 1 day. The certificates are
+automatically refreshed before expiring, and you must take care to always read the credentials from file, rather than caching them for this reason.
+
+To set a longer expiration time, set the `spire-integration.otterize.com/cert-ttl` annotation for your pods. FIXME For more information, see the documentation for the [SPIRE Integration Operator](/components/spire-integration-operator)
 :::
 - `spire-integration.otterize.com/cert-type` - The requested certificate type - pem (default) or jks
 
@@ -253,14 +261,14 @@ And then inspect them with
                    pub:
    ```
 
-You can see that Otterize generated an x509 certificate using the pod's name [`client`] and namespace [`otterize-tutorial-mtls`].
-   The certificate belongs to a chain of trust starting at the SPIRE server.
+You can see that Otterize generated an X.509 keypair using the pod's name `client` and namespace `otterize-tutorial-mtls`: `client.otterize-tutorial-mtls`.
+The certificate belongs to a chain of trust starting at the SPIRE server.
 
 
 ### Optional - verify demo setup
 
-Confirm that the client can successfully call the server using HTTP over mTLS. The server will reply to the client
-   with it's `own` certificate's `common name` and the `client`'s certificate `common name`.
+Confirm that the client can successfully call the server using HTTP over mTLS. The client makes requests, and the server replies
+with the server's certificate's `common name` as well as the `client`'s certificate `common name`.
 
    ```bash
    kubectl logs --tail 3 -n otterize-tutorial-mtls deploy/client

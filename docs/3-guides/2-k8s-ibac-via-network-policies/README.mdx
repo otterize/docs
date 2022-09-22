@@ -2,10 +2,8 @@
 sidebar_position: 1
 title: IBAC in Kubernetes via network policies
 ---
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
 
-One of the easiest ways to realize intent-based access control in Kubernetes is by leveraging network policies.
+One of the easiest ways to realize [intent-based access control](/intent-based-access-control) in Kubernetes is by leveraging network policies.
 
 Network policies are built into Kubernetes itself, and while their enforcement is not, all that's required
 is a Kubernetes CNI network plugin; most Kubernetes clusters either have a CNI installed or can add one easily.
@@ -89,7 +87,7 @@ To get the externally-accessible URL where your demo front end is available, run
 ```bash
 kubectl get service -n otterize-ecom-demo frontend-external -o json | jq -r '.status.loadBalancer.ingress[0].hostname'
 ```
-The result should be similar to (if running on EKS):
+The result should be similar to (if running on AWS EKS):
 ```
 a11843075fd254f8099a986467098647-1889474685.us-east-1.elb.amazonaws.com
 ```
@@ -131,11 +129,11 @@ rather than trying to protect all servers at once.
 
 Here's what it looks like for the reference lab. If you're using your own services, adjust accordingly.
 
-:::note TOMER
+<!-- FIXME
 Show the lab again, but now with a circle overlay or other color coding showing the server that will be protected,
 the client that will declare its intent to call that server and still go through,
 and the client that will now be blocked (until it declares its intent too).
-:::
+--->
 
 - The `productcatalogservice` *serves* product information;
   - The `checkoutservice` needs to *call it* when checking out;
@@ -170,9 +168,9 @@ Now let's add the intents file of the `checkoutservice` (remember to adjust if y
    ```
 2. Go ahead and place an order on the side, you will see all functions correctly.
     ![Order complete](/resources/lab/order-complete.png)
-:::note TOMER
+<!-- FIXME
 Add updated lab image
-:::
+-->
 
 ## Lather, rinse, repeat
 
@@ -195,9 +193,9 @@ To see the potential of the network mapper in bootstrapping IBAC, try this:
 1. Run the network mapper while generating enough traffic in your cluster to capture all calls, and
       export them as intents files.
     ```bash
-    otterize mapper export -n otterize-ecom-demo > intents.yaml
+    otterize mapper export -n otterize-ecom-demo -o intents.yaml
     ```
-    Or, if you're using the reference lab we've already done that for you
+    Or, if you're using the reference lab we've already done that for you:
     ```bash
     wget https://docs.otterize.com/code-examples/lab/intents.yaml
     ```
@@ -206,7 +204,7 @@ To see the potential of the network mapper in bootstrapping IBAC, try this:
    ```yaml
    {@include: ../../../static/code-examples/lab/default-deny-network-policy.yaml}
    ```
-   if you're using the reference lab we've already done that for you
+   if you're using the reference lab we've already done that for you:
    ```bash
    kubectl apply -f https://docs.otterize.com/code-examples/lab/default-deny-network-policy.yaml
    ```
@@ -222,7 +220,7 @@ To see the potential of the network mapper in bootstrapping IBAC, try this:
 </details>
 
 
-SUGGEST NEXT STEPS AND FINISH BELOW
+FIXME: SUGGEST NEXT STEPS AND FINISH BELOW
 
 ## Practical notes
 

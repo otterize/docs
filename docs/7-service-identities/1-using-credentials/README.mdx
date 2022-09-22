@@ -6,23 +6,23 @@ title: Using credentials
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Credential SDK integration
+# Using mTLS credentials
 
-## mTLS credentials
+## Mounting mTLS credentials into pods
 
-To mount mTLS credentials please follow the [guide](/guides/k8s-mtls/).
+To learn how to mount mTLS credentials please follow the [guide](/guides/k8s-mtls/).
 
 ## HTTP
 ### Client
 
 <Tabs>
-<TabItem value="js" label="JS" default>
+<TabItem value="js" label="JavaScript" default>
 
 ```js
 {@include: ../../../static/code-examples/code/mtls/http/client.js}
 ```
 </TabItem>
-<TabItem value="go" label="GO">
+<TabItem value="go" label="Go">
 
 ```go
 {@include: ../../../static/code-examples/code/mtls/http/client.go}
@@ -45,13 +45,13 @@ To mount mTLS credentials please follow the [guide](/guides/k8s-mtls/).
 ### Server
 
 <Tabs>
-<TabItem value="js" label="JS" default>
+<TabItem value="js" label="JavaScript" default>
 
 ```js
 {@include: ../../../static/code-examples/code/mtls/http/server.js}
 ```
 </TabItem>
-<TabItem value="go" label="GO">
+<TabItem value="go" label="Go">
 
 ```go
 {@include: ../../../static/code-examples/code/mtls/http/server.go}

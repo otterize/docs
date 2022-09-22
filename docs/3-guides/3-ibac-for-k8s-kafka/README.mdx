@@ -5,12 +5,14 @@ title: Intent-based access control for Kafka in Kubernetes
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-We can realize intent-based access control in Kubernetes is by leveraging the built-in capabilities
+We can realize intent-based access control in Kubernetes by leveraging the built-in capabilities
 Kafka offers for enforcement using its ACL mechanism, coupled with K8s identities Otterize can easily bake
 intro mTLS certificates.
 
+<!-- FIXME
 :::note to complete
 :::
+-->
 
 Of course, Otterize eliminates all of that. Let's see how.
 
@@ -21,32 +23,27 @@ and eventually in a staging or production cluster. You'll need admin access.
 
 You can also use an existing Kafka deployment or use our provided deployment for ease of use.
 
-## Install Otterize into your Kubernetes
-To apply intents on an existing cluster you will need to install Otterize with the Kafka/mTLS
-option enabled. Follow the [Kafka/mTLS components](/guides/k8s-installation#kafkamtls) installation
-instructions to or these [instructions](/guides/k8s-installation) for a complete installation.
+## Install Otterize
 :::note
-We recommend working with the [Kafka/mTLS components](/guides/k8s-installation#kafkamtls) installation when following this guide to avoid conflicts
-with Network Policies applied alongside Kafka ACLs.
+You can skip this section if Otterize is already installed in your cluster.
 :::
+{@include: ../../_common/install-otterize.md}
+
+If you'd like to disable network policies creation and _only_ use Otterize for Kafka ACLs, pass `--set intentsOperator.operator.enableNetworkPolicyCreation=false` to Helm.
 
 
-## Configure kafka for secure access
-To configure kafka for secure access we have multiple areas we need to modify in its configuration to prepare for secure
-access and another where we add annotations to let Otterize know it needs to generate credentials for secure access.
+## Configure Kafka for secure access
+To configure a Kafka broker for secure access, we need to configure the broker itself as well as adding Otterize-specific annotations to indicate that we want mTLS credential generation to happen.
 
-The following example shows how to configure bitnami's popular
-kafka [chart](https://github.com/bitnami/charts/tree/master/bitnami/kafka):
+The following example shows how to configure Bitnami's popular
+Kafka [chart](https://github.com/bitnami/charts/tree/master/bitnami/kafka):
 
-:::note
-Though SSL was replaced by TLS, Kafka still uses the term SSL internally.
-:::
 
-1. Allow Otterize to manage Kafka by adding it as a super user wtih:
+1. Configure super users - add the broker itself and the Otterize Intents Operator:
    ```yaml
    superUsers: "User:CN=kafka.kafka,O=SPIRE,C=US;User:CN=intents-operator.otterize,O=SPIRE,C=US"
    ```
-3. Configure its [listeners](https://www.confluent.io/blog/kafka-listeners-explained/) to use SSL
+3. Configure the Kafka broker's [listeners](https://www.confluent.io/blog/kafka-listeners-explained/) to use SSL
    ```yaml
    listeners:
      - "CLIENT://:9092"
@@ -75,20 +72,19 @@ Though SSL was replaced by TLS, Kafka still uses the term SSL internally.
    allowEveryoneIfNoAclFound: true  
    ```
 5. Add pod annotations to let Otterize know it needs to generate the JKS credentials and store them at the specified K8s
-   secret according to bitnami's
-   chart [specifications](https://github.com/bitnami/charts/tree/master/bitnami/kafka#enable-security-for-kafka-and-zookeeper) :
+   secret:
    ```yaml
    podAnnotations:
-     otterize/cert-type: jks
+     spire-integration.otterize.com/cert-type: jks
      spire-integration.otterize.com/tls-secret-name: kafka-tls-secret
-     otterize/truststore-file-name: kafka.truststore.jks
-     otterize/keystore-file-name: kafka-keystore.jks
-     otterize/dns-names: "kafka-0.kafka-headless.kafka.svc.cluster.local,kafka.kafka.svc.cluster.local"
-     otterize/cert-ttl: "31536000" # 1 year
+     spire-integration.otterize.com/truststore-file-name: kafka.truststore.jks
+     spire-integration.otterize.com/keystore-file-name: kafka-keystore.jks
+     spire-integration.otterize.com/dns-names: "kafka-0.kafka-headless.kafka.svc.cluster.local,kafka.kafka.svc.cluster.local"
+     spire-integration.otterize.com/cert-ttl: "31536000" # 1 year
    ```
 
 <details>
-<summary>Expand to see the complete YAML of this example...</summary>
+<summary>Expand to see the complete YAML of this example</summary>
 
 ```yaml
 {@include: ../../../static/code-examples/kafka-mtls/helm/values.yaml}
@@ -96,46 +92,25 @@ Though SSL was replaced by TLS, Kafka still uses the term SSL internally.
 
 </details>
 
-The following command will deploy a Kafka cluster configured to use Otterize-provided mTLS credentials
-with permissions for Otterize to configure ACLs.
+The following commands will deploy a Kafka cluster configured to use Otterize-provided mTLS credentials
+with permissions for Otterize to configure ACLs:
  ```bash
  helm repo add bitnami https://charts.bitnami.com/bitnami
- helm upgrade --install -n kafka kafka \
- --version 14.x.x bitnami/kafka \
- -f https://docs.otterize.com/code-examples/kafka-mtls/helm/values.yaml --create-namespace
+ helm install -n kafka \
+ --version 14.x.x \
+ -f https://docs.otterize.com/code-examples/kafka-mtls/helm/values.yaml --create-namespace kafka bitnami/kafka
  ```
-
-<details>
-<summary>Optional: check deployment status</summary>
-<div>
-
-It can take several minutes for the pods to **stabilize** into the `Ready` and `Running` states. You can monitor with
-the following command:
-
- ```bash
-kubectl get pods -n kafka -w
- ```
-
-After **stabilization** you should see:
-
- ```bash
- NAME                READY   STATUS    RESTARTS      AGE
-kafka-0             1/1     Running   1 (25s ago)   45s
-kafka-zookeeper-0   1/1     Running   0             56s
- ```
-</div>
-</details>
+You can add the `--wait` flag for Helm to wait for deployment to complete and all pods to be Ready, or manually watch for all pods to be `Ready` using `kubectl get pods -n kafka -w`.
 
 
 
 ### Optional - Testing secure connection to Kafka
 
-You can set up an interactive session that securely connects to Kafka by deploying a pod configured to get credentials
-and using the popular [kafka-console-producer](https://kafka.apache.org/quickstart#quickstart_send) and
+You can set up an interactive session that securely connects to Kafka by deploying a pod configured to get credentials, produce and consume messages using the built-in [kafka-console-producer](https://kafka.apache.org/quickstart#quickstart_send) and
 [kafka-console-consumer](https://kafka.apache.org/quickstart#quickstart_consume) scripts:
 
 <details>
-<summary>Expand to see the details of this example...</summary>
+<summary>Expand to see the details of this example</summary>
 <Tabs>
 <TabItem value="namespace.yaml" label="namespace.yaml" default>
 
@@ -164,17 +139,17 @@ and using the popular [kafka-console-producer](https://kafka.apache.org/quicksta
     ```bash
     kubectl apply -f https://docs.otterize.com/code-examples/ibac-for-kafka/interactive/all.yaml
     ```
-2. Check that the `pod` was deployed
+2. Verify that the pod was deployed
    ```bash
    kubectl get pods -n otterize-tutorial-kafka-mtls -l app=interactive
    ```
-   You should see
+   You should see the following output:
    ```
    NAME                           READY   STATUS    RESTARTS   AGE
    interactive-5568ff58ff-84ksc   1/1     Running   0          8s
    ```
 
-3. Let's open two interactive terminal windows - one for the producer and one for the consumer with so we can see
+3. Let's open two interactive terminal windows - one for the producer and one for the consumer, so we can see
    the messages sent and received in real time:
 
    ```bash title="Producer terminal"
@@ -192,7 +167,7 @@ and using the popular [kafka-console-producer](https://kafka.apache.org/quicksta
    -topic mytopic \
    --consumer.config /app/client.properties
    ```
-4. Write any text you wish on the **producer terminal**, send it with an **enter** and you will see the messages appear
+4. Write any text you like on the **producer terminal**, send it with an **enter** and you will see the messages appear
    on the
    ```bash title="Producer terminal"
    >Hello there consumer, this is the producer!
@@ -290,7 +265,7 @@ and using the popular [kafka-console-producer](https://kafka.apache.org/quicksta
 [kafka-console-consumer](https://kafka.apache.org/quickstart#quickstart_consume) scripts:
 
 <details>
-<summary>Expand to see the details of this example...</summary>
+<summary>Expand to see the details of this example</summary>
 <Tabs>
 <TabItem value="namespace.yaml" label="namespace.yaml" default>
 
@@ -516,7 +491,7 @@ The following eur example is built of a single client (`myclient`) running in th
 and an intent to access a single topic (`mytopic`).
 
 <details>
-<summary>Expand to see the details of this example...</summary>
+<summary>Expand to see the details of this example</summary>
 <Tabs>
 
 <TabItem value="deployment.yaml" label="deployment.yaml" default>
