@@ -1,0 +1,41 @@
+---
+sidebar_position: 4
+title: Network mapper
+---
+
+The Otterize network mapper creates a map of in-cluster traffic by (1) capturing DNS traffic and (2) inspecting active connections in the same manner `netstat` does, then resolving the IP addresses participating in connections to the Pods, and crawling up the ownership of the Pod until it reaches the root object. See [Service identities](/service-identities) to learn more on how service name resolving happens.
+
+You can then use the CLI to list the traffic by client, or export it as JSON or ClientIntents Kubernetes resources (YAML). ClientIntents can be consumed by the [Intents Operator](https://github.com/otterize/intents-operator) to apply network policies or Kafka ACLs to your cluster, and achieve zero trust.
+
+Example output from the [Quick tutorial](/quick-tutorials/k8s-network-mapper):
+```
+checkoutservice calls:
+  - orderservice
+
+orderservice calls:
+  - kafka
+```
+
+## How does the Network Mapper work?
+
+### Components
+- Sniffer - the sniffer is deployed to each node using a DaemonSet, and is responsible for capturing node-local DNS traffic and inspecting open connections.
+- Mapper - the mapper is deployed once, and resolves service names using the Kubernetes API with traffic information reported by the sniffers.
+
+### DNS responses
+DNS is a common network protocol used for service discovery. When a pod (`checkoutservice`) tries to connect to a Kubernetes service
+(`orderservice`) or another pod, a DNS query is sent out. The network mapper watches DNS responses and extracts the IP addresses, which are used for the [service identity resolving process](/service-identities).
+
+### Active TCP connections
+DNS responses will only appear when new connections are opened. To handle long-lived connections, the network mapper also queries open TCP connections in a manner similar to `netstat` or `ss`. The IP addresses are used for the [service identity resolving process](/service-identities), as above.
+
+## Deploying the network mapper
+To deploy the network mapper, [use the Helm chart](helm-chart).
+
+## Pod annotations
+You can override the service name the network mapper uses when it computes the service name using a pod annotation.
+
+
+| Annotation                          | Description                                     | Default                                       |
+|-------------------------------------|-------------------------------------------------|-----------------------------------------------|
+| `intents.otterize.com/service-name` | Otterize-wide override for this service's name. | See [Service identities](/service-identities) |
