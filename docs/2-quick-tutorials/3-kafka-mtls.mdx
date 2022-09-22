@@ -51,9 +51,9 @@ The following command will deploy a Kafka cluster configured to use Otterize-pro
 with permissions for the Intents Operator to configure ACLs:
  ```bash
  helm repo add bitnami https://charts.bitnami.com/bitnami
- helm upgrade --install --create-namespace -n kafka kafka \
-   --version 14.x.x bitnami/kafka \
-   -f https://docs.otterize.com/code-examples/kafka-mtls/helm/values.yaml
+ helm install --create-namespace -n kafka \
+   --version 14.x.x \
+   -f https://docs.otterize.com/code-examples/kafka-mtls/helm/values.yaml kafka bitnami/kafka
  ```
 
 You can add the `--wait` flag for Helm to wait for deployment to complete and all pods to be Ready, or manually watch for all pods to be `Ready` using `kubectl get pods -n kafka -w`.
