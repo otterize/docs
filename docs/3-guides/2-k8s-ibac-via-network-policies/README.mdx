@@ -94,7 +94,7 @@ a11843075fd254f8099a986467098647-1889474685.us-east-1.elb.amazonaws.com
 Go ahead and browse to the URL above to "shop" and get a feel for the reference lab's behavior.
 (The URL might take some time to populate across DNS servers. Note that we are accessing an HTTP and not an HTTPS website.)
 
-<img src="https://github.com/GoogleCloudPlatform/microservices-demo/raw/main/docs/img/online-boutique-frontend-1.png" />
+<img src="https://github.com/GoogleCloudPlatform/microservices-demo/raw/main/docs/img/online-boutique-frontend-1.png" width="300"/>
 
 ## Install Otterize into your Kubernetes
 To apply intents on an existing cluster you will need to install Otterize with the network policies
@@ -148,11 +148,13 @@ Here's the intents file of the `recommendationservice` (remember to adjust if yo
     kubectl apply -f https://docs.otterize.com/code-examples/lab/recommendationservice-productcatalogservice.yaml
     ```
 
-2. And check in on our lab by adding an item to your cart and placing an order.
+2. Now see how the lab is doing, by adding an item to your cart and placing an order:
 
-    ![Place order](/resources/lab/place-order.png)
+    <img title="Place order" src="/resources/lab/place-order.png" width="200" />
+
 3. You will notice that the site hangs as the `checkoutservice` tries to call the `productcatalogservice` but is being blocked
-   by the network policies set in the previous stage. When the `checkoutservice` times out you will see.
+   by the network policies set in the previous stage. When the `checkoutservice` times out you should see:
+
     ![Checkout service timed out](/resources/lab/checkoutservice-timeout.png)
 
 ### Add a second client's intents
@@ -219,9 +221,3 @@ To see the potential of the network mapper in bootstrapping IBAC, try this:
   </div>
 </details>
 
-
-FIXME: SUGGEST NEXT STEPS AND FINISH BELOW
-
-## Practical notes
-
-### Avoiding drift
