@@ -10,9 +10,8 @@ can use for traffic shaping within K8s clusters. They allow us to shape traffic 
 and L4 identifiers. To enforce network policies, a Kubernetes cluster requires a CNI supporting network policies to be
 installed. Some popular options are Calico and Cilium.
 
-## How a network policy looks like
-Let's take a look at an example showing a network policy allowing traffic
-
+## Closer look at a network policy
+Let's take a look at an example showing a network policy allowing traffic:
 - _from_ pods labeled `app:backend` in namespaces labeled `env:production`
 - _to_ pods labeled `app:db` in the namespace  `production-db`
 
@@ -97,10 +96,9 @@ case that means that the `frontend-external` `LoadBalancer` won't be able to com
 To overcome this, Otterize will automatically generate a network policy to allow traffic from `frontend-external`
 to `frontend` by relying on the existence of the `LoadBalancer Service` as an indicator of intent between the two.
 
-FAQ:
-- Why can't Otterize always generate network policies for ingress types?
-  - If no network policies exist, automatically generating a network policy to allow `frontend-external` -> `frontend` will
-  block existing traffic like `loadgenerator` -> `frontend`.
+Why doesn't Otterize always generate network policies for ingress types?
+Because if no network policies exist, automatically generating a network policy to allow `frontend-external` -> `frontend`
+would block existing traffic like `loadgenerator` -> `frontend`.
 
 
 
