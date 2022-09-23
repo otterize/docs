@@ -25,9 +25,9 @@ You can also use an existing Kafka deployment or use our provided deployment for
 
 ## Install Otterize
 :::note
-For this guide's examples, we'll disable the network policy component, so that our communications to the Kafka broker don't get blocked -
-and we can see the Kafka ACL authorization mechanism in action.
-If you already have Otterize installed, redeploy it like so
+For this tutorial, we'll disable the network policy component, to focus on the Kafka ACL authorization mechanism.
+If you already have Otterize installed, redeploy it as shown below. You can always re-enable the network policy component
+later by deploying it as shown below but without the `--set` flag.
 :::
 {@include: ../../_common/install-otterize-kafka.md}
 
@@ -104,7 +104,7 @@ You can add the `--wait` flag for Helm to wait for deployment to complete and al
 
 
 
-### Optional - Testing secure connection to Kafka
+### Optional: Testing secure connection to Kafka
 
 You can set up an interactive session that securely connects to Kafka by deploying a pod configured to get credentials, produce and consume messages using the built-in [kafka-console-producer](https://kafka.apache.org/quickstart#quickstart_send) and
 [kafka-console-consumer](https://kafka.apache.org/quickstart#quickstart_consume) scripts:
@@ -168,7 +168,7 @@ You can set up an interactive session that securely connects to Kafka by deployi
    --consumer.config /app/client.properties
    ```
 4. Write any text you like on the **producer terminal**, send it with an **enter** and you will see the messages appear
-   on the
+   on the consumer terminal:
    ```bash title="Producer terminal"
    >Hello there consumer, this is the producer!
    >
@@ -224,18 +224,18 @@ Permission levels are set by
    ```
 
 To set a security scope for topic access we need to define
-- `Default access` permission level for topics
-- `Per topic` access permission level
+- **Default access** permission level for topics
+- **Per topic** access permission level
 
 
-### Setting the `default access` security scope
+### Setting the default access security scope
 To set the default security scope for topics we will use the following `topic` and `pattern`:
 ```
     - topic: "*"
       pattern: prefix
 ```
 
-### Setting `per topic` security scope
+### Setting per topic security scope
 To set the default security scope for topics we will use the following `topic` and `pattern`:
 ```
     - topic: "*"
@@ -251,7 +251,7 @@ The following KafkaServerConfig sets
 {@include: ../../../static/code-examples/ibac-for-kafka/kafkaserverconfig-mytopic.yaml}
 ```
 
-### Optional - Testing security scopes
+### Optional: Testing security scopes
 
 Let's run through the example config and check the various states clients, intents and Kafka can be at. By the following order
 - Access `mytopic` successfully as it requires clients to only be authenticated.
@@ -344,8 +344,8 @@ Hello there consumer, this is the producer!
    ```
 You can close the two terminal windows.
 #### Fail to access `mytopic-intended`
-We will now test the behavior with two `new` interactive terminal windows configured to access `mytopic-intended`. Start with opening
-the `Producer terminal`
+We will now test the behavior with two **new** interactive terminal windows configured to access `mytopic-intended`. Start with opening
+the **producer terminal**
 ```bash title="Producer terminal"
 kubectl exec -n ibac-for-kafka -it deploy/interactive -- bash \
 /opt/bitnami/kafka/bin/kafka-console-producer.sh \
@@ -353,7 +353,7 @@ kubectl exec -n ibac-for-kafka -it deploy/interactive -- bash \
 -topic mytopic-intended \
 --producer.config /app/client.properties
 ```
-Type `hello` into the `Producer terminal` and you will see it getting blocked from accessing the `mytopic-intended` as following:
+Type `hello` into the **producer terminal** and you will see it getting blocked from accessing the `mytopic-intended` as following:
 ```bash title="Producer terminal"
 >hello
 [2022-09-15 10:12:24,926] WARN [Producer clientId=console-producer] Error while fetching metadata with correlation id 4 : {mytopic-intended=TOPIC_AUTHORIZATION_FAILED} (org.apache.kafka.clients.NetworkClient)
@@ -361,7 +361,7 @@ Type `hello` into the `Producer terminal` and you will see it getting blocked fr
 [2022-09-15 10:12:24,941] ERROR Error when sending message to topic mytopic-intended with key: null, value: 5 bytes with error: (org.apache.kafka.clients.producer.internals.ErrorLoggingCallback)
 org.apache.kafka.common.errors.TopicAuthorizationException: Not authorized to access topics: [mytopic-intended]
 ```
-Open the `Consumer terminal` with:
+Open the **consumer terminal** with:
 ```bash title="Consumer terminal"
 kubectl exec -n ibac-for-kafka -it deploy/interactive -- bash \
 /opt/bitnami/kafka/bin/kafka-console-consumer.sh \
