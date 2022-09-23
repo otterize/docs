@@ -195,12 +195,12 @@ To set a longer expiration time, set the `spire-integration.otterize.com/cert-tt
 :::
 - `spire-integration.otterize.com/cert-type` - The requested certificate type - pem (default) or jks
 
-#### Cert-type - pem parameters
+#### Parameters for pem-type certs
 - `spire-integration.otterize.com/svid-file-name` - The name of the file in the secret data, that stores the certificate's SVID file. Defaults to `svid.pem`
 - `spire-integration.otterize.com/bundle-file-name` - The name of the file in the secret data, that stores the certificate's bundle file. Defaults to `bundle.pem`.
 - `spire-integration.otterize.com/key-file-name` - The name of the file in the secret data, that stores the certificate's key file. Defaults to `key.pem`.
 
-#### Cert-type - jks parameters
+#### Parameters for jks-type certs
 - `spire-integration.otterize.com/keystore-file-name` - The name of the file in the secret data, that stores the certificate's key store file. Defaults to `keystore.jks`.
 - `spire-integration.otterize.com/truststore-file-name` - The name of the file in the secret data, that stores the certificate's trust store file. Defaults to `truststore.jks`.
 - `spire-integration.otterize.com/jks-password` - The jks certificate password. Defaults to `password`.
@@ -301,7 +301,7 @@ You can also follow the server's output log with
     2. Generated matching mTLS credentials using the SPIRE server.
     3. Stored the mTLS credentials into a K8s secrets.
 3. The secrets were mounted (separately) into each pod's container.
-4. The pods communicated with each other using HTTP of mutual TLS.
+4. The pods communicated with each other over HTTP using mutual TLS.
 
 ## What's next
 

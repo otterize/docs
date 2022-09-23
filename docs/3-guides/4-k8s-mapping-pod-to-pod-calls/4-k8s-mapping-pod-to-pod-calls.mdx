@@ -16,13 +16,10 @@ through installing Otterize, mapping traffic and tracking changes.
 {@include: ../../_common/install-otterize-cli.md}
 
 
-## Retrieving the network map (list, YAML intents, and JSON)
+## Retrieving the network map
 
 {@include: ../../_common/network-mapper/intents-list-export.md}
 
-:::info
-See the [CLI documentation](/cli) for more details.
-:::
 
 ### Filtering by namespace
 You can query the mapper for calls originating only from a specific namespace with:
@@ -36,7 +33,10 @@ The Otterize network mapper keeps track of active connections as long as it's ru
 otterize mapper reset
 ```
 
-For the complete list of the otterize network mapper capabilities as read the [CLI command reference](/cli/#network-mapper).
+:::tip
+For the complete list of the Otterize network mapper capabilities
+read the [CLI command reference](/cli/#network-mapper).
+:::
 
 ## Track network map changes over time
 
@@ -110,7 +110,7 @@ server-6698c58cbc-ssxvx   1/1     Running   0          45s
 ## Which calls are picked up
 The Otterize network mapper creates a map of in-cluster traffic by (1) capturing DNS traffic and (2) inspecting active connections in the same manner `netstat` does, then resolving the IP addresses participating in connections to the Pods, and crawling up the ownership of the Pod until it reaches the root object.
 
-To learn more, read about the [network mapper](/components/network-mapper)
+To learn more, read about the [network mapper](/components/network-mapper).
 
 <!-- FIXME
 :::tip
@@ -162,4 +162,4 @@ To learn more about how to use ClientIntents to manage network policies read thi
 
 ## Current limitations
 
-* DNS response tracking is relevant for clusters using DNS for service discovery
+* The network mapper is designed for situations where pods use Kubernetes DNS for service discovery.
