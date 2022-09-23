@@ -112,31 +112,32 @@ NAME                   POD-SELECTOR   AGE
 default-deny-ingress   none           17s
 ```
 </details>
-Let's monitor the client's attempts to call the server with a second terminal window,
-   so we can see the effects of our changes in real time.
 
-   **Open a second terminal window** and tail the client log:
-   ```bash
-   kubectl logs -f --tail 1 -n otterize-tutorial-npol deploy/client
-   ```
-   At this point the client should be timing out when trying to call the server:
-   ```
-   Calling server...
-   curl timed out
-   Calling server...
-   curl timed out
-   Calling server...
-   curl timed out
-   ```
+Let's monitor the client's attempts to call the server with a second terminal window,
+so we can see the effects of our changes in real time.
+
+**Open a second terminal window** and tail the client log:
+```bash
+kubectl logs -f --tail 1 -n otterize-tutorial-npol deploy/client
+```
+At this point the client should be timing out when trying to call the server:
+```
+Calling server...
+curl timed out
+Calling server...
+curl timed out
+Calling server...
+curl timed out
+```
 
 :::tip
-   If the client isn't timing out, then the installed CNI plugin likely does not support network policies.
-   Consult the docs for your Kubernetes distribution or head back to the [Calico installation section](#make-sure-you-have-a-cni-network-plugin) to install one.
-   For example, minikube does not start by default with a CNI that supports network policies
-   but you can ask it to start with one that does, such as Calico.
+If the client isn't timing out, then the installed CNI plugin likely does not support network policies.
+Consult the docs for your Kubernetes distribution or head back to the [Calico installation section](#make-sure-you-have-a-cni-network-plugin) to install one.
+For example, minikube does not start by default with a CNI that supports network policies
+but you can ask it to start with one that does, such as Calico.
 :::
 
-   The client failing like that is the expected outcome since by default all pods' ingress are blocked by the default network policy:
+The client failing like that is the expected outcome since by default the ingress to every pod is blocked by the default network policy:
 ```yaml
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
@@ -198,14 +199,14 @@ Client intents are the cornerstone of [intent-based access control](https://otte
    default-deny-ingress                           <none>                                               28s
    ```
 
-:::danger Uri: write celebration
-TODO
-:::
+## What did we accomplish?
 
-:::tip
-To learn more about how Otterize + network policies work see
-details [here](/intents-operator/network-policies/in-depth)
-:::
+- Controlling access through network policies no longer means touching network policies at all.
+
+- Clients simply declare what they need to access with their intents files.
+
+- The next `kubectl apply` ensures that network policies automatically reflect the intended pod-to-pod access.
+
 
 <details>
 <summary>Expand to see what happened behind the scenes</summary>
@@ -233,8 +234,8 @@ You can read the detailed explanation about how Otterize manages labels for netw
 ## What's next
 
 - Configure [network policies](/guides/k8s-ibac-via-network-policies/) for your existing deployments.
-- Explore the [network mapper](/quick-tutorials/k8s-network-mapper) to help you bootstrap intents you can.
-  apply as network policies.
+- Explore the [network mapper](/quick-tutorials/k8s-network-mapper) to help you bootstrap intents files
+  for use in IBAC.
 
 ## Teardown
 
