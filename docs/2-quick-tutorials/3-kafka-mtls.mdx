@@ -21,9 +21,9 @@ We will:
 
 ## Install Otterize
 :::note
-For this tutorial, we'll disable the network policy component, so that our communications to the Kafka broker don't get blocked -
-and we can see the Kafka ACL authorization mechanism in action.
-If you already have Otterize installed, redeploy it like so
+For this tutorial, we'll disable the network policy component, to focus on the Kafka ACL authorization mechanism.
+If you already have Otterize installed, redeploy it as shown below. You can always re-enable the network policy component
+later by deploying it as shown below but without the `--set` flag.
 :::
 {@include: ../_common/install-otterize-kafka.md}
 
@@ -185,6 +185,7 @@ NAME                      READY   STATUS    RESTARTS   AGE
 client-5d9d5c8d7b-7dlzb   1/1     Running   0          24s
 ```
 </details>
+
 2. Let's monitor the client's attempts to access the Kafka topic with a second terminal window,
    so we can see the effects of our changes in real time.
 
@@ -260,9 +261,17 @@ Client intents are the cornerstone of [intent-based access control](https://otte
    for operations: ALL from hosts: *), zkVersion : 6 (kafka.security.authorizer.AclAuthorizer)
    ```
 
-:::danger Uri: write celebration
-TODO
-:::
+## What did we accomplish?
+
+- Controlling Kafka access no longer means touching ACLs, issuing and managing and distributing certs, establishing trust,
+etc.
+
+- As we saw with pod-to-pod access, clients simply declare with their intents files the Kafka access they need,
+and define a place on their filesystem where they'll get the appropriate certs.
+
+- The next `kubectl apply` ensures that all the appropriate certs are issued and distributed,
+and that Kafka ACLs are configured to reflect precisely the intended topic-level access.
+
 
 <details>
 <summary>Expand to see what happened behind the scenes</summary>
