@@ -25,7 +25,7 @@ export const LinkButton = (props) => (
 Otterize OSS implements intent-based access control in a single Kubernetes cluster.
 
 It consists of the intents operator, a Kubernetes operator which handles client intents, and translates those intents to effective access control &mdash; at the moment, through network policies and through Kafka ACLs. It also
-includes the [SPIRE integration operator](spire-integration-operator), a Kubernetes operator for integrating with SPIFFE/SPIRE to handle pod identities
+includes the SPIRE integration operator, a Kubernetes operator for integrating with SPIFFE/SPIRE to handle pod identities
 and manage certificates. Finally, we have the network mapper to sniff pod-to-pod traffic
 and build a map, that may be exported to client intents files.
 
