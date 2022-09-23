@@ -5,8 +5,6 @@ title: Deploy mTLS between pods
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# mTLS
-
 This tutorial will walk you through deploying mTLS certificates on a sample client-server deployment.
 We will:
 
@@ -121,10 +119,10 @@ https.createServer(
 For credentials to be generated for a pod, it must be annotated to inform the SPIRE integration operator of the desired secret name.
 
 We'll be performing the following steps:
-1. Annotate the pod - Otterize looks for the `otterize/credentials-secret-name` annotation, generates
-mTLS credentials, and stores them as K8s secret named as the annotation value.
-2. Mount the credentials stored as a K8s secret as a volume
-3. Mount the volume into the container
+- Annotate the pod: Otterize looks for the `otterize/credentials-secret-name` annotation, generates
+mTLS credentials, and stores them as K8s secrets named according to the annotation value.
+- Make the credentials in the K8s secret available as a volume
+- Mount the volume into the container
 
 <details>
 <summary>Expand to see a detailed explanation for the configuration deployed below</summary>
@@ -159,10 +157,10 @@ spec:
 
 
 
-1. Deploy the `client` and `server` using `kubectl`.
-   ```bash
-   kubectl apply -f https://docs.otterize.com/code-examples/mtls/all.yaml
-   ```
+Deploy the `client` and `server` using `kubectl`.
+```bash
+kubectl apply -f https://docs.otterize.com/code-examples/mtls/all.yaml
+```
 
 <details>
 <summary>Optional: check deployment status</summary>

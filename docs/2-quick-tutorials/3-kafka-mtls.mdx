@@ -5,8 +5,6 @@ title: Deploy mTLS between pods and Kafka
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Kafka + mTLS
-
 This tutorial will walk you through applying intents and deploying mTLS certificates between a client and a Kafka cluster
 and configuring intents for one of its clients.
 We will:
@@ -267,7 +265,7 @@ Client intents are the cornerstone of [intent-based access control](https://otte
 etc.
 
 - As we saw with pod-to-pod access, clients simply declare with their intents files the Kafka access they need,
-and define a place on their filesystem where they'll get the appropriate certs.
+and define a place on their filesystem where they'll get the appropriate credentials (certs).
 
 - The next `kubectl apply` ensures that all the appropriate certs are issued and distributed,
 and that Kafka ACLs are configured to reflect precisely the intended topic-level access.
