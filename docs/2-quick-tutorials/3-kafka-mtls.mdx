@@ -28,26 +28,22 @@ later by deploying it as shown below but without the `--set` flag.
 
 ## Install Kafka
 
-We will deploy a Kafka cluster using bitnami's [chart](https://github.com/bitnami/charts/tree/master/bitnami/kafka)
-To configure the chart to use the Otterize-provided credentials we need to configure it to use SSL
-and trust Otterize to configure ACLs:
-
-1. Configure Otterize as a super user to grant it access to configure ACLs
-2. Use SSL for its listeners
-3. Using pod annotations, tell the SPIRE integration operator how the credentials should be created
-4. Authenticate connecting clients using mTLS credentials provided as a K8s secret
+We will deploy a Kafka cluster using Bitnami's [Helm chart](https://github.com/bitnami/charts/tree/master/bitnami/kafka).
+In the chart we will configure Kafka to:
+- Recognize the Otterize intents operator as a super user so it can configure ACLs;
+- Use TLS (Kafka calls it SSL) for its listeners;
+- Tell the Otterize SPIRE integration operator, via pod annotations, how credentials should be created; and
+- Authenticate clients using mTLS credentials provided as a Kubernetes secret
 
 <details>
 <summary>Expand to see the Helm values.yaml used with the Bitnami chart</summary>
-
 
 ```yaml
 {@include: ../../static/code-examples/kafka-mtls/helm/values.yaml}
 ```
 </details>
 
-The following command will deploy a Kafka cluster configured to use Otterize-provided mTLS credentials
-with permissions for the intents operator to configure ACLs:
+The following command will deploy a Kafka cluster with this chart:
  ```bash
  helm repo add bitnami https://charts.bitnami.com/bitnami
  helm install --create-namespace -n kafka \
@@ -59,6 +55,7 @@ You can add the `--wait` flag for Helm to wait for deployment to complete and al
 
 
 ## Protect a Kafka topic
+
 Let's protect a single kafka topic (`mytopic`) by applying a `KafkaServerConfig`:
 ```bash
 kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/kafkaserverconfig.yaml
@@ -222,7 +219,7 @@ Client intents are the cornerstone of [intent-based access control](https://otte
    kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/client-intents.yaml
    ```
 
-2. You should quickly see in the **second terminal** that the client is now successfully producing and consuming messages
+2. You should quickly see in the **second terminal** that the client is now successfully producing and consuming messages:
     ```bash
     Loading mTLS certificates
     Connecting to Kafka
