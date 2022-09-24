@@ -50,3 +50,8 @@
 :root {
     --doc-sidebar-width: 350px !important;
 }
+
+/* Auto-wrap text in code blocks */
+pre.prism-code {
+  white-space : pre-wrap;
+}
