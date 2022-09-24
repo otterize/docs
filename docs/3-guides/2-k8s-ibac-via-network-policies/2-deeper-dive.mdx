@@ -114,34 +114,34 @@ blocking pods from accepting incoming calls unless another network policy explic
 
 <TabItem value="namespace.yaml" label="namespace.yaml" default>
 
-   ```yaml
-   {@include: ../../../static/code-examples/network-policies/namespace.yaml}
-   ```
+```yaml
+{@include: ../../../static/code-examples/network-policies/namespace.yaml}
+```
 
 </TabItem>
 
 <TabItem value="server.yaml" label="server.yaml" default>
 
-   ```yaml
-  {@include: ../../../static/code-examples/network-policies/server-deployment.yaml}
-   ---
-  {@include: ../../../static/code-examples/network-policies/server-service.yaml}
-  ```
+```yaml
+{@include: ../../../static/code-examples/network-policies/server-deployment.yaml}
+---
+{@include: ../../../static/code-examples/network-policies/server-service.yaml}
+```
 
 </TabItem>
 <TabItem value="client.yaml" label="client.yaml" default>
 
-   ```yaml
-   {@include: ../../../static/code-examples/network-policies/client-deployment.yaml}
-   ```
+```yaml
+{@include: ../../../static/code-examples/network-policies/client-deployment.yaml}
+```
 
 </TabItem>
 
 <TabItem value="default-deny.yaml" label="default-deny.yaml" default>
 
-   ```yaml
-   {@include: ../../../static/code-examples/network-policies/default-deny-network-policy.yaml}
-   ```
+```yaml
+{@include: ../../../static/code-examples/network-policies/default-deny-network-policy.yaml}
+```
 
 </TabItem>
 </Tabs>
@@ -165,13 +165,14 @@ blocking pods from accepting incoming calls unless another network policy explic
 
 3. The client intents to call the server are declared with this `intents.yaml` file:
 
-   ```yaml
-   {@include: ../../../static/code-examples/network-policies/intents.yaml}
-   ```
-   Let's apply it:
-   ```shell
-   kubectl apply -f https://docs.otterize.com/code-examples/network-policies/intents.yaml
-   ```
+```yaml
+{@include: ../../../static/code-examples/network-policies/intents.yaml}
+```
+Let's apply it:
+```shell
+kubectl apply -f https://docs.otterize.com/code-examples/network-policies/intents.yaml
+```
+
 ### Track artifacts
 After applying the intents file Otterize performed multiple actions to allow access from the client to the server using network policies:
 - Create a network policy allowing traffic from the [client, namespace -labeled] pods to [server-labeled] pods

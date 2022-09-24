@@ -49,34 +49,34 @@ blocking pods from accepting incoming calls unless another network policy explic
 
 <TabItem value="namespace.yaml" label="namespace.yaml" default>
 
-   ```yaml
-   {@include: ../../static/code-examples/network-policies/namespace.yaml}
-   ```
+```yaml
+{@include: ../../static/code-examples/network-policies/namespace.yaml}
+```
 
 </TabItem>
 
 <TabItem value="server.yaml" label="server.yaml" default>
 
-   ```yaml
-  {@include: ../../static/code-examples/network-policies/server-deployment.yaml}
-   ---
-  {@include: ../../static/code-examples/network-policies/server-service.yaml}
-  ```
+```yaml
+{@include: ../../static/code-examples/network-policies/server-deployment.yaml}
+---
+{@include: ../../static/code-examples/network-policies/server-service.yaml}
+```
 
 </TabItem>
 <TabItem value="client.yaml" label="client.yaml" default>
 
-   ```yaml
-   {@include: ../../static/code-examples/network-policies/client-deployment.yaml}
-   ```
+```yaml
+{@include: ../../static/code-examples/network-policies/client-deployment.yaml}
+```
 
 </TabItem>
 
 <TabItem value="default-deny.yaml" label="default-deny.yaml" default>
 
-   ```yaml
-   {@include: ../../static/code-examples/network-policies/default-deny-network-policy.yaml}
-   ```
+```yaml
+{@include: ../../static/code-examples/network-policies/default-deny-network-policy.yaml}
+```
 
 </TabItem>
 </Tabs>
@@ -157,9 +157,10 @@ spec:
 
 1. The client declares its intent to call the server with this `intents.yaml` file:
 
-   ```yaml
-   {@include: ../../static/code-examples/network-policies/intents.yaml}
-   ```
+```yaml
+{@include: ../../static/code-examples/network-policies/intents.yaml}
+```
+
 :::tip
 Client intents are the cornerstone of [intent-based access control](https://otterize.com/ibac).
 :::

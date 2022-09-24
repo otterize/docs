@@ -193,28 +193,28 @@ reflect all those calls.
 
 To see the potential of the network mapper in bootstrapping IBAC, try this:
 1. Run the network mapper while generating enough traffic in your cluster to capture all calls, and
-      export them as intents files.
-    ```bash
-    otterize mapper export -n otterize-ecom-demo -o intents.yaml
-    ```
-    Or, if you're using the reference lab we've already done that for you:
-    ```bash
-    wget https://docs.otterize.com/code-examples/lab/intents.yaml
-    ```
+export them as intents files.
+```bash
+otterize mapper export -n otterize-ecom-demo -o intents.yaml
+```
+Or, if you're using the reference lab we've already done that for you:
+```bash
+wget https://docs.otterize.com/code-examples/lab/intents.yaml
+```
 2. Create and apply a "default-deny-ingress" network policy in your cluster for the selected namespace;
-   all pods will now have at least one ingress policy so *all* undeclared calls will be blocked.
-   ```yaml
-   {@include: ../../../static/code-examples/lab/default-deny-network-policy.yaml}
-   ```
-   if you're using the reference lab we've already done that for you:
-   ```bash
-   kubectl apply -f https://docs.otterize.com/code-examples/lab/default-deny-network-policy.yaml
-   ```
+all pods will now have at least one ingress policy so *all* undeclared calls will be blocked.
+```yaml
+{@include: ../../../static/code-examples/lab/default-deny-network-policy.yaml}
+```
+if you're using the reference lab we've already done that for you:
+```bash
+kubectl apply -f https://docs.otterize.com/code-examples/lab/default-deny-network-policy.yaml
+```
 3. See that most services are now blocked. For example, the reference lab will stop working.
 4. Now apply all the intents you captured in the first step.
-   ```bash
-   kubectl apply -f intents.yaml
-   ```
+```bash
+kubectl apply -f intents.yaml
+```
 5. Your cluster should now roar back to life, fully functioning *and now secured*!
 
 

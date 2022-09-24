@@ -32,31 +32,31 @@ provisioned by the Otterize SPIRE integration operator.
 
 <TabItem value="namespace.yaml" label="namespace.yaml" default>
 
-   ```yaml
-   {@include: ../../static/code-examples/kafka-mtls/namespace.yaml}
-   ```
+```yaml
+{@include: ../../static/code-examples/kafka-mtls/namespace.yaml}
+```
 
 </TabItem>
 
 <TabItem value="client-deployment.yaml" label="client-deployment.yaml">
 
-   ```yaml
-  {@include: ../../static/code-examples/kafka-mtls/client-deployment.yaml}
-  ```
+```yaml
+{@include: ../../static/code-examples/kafka-mtls/client-deployment.yaml}
+```
 
 </TabItem>
 
 <TabItem value="client-configmap.yaml" label="client-configmap.yaml">
 
-   ```yaml
-  {@include: ../../static/code-examples/kafka-mtls/client-configmap.yaml}
-  ```
+```yaml
+{@include: ../../static/code-examples/kafka-mtls/client-configmap.yaml}
+```
 
 </TabItem>
 <TabItem value="client.js" label="client.js" default>
 
-   ```js
-   const fs = require('fs');
+```js
+const fs = require('fs');
 const https = require('https');
 
 const options = {
@@ -79,12 +79,12 @@ const req = https.request(
 );
 
 req.end();
-   ```
+```
 
 </TabItem>
 <TabItem value="server.js" label="server.js" default>
 
-   ```js
+```js
 const https = require(`https`);
 const fs = require(`fs`);
 
@@ -109,7 +109,7 @@ https.createServer(
             res.end();
         }
     }).listen(443);
-   ```
+```
 
 </TabItem>
 </Tabs>
