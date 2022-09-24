@@ -104,9 +104,11 @@ You can add the `--wait` flag for Helm to wait for deployment to complete and al
 
 
 
-### Optional: Testing secure connection to Kafka
+### Testing secure connection to Kafka
 
-You can set up an interactive session that securely connects to Kafka by deploying a pod configured to get credentials, produce and consume messages using the built-in [kafka-console-producer](https://kafka.apache.org/quickstart#quickstart_send) and
+You can set up an interactive session that securely connects to Kafka by deploying a pod configured to get credentials,
+and then send that pod scripts to produce and consume messages, using the standard Kafka
+[kafka-console-producer](https://kafka.apache.org/quickstart#quickstart_send) and
 [kafka-console-consumer](https://kafka.apache.org/quickstart#quickstart_consume) scripts:
 
 <details>
@@ -223,46 +225,49 @@ Permission levels are set by
    intentsRequired: true
    ```
 
-To set a security scope for topic access we need to define
-- **Default access** permission level for topics
-- **Per topic** access permission level
+To set a security scope for topic access, define:
+- **Default** access permission levels for topics
+- **Per-topic** access permission level
 
-
-### Setting the default access security scope
-To set the default security scope for topics we will use the following `topic` and `pattern`:
+### Setting the default access permission levels for topics
+To set the default security scope for topics, use the following `topic` and `pattern`:
 ```
     - topic: "*"
       pattern: prefix
 ```
 
-### Setting per topic security scope
-To set the default security scope for topics we will use the following `topic` and `pattern`:
+### Setting per-topic access permission level
+To set the security scope for a specific topic, use the following `topic` and `pattern`:
 ```
-    - topic: "*"
-      pattern: prefix
+    - topic: "TOPIC NAME GOES HERE"
+      pattern: literal
 ```
 
 ### Example config
-The following KafkaServerConfig sets
-- a default allow unauthenticated access to all topics
-- restricts access to `mytopic` to authenticated clients
-- restricts access to `mytopic-intended` for authenticated clients with applied intents:
+The following KafkaServerConfig
+- Sets a default allow unauthenticated access to all topics;
+- Restricts access to `mytopic` to authenticated clients;
+- Restricts access to `mytopic-intended` for authenticated clients with applied intents:
 ```yaml
 {@include: ../../../static/code-examples/ibac-for-kafka/kafkaserverconfig-mytopic.yaml}
 ```
 
-### Optional: Testing security scopes
+It will be used in the next section as an example.
 
-Let's run through the example config and check the various states clients, intents and Kafka can be at. By the following order
-- Access `mytopic` successfully as it requires clients to only be authenticated.
-- Fail to access `mytopic-intended` as it requires client intents for access.
-- Apply client intents for the `interactive` pod to access `mytopic-intended`
-- Access `mytopic-intended` successfully as it requires clients to only be authenticated.
+### Testing security scopes
 
+Let's run through the example config above and check that Kafka access controls are working as configured:
+- A client that's authenticated but without declared intents:
+  - can access `mytopic` successfully;
+  - can't access `mytopic-intended`.
+- Apply intents for that client to access `mytopic-intended`...
+- Now that client can access `mytopic-intended`.
 
 You can set up an interactive session that securely connects to Kafka by deploying a pod configured to get credentials
 and using the popular [kafka-console-producer](https://kafka.apache.org/quickstart#quickstart_send) and
-[kafka-console-consumer](https://kafka.apache.org/quickstart#quickstart_consume) scripts:
+[kafka-console-consumer](https://kafka.apache.org/quickstart#quickstart_consume) scripts.
+There will be one client (this "interactive" pod) and we will use it from two different windows to get it to
+produce events (from one window) and then consume them (showing them in the second window).
 
 <details>
 <summary>Expand to see the details of the pod YAML configurations</summary>
@@ -290,7 +295,7 @@ and using the popular [kafka-console-producer](https://kafka.apache.org/quicksta
 </Tabs>
 </details>
 
-Deploy a pod configured for the interactive session connecting to Kafka
+Deploy a pod configured for the interactive session and connecting to Kafka:
 ```bash
 kubectl apply -f https://docs.otterize.com/code-examples/ibac-for-kafka/interactive/all.yaml
 ```
@@ -311,41 +316,53 @@ interactive-5568ff58ff-84ksc   1/1     Running   0          8s
 </div>
 </details>
 
-Apply the example configuration
-   ```bash
-   kubectl apply -f https://docs.otterize.com/code-examples/ibac-for-kafka/kafkaserverconfig-mytopic.yaml
-   ```
-#### Access `mytopic` successfully
-Let's open two interactive terminal windows configured to access `mytopic` - one for the producer and one for the consumer with so we can see
-the messages sent and received in real time:
-   ```bash title="Producer terminal"
-   kubectl exec -n ibac-for-kafka -it deploy/interactive -- bash \
-   /opt/bitnami/kafka/bin/kafka-console-producer.sh \
-   --bootstrap-server kafka.kafka:9092 \
-   -topic mytopic \
-   --producer.config /app/client.properties
-   ```
+Apply the example configuration to Kafka:
+```bash
+kubectl apply -f https://docs.otterize.com/code-examples/ibac-for-kafka/kafkaserverconfig-mytopic.yaml
+```
 
-   ```bash title="Consumer terminal"
-   kubectl exec -n ibac-for-kafka -it deploy/interactive -- bash \
-   /opt/bitnami/kafka/bin/kafka-console-consumer.sh \
-   --bootstrap-server kafka.kafka:9092 \
-   -topic mytopic \
-   --consumer.config /app/client.properties
-   ```
-Write any text you wish on the **producer terminal**, send it with an **enter** and you will see the messages appear
-on the
+#### Access `mytopic` successfully
+
+Let's open two interactive terminal windows &mdash;
+one scripted to produce events to `mytopic` and one to consume and show events from `mytopic` &mdash;
+so we can see the messages sent and received in real time:
+
+```bash title="Producer terminal"
+kubectl exec -n ibac-for-kafka -it deploy/interactive -- bash \
+/opt/bitnami/kafka/bin/kafka-console-producer.sh \
+--bootstrap-server kafka.kafka:9092 \
+-topic mytopic \
+--producer.config /app/client.properties
+```
+
+```bash title="Consumer terminal"
+kubectl exec -n ibac-for-kafka -it deploy/interactive -- bash \
+/opt/bitnami/kafka/bin/kafka-console-consumer.sh \
+--bootstrap-server kafka.kafka:9092 \
+-topic mytopic \
+--consumer.config /app/client.properties
+```
+
+Type some text in the **producer terminal**, send it with an **enter**, and look for the message to appear
+in the **consumer terminal**:
 ```bash title="Producer terminal"
 >Hello there consumer, this is the producer!
 >
-   ```
+```
 ```bash title="Consumer terminal"
 Hello there consumer, this is the producer!
-   ```
-You can close the two terminal windows.
+```
+
+Sure enough, all that the client (pod) needed in order to access `mytopic` were the mTLS credentials
+(configured and distributed by Otterize) because that topic was configured as only requiring authentication.
+
+You can now close the two terminal windows.
+
 #### Fail to access `mytopic-intended`
-We will now test the behavior with two **new** interactive terminal windows configured to access `mytopic-intended`. Start with opening
-the **producer terminal**
+
+We will now test the behavior with two **new** interactive terminal windows, now scripted to access `mytopic-intended`.
+
+Start by opening the **producer terminal**:
 ```bash title="Producer terminal"
 kubectl exec -n ibac-for-kafka -it deploy/interactive -- bash \
 /opt/bitnami/kafka/bin/kafka-console-producer.sh \
@@ -353,7 +370,8 @@ kubectl exec -n ibac-for-kafka -it deploy/interactive -- bash \
 -topic mytopic-intended \
 --producer.config /app/client.properties
 ```
-Type `hello` into the **producer terminal** and you will see it getting blocked from accessing the `mytopic-intended` as following:
+
+Type `hello` into the **producer terminal** and you will see it getting blocked from accessing the `mytopic-intended`:
 ```bash title="Producer terminal"
 >hello
 [2022-09-15 10:12:24,926] WARN [Producer clientId=console-producer] Error while fetching metadata with correlation id 4 : {mytopic-intended=TOPIC_AUTHORIZATION_FAILED} (org.apache.kafka.clients.NetworkClient)
@@ -361,6 +379,7 @@ Type `hello` into the **producer terminal** and you will see it getting blocked 
 [2022-09-15 10:12:24,941] ERROR Error when sending message to topic mytopic-intended with key: null, value: 5 bytes with error: (org.apache.kafka.clients.producer.internals.ErrorLoggingCallback)
 org.apache.kafka.common.errors.TopicAuthorizationException: Not authorized to access topics: [mytopic-intended]
 ```
+
 Open the **consumer terminal** with:
 ```bash title="Consumer terminal"
 kubectl exec -n ibac-for-kafka -it deploy/interactive -- bash \
@@ -369,7 +388,8 @@ kubectl exec -n ibac-for-kafka -it deploy/interactive -- bash \
 -topic mytopic-intended \
 --consumer.config /app/client.properties
 ```
-And you will see it fail immediately to consume `mytopic-intended` as following:
+
+Notice that it immediately fails to consume `mytopic-intended` as following:
 ```bash
 [2022-09-15 10:12:14,822] WARN [Consumer clientId=console-consumer, groupId=console-consumer-40186] Error while fetching metadata with correlation id 2 : {mytopic-intended=TOPIC_AUTHORIZATION_FAILED} (org.apache.kafka.clients.NetworkClient)
 [2022-09-15 10:12:14,824] ERROR [Consumer clientId=console-consumer, groupId=console-consumer-40186] Topic authorization failed for topics [mytopic-intended] (org.apache.kafka.clients.Metadata)
@@ -377,37 +397,44 @@ And you will see it fail immediately to consume `mytopic-intended` as following:
 org.apache.kafka.common.errors.TopicAuthorizationException: Not authorized to access topics: [mytopic-intended]
 Processed a total of 0 messages
 ```
-You can close the two terminal windows.
-#### Apply client intents for the `interactive` pod to access `mytopic-intended`
-Apply the following intents
+
+While the client (pod) had credentials, it was not authorized to access this topic, as it didn't declare
+intents to do so, and this topic was configured to require authorization.
+
+You can again close the two terminal windows.
+
+#### Declare and apply client intents to access `mytopic-intended`
+
+Now we'll declare the client's intents to access `mytopic-intended`:
 ```yaml
 {@include: ../../../static/code-examples/ibac-for-kafka/interactive/interactive-intents.yaml}
 ```
-With
+Apply these intents with:
 ```bash
 kubectl apply -f https://docs.otterize.com/code-examples/ibac-for-kafka/interactive/interactive-intents.yaml
 ```
 
 #### Access `mytopic-intended` successfully
-Let's open two interactive terminal windows configured to access `mytopic` - one for the producer and one for the consumer with so we can see
-the messages sent and received in real time:
-   ```bash title="Producer terminal"
-   kubectl exec -n ibac-for-kafka -it deploy/interactive -- bash \
-   /opt/bitnami/kafka/bin/kafka-console-producer.sh \
-   --bootstrap-server kafka.kafka:9092 \
-   -topic mytopic-intended \
-   --producer.config /app/client.properties
-   ```
 
-   ```bash title="Consumer terminal"
-   kubectl exec -n ibac-for-kafka -it deploy/interactive -- bash \
-   /opt/bitnami/kafka/bin/kafka-console-consumer.sh \
-   --bootstrap-server kafka.kafka:9092 \
-   -topic mytopic-intended \
-   --consumer.config /app/client.properties
-   ```
-Write any text you wish on the **producer terminal**, send it with an **enter** and you will see the messages appear
-on the
+Finally, let's again open two interactive terminal windows scripted to access `mytopic-intended`:
+
+```bash title="Producer terminal"
+kubectl exec -n ibac-for-kafka -it deploy/interactive -- bash \
+/opt/bitnami/kafka/bin/kafka-console-producer.sh \
+--bootstrap-server kafka.kafka:9092 \
+-topic mytopic-intended \
+--producer.config /app/client.properties
+```
+
+```bash title="Consumer terminal"
+kubectl exec -n ibac-for-kafka -it deploy/interactive -- bash \
+/opt/bitnami/kafka/bin/kafka-console-consumer.sh \
+--bootstrap-server kafka.kafka:9092 \
+-topic mytopic-intended \
+--consumer.config /app/client.properties
+```
+
+Type some text in the **producer terminal**, send it with an **enter**, and watch the two windows:
 ```bash title="Producer terminal"
 >Hello there consumer, this is the producer!
 >
@@ -415,13 +442,22 @@ on the
 ```bash title="Consumer terminal"
 Hello there consumer, this is the producer!
    ```
-You can close the two terminal windows.
+
+Now that the client has declared its intents, and those intents were applied to the cluster, Otterize
+configured the Kafka ACLs to permit this client to successfully access the `mytopic-intended` topic.
+
+You can now close the two terminal windows.
 
 ### What happens when we apply a security scope
-Security scopes translate directly into Kafka ACLs. You can use the parameters `topic`, `pattern`, `clientIdentityRequired` and `intentsRequired` to configure them. With those, you can choose whether on which topics you'd like to require an identity (enforce mTLS), on which you'd like to require intents, and on which you require none of those. [Read more about Kafka configuration](/components/intents-operator/configuration).
+Security scopes translate directly into Kafka ACLs.
+You can use the parameters `topic`, `pattern`, `clientIdentityRequired` and `intentsRequired` to configure them.
+With those, you can choose on which topics you'd like to require an identity (enforce mTLS),
+on which you'd like to require intents,
+and on which you don't require any of those.
+[Read more about Kafka configuration here.](/components/intents-operator/configuration).
 
 ## Otterize identities, intents and Kafka ACLs
-In the following example, there is a single client (`myclient`) running in the namespace `ibac-for-kafka`
+In the following example, there is one client (`myclient`) running in the namespace `ibac-for-kafka`
 and an intent to access a single topic (`mytopic`).
 
 <details>
@@ -455,11 +491,11 @@ automatically generates mTLS credentials for the pod.
 The certificate's `CN` is set to be `myclient.ibac-for-kafka`. This is determined by taking the [Otterize service name](/service-identities) and appending the namespace. This value will be used in the
 following step when applying intents.
 
-You can deploy the client with
+You can deploy the client with:
 ```bash
 kubectl apply -f https://docs.otterize.com/code-examples/ibac-for-kafka/client-deployment.yaml
 ```
-And by running the following command
+Run the following to inspect its certificate:
 ```bash
 kubectl get secret -n ibac-for-kafka myclient-credentials-secret -o jsonpath='{.data.svid\.pem}' | \
 base64 -d | openssl x509 -in svid.pem -text | grep "CN ="
@@ -470,19 +506,19 @@ You should see the `CN` configured correctly
 ```
 
 ### Applying intents
-When an intent is applied, in our case it would be for `myclient` to access `mytopic` on Kafka, Otterize automatically
+When an intent is applied &mdash; in our case, for `myclient` to access `mytopic` on Kafka &mdash; Otterize automatically
 generates an ACL to match the same `CN` value, that is `myclient.ibac-for-kafka`, and to allow it
-to access the topic for the desired operation.
+to access the intended topic with the intended operation.
 
-You can apply the intents with
+You can apply the intents with:
 ```bash
 kubectl apply -f https://docs.otterize.com/code-examples/ibac-for-kafka/client-intents.yaml
 ```
-And by running the following command
+Run the following command to look through the Kafka logs for ACL changes:
 ```bash
 kubectl logs -n kafka statefulset/kafka | grep "Processing Acl change" | grep myclient | tail -n 1
 ```
-You should see that a Kafka ACL was configured to allow access to `mytopic` for `myclient.ibac-for-kafka`
+You should see that a Kafka ACL was configured to allow access to `mytopic` for `myclient.ibac-for-kafka`:
 ```bash
 [2022-09-15 07:41:12,632] INFO Processing Acl change notification for
 ResourcePattern(resourceType=TOPIC, name=mytopic, patternType=LITERAL), versionedAcls :
