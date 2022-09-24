@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: other-client
+  namespace: otterize-tutorial-mapper
+spec:
+  selector:
+    matchLabels:
+      app: other-client
+  template:
+    metadata:
+      labels:
+        app: other-client
+    spec:
+      containers:
+        - name: other-client
+          image: alpine/curl
+          command: [ "/bin/sh", "-c", "--" ]
+          args: [ "while true; do curl -si other-server; sleep 2; done" ]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: other-server
+  namespace: otterize-tutorial-mapper
+spec:
+  selector:
+    matchLabels:
+      app: other-server
+  template:
+    metadata:
+      labels:
+        app: other-server
+    spec:
+      containers:
+        - name: other-server
+          image: hashicorp/http-echo
+          args: [ "-listen=:80", "-text=\"hello world\""]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: other-server
+  namespace: otterize-tutorial-mapper
+spec:
+  selector:
+    app: other-server
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
