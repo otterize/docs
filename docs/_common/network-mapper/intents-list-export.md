@@ -1,8 +1,6 @@
 You can view mapped traffic by calling the CLI `export` command. It supports multiple output formats such as `intents`
 and `JSON`.
-The following example shows the CLI output for a cluster running three pods: checkout, kafka, zookeeper.
-
-You should see similar structured results on your cluster.
+The following example shows the CLI output filtered for a namespace (otterize-tutorial-mapper) running three pods: client, client2, server.
 
 <Tabs>
   <TabItem value="plain" label="Plain" default>
@@ -10,15 +8,14 @@ You should see similar structured results on your cluster.
 1. Run the list command:
 
    ```shell
-   otterize mapper list
+   otterize mapper list -n otterize-tutorial-mapper
    ```
 2. You should get a result based on your existing traffic looking like this:
    ```shell
-   checkoutservice in namespace ecom-demo calls:
-     - orderservice
-   
-   orderservice in namespace ecom-demo calls:
-     - kafka
+   client in namespace otterize-tutorial-mapper calls:
+     - server
+   client2 in namespace otterize-tutorial-mapper calls:
+     - server
    ```
 
 </TabItem>
@@ -27,31 +24,31 @@ You should see similar structured results on your cluster.
 1. Run the export command:
 
    ```shell
-   otterize mapper export
+   otterize mapper export -n otterize-tutorial-mapper
    ```
 2. You should get a result based on your existing traffic looking like this:
    ```shell
    apiVersion: k8s.k8s.otterize.com/v1
    kind: ClientIntents
    metadata:
-     name: checkoutservice
-     namespace: ecom-demo
+     name: client
+     namespace: otterize-tutorial-mapper
    spec:
      service:
-       name: checkoutservice
+       name: client
      calls:
-       - name: orderservice
+       - name: server
    ---
    apiVersion: k8s.k8s.otterize.com/v1
    kind: ClientIntents
    metadata:
-     name: orderservice
-     namespace: ecom-demo
+     name: server
+     namespace: otterize-tutorial-mapper
    spec:
      service:
-       name: orderservice
+       name: client2
      calls:
-       - name: kafka
+       - name: server
    ```
 
 </TabItem>
@@ -59,7 +56,7 @@ You should see similar structured results on your cluster.
 
 1. Run the export command:
    ```shell
-   otterize mapper export --format json
+   otterize mapper export -n otterize-tutorial-mapper --format json
    ```
 2. You should get a result based on your existing traffic looking like this:
 
@@ -69,16 +66,16 @@ You should see similar structured results on your cluster.
        "kind": "ClientIntents",
        "apiVersion": "k8s.otterize.com/v1alpha1",
        "metadata": {
-         "name": "checkoutservice",
-         "namespace": "ecom-demo"
+         "name": "client",
+         "namespace": "otterize-tutorial-mapper"
        },
        "spec": {
          "service": {
-           "name": "checkoutservice"
+           "name": "client"
          },
          "calls": [
            {
-             "name": "orderservice"
+             "name": "server"
            }
          ]
        }
@@ -87,16 +84,16 @@ You should see similar structured results on your cluster.
        "kind": "ClientIntents",
        "apiVersion": "k8s.otterize.com/v1alpha1",
        "metadata": {
-         "name": "orderservice",
-         "namespace": "ecom-demo"
+         "name": "client",
+         "namespace": "otterize-tutorial-mapper"
        },
        "spec": {
          "service": {
-           "name": "orderservice"
+           "name": "client"
          },
          "calls": [
            {
-             "name": "kafka"
+             "name": "server"
            }
          ]
        }

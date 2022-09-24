@@ -20,6 +20,13 @@ through installing Otterize, mapping traffic and tracking changes.
 
 The network mapper starts to sniff traffic and build an in-memory network map as soon as it's installed.
 
+### Deploy demo to simulate traffic
+Add traffic to the cluster and see how the network mapper tracks it. You can do that by deploying our
+example which consists of three pods: client, client2 and server, communicating over HTTP. Deploy example:
+```shell
+kubectl apply -n otterize-tutorial-mapper -f https://docs.otterize.com/code-examples/network-mapper/all.yaml
+```
+
 ### Show mapped traffic
 
 {@include: ../_common/network-mapper/intents-list-export.md}
@@ -35,14 +42,13 @@ cluster.
 
 1. Let's save the current state of traffic from the cluster into a file we will compare against later:
    ```shell
-   otterize mapper list > intents-original.txt
+   otterize mapper list -n otterize-tutorial-mapper > intents-original.txt
    ```
 
-2. And now we can add traffic to the cluster and see how the network mapper tracks it. You can do that by deploying our
-   example
-   which consists of two pods: client and server, communicating over HTTP. Deploy example:
+2. And now we can add more traffic to the cluster and see how the network mapper tracks it. You can do that by deploying the extension
+   example which consists of two pods: other-client and other-server, communicating over HTTP. Deploy example:
    ```shell
-   kubectl apply -n otterize-tutorial-mapper -f https://docs.otterize.com/code-examples/network-mapper/all.yaml
+   kubectl apply -n otterize-tutorial-mapper -f https://docs.otterize.com/code-examples/network-mapper/all-other.yaml
    ```
 
 <details>
@@ -54,32 +60,33 @@ kubectl get pods -n otterize-tutorial-mapper
 You should see
 ```
 NAME                      READY   STATUS    RESTARTS   AGE
-client-756f7677f8-d6qdq   1/1     Running   0          45s
-server-6698c58cbc-ssxvx   1/1     Running   0          45s
+client-756f7677f8-rdm8l         1/1     Running   0          15m
+client2-5c4479947b-cdkl2        1/1     Running   0          9m18s
+other-client-8666d97d9c-29xpg   1/1     Running   0          4m8s
+other-server-676dbc5f5-bqxs4    1/1     Running   0          4m3s
+server-6698c58cbc-tht9n         1/1     Running   0          15m
 ```
 </details>
 
 3. Export the updated observed intents:
    ```shell
-   otterize mapper list
+   otterize mapper list -n otterize-tutorial-mapper
    ```
    You will now see the client and server pods communication in addition
    to the previously observed traffic.
    ```shell
-   # highlight-start
-   client calls:
+   client in namespace otterize-tutorial-mapper calls:
      - server
+   client2 in namespace otterize-tutorial-mapper calls:
+     - server
+   # highlight-start
+   other-client in namespace otterize-tutorial-mapper calls:
+     - other-server
    # highlight-end
-   
-   checkoutservice in namespace ecom-demo calls:
-     - orderservice
-   
-   orderservice in namespace ecom-demo calls:
-     - kafka
-   ```
+      ```
 5. We can also compare both outputs to see the difference. We'll start by saving the updated state to a file with:
    ```bash
-   otterize mapper list > intents-updated.txt
+   otterize mapper list -n otterize-tutorial-mapper > intents-updated.txt
    ```
 6. And compare the original file with the updated file using:
    ```bash
@@ -87,14 +94,14 @@ server-6698c58cbc-ssxvx   1/1     Running   0          45s
    ```
    You should see a result looking like:
    ```bash
-                                                       > client in namespace otterize-tutorial-mapper calls:
-                                                       >   - server
-                                                       >
-   checkoutservice in namespace ecom-demo calls:       checkoutservice in namespace ecom-demo calls:
-     - orderservice                                      - orderservice
-
-   orderservice in namespace ecom-demo calls:          orderservice in namespace ecom-demo calls:
-     - kafka                                             - kafka
+   client in namespace otterize-tutorial-mapper calls:             client in namespace otterize-tutorial-mapper calls:
+     - server                                                        - server
+   client2 in namespace otterize-tutorial-mapper calls:            client2 in namespace otterize-tutorial-mapper calls:
+     - server                                                        - server
+   # highlight-start
+                                                                  > other-client in namespace otterize-tutorial-mapper calls:
+                                                                  >   - other-server
+   # highlight-end
       ```
 
 ## What's next
