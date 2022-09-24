@@ -506,9 +506,11 @@ You should see the `CN` configured correctly
 ```
 
 ### Applying intents
+
 When an intent is applied &mdash; in our case, for `myclient` to access `mytopic` on Kafka &mdash; Otterize automatically
-generates an ACL to match the same `CN` value, that is `myclient.ibac-for-kafka`, and to allow it
-to access the intended topic with the intended operation.
+generates an ACL:
+- the ACL matches the `CN` value used for this client: `myclient.ibac-for-kafka`;
+- the ACL allow access to the intended topic with the intended operation.
 
 You can apply the intents with:
 ```bash
