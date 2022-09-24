@@ -54,3 +54,23 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client2
+  namespace: otterize-tutorial-mapper
+spec:
+  selector:
+    matchLabels:
+      app: client2
+  template:
+    metadata:
+      labels:
+        app: client2
+    spec:
+      containers:
+        - name: client2
+          image: alpine/curl
+          command: [ "/bin/sh", "-c", "--" ]
+          args: [ "while true; do curl -si server; sleep 2; done" ]
