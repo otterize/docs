@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: testing-service
+  namespace: otterize-ecom-demo
+spec:
+  selector:
+    matchLabels:
+      app: testing-service
+  template:
+    metadata:
+      labels:
+        app: testing-service
+    spec:
+      containers:
+        - name: testing-service
+          image: alpine/curl
+          command: [ "/bin/sh", "-c", "--" ]
+          args: [ "while true; do curl -si frontend; sleep 2; done" ]
