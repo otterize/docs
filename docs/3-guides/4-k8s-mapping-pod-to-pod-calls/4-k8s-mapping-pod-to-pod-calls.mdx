@@ -18,7 +18,61 @@ through installing Otterize, mapping traffic and tracking changes.
 
 ## Retrieving the network map
 
-{@include: ../../_common/network-mapper/intents-list-export.md}
+### Choose a Kubernetes cluster and services
+
+You can use this guide with your own set of services, e.g. first in a Kubernetes cluster running dev or lab services,
+and eventually in a staging or production cluster.
+
+Alternatively, you can start with services from our reference lab,
+which is based on the [Google microservices demo](https://github.com/GoogleCloudPlatform/microservices-demo)
+simulating an e-commerce application. You'll deploy these into any Kubernetes cluster to which you have admin access.
+
+For the sake of illustration, we'll refer to the reference lab example in this guide. But if you're using
+your own services, just apply the same steps and adjust the particulars to your needs.
+
+### Reference lab example
+
+The reference e-commerce application architecture is as follows
+![Demo e-commerce](https://github.com/GoogleCloudPlatform/microservices-demo/raw/main/docs/img/architecture-diagram.png)
+
+### Deploying the reference lab
+
+Create a namespace to hold the services, and deploy them:
+```bash
+kubectl create namespace otterize-ecom-demo
+kubectl apply -n otterize-ecom-demo -f https://docs.otterize.com/code-examples/microservices-demo/kubernetes-manifests.yml
+```
+<details>
+<summary>Optional: check that the lab was deployed...</summary>
+<div>
+
+
+    To see all the pods in the lab:
+    ```bash
+    kubectl get pods -n otterize-ecom-demo
+    ```
+    The pods should all be ready and running:
+    ```bash
+    NAME                                     READY   STATUS    RESTARTS   AGE
+    adservice-694f4ff98-cz4nn                1/1     Running   0          23m
+    cartservice-85f8bc44fd-45cbk             1/1     Running   0          23m
+    checkoutservice-8fc47bbbd-9lhfv          1/1     Running   0          23m
+    currencyservice-597bdf576b-8hftc         1/1     Running   0          23m
+    emailservice-d5c6f74dd-qlwc4             1/1     Running   0          23m
+    frontend-7ffbf49884-j9rhz                1/1     Running   0          23m
+    loadgenerator-65779994db-tgdxk           1/1     Running   0          23m
+    paymentservice-76b9c8b87d-ktfcd          1/1     Running   0          23m
+    productcatalogservice-6969d4f5fd-xdw99   1/1     Running   0          23m
+    recommendationservice-58798d5c8-2f4rz    1/1     Running   0          23m
+    redis-cart-6f65887b5d-xwpz5              1/1     Running   0          23m
+    shippingservice-ff5f4d7d-qcjw8           1/1     Running   0          23m
+    ```
+
+
+</div>
+</details>
+
+{@include: ../../_common/network-mapper/intents-list-export-demo-lab.md}
 
 
 ### Filtering by namespace
@@ -44,51 +98,65 @@ Using a few simple command-line tricks, you can track changes to the network map
 
 1. Let's save the current state of traffic from the cluster into a file we will compare against later
    ```shell
-   otterize mapper list > intents-original.txt
+   otterize mapper list -n otterize-ecom-demo > intents-original.txt
    ```
 
 2. And now we can add traffic to the cluster and see how the network mapper tracks it. You can do that by deploying our
    example
-   which consists of two pods: client and server, communicating over HTTP. Deploy example:
+   which consists of a single pod: testing-service, communicating over HTTP with the frontend. Deploy example:
    ```shell
-   kubectl apply -n otterize-tutorial-mapper -f https://docs.otterize.com/code-examples/network-mapper/all.yaml
+   kubectl apply -n otterize-ecom-demo -f https://docs.otterize.com/code-examples/network-mapper/testing-service-to-frontend-deployment.yaml
    ```
 
 <details>
-<summary>Check that the client and server pods were deployed</summary>
+<summary>Check that the new pod was deployed</summary>
 
 ```bash
-kubectl get pods -n otterize-tutorial-mapper
+    kubectl get pods -n otterize-ecom-demo -l app=testing-service
 ```
 You should see
 ```
-NAME                      READY   STATUS    RESTARTS   AGE
-client-756f7677f8-d6qdq   1/1     Running   0          45s
-server-6698c58cbc-ssxvx   1/1     Running   0          45s
+NAME                               READY   STATUS    RESTARTS   AGE
+testing-service-7b8cc77c67-9ksk8   1/1     Running   0          3m3s
 ```
 </details>
 
 3. Export the updated observed intents.
    ```shell
-   otterize mapper list
+   otterize mapper list -n otterize-ecom-demo
    ```
-   You will now see the client and server pods communication in addition
+   You will now see the testing-service and frontend pods communication in addition
    to the previously observed traffic.
    ```shell
+   cartservice in namespace otterize-ecom-demo calls:
+     - redis-cart
+   checkoutservice in namespace otterize-ecom-demo calls:
+     - cartservice
+     - currencyservice
+     - emailservice
+     - paymentservice
+     - productcatalogservice
+     - shippingservice
+   frontend in namespace otterize-ecom-demo calls:
+     - adservice
+     - cartservice
+     - checkoutservice
+     - currencyservice
+     - productcatalogservice
+     - recommendationservice
+     - shippingservice
+   loadgenerator in namespace otterize-ecom-demo calls:
+     - frontend
+   recommendationservice in namespace otterize-ecom-demo calls:
+     - productcatalogservice
    # highlight-start
-   client calls:
-     - server
+   testing-service in namespace otterize-ecom-demo calls:
+     - frontend
    # highlight-end
-
-   checkoutservice in namespace ecom-demo calls:
-     - orderservice
-
-   orderservice in namespace ecom-demo calls:
-     - kafka
    ```
 5. We can also compare both outputs to see the difference. We'll start by saving the updated state to a file with:
    ```bash
-   otterize mapper list > intents-updated.txt
+   otterize mapper list -n otterize-ecom-demo > intents-updated.txt
    ```
 6. And compare the original file with the updated file using:
    ```bash
@@ -96,15 +164,30 @@ server-6698c58cbc-ssxvx   1/1     Running   0          45s
    ```
    You should see similar output:
    ```bash
-                                                       > client calls:
-                                                       >   - server
-                                                       >
-   checkoutservice in namespace ecom-demo calls:       checkoutservice in namespace ecom-demo calls:
-     - orderservice                                      - orderservice
-
-   orderservice in namespace ecom-demo calls:          orderservice in namespace ecom-demo calls:
-     - kafka                                             - kafka
-      ```
+   cartservice in namespace otterize-ecom-demo calls:              cartservice in namespace otterize-ecom-demo calls:
+     - redis-cart                                                    - redis-cart
+   checkoutservice in namespace otterize-ecom-demo calls:          checkoutservice in namespace otterize-ecom-demo calls:
+     - cartservice                                                   - cartservice
+     - currencyservice                                               - currencyservice
+     - emailservice                                                  - emailservice
+     - paymentservice                                                - paymentservice
+     - productcatalogservice                                         - productcatalogservice
+     - shippingservice                                               - shippingservice
+   frontend in namespace otterize-ecom-demo calls:                 frontend in namespace otterize-ecom-demo calls:
+     - adservice                                                     - adservice
+     - cartservice                                                   - cartservice
+     - checkoutservice                                               - checkoutservice
+     - currencyservice                                               - currencyservice
+     - productcatalogservice                                         - productcatalogservice
+     - recommendationservice                                         - recommendationservice
+     - shippingservice                                               - shippingservice
+   loadgenerator in namespace otterize-ecom-demo calls:            loadgenerator in namespace otterize-ecom-demo calls:
+     - frontend                                                      - frontend
+   recommendationservice in namespace otterize-ecom-demo calls:    recommendationservice in namespace otterize-ecom-demo calls:
+     - productcatalogservice                                         - productcatalogservice
+                                                                 > testing-service in namespace otterize-ecom-demo calls:
+                                                                 >   - frontend
+    ```
 
 
 ## Which calls are picked up
@@ -163,3 +246,11 @@ To learn more about how to use ClientIntents to manage network policies read thi
 ## Design note
 
 * The network mapper is designed for situations where pods use Kubernetes DNS for service discovery.
+
+### Teardown
+
+To remove the deployed resources run:
+
+```bash
+kubectl delete namespace otterize-ecom-demo
+```
