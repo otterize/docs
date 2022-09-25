@@ -32,11 +32,11 @@ kubectl apply -n otterize-tutorial-mapper -f https://docs.otterize.com/code-exam
 
 You can view mapped traffic by calling the CLI `list` or `export` commands.
 The latter supports multiple output formats, namely `intents` (client intents files) and `json`.
-The following example shows the CLI output filtered for the namespace (`otterize-tutorial-mapper`)
+The following shows the CLI output filtered for the namespace (`otterize-tutorial-mapper`)
 of the example above.
 
 <Tabs>
-  <TabItem value="plain" label="Plain" default>
+  <TabItem value="list" label="List" default>
 
 1. List the pod-to-pod network map built up ("sniffed") so far:
 
@@ -52,7 +52,7 @@ of the example above.
    ```
 
 </TabItem>
-  <TabItem value="intents" label="Intents" default>
+  <TabItem value="intents" label="Export as intents" default>
 
 1. Export as YAML client intents (the default format) the pod-to-pod network map built up so far:
 
@@ -85,9 +85,9 @@ of the example above.
    ```
 
 </TabItem>
-  <TabItem value="json" label="JSON">
+  <TabItem value="json" label="Export as JSON">
 
-1. Export as JSON the pod-to-pod network map built up so far as JSON:
+1. Export as JSON the pod-to-pod network map built up so far:
    ```shell
    otterize mapper export -n otterize-tutorial-mapper --format json
    ```
@@ -191,7 +191,7 @@ server-6698c58cbc-tht9n         1/1     Running   0          15m
      - other-server
    # highlight-end
       ```
-5. We can also compare both outputs to see the difference. Start by saving the updated state to a file:
+5. We can also compare both outputs to see the difference. Start by saving the updated list to a file:
    ```bash
    otterize mapper list -n otterize-tutorial-mapper > intents-updated.txt
    ```
@@ -213,23 +213,18 @@ server-6698c58cbc-tht9n         1/1     Running   0          15m
 
 ## What's next
 
-One of the outputs of the network mapper is a set of intents that reflect the observed traffic.
-The mapper doesn't look at the types and contents of the calls, so the intents won't have granular information
-beyond what service calls what service. But it's a pretty good way to bootstrap intents files and get
-going with intent-based access control.
-
-Take a look at the **intents** tab in the section called [Show mapped traffic](#show-mapped-traffic).
-With these intents we can then automatically control pod-to-pod access using Kubernetes network policies:
-in other words, these intents create network policies that reflect the mapped traffic, and as you
-evolve the intents and apply them, the network policies will always reflect the intents.
+The network mapper is a great way to bootstrap IBAC. It generates client intents files that reflect
+the current topology of your services; those can then be used by each client team to grant them easy
+and *secure* access to the services they need, and as their needs evolve, they need only evolve
+the intents files. We'll see more of that below.
 
 Where to go next?
 
 - If you haven't already, see the [automate network policies tutorial](/quick-tutorials/k8s-network-policies).
 - Or go to the next tutorial to [automate secure access for Kafka](/quick-tutorials/kafka-mtls).
-- You might also dive deeper into the [IBAC with network policies guide](../guides/k8s-ibac-via-network-policies).
-  - It even contains a bootstrapping exercise at the end.
-- For a deeper dive into the network mapper, see the [Mapping pod-to-pod calls guide](../guides/k8s-mapping-pod-to-pod-calls).
+- You might also dive deeper into the guide for [IBAC with network policies](../guides/k8s-ibac-via-network-policies).
+  - It even contains a bootstrapping exercise at the end!
+- For a deeper dive into the network mapper, see the guide for [mapping pod-to-pod calls](../guides/k8s-mapping-pod-to-pod-calls).
 
 ### Teardown
 
