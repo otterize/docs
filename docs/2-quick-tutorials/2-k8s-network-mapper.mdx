@@ -30,7 +30,112 @@ kubectl apply -n otterize-tutorial-mapper -f https://docs.otterize.com/code-exam
 
 ### Show mapped traffic
 
-{@include: ../_common/network-mapper/intents-list-export.md}
+You can view mapped traffic by calling the CLI `list` or `export` commands.
+The latter supports multiple output formats, namely `intents` (client intents files) and `json`.
+The following example shows the CLI output filtered for the namespace (`otterize-tutorial-mapper`)
+of the example above.
+
+<Tabs>
+  <TabItem value="plain" label="Plain" default>
+
+1. List the pod-to-pod network map built up ("sniffed") so far:
+
+   ```shell
+   otterize mapper list -n otterize-tutorial-mapper
+   ```
+2. For the simple example above, you should see:
+   ```shell
+   client in namespace otterize-tutorial-mapper calls:
+     - server
+   client2 in namespace otterize-tutorial-mapper calls:
+     - server
+   ```
+
+</TabItem>
+  <TabItem value="intents" label="Intents" default>
+
+1. Export as YAML client intents (the default format) the pod-to-pod network map built up so far:
+
+   ```shell
+   otterize mapper export -n otterize-tutorial-mapper
+   ```
+2. For the simple example above, you should see (concatenated into one YAML file):
+   ```yaml
+   apiVersion: k8s.k8s.otterize.com/v1
+   kind: ClientIntents
+   metadata:
+     name: client
+     namespace: otterize-tutorial-mapper
+   spec:
+     service:
+       name: client
+     calls:
+       - name: server
+   ---
+   apiVersion: k8s.k8s.otterize.com/v1
+   kind: ClientIntents
+   metadata:
+     name: server
+     namespace: otterize-tutorial-mapper
+   spec:
+     service:
+       name: client2
+     calls:
+       - name: server
+   ```
+
+</TabItem>
+  <TabItem value="json" label="JSON">
+
+1. Export as JSON the pod-to-pod network map built up so far as JSON:
+   ```shell
+   otterize mapper export -n otterize-tutorial-mapper --format json
+   ```
+2. For the simple example above, you should see:
+
+   ```json
+   [
+     {
+       "kind": "ClientIntents",
+       "apiVersion": "k8s.otterize.com/v1alpha1",
+       "metadata": {
+         "name": "client",
+         "namespace": "otterize-tutorial-mapper"
+       },
+       "spec": {
+         "service": {
+           "name": "client"
+         },
+         "calls": [
+           {
+             "name": "server"
+           }
+         ]
+       }
+     },
+     {
+       "kind": "ClientIntents",
+       "apiVersion": "k8s.otterize.com/v1alpha1",
+       "metadata": {
+         "name": "client",
+         "namespace": "otterize-tutorial-mapper"
+       },
+       "spec": {
+         "service": {
+           "name": "client"
+         },
+         "calls": [
+           {
+             "name": "server"
+           }
+         ]
+       }
+     }
+   ]
+   ```
+
+</TabItem>
+</Tabs>
 
 :::info
 See the [CLI documentation](/cli) for more details about the CLI.
@@ -46,8 +151,10 @@ cluster. We call that "Sniff&Diff": continue to sniff traffic, then diff the net
    otterize mapper list -n otterize-tutorial-mapper > intents-original.txt
    ```
 
-2. And now we can add more traffic to the cluster and see how the network mapper tracks it. You can do that by deploying the extension
-   example which consists of two pods: other-client and other-server, communicating over HTTP. Deploy example:
+2. And now we can add more traffic to the cluster and see how the network mapper tracks it.
+   Let's deploy an extension to the example, consisting of two pods &mdash;
+   `other-client` and `other-server`, communicating over HTTP:
+
    ```shell
    kubectl apply -n otterize-tutorial-mapper -f https://docs.otterize.com/code-examples/network-mapper/all-other.yaml
    ```
@@ -69,12 +176,11 @@ server-6698c58cbc-tht9n         1/1     Running   0          15m
 ```
 </details>
 
-3. Export the updated observed intents:
+3. Let's list the network map again:
    ```shell
    otterize mapper list -n otterize-tutorial-mapper
    ```
-   You will now see the client and server pods communication in addition
-   to the previously observed traffic.
+   You should see all the calls including the new ones:
    ```shell
    client in namespace otterize-tutorial-mapper calls:
      - server
@@ -85,15 +191,15 @@ server-6698c58cbc-tht9n         1/1     Running   0          15m
      - other-server
    # highlight-end
       ```
-5. We can also compare both outputs to see the difference. We'll start by saving the updated state to a file with:
+5. We can also compare both outputs to see the difference. Start by saving the updated state to a file:
    ```bash
    otterize mapper list -n otterize-tutorial-mapper > intents-updated.txt
    ```
-6. And compare the original file with the updated file using:
+6. Now compare the original file with the updated file using:
    ```bash
-   diff --color=always -y intents-original.txt intents-updated.txt;echo
+   diff -y intents-original.txt intents-updated.txt;echo
    ```
-   You should see a result looking like:
+   Note the new calls identified on the lower right:
    ```bash
    client in namespace otterize-tutorial-mapper calls:             client in namespace otterize-tutorial-mapper calls:
      - server                                                        - server
@@ -112,8 +218,10 @@ The mapper doesn't look at the types and contents of the calls, so the intents w
 beyond what service calls what service. But it's a pretty good way to bootstrap intents files and get
 going with intent-based access control.
 
-Take a look at the **intents** tab in the [Show mapped traffic section](#show-mapped-traffic).
-With these intents we can automatically control pod-to-pod access using Kubernetes network policies.
+Take a look at the **intents** tab in the section called [Show mapped traffic](#show-mapped-traffic).
+With these intents we can then automatically control pod-to-pod access using Kubernetes network policies:
+in other words, these intents create network policies that reflect the mapped traffic, and as you
+evolve the intents and apply them, the network policies will always reflect the intents.
 
 Where to go next?
 
