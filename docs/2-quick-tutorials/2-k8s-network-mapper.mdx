@@ -21,8 +21,9 @@ through installing Otterize, mapping traffic and tracking changes.
 The network mapper starts to sniff traffic and build an in-memory network map as soon as it's installed.
 
 ### Deploy demo to simulate traffic
-Add traffic to the cluster and see how the network mapper tracks it. You can do that by deploying our
-example which consists of three pods: client, client2 and server, communicating over HTTP. Deploy example:
+
+Let's add traffic to the cluster and see how the network mapper tracks it.
+Deploy the following simple example &mdash; `client`, `client2` and `server`, communicating over HTTP:
 ```shell
 kubectl apply -n otterize-tutorial-mapper -f https://docs.otterize.com/code-examples/network-mapper/all.yaml
 ```
@@ -35,10 +36,10 @@ kubectl apply -n otterize-tutorial-mapper -f https://docs.otterize.com/code-exam
 See the [CLI documentation](/cli) for more details about the CLI.
 :::
 
-### Change traffic -> Sniff&Diff
+### Change traffic, then "Sniff&Diff"
 
 One of the benefits for using the network mapper is the ability to track changes over time for communication within your
-cluster.
+cluster. We call that "Sniff&Diff": continue to sniff traffic, then diff the network mapper output to see what changed.
 
 1. Let's save the current state of traffic from the cluster into a file we will compare against later:
    ```shell
@@ -106,10 +107,21 @@ server-6698c58cbc-tht9n         1/1     Running   0          15m
 
 ## What's next
 
-Now that we've observed cluster intents we can enforce them with the intents operator.
+One of the outputs of the network mapper is a set of intents that reflect the observed traffic.
+The mapper doesn't look at the types and contents of the calls, so the intents won't have granular information
+beyond what service calls what service. But it's a pretty good way to bootstrap intents files and get
+going with intent-based access control.
 
-- Configure [network policies](/quick-tutorials/k8s-network-policies).
-- Configure [secure access for Kafka](/quick-tutorials/kafka-mtls).
+Take a look at the **intents** tab in the [Show mapped traffic section](#show-mapped-traffic).
+With these intents we can automatically control pod-to-pod access using Kubernetes network policies.
+
+Where to go next?
+
+- If you haven't already, see the [automate network policies tutorial](/quick-tutorials/k8s-network-policies).
+- Or go to the next tutorial to [automate secure access for Kafka](/quick-tutorials/kafka-mtls).
+- You might also dive deeper into the [IBAC with network policies guide](../guides/k8s-ibac-via-network-policies).
+  - It even contains a bootstrapping exercise at the end.
+- For a deeper dive into the network mapper, see the [Mapping pod-to-pod calls guide](../guides/k8s-mapping-pod-to-pod-calls).
 
 ### Teardown
 
