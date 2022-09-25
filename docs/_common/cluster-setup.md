@@ -6,7 +6,7 @@ If you don't have a cluster already, we recommend starting out with a Minikube c
     Start your minikube cluster. <a href="https://minikube.sigs.k8s.io/docs/start/">Don't have the minikube CLI? Read the installation instructions</a>
 
 ```bash
-$ minikube start --network-plugin=cni
+minikube start --network-plugin=cni
 ```
 
 Install Calico:
