@@ -69,7 +69,7 @@ Run the following command to enable network policy enforcement on your cluster, 
 <TabItem value="eks" label="AWS EKS">
 <a href="https://docs.aws.amazon.com/eks/latest/userguide/calico.html">Visit the official documentation</a>, or follow the instructions below:
 
-1. Spin up an EKS cluster using the console, AWS CLI or `eksctl`.
+1. Spin up an [EKS cluster](https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html) using the console, AWS CLI or `eksctl`.
 2. Install Calico for NetworkPolicy enforcement, without replacing the CNI:
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/aws/amazon-vpc-cni-k8s/master/config/master/calico-operator.yaml
@@ -77,7 +77,10 @@ kubectl apply -f https://raw.githubusercontent.com/aws/amazon-vpc-cni-k8s/master
 ```
 </TabItem>
 <TabItem value="aks" label="Azure AKS">
-No setup is required: Azure AKS comes with a built-in network policy implementation called Azure Network Policy Manager. You choose whether you'd like to use this option or Calico when you create a cluster.
+
+Setup an EKS cluster using this [guide](https://learn.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-cli)
+
+For CNI no setup is required: Azure AKS comes with a built-in network policy implementation called Azure Network Policy Manager. You choose whether you'd like to use this option or Calico when you create a cluster.
 
 
 <a href="https://learn.microsoft.com/en-us/azure/aks/use-network-policies"> Read more at the official documentation site</a>.
