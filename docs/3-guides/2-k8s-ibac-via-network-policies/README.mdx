@@ -3,6 +3,9 @@ sidebar_position: 1
 title: IBAC in Kubernetes via network policies
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 One of the easiest ways to realize [intent-based access control](/intent-based-access-control) in Kubernetes is by leveraging network policies.
 
 Network policies are built into Kubernetes itself, and while their enforcement is not, all that's required
@@ -83,6 +86,9 @@ shippingservice-ff5f4d7d-qcjw8           1/1     Running   0          23m
 
 ### Let's go shop in the lab!
 
+<Tabs groupId="frontend-addr">
+<TabItem value="k8s" label="K8s">
+
 To get the externally-accessible URL where your demo front end is available, run:
 ```bash
 kubectl get service -n otterize-ecom-demo frontend-external | awk '{print $4}'
@@ -93,6 +99,20 @@ a11843075fd254f8099a986467098647-1889474685.us-east-1.elb.amazonaws.com
 ```
 Go ahead and browse to the URL above to "shop" and get a feel for the reference lab's behavior.
 (The URL might take some time to populate across DNS servers. Note that we are accessing an HTTP and not an HTTPS website.)
+</TabItem>
+<TabItem value="minikube" label="Minikube">
+
+To get the externally-accessible URL where your demo front end is available, run:
+```
+kubectl port-forward -n otterize-ecom-demo service/frontend-external 8080:80
+```
+The demo is now accessible at:
+```
+http://localhost:8080
+```
+Go ahead and browse to the URL above to "shop" and get a feel for the reference lab's behavior.
+</TabItem>
+</Tabs>
 
 <img src="https://github.com/GoogleCloudPlatform/microservices-demo/raw/main/docs/img/online-boutique-frontend-1.png" width="300"/>
 
