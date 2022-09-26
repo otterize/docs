@@ -7,16 +7,16 @@
 <TabItem value="Apple Silicon" label="Apple Silicon">
 
 ```bash
-wget https://github.com/otterize/otterize-cli/releases/download/v0.1.4/otterize-cli_0.1.4_Darwin_arm64.tar.gz
-tar xf otterize-cli_0.1.4_Darwin_arm64.tar.gz
+wget https://github.com/otterize/otterize-cli/releases/download/v0.1.4/otterize-cli_0.1.4_macOS_arm64.tar.gz
+tar xf otterize-cli_0.1.4_macOS_arm64.tar.gz
 sudo cp otterize /usr/local/bin  # optionally move to PATH
 ```
 </TabItem>
 <TabItem value="Intel 64-bit" label="Intel 64-bit">
 
 ```bash
-wget https://github.com/otterize/otterize-cli/releases/download/v0.1.4/otterize-cli_0.1.4_Darwin_x86_64.tar.gz
-tar xf otterize-cli_0.1.4_Darwin_x86_64.tar.gz
+wget https://github.com/otterize/otterize-cli/releases/download/v0.1.4/otterize-cli_0.1.4_macOS_x86_64.tar.gz
+tar xf otterize-cli_0.1.4_macOS_x86_64.tar.gz
 sudo cp otterize /usr/local/bin  # optionally move to PATH
 ```
 </TabItem>
