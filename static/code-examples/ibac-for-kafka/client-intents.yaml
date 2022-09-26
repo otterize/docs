@@ -11,5 +11,5 @@ spec:
       namespace: kafka
       type: Kafka
       topics:
-        - name: mytopic
+        - name: my-topic
           operation: all
