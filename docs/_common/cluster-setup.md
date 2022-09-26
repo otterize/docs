@@ -6,7 +6,7 @@ If you don't have a cluster already, we recommend starting out with a Minikube c
     Start your minikube cluster. <a href="https://minikube.sigs.k8s.io/docs/start/">Don't have the minikube CLI? Read the installation instructions</a>
 
 ```bash
-$ minikube start --network-plugin=cni
+minikube start --network-plugin=cni
 ```
 
 Install Calico:
@@ -78,9 +78,9 @@ kubectl apply -f https://raw.githubusercontent.com/aws/amazon-vpc-cni-k8s/master
 </TabItem>
 <TabItem value="aks" label="Azure AKS">
 
-Setup an EKS cluster using this [guide](https://learn.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-cli)
+You can setup an AKS cluster using this [guide](https://learn.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-cli).
 
-For CNI no setup is required: Azure AKS comes with a built-in network policy implementation called Azure Network Policy Manager. You choose whether you'd like to use this option or Calico when you create a cluster.
+For network policy support, no setup is required: Azure AKS comes with a built-in network policy implementation called Azure Network Policy Manager. You choose whether you'd like to use this option or Calico when you create a cluster.
 
 
 <a href="https://learn.microsoft.com/en-us/azure/aks/use-network-policies"> Read more at the official documentation site</a>.
