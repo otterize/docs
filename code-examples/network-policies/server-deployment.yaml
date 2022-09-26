@@ -14,5 +14,6 @@ spec:
     spec:
       containers:
         - name: server
-          image: hashicorp/http-echo
-          args: [ "-listen=:80", "-text=Hi, I am the server, you called, may I help you?"]
+          image: node
+          command: [ "/bin/sh","-c" ]
+          args: [ "echo \"Hi, I am the server, you called, may I help you?\" > index.html; npx --yes http-server -p 80 " ]
