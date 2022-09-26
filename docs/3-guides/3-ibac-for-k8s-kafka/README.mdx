@@ -499,7 +499,7 @@ kubectl apply -f https://docs.otterize.com/code-examples/ibac-for-kafka/client-d
 Run the following to inspect its certificate:
 ```bash
 kubectl get secret -n ibac-for-kafka myclient-credentials-secret -o jsonpath='{.data.svid\.pem}' | \
-base64 -d | openssl x509 -in svid.pem -text | grep "CN ="
+base64 -d | openssl x509 -in svid.pem -text | grep "CN"
 ```
 You should see the `CN` configured correctly
 ```bash
