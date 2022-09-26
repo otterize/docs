@@ -34,8 +34,9 @@ spec:
     spec:
       containers:
         - name: other-server
-          image: hashicorp/http-echo
-          args: [ "-listen=:80", "-text=\"hello world\""]
+          image: node
+          command: [ "/bin/sh","-c" ]
+          args: [ "echo \"Hi, I am the other-server, you called, may I help you?\" > index.html; npx --yes http-server -p 80 " ]
 ---
 apiVersion: v1
 kind: Service
