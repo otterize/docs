@@ -23,7 +23,7 @@ kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/
 ***To enable network policy enforcement when creating a new cluster, run the following command:***
 
 
-`gcloud container clusters create CLUSTER_NAME --enable-network-policy`
+`gcloud container clusters create CLUSTER_NAME --enable-network-policy --zone=ZONE`
 Replace CLUSTER_NAME with the name of the new cluster.
 
 ***To enable network policy enforcement for an existing cluster, perform the following tasks:***
