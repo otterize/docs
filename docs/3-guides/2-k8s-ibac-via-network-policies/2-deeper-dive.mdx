@@ -222,16 +222,16 @@ After applying the intents file Otterize performed multiple actions to allow acc
   ```
 
   And when we break down the label structure we can see
-    - For the server - <span style={{color:'gray'}}>intents.otterize.com/server</span>=<span style={{color:'magenta'}}>server</span>-<span style={{color:'red'}}>otterize-tutorial-np</span>-<span style={{color:'green'}}>7e16db</span>
-      - <span style={{color:'gray'}}>intents.otterize.com/server</span> - Label prefix for servers
-      - <span style={{color:'magenta'}}>server</span> - Server pod name
-      - <span style={{color:'red'}}>otterize-tutorial-np</span> - Server pod namespace (might be truncated)
-      - <span style={{color:'green'}}>7e16db</span> - Hash for server pod name and and namespace
-    - For the client - <span style={{color:'gray'}}>intents.otterize.com/access</span>-<span style={{color:'magenta'}}>server</span>-<span style={{color:'red'}}>otterize-tutorial-np</span>-<span style={{color:'green'}}>7e16db</span>=true
-      - <span style={{color:'gray'}}>intents.otterize.com/access</span> - Label prefix for clients
-      - <span style={{color:'magenta'}}>server</span> - Server pod name
-      - <span style={{color:'red'}}>otterize-tutorial-np</span> - Server pod namespace (might be truncated)
-      - <span style={{color:'green'}}>7e16db</span> - Hash for server pod name and and namespace
+  - For the server - <span style={{color:'gray'}}>intents.otterize.com/server</span>=<span style={{color:'magenta'}}>server</span>-<span style={{color:'red'}}>otterize-tutorial-np</span>-<span style={{color:'green'}}>7e16db</span>
+    - <span style={{color:'gray'}}>intents.otterize.com/server</span> - Label prefix for servers
+    - <span style={{color:'magenta'}}>server</span> - Server pod name
+    - <span style={{color:'red'}}>otterize-tutorial-np</span> - Server pod namespace (might be truncated)
+    - <span style={{color:'green'}}>7e16db</span> - Hash for server pod name and and namespace
+  - For the client - <span style={{color:'gray'}}>intents.otterize.com/access</span>-<span style={{color:'magenta'}}>server</span>-<span style={{color:'red'}}>otterize-tutorial-np</span>-<span style={{color:'green'}}>7e16db</span>=true
+    - <span style={{color:'gray'}}>intents.otterize.com/access</span> - Label prefix for clients
+    - <span style={{color:'magenta'}}>server</span> - Server pod name
+    - <span style={{color:'red'}}>otterize-tutorial-np</span> - Server pod namespace (might be truncated)
+    - <span style={{color:'green'}}>7e16db</span> - Hash for server pod name and and namespace
 3. Finally, let's look at the namespace label with:
   ```bash
   kubectl get namespace otterize-tutorial-npol --show-labels
