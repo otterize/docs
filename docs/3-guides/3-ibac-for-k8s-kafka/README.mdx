@@ -41,7 +41,7 @@ Kafka [chart](https://github.com/bitnami/charts/tree/master/bitnami/kafka):
 
 1. Configure super users - add the broker itself and the Otterize Intents Operator:
    ```yaml
-   superUsers: "User:CN=kafka.kafka,O=SPIRE,C=US;User:CN=intents-operator.otterize,O=SPIRE,C=US"
+   superUsers: "User:CN=kafka.kafka,O=SPIRE,C=US;User:CN=intents-operator-controller-manager.otterize,O=SPIRE,C=US"
    ```
 3. Configure the Kafka broker's [listeners](https://www.confluent.io/blog/kafka-listeners-explained/) to use SSL
    ```yaml
