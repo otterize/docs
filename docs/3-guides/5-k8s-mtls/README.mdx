@@ -308,3 +308,9 @@ You can also follow the server's output log with
 - Learn how to configure your existing code to use mTLS for [HTTPS](/service-identities/using-credentials/#http)
 (clients and servers) and for [Kafka clients](/service-identities/using-credentials/#kafka).
 - Configure secure access between pods and Kafka with this [guide](/guides/ibac-for-k8s-kafka/).
+
+## Teardown
+To remove the deployed resources run:
+```bash
+kubectl delete namespace otterize-tutorial-mtls
+```

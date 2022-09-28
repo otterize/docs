@@ -529,3 +529,9 @@ Set(User:ANONYMOUS has DENY permission for operations: ALL from hosts: *,
     User:CN=myclient.ibac-for-kafka,O=SPIRE,C=US has ALLOW permission for operations: ALL from hosts: *)
 , zkVersion : 5 (kafka.security.authorizer.AclAuthorizer)
 ```
+
+## Teardown
+To remove the deployed resources run:
+```bash
+kubectl delete namespace ibac-for-kafka
+```
