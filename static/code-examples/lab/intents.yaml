@@ -8,7 +8,7 @@ spec:
     name: cartservice
   calls:
     - name: redis-cart
-      type: HTTP
+      type: http
 ---
 apiVersion: k8s.otterize.com/v1alpha1
 kind: ClientIntents
@@ -20,17 +20,17 @@ spec:
     name: checkoutservice
   calls:
     - name: cartservice
-      type: HTTP
+      type: http
     - name: currencyservice
-      type: HTTP
+      type: http
     - name: emailservice
-      type: HTTP
+      type: http
     - name: paymentservice
-      type: HTTP
+      type: http
     - name: productcatalogservice
-      type: HTTP
+      type: http
     - name: shippingservice
-      type: HTTP
+      type: http
 ---
 apiVersion: k8s.otterize.com/v1alpha1
 kind: ClientIntents
@@ -42,19 +42,19 @@ spec:
     name: frontend
   calls:
     - name: adservice
-      type: HTTP
+      type: http
     - name: cartservice
-      type: HTTP
+      type: http
     - name: checkoutservice
-      type: HTTP
+      type: http
     - name: currencyservice
-      type: HTTP
+      type: http
     - name: productcatalogservice
-      type: HTTP
+      type: http
     - name: recommendationservice
-      type: HTTP
+      type: http
     - name: shippingservice
-      type: HTTP
+      type: http
 ---
 apiVersion: k8s.otterize.com/v1alpha1
 kind: ClientIntents
@@ -66,7 +66,7 @@ spec:
     name: loadgenerator
   calls:
     - name: frontend
-      type: HTTP
+      type: http
 ---
 apiVersion: k8s.otterize.com/v1alpha1
 kind: ClientIntents
@@ -78,4 +78,4 @@ spec:
     name: recommendationservice
   calls:
     - name: productcatalogservice
-      type: HTTP
+      type: http
