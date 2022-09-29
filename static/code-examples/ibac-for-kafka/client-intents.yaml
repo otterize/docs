@@ -9,7 +9,7 @@ spec:
   calls:
     - name: kafka
       namespace: kafka
-      type: Kafka
+      type: kafka
       topics:
         - name: my-topic
           operation: all

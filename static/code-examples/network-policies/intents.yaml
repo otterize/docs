@@ -8,4 +8,4 @@ spec:
     name: client
   calls:
     - name: server
-      type: HTTP
+      type: http
