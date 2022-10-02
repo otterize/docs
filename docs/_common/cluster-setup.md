@@ -19,6 +19,8 @@ kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/
 <Tabs>
 <TabItem value="cli" label="gcloud CLI">
 
+To use the gcloud CLI for this tutorial, [install](https://cloud.google.com/sdk/docs/install) and then 
+[initialize](https://cloud.google.com/sdk/docs/initializing) it.
 
 ***To enable network policy enforcement when creating a new cluster, run the following command:***
 
