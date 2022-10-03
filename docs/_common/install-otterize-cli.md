@@ -2,12 +2,18 @@
 
 
 
-<TabItem value="mac" label="Mac">
+<TabItem value="mac" label="Mac" default>
 <Tabs>
+<TabItem value="Brew" label="Brew">
+
+```bash
+brew install otterize/otterize/otterize-cli
+``` 
+</TabItem>
 <TabItem value="Apple Silicon" label="Apple Silicon">
 
 ```bash
-curl -LJO https://github.com/otterize/otterize-cli/releases/download/v0.1.4/otterize-cli_0.1.4_macOS_arm64.tar.gz
+curl -LJO https://get.otterize.com/otterize-cli/v0.1.5/otterize_macOS_arm64_notarized.zip
 tar xf otterize-cli_0.1.4_macOS_arm64.tar.gz
 sudo cp otterize /usr/local/bin  # optionally move to PATH
 ```
@@ -15,7 +21,7 @@ sudo cp otterize /usr/local/bin  # optionally move to PATH
 <TabItem value="Intel 64-bit" label="Intel 64-bit">
 
 ```bash
-curl -LJO https://github.com/otterize/otterize-cli/releases/download/v0.1.4/otterize-cli_0.1.4_macOS_x86_64.tar.gz
+curl -LJO https://get.otterize.com/otterize-cli/v0.1.5/otterize_macOS_x86_64_notarized.zip
 tar xf otterize-cli_0.1.4_macOS_x86_64.tar.gz
 sudo cp otterize /usr/local/bin  # optionally move to PATH
 ```
@@ -25,23 +31,7 @@ sudo cp otterize /usr/local/bin  # optionally move to PATH
 
 <TabItem value="windows" label="Windows">
 <Tabs>
-<TabItem value="64-bit" label="64-bit">
-
-```PowerShell
-Invoke-WebRequest -Uri https://github.com/otterize/otterize-cli/releases/download/v0.1.4/otterize-cli_0.1.4_Windows_x86_64.zip -OutFile otterize-cli_0.1.4_Windows_x86_64.zip
-Expand-Archive otterize-cli_0.1.4_Windows_x86_64.zip-DestinationPath .
-# optionally move to PATH
-```
-</TabItem>
-<TabItem value="32-bit" label="32-bit">
-
-```PowerShell
-Invoke-WebRequest -Uri https://github.com/otterize/otterize-cli/releases/download/v0.1.4/otterize-cli_0.1.4_Windows_i386.zip -OutFile otterize-cli_0.1.4_Windows_i386.zip
-Expand-Archive otterize-cli_0.1.4_Windows_i386.zip-DestinationPath .
-# optionally move to PATH
-```
-</TabItem>
-<TabItem value="scoop" label="scoop">
+<TabItem value="scoop" label="scoop" default>
 
 ```PowerShell
 scoop bucket add otterize-cli https://github.com/otterize/scoop-otterize-cli
@@ -49,24 +39,48 @@ scoop update
 scoop install otterize-cli
 ```
 </TabItem>
+<TabItem value="64-bit" label="64-bit">
+
+```PowerShell
+Invoke-WebRequest -Uri https://get.otterize.com/otterize-cli/v0.1.5/otterize_Windows_x86_64.zip -OutFile otterize_Windows_x86_64.zip
+Expand-Archive otterize_Windows_x86_64.zip -DestinationPath .
+# optionally move to PATH
+```
+</TabItem>
+<TabItem value="32-bit" label="32-bit">
+
+```PowerShell
+Invoke-WebRequest -Uri https://get.otterize.com/otterize-cli/v0.1.5/otterize_Windows_i386.zip -OutFile otterize_Windows_i386.zip
+Expand-Archive otterize_Windows_i386.zip -DestinationPath .
+# optionally move to PATH
+```
+</TabItem>
 </Tabs>
 </TabItem>
 <TabItem value="linux" label="Linux">
 <Tabs>
-<TabItem value="amd64" label="amd64">
+<TabItem value="64-bit" label="64-bit">
 
 ```bash
-wget https://github.com/otterize/otterize-cli/releases/download/v0.1.4/otterize-cli_0.1.4_Linux_x86_64.tar.gz
-tar xf otterize-cli_0.1.4_Linux_x86_64.tar.gz
-sudo cp otterize /usr/local/bin  # optionally move to PATH
+wget https://get.otterize.com/otterize-cli/v0.1.5/otterize_Linux_arm64.tar.gz
+tar xf otterize_Linux_arm64.tar.gz
+sudo cp otterize_Linux_arm64/otterize /usr/local/bin  # optionally move to PATH
 ```
 </TabItem>
-<TabItem value="i386" label="i386">
+<TabItem value="32-bit" label="32-bit">
 
 ```bash
-wget https://github.com/otterize/otterize-cli/releases/download/v0.1.4/otterize-cli_0.1.4_Linux_i386.tar.gz
-tar xf otterize-cli_0.1.4_Linux_i386.tar.gz
-sudo cp otterize /usr/local/bin  # optionally move to PATH
+wget https://get.otterize.com/otterize-cli/v0.1.5/otterize_Linux_i386.tar.gz
+tar xf otterize_Linux_i386.tar.gz
+sudo cp otterize_Linux_i386/otterize /usr/local/bin  # optionally move to PATH
+```
+</TabItem>
+<TabItem value="arm-64-bit" label="Arm 64-bit">
+
+```bash
+wget https://get.otterize.com/otterize-cli/v0.1.5/otterize_Linux_arm64.tar.gz
+tar xf otterize_Linux_arm64.tar.gz
+sudo cp otterize_Linux_arm64/otterize /usr/local/bin  # optionally move to PATH
 ```
 </TabItem>
 </Tabs>
