@@ -33,7 +33,7 @@ class TestNetworkPolicies:
 
     def test_npol_4_apply_intents(self):
         run(
-            f"kubectl apply -f ../../static/code-examples/network-policies/intents/intents.yaml")
+            f"kubectl apply -f ../../static/code-examples/automate-network-policies/intents/intents.yaml")
         # Check that a Network Policy was generated
         assert f'name: access-to-server-from-{self.namespace}' in run(
             f"kubectl get netpol -n otterize-tutorial-npol --output yaml")

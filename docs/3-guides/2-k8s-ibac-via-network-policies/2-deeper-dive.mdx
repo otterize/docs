@@ -115,7 +115,7 @@ blocking pods from accepting incoming calls unless another network policy explic
 <TabItem value="namespace.yaml" label="namespace.yaml" default>
 
 ```yaml
-{@include: ../../../static/code-examples/network-policies/namespace.yaml}
+{@include: ../../../static/code-examples/automate-network-policies/namespace.yaml}
 ```
 
 </TabItem>
@@ -123,16 +123,16 @@ blocking pods from accepting incoming calls unless another network policy explic
 <TabItem value="server.yaml" label="server.yaml" default>
 
 ```yaml
-{@include: ../../../static/code-examples/network-policies/server-deployment.yaml}
+{@include: ../../../static/code-examples/automate-network-policies/server-deployment.yaml}
 ---
-{@include: ../../../static/code-examples/network-policies/server-service.yaml}
+{@include: ../../../static/code-examples/automate-network-policies/server-service.yaml}
 ```
 
 </TabItem>
 <TabItem value="client.yaml" label="client.yaml" default>
 
 ```yaml
-{@include: ../../../static/code-examples/network-policies/client-deployment.yaml}
+{@include: ../../../static/code-examples/automate-network-policies/client-deployment.yaml}
 ```
 
 </TabItem>
@@ -140,7 +140,7 @@ blocking pods from accepting incoming calls unless another network policy explic
 <TabItem value="default-deny.yaml" label="default-deny.yaml" default>
 
 ```yaml
-{@include: ../../../static/code-examples/network-policies/default-deny-network-policy.yaml}
+{@include: ../../../static/code-examples/automate-network-policies/default-deny-network-policy.yaml}
 ```
 
 </TabItem>
@@ -150,7 +150,7 @@ blocking pods from accepting incoming calls unless another network policy explic
 1. Deploy the client, server, and the default deny network policy using `kubectl`.
 
    ```shell
-   kubectl apply -f https://docs.otterize.com/code-examples/network-policies/all.yaml
+   kubectl apply -f https://docs.otterize.com/code-examples/automate-network-policies/all.yaml
    ```
 2. Check that the `client` and server `pods` were deployed
    ```bash
@@ -166,11 +166,11 @@ blocking pods from accepting incoming calls unless another network policy explic
 3. The client intents to call the server are declared with this `intents.yaml` file:
 
 ```yaml
-{@include: ../../../static/code-examples/network-policies/intents.yaml}
+{@include: ../../../static/code-examples/automate-network-policies/intents.yaml}
 ```
 Let's apply it:
 ```shell
-kubectl apply -f https://docs.otterize.com/code-examples/network-policies/intents.yaml
+kubectl apply -f https://docs.otterize.com/code-examples/automate-network-policies/intents.yaml
 ```
 
 ### Track artifacts

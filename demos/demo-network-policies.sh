@@ -23,7 +23,7 @@ pei "# - client and server pods communicating over HTTP"
 prompt
 pei "# - a default deny network policy to block the communication between them"
 prompt
-pei "kubectl apply -f https://docs.otterize.com/code-examples/network-policies/all.yaml"
+pei "kubectl apply -f https://docs.otterize.com/code-examples/automate-network-policies/all.yaml"
 prompt
 pei ""
 prompt
@@ -53,10 +53,10 @@ pei "# The intents file is a custom resource you can apply directly to your K8s 
 prompt
 pei "# It looks as follows"
 prompt
-pei "curl https://docs.otterize.com/code-examples/network-policies/intents/intents.yaml"
+pei "curl https://docs.otterize.com/code-examples/automate-network-policies/intents/intents.yaml"
 echo # the intents yaml doesn't have new line at the end of the file
 prompt
-pei "kubectl apply -f https://docs.otterize.com/code-examples/network-policies/intents/intents.yaml"
+pei "kubectl apply -f https://docs.otterize.com/code-examples/automate-network-policies/intents/intents.yaml"
 prompt
 pei "# And we can now see that the client is able to call the server"
 prompt

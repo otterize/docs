@@ -36,12 +36,9 @@ You can skip this section if Otterize is already installed in your cluster.
 {@include: ../_common/install-otterize.md}
 
 
-## Deploy the server, client, and default network policy
+## Deploy the server, client, client-other
 
-Our simple example consists of two pods: an HTTP server and a client that calls it.
-
-We also deploy a default-deny ingress network policy,
-blocking pods from accepting incoming calls unless another network policy explicitly allows them.
+Our simple example consists of three pods: an HTTP server and two clients that call it.
 
 <details>
 <summary>Expand to see the example YAML files</summary>
@@ -50,7 +47,7 @@ blocking pods from accepting incoming calls unless another network policy explic
 <TabItem value="namespace.yaml" label="namespace.yaml" default>
 
 ```yaml
-{@include: ../../static/code-examples/network-policies/namespace.yaml}
+{@include: ../../static/code-examples/automate-network-policies/namespace.yaml}
 ```
 
 </TabItem>
@@ -58,34 +55,34 @@ blocking pods from accepting incoming calls unless another network policy explic
 <TabItem value="server.yaml" label="server.yaml" default>
 
 ```yaml
-{@include: ../../static/code-examples/network-policies/server-deployment.yaml}
+{@include: ../../static/code-examples/automate-network-policies/server-deployment.yaml}
 ---
-{@include: ../../static/code-examples/network-policies/server-service.yaml}
+{@include: ../../static/code-examples/automate-network-policies/server-service.yaml}
 ```
 
 </TabItem>
 <TabItem value="client.yaml" label="client.yaml" default>
 
 ```yaml
-{@include: ../../static/code-examples/network-policies/client-deployment.yaml}
+{@include: ../../static/code-examples/automate-network-policies/client-deployment.yaml}
 ```
 
 </TabItem>
-
-<TabItem value="default-deny.yaml" label="default-deny.yaml" default>
+<TabItem value="client-other.yaml" label="client-other.yaml" default>
 
 ```yaml
-{@include: ../../static/code-examples/network-policies/default-deny-network-policy.yaml}
+{@include: ../../static/code-examples/automate-network-policies/client-other-deployment.yaml}
 ```
 
 </TabItem>
+
 </Tabs>
 </details>
 
 Deploy the client, server, and the default deny network policy using `kubectl`.
 
    ```shell
-   kubectl apply -f https://docs.otterize.com/code-examples/network-policies/all.yaml
+   kubectl apply -f https://docs.otterize.com/code-examples/automate-network-policies/all.yaml
    ```
 
 <details>
@@ -97,39 +94,101 @@ kubectl get pods -n otterize-tutorial-npol
 ```
 You should see
 ```
-NAME                      READY   STATUS    RESTARTS   AGE
-client-5689997b5c-grlnt   1/1     Running   0          35s
-server-6698c58cbc-v9n9b   1/1     Running   0          34s
-```
-Check that the default deny ingress network policy was deployed:
-
-```bash
-kubectl get NetworkPolicies -n otterize-tutorial-npol
-```
-You should see
-```
-NAME                   POD-SELECTOR   AGE
-default-deny-ingress   none           17s
+NAME                           READY   STATUS    RESTARTS   AGE
+client-596bcb48d5-pnjxc        1/1     Running   0          8s
+client-other-f56d65d7f-z2wg2   1/1     Running   0          8s
+server-6bb4784ccc-wtz7f        1/1     Running   0          8s
 ```
 </details>
 
-Let's monitor the client's attempts to call the server with a second terminal window,
+Let's monitor both client attempts to call the server with additional terminal windows,
 so we can see the effects of our changes in real time.
 
-**Open a second terminal window** and tail the client log:
+**Open a new terminal window [client]** and tail the client log:
 ```bash
 kubectl logs -f --tail 1 -n otterize-tutorial-npol deploy/client
 ```
-At this point the client should be timing out when trying to call the server:
+At this point the client should be able to communicate with the server:
 ```
 Calling server...
-curl timed out
-Calling server...
-curl timed out
-Calling server...
-curl timed out
+HTTP/1.1 200 OK
+accept-ranges: bytes
+cache-control: max-age=3600
+last-modified: Mon, 03 Oct 2022 10:29:04 GMT
+etag: W/"3557515-49-2022-10-03T10:29:04.343Z"
+content-length: 49
+content-type: text/html; charset=UTF-8
+Date: Mon, 03 Oct 2022 10:30:51 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+Hi, I am the server, you called, may I help you?
 ```
 
+**Open another terminal window [client-other]** and tail the client-other log:
+```bash
+kubectl logs -f --tail 1 -n otterize-tutorial-npol deploy/client-other
+```
+At this point the client should be able to communicate with the server:
+```
+Calling server...
+HTTP/1.1 200 OK
+accept-ranges: bytes
+cache-control: max-age=3600
+last-modified: Mon, 03 Oct 2022 10:29:04 GMT
+etag: W/"3557515-49-2022-10-03T10:29:04.343Z"
+content-length: 49
+content-type: text/html; charset=UTF-8
+Date: Mon, 03 Oct 2022 10:30:51 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+Hi, I am the server, you called, may I help you?
+```
+
+## Apply intents
+We will now declare and apply intents to that allow traffic from the
+**client** to the **server**.
+Once the client declares its intents, Otterize will add a network policy to allow the intended calls
+(**client** -> **server**) and block all unintended calls (**client-other** -> **server**).
+
+1. The client declares its intent to call the server with this `intents.yaml` file:
+
+   ```yaml
+   {@include: ../../static/code-examples/automate-network-policies/intents.yaml}
+   ```
+
+:::tip
+Client intents are the cornerstone of [intent-based access control](https://otterize.com/ibac).
+:::
+
+   Keep an eye on the logs being tailed in the **[client-other]** terminal window
+   while you apply this `intents.yaml` file in your **main terminal window** using:
+   ```shell
+   kubectl apply -f https://docs.otterize.com/code-examples/automate-network-policies/intents.yaml
+   ```
+2. You should quickly see in the **[client-other]** terminal that it times out when calling the server as expected:
+   ```bash
+   Calling server...
+   HTTP/1.1 200 OK
+   accept-ranges: bytes
+   cache-control: max-age=3600
+   last-modified: Mon, 03 Oct 2022 10:29:04 GMT
+   etag: W/"3557515-49-2022-10-03T10:29:04.343Z"
+   content-length: 49
+   content-type: text/html; charset=UTF-8
+   Date: Mon, 03 Oct 2022 10:41:14 GMT
+   Connection: keep-alive
+   Keep-Alive: timeout=5
+
+   Hi, I am the server, you called, may I help you?  # <- before applying the intents file
+   # highlight-start
+   Calling server...                                 # <- after applying the intents file
+   curl timed out
+   Calling server...
+   curl timed out
+   # highlight-end
+   ```
 :::tip
 If the client isn't timing out, then the installed CNI plugin likely does not support network policies.
 Consult the docs for your Kubernetes distribution or head back to the [Calico installation section](#make-sure-you-have-a-cni-network-plugin) to install one.
@@ -137,59 +196,23 @@ For example, minikube does not start by default with a CNI that supports network
 but you can ask it to start with one that does, such as Calico.
 :::
 
-The client failing like that is the expected outcome since by default the ingress to every pod is blocked by the default network policy:
-```yaml
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: default-deny-ingress
-  namespace:  otterize-tutorial-npol
-spec:
-  podSelector: {} # selects all pods in the namespace
-  # the lack of a `from` field means no pod is allowed to access
-  policyTypes: # this policy applies to ingress and doesn't apply to egress
-    - Ingress
-```
-   Once the client declares its intents, Otterize will add a network policy to allow the intended calls.
-   Let's see that now.
-
-## Apply intents
-
-1. The client declares its intent to call the server with this `intents.yaml` file:
-
-```yaml
-{@include: ../../static/code-examples/network-policies/intents.yaml}
-```
-
-:::tip
-Client intents are the cornerstone of [intent-based access control](https://otterize.com/ibac).
-:::
-
-   Keep an eye on the logs being tailed in the **second terminal window**
-   while you apply this `intents.yaml` file in your **main terminal window** using:
-   ```shell
-   kubectl apply -f https://docs.otterize.com/code-examples/network-policies/intents.yaml
-   ```
-2. You should quickly see in the **second terminal** that the client is now successfully calling the server:
+3. And in the **[client]** terminal you should see that calls go through as intended:
    ```bash
    Calling server...
-   curl timed out
-   Calling server...
-   curl timed out                              # <- before applying the intents file
-   # highlight-start
-   Calling server...                           # <- after applying the intents file
    HTTP/1.1 200 OK
-   X-App-Name: http-echo
-   X-App-Version: 0.2.3
-   Date: Wed, 07 Sep 2022 13:51:34 GMT
-   Content-Length: 12
-   Content-Type: text/plain; charset=utf-8
-   
-   Hi, I am the server, you called, may I help you?
-   # highlight-end
-   ```
+   accept-ranges: bytes
+   cache-control: max-age=3600
+   last-modified: Mon, 03 Oct 2022 10:29:04 GMT
+   etag: W/"3557515-49-2022-10-03T10:29:04.343Z"
+   content-length: 49
+   content-type: text/html; charset=UTF-8
+   Date: Mon, 03 Oct 2022 10:41:14 GMT
+   Connection: keep-alive
+   Keep-Alive: timeout=5
 
-3. You should see that a new network policy was created:
+   Hi, I am the server, you called, may I help you?
+   ```
+4. You should also see that a new network policy was created:
    ```bash
    kubectl get NetworkPolicies -n otterize-tutorial-npol
    ```
