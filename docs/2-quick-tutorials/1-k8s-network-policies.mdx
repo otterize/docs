@@ -148,9 +148,9 @@ Hi, I am the server, you called, may I help you?
 
 ## Apply intents
 We will now declare and apply intents to that allow traffic from the
-**client** to the **server**.
+**client** to the **server** by creating a custom resource ClientIntent).
 Once the client declares its intents, Otterize will add a network policy to allow the intended calls
-(**client** -> **server**) and block all unintended calls (**client-other** -> **server**).
+(**client** -> **server**) and fail all unintended calls (**client-other** -> **server**).
 
 1. The client declares its intent to call the server with this `intents.yaml` file:
 
@@ -222,7 +222,9 @@ but you can ask it to start with one that does, such as Calico.
    access-to-server-from-otterize-tutorial-npol   otterize/server=server-otterize-tutorial-np-7e16db   6s
    default-deny-ingress                           <none>                                               28s
    ```
-
+:::tip Done!
+Otterize did its job of both protecting *and* allowing intended access.
+:::
 ## What did we accomplish?
 
 - Controlling access through network policies no longer means touching network policies at all.
