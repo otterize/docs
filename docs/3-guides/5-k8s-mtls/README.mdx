@@ -181,9 +181,9 @@ spec:
 The provided demo pods were already configured and annotated as required.
 
 ### Annotation parameters
-The following annotations control different aspects of the credential generation:
+For the complete list of annotation parameters please follow the SPIRE integration operator
+[documentation](/components/spire-integration-operator/).
 
-#### Global parameters
 - `spire-integration.otterize.com/tls-secret-name`  - The name of the k8s secret in which the certificate data is stored
 - `spire-integration.otterize.com/dns-names` - A comma-separated list of additional dns names to be registered as part of the
 - `spire-integration.otterize.com/cert-ttl` - The certificate TTL. Defaults to SPIRE-server's configured default TTL
@@ -194,18 +194,6 @@ automatically refreshed before expiring, and you must take care to always read t
 
 To set a longer expiration time, set the `spire-integration.otterize.com/cert-ttl` annotation for your pods. For more information, see the documentation for the [SPIRE Integration Operator](/components/spire-integration-operator)
 :::
-
-- `spire-integration.otterize.com/cert-type` - The requested certificate type - pem (default) or jks
-
-#### Parameters for pem-type certs
-- `spire-integration.otterize.com/svid-file-name` - The name of the file in the secret data, that stores the certificate's SVID file. Defaults to `svid.pem`
-- `spire-integration.otterize.com/bundle-file-name` - The name of the file in the secret data, that stores the certificate's bundle file. Defaults to `bundle.pem`.
-- `spire-integration.otterize.com/key-file-name` - The name of the file in the secret data, that stores the certificate's key file. Defaults to `key.pem`.
-
-#### Parameters for jks-type certs
-- `spire-integration.otterize.com/keystore-file-name` - The name of the file in the secret data, that stores the certificate's key store file. Defaults to `keystore.jks`.
-- `spire-integration.otterize.com/truststore-file-name` - The name of the file in the secret data, that stores the certificate's trust store file. Defaults to `truststore.jks`.
-- `spire-integration.otterize.com/jks-password` - The jks certificate password. Defaults to `password`.
 
 :::tip
 Certificates are automatically refreshed before expiring. We recommend loading certificates each time before using them where possible.
