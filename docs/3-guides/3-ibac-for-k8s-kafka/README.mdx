@@ -104,7 +104,7 @@ with permissions for Otterize to configure ACLs:
  --version 14.x.x \
  -f https://docs.otterize.com/code-examples/kafka-mtls/helm/values.yaml --create-namespace kafka bitnami/kafka
  ```
-You can add the `--wait` flag for Helm to wait for deployment to complete and all pods to be Ready, or manually watch for all pods to be `Ready` using `kubectl get pods -n kafka -w`.
+You can watch for all pods to be `Ready` using `kubectl get pods -n kafka -w`.
 
 
 
