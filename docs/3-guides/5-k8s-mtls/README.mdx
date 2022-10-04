@@ -187,12 +187,14 @@ The following annotations control different aspects of the credential generation
 - `spire-integration.otterize.com/tls-secret-name`  - The name of the k8s secret in which the certificate data is stored
 - `spire-integration.otterize.com/dns-names` - A comma-separated list of additional dns names to be registered as part of the
 - `spire-integration.otterize.com/cert-ttl` - The certificate TTL. Defaults to SPIRE-server's configured default TTL
+
 :::note
 Otterize defaults to generating credentials with an expiry time of 1 day. The certificates are
 automatically refreshed before expiring, and you must take care to always read the credentials from file, rather than caching them for this reason.
 
 To set a longer expiration time, set the `spire-integration.otterize.com/cert-ttl` annotation for your pods. For more information, see the documentation for the [SPIRE Integration Operator](/components/spire-integration-operator)
 :::
+
 - `spire-integration.otterize.com/cert-type` - The requested certificate type - pem (default) or jks
 
 #### Parameters for pem-type certs
