@@ -119,7 +119,7 @@ https.createServer(
 For credentials to be generated for a pod, it must be annotated to inform the SPIRE integration operator of the desired secret name.
 
 We'll be performing the following steps:
-- Annotate the pod: Otterize looks for the `otterize/credentials-secret-name` annotation, generates
+- Annotate the pod: Otterize looks for the `otterize/tls-secret-name` annotation, generates
 mTLS credentials, and stores them as K8s secrets named according to the annotation value.
 - Make the credentials in the K8s secret available as a volume
 - Mount the volume into the container
@@ -134,7 +134,7 @@ spec:
       ...
       annotations:
         # highlight-next-line
-        otterize/credentials-secret-name: client-credentials-secret       # 1 Generate credentials
+        otterize/tls-secret-name: client-credentials-secret       # 1 Generate credentials
     spec:
       volumes:
         # highlight-start

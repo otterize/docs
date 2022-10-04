@@ -143,7 +143,7 @@ server-6698c58cbc-v9n9b   1/1     Running   0          34s
 ## Annotate deployment
 To generate credentials for the pod we simply need to update the deployment by annotating it.
 The required steps are to
-1. Annotate the pod - Otterize automatically identifies the `otterize/credentials-secret-name` annotation, generates
+1. Annotate the pod - Otterize automatically identifies the `otterize/tls-secret-name` annotation, generates
 mTLS credentials, and stores them as K8s secret named as the annotation value.
 2. Mount the credentials stored as a K8s secret as a volume
 3. Mount the volume into the container
@@ -158,7 +158,7 @@ spec:
       ...
       annotations:
         # highlight-next-line
-        otterize/credentials-secret-name: client-credentials-secret       # 1 Generate credentials
+        otterize/tls-secret-name: client-credentials-secret       # 1 Generate credentials
     spec:
       volumes:
         # highlight-start
