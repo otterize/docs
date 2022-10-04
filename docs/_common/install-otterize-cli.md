@@ -14,7 +14,7 @@ brew install otterize/otterize/otterize-cli
 
 ```bash
 curl -LJO https://get.otterize.com/otterize-cli/v0.1.5/otterize_macOS_arm64_notarized.zip
-tar xf otterize-cli_0.1.4_macOS_arm64.tar.gz
+tar xf otterize_macOS_arm64_notarized.zip
 sudo cp otterize /usr/local/bin  # optionally move to PATH
 ```
 </TabItem>
@@ -22,7 +22,7 @@ sudo cp otterize /usr/local/bin  # optionally move to PATH
 
 ```bash
 curl -LJO https://get.otterize.com/otterize-cli/v0.1.5/otterize_macOS_x86_64_notarized.zip
-tar xf otterize-cli_0.1.4_macOS_x86_64.tar.gz
+tar xf otterize_macOS_x86_64_notarized.zip
 sudo cp otterize /usr/local/bin  # optionally move to PATH
 ```
 </TabItem>
@@ -62,9 +62,9 @@ Expand-Archive otterize_Windows_i386.zip -DestinationPath .
 <TabItem value="64-bit" label="64-bit">
 
 ```bash
-wget https://get.otterize.com/otterize-cli/v0.1.5/otterize_Linux_arm64.tar.gz
-tar xf otterize_Linux_arm64.tar.gz
-sudo cp otterize_Linux_arm64/otterize /usr/local/bin  # optionally move to PATH
+wget https://get.otterize.com/otterize-cli/v0.1.5/otterize_Linux_x86_64.tar.gz
+tar xf otterize_Linux_x86_64.tar.gz
+sudo cp otterize /usr/local/bin  # optionally move to PATH
 ```
 </TabItem>
 <TabItem value="32-bit" label="32-bit">
@@ -72,7 +72,7 @@ sudo cp otterize_Linux_arm64/otterize /usr/local/bin  # optionally move to PATH
 ```bash
 wget https://get.otterize.com/otterize-cli/v0.1.5/otterize_Linux_i386.tar.gz
 tar xf otterize_Linux_i386.tar.gz
-sudo cp otterize_Linux_i386/otterize /usr/local/bin  # optionally move to PATH
+sudo cp otterize /usr/local/bin  # optionally move to PATH
 ```
 </TabItem>
 <TabItem value="arm-64-bit" label="Arm 64-bit">
@@ -80,7 +80,7 @@ sudo cp otterize_Linux_i386/otterize /usr/local/bin  # optionally move to PATH
 ```bash
 wget https://get.otterize.com/otterize-cli/v0.1.5/otterize_Linux_arm64.tar.gz
 tar xf otterize_Linux_arm64.tar.gz
-sudo cp otterize_Linux_arm64/otterize /usr/local/bin  # optionally move to PATH
+sudo cp otterize /usr/local/bin  # optionally move to PATH
 ```
 </TabItem>
 </Tabs>
