@@ -52,9 +52,9 @@ The following command will deploy a Kafka cluster with this chart:
 You can watch for all pods to be `Ready` using `kubectl get pods -n kafka -w`.
 
 
-## Protect a Kafka topic
+## Manage Kafka access with Otterize
 
-Let's protect a single kafka topic (`mytopic`) by applying a `KafkaServerConfig`:
+Let's connect Kafka with Otterize by applying a `KafkaServerConfig`:
 ```bash
 kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/kafkaserverconfig.yaml
 ```
@@ -72,16 +72,18 @@ kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/kafkaserverc
 </Tabs>
 </details>
 
-Upon applying the KafkaServerConfig, an ACL will be configured on Kafka to deny anonymous access to the topic.
+Upon applying the KafkaServerConfig, an ACL will configure Kafka to allow anonymous access all topics.
+This will be the base state, from which we will gradually roll out secure access to Kafka.
 
 ```bash
-kubectl logs -n kafka statefulset/kafka | grep "Processing Acl change" | grep mytopic | tail -n 1
+kubectl logs -n kafka statefulset/kafka | grep "Processing Acl change" | grep ANONYMOUS | tail -n 1
    ```
 You should see the following output:
 ```
-[2022-09-13 10:58:32,052] INFO Processing Acl change notification for ResourcePattern
-(resourceType=TOPIC, name=mytopic, patternType=LITERAL), versionedAcls :
-Set(User:ANONYMOUS has DENY permission for operations: ALL from hosts: *), zkVersion : 9
+[2022-09-13 10:58:32,052] INFO Processing Acl change notification for
+ResourcePattern(resourceType=TOPIC, name=*, patternType=PREFIXED), versionedAcls :
+Set(User:ANONYMOUS has ALLOW permission for operations: ALL from hosts: *,
+User:* has ALLOW permission for operations: ALL from hosts: *), zkVersion : 0
 (kafka.security.authorizer.AclAuthorizer)
 ```
 
@@ -124,11 +126,7 @@ spec:
 ```
 </details>
 
-Our simple example consists of a single client pod and a Kafka broker.
-
-We also apply a KafkaServerConfig to block access to a specific topic unless intents are set
-to allow access. At first, we expect the client to be blocked from accessing the specific topic.
-We will follow up by applying an intent to allow access.
+Our simple example consists of a two client pods and a Kafka broker.
 <details>
 <summary>Expand to see the Kubernetes YAMLs used in this example</summary>
 <Tabs>
@@ -157,6 +155,22 @@ We will follow up by applying an intent to allow access.
 
 </TabItem>
 
+<TabItem value="client-other-deployment.yaml" label="client-other-deployment.yaml">
+
+```yaml
+{@include: ../../static/code-examples/kafka-mtls/client-other-deployment.yaml}
+```
+
+</TabItem>
+
+<TabItem value="client-other-configmap.yaml" label="client-other-configmap.yaml">
+
+```yaml
+{@include: ../../static/code-examples/kafka-mtls/client-other-configmap.yaml}
+```
+
+</TabItem>
+
 </Tabs>
 </details>
 
@@ -175,31 +189,50 @@ kubectl get pods -n otterize-tutorial-kafka-mtls
 ```
 You should see:
 ```
-NAME                      READY   STATUS    RESTARTS   AGE
-client-5d9d5c8d7b-7dlzb   1/1     Running   0          24s
+NAME                              READY   STATUS    RESTARTS   AGE
+myclient-5d9646fc46-tw5hs         1/1     Running   0          21s
+myclient-other-59647b448c-w4cpq   1/1     Running   0          21s
 ```
 </details>
 
-2. Let's monitor the client's attempts to access the Kafka topic with a second terminal window,
-   so we can see the effects of our changes in real time.
+Let's monitor both client attempts to call the server with additional terminal windows,
+so we can see the effects of our changes in real time.
 
-   **Open a second terminal window** and tail the client log:
-   ```bash
-   kubectl logs -f --tail 1 -n otterize-tutorial-kafka-mtls deploy/myclient
-   ```
-   At this point the client should log an error saying it is not authorized to access the topic:
-   ```
-   Loading mTLS certificates
-   Connecting to Kafka
-   Creating a producer and a consumer for - mytopic
-   Sending messages
-   time="2022-09-13T10:41:07Z" level=info error="kafka server: The client is not authorized to access this topic"
-   Loop exited
-   ```
+**Open a new terminal window [myclient]** and tail the client log:
+```bash
+kubectl logs -f --tail 1 -n otterize-tutorial-kafka-mtls deploy/myclient
+```
+At this point the client should be able to communicate with the server:
+```
+Loading mTLS certificates
+Connecting to Kafka
+Creating a producer and a consumer for - mytopic
+Sending messages
+Sent message - Message 1 [sent by client]
+Read message - Message 1 [sent by client]
+Read message - Message 1 [sent by client-other]
+Sent message - Message 2 [sent by client]
+Read message - Message 2 [sent by client-other]
+Read message - Message 2 [sent by client]
+Read message - Message 3 [sent by client-other]
+Sent message - Message 3 [sent by client]
+Read message - Message 3 [sent by client]
+```
 
-   This is the expected outcome since we configured Kafka to require ACLs for access to this topic.
-   Once the client declares its intents, Otterize will add an ACL to Kafka to allow the intended calls.
-   Let's see that now...
+**Open another terminal window [myclient-other]** and tail the client-other log:
+```bash
+kubectl logs -f --tail 1 -n otterize-tutorial-kafka-mtls deploy/myclient-other
+```
+At this point the client should be able to communicate with the server:
+```
+Loading mTLS certificates
+Connecting to Kafka
+Creating a producer for - mytopic
+Sending messages
+Sent message - Message 1 [sent by client-other]
+Sent message - Message 2 [sent by client-other]
+Sent message - Message 3 [sent by client-other]
+```
 
 ## Apply intents
 1. The client declares its intent to call the server with this `intents.yaml` file:
@@ -211,38 +244,30 @@ client-5d9d5c8d7b-7dlzb   1/1     Running   0          24s
 Client intents are the cornerstone of [intent-based access control](https://otterize.com/ibac).
 :::
 
-   Keep an eye on the logs being tailed in the **second terminal window**
+   Keep an eye on the logs being tailed in the **[client-other]**
    while you apply this `intents.yaml` file in your **main terminal window** using:
    ```shell
    kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/client-intents.yaml
    ```
 
-2. You should quickly see in the **second terminal** that the client is now successfully producing and consuming messages:
+You should quickly see in the **[client-other]** that the client is now **unauthorized** to access the topic:
     ```bash
-    Loading mTLS certificates
-    Connecting to Kafka
-    Creating a producer and a consumer for - mytopic
-    Sending messages
-    time="2022-09-13T10:41:07Z" level=info error="kafka server: The client is not authorized to access this topic"
-    Loop exited                                   <- before applying the intents file
+    Sent message - Message 12 [sent by client-other]
+    Sent message - Message 13 [sent by client-other]            # <- before applying the intents file
     # highlight-start
-    Loading mTLS certificates                     <- after applying the intents file
-    Connecting to Kafka
-    Creating a producer and a consumer for - mytopic
-    Sending messages
-    Sent message - Message 1
-    Sent message - Message 2
-    Sent message - Message 3
-    Sent message - Message 4
-    Sent message - Message 5
-    Read message - Message 1
-    Read message - Message 2
-    Read message - Message 3
-    Read message - Message 4
-    Read message - Message 5
-   # highlight-end
+    time="2022-10-06T09:44:53Z" level=info error="kafka server: # <- after applying the intents file
+      The client is not authorized to access this topic"
+    Loop exited
+    # highlight-end
     ```
-3. Observe that an ACL for this client was configured on the Kafka broker:
+And in the **[client]** terminal you can see that the client is now still able to access the topic:
+```bash
+Sent message - Message 24 [sent by client]
+Read message - Message 24 [sent by client]
+Sent message - Message 25 [sent by client]
+Read message - Message 25 [sent by client]
+```
+Observe that an ACL for this client was configured on the Kafka broker:
    ```bash
    kubectl logs -n kafka statefulset/kafka | grep "Processing Acl change" | grep mytopic | tail -n 1
    ```
@@ -287,6 +312,10 @@ The Otterize SPIRE integration operator:
 8. The client pod connected and authenticated to Kafka using mTLS but and accessed the topic successfully.
 
 </details>
+
+:::info Bonus tutorial
+Try to add an intents file yourself for client-other and apply it to allow access to the topic.
+:::
 
 ## What's next
 - Read about how to gradually rollout [secure access for Kafka](/guides/ibac-for-k8s-kafka/) on your existing infrastructure.

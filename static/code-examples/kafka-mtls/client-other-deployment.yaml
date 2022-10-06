@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myclient-other
+  namespace: otterize-tutorial-kafka-mtls
+spec:
+  selector:
+    matchLabels:
+      app: myclient-other
+  template:
+    metadata:
+      labels:
+        app: myclient-other
+      annotations:
+        spire-integration.otterize.com/tls-secret-name: myclient-other-credentials-secret
+    spec:
+      containers:
+        - name: myclient-other
+          image: golang
+          command: [ "/bin/sh", "-c", "--" ]
+          args: [ "while true; do cd /app; cp src/* .; go get main; go run .; sleep infinity; done" ]
+          volumeMounts:
+            - name: ephemeral
+              mountPath: /app
+            - mountPath: /app/src
+              name: myclient-other-go
+            - name: otterize-credentials
+              mountPath: /var/otterize/credentials
+              readOnly: true
+      volumes:
+        - name: myclient-other-go
+          configMap:
+            name: myclient-other-go
+        - name: otterize-credentials
+          secret:
+            secretName: myclient-other-credentials-secret
+        - name: ephemeral
+          emptyDir: { }

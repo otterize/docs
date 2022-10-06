@@ -12,7 +12,7 @@ spec:
     keyFile: /etc/otterize-spire/key.pem
     rootCAFile: /etc/otterize-spire/bundle.pem
   topics:
-    - topic: "mytopic"
-      pattern: literal
-      clientIdentityRequired: true
-      intentsRequired: true
+    - topic: "*"
+      pattern: prefix
+      clientIdentityRequired: false
+      intentsRequired: false
