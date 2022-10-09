@@ -3,33 +3,160 @@ sidebar_position: 11
 title: FAQ
 ---
 
-:::info
-This section will be filled out soon, once we have a better grasp of what questions
-people would like to ask.
-:::
+<details>
 
-#### What's the difference between authorization and authentication?
+<summary>What's the difference between authorization and authentication?</summary>
 
-#### What is IBAC?
+**Authorization** means to allow a client (in our case, another service) of a server to perform certain operations
+on that server (specifically, through that server's API). Often, the server will want to allow one client to perform
+certain operations that another client cannot perform. To know whether a client ca perform the operation the client requests,
+the server must first know which client is making the request.
 
-#### What's behind the name "Otterize"?
+**Authentication** means verifying who a client is, i.e. determining its identity. Usually the client presents some
+credentials at the time it makes the request; when the server verifies them, i.e. authenticates the client, it now
+knows the identity of the client, and can see whether that specific client is authorized to perform the requested operation.
 
-#### Where does Otterize fit my infrastructure?
+In some cases, authorization is implied through authentication: any client the server definitively recognizes, i.e.
+authenticates, is allowed to perform any requested operation.
 
-#### Is Otterize open source?
+There are many variations on authorization and authentication. For example, when Otterize is used with Kubernetes
+network policies, the Otterize intents operator first establishes pod identity using
+[a certain algorithm](/service-identities). To authorize pod-to-pod access, it then creates labels and configures
+network policies in the Kubernetes cluster such that only client pods that are authorized to access the server pod
+are allowed network access to those servers. At runtime, the authorized client pods can simply send requests
+to the server pods, and unless other enforcement mechanisms are in place, no authentication is needed. (Effectively,
+the labels which Otterize configured Kubernetes to put on the pod serve as a kind of authentication for the network policies.)
 
-#### Can I start with one use-case and expand to other use-cases as I grow?
+</details>
 
-#### How is Otterize different from a service mesh?
+<details>
 
-#### Can I control which intents are being approved and which are not?
+<summary>What is IBAC?</summary>
 
-#### How do you handle identity bridging? Can it work in a heterogeneous environment?
+IBAC is short for intent-based access control, which is **a new paradigm** for configuring service-to-service access
+control based on the client service declaring what server calls (or operations) it intends to make.
 
-#### When will Otterize Cloud be ready?
+For more information, see the [IBAC documentation page](/intent-based-access-control) and [otterize.com/ibac](https://otterize.com/ibac).
 
-#### Will you keep supporting the open source after launching the Otterize Cloud product?
+</details>
 
-#### What will always stay available to the community as an open source feature?
+<details>
 
+<summary>What's behind the name "Otterize"?</summary>
+
+That's easy: it's "authorize" in a Hebrew accent &#128521;
+
+</details>
+
+<details>
+
+<summary>Where does Otterize fit in my infrastructure?</summary>
+
+Otterize does not provide yet another layer in your infrastructure, at least not in your runtime infrastructure.
+Instead, Otterize primarily configures your existing infrastructure's access controls -- its enforcement points --
+according to client intents that have been applied in a particular context -- say, a Kubernetes namespace, or
+an environment (when using Otterize Cloud). With Otterize Cloud, you can also set rules on how to process intents
+before they're used to configure access controls, or even to set access controls directly.
+
+Otterize also provides an optional server SDK (coming soon) that you can embed in your code as an inline access control.
+It provides a layer of authentication and authorization that can be standalone or can be used in addition to
+other access controls such as network policies, API gateways, or proxies.
+
+</details>
+
+<details>
+
+<summary>Is Otterize open source?</summary>
+
+Otterize provides a standalone, completely open-source solution called **Otterize OSS** for intent-based access control
+within a Kubernetes cluster. More information is available at [otterize.com/open-source](https://otterize.com/open-source)
+and on [GitHub](https://github.com/otterize).
+
+Otterize also provides a cloud-based, SaaS offering called Otterize Cloud that is not open source, with both free and
+paid tiers. More information is available at [otterize.com/product](https://otterize.com/product)
+
+In general, **all** Otterize components that run on the user side ("on prem") are open sourced. These include the Kubernetes operators
+and the network mapper that are part of Otterize OSS, as well as the Otterize CLI, the Otterize SDK (coming soon), and components
+to integrate with your infrastructure, e.g. for integrating with Kafka outside of Kubernetes.
+
+</details>
+
+<details>
+
+<summary>Can I start with one use-case and expand to other use-cases as I grow?</summary>
+
+Sure, in fact we recommend that you roll out IBAC gradually, to grow your and your organization's confidence in this approach.
+Change, even when positive, is not always easy to manage. Tools such as the network mapper let you bootstrap intents files to make
+adoption by teams that own specific services much easier. Read the various [Guides](/guides)
+to see how to roll out IBAC gradually for various use cases.
+
+</details>
+
+<details>
+
+<summary>How is Otterize different from a service mesh?</summary>
+
+</details>
+
+<details>
+
+<summary>Can I control which intents are being approved and which are not?</summary>
+
+Usually, when client intents files go through code review along with the client code, they accurately reflect the calls
+the client will be making, so it would make sense to enable access controls so those calls can go through. Depending on
+the access control mechanisms, once Otterize configures secure access to a server based on a client's declared intent,
+all unintended calls are then blocked &mdash; for example, configuring the first Kubernetes network policy on a service blocks
+access from pods not having a network policy on that service, and configuring a Kafka ACL on a topic blocks access to that
+topics from clients not having an ACL on it. In that case, intents not only enable client access, they also increase server security.
+
+But there may well be cases in which access should still require some other approval before it's granted. For example,
+intents might automatically turn into access only in certain environments, or only for certain services, while others
+require approval or some other check. For such cases, Otterize Cloud (coming soon) provides automation rules that
+intermediate between application of intents and granting of access. Even within Otterize OSS, platform teams can
+manage when access is granted by managing when `kubectl apply` executes within a CI/CD pipeline.
+
+For more information on IBAC and security, see the [security documentation](/security).
+
+</details>
+
+<details>
+
+<summary>When will Otterize Cloud be ready?</summary>
+
+Otterize Cloud has actually been under construction since we started Otterize, and we've continued to iterate on it as we
+built out Otterize OSS, to make sure it's a great extension to Otterize OSS as well as a great product if you don't start
+from Otterize OSS.
+
+We definitely believe in releasing early and often, so the first Otterize Cloud release will add a lot of value but
+will definitely also be lean, and set up a rapid cycle of innovation after the first launch, in parallel with the parallel
+cycle of innovation for Otterize OSS.
+
+We also believe very much in high quality: of the product, the documentation, and the entire user experience. Which means
+we don't want to release before all these are ready.
+
+So, as soon as we finish implementing the core features of Otterize Cloud, test, automate the tests, document, and test again
+with the documentation, we'll release Otterize Cloud.
+
+When? Depending on when you're reading this, we're talking weeks to a few (not many) months.
+
+</details>
+
+<details>
+
+<summary>Will you keep supporting the open source after launching the Otterize Cloud product?</summary>
+
+Otterize OSS is as critical for us as Otterize Cloud. Our mission is to get IBAC &mdash; intent-based access control &mdash; adopted
+as broadly as possible. We can't do it alone, and that means we can't do it without being open-first: with a robust open-source
+offering, an openness to develop an open ecosystem around IBAC, and an open mind to learning from the community what works and
+when doesn't and therefore making changes and evolving. It's also the way we work within Otterize as a company, something we
+hope to publish soon as a blog post.
+
+In short, our one metric as a company is adoption, and that will be driven by Otterize OSS as much as by Otterize Cloud.
+
+Which means Otterize OSS will continue to be developed energetically along with Otterize Cloud. And not just because
+Otterize OSS **is** also the way that Otterize Cloud integrates with Kubernetes clusters. Otterize OSS will continue
+indefinitely to be a robust, productized, free and open source implementation of IBAC in a Kubernetes cluster, which
+never requires any commercial software (by Otterize or anyone else).
+
+</details>
 
