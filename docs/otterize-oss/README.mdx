@@ -1,0 +1,37 @@
+---
+sidebar_position: 8
+title: Otterize OSS
+---
+
+Otterize OSS implements intent-based access control (IBAC) in a single Kubernetes cluster.
+It is a fully standalone, free and open-source software implementation of IBAC built for cloud-native
+teams that use Kubernetes at the core of their infrastructure.
+
+It consists of several components:
+- The [Otterize intents operator](/components/intents-operator) that translates ClientIntents resources to
+access controls using plugins, which currently include:
+  - A network policies manager to control pod-to-pod access.
+  - An ACL configurator for in-Kubernetes Kafka clusters to control client access.
+- The [Otterize SPIRE integration operator](/components/spire-integration-operator) that integrates with SPIFFE/SPIRE
+to handle pod identities and manage certificates.
+- The [Otterize network mapper](/components/network-mapper) that sniffs pod-to-pod traffic and builds a network map,
+which is useful on its own and may also be exported as client intents files for bootstrapping IBAC.
+
+The Otterize OSS code base and issues are managed [on GitHub](https://github.com/otterize).and
+
+To get started with Otterize OSS, see the [quick tutorials](/tutorials) or the [more in-depth guides](/guides).
+
+The near-term roadmap for Otterize OSS currently includes:
+- **Otterize SDK**: an SDK for fine-grained inline ("middleware") access control.
+  - Capabilities:
+    - A server-side library to authenticate clients and only authorize calls that have been declared as intents.
+    - A client-side library to easily get the credentials needed to present to the server-side library when making calls.
+  - Supported protocols:
+    - HTTP
+  - Supported languages:
+    - Python
+    - Go
+    - JavaScript
+
+
+
