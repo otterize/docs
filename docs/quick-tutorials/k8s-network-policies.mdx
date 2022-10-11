@@ -76,72 +76,72 @@ Our simple example consists of three pods: an HTTP server and two clients that c
 </Tabs>
 </details>
 
-Deploy the two clients and the server in their namespace using `kubectl`:
+1. Deploy the two clients and the server in their namespace using `kubectl`:
 
-```shell
-kubectl apply -f https://docs.otterize.com/code-examples/automate-network-policies/all.yaml
-```
+    ```shell
+    kubectl apply -f https://docs.otterize.com/code-examples/automate-network-policies/all.yaml
+    ```
 
-<details>
-<summary>Optional: check deployment status</summary>
-Check that the client and server pods were deployed
+    <details>
+    <summary>Optional: check deployment status</summary>
+    Check that the client and server pods were deployed
 
-```bash
-kubectl get pods -n otterize-tutorial-npol
-```
-You should see
-```
-NAME                           READY   STATUS    RESTARTS   AGE
-client-596bcb48d5-pnjxc        1/1     Running   0          8s
-client-other-f56d65d7f-z2wg2   1/1     Running   0          8s
-server-6bb4784ccc-wtz7f        1/1     Running   0          8s
-```
-</details>
+    ```bash
+    kubectl get pods -n otterize-tutorial-npol
+    ```
+    You should see
+    ```
+    NAME                           READY   STATUS    RESTARTS   AGE
+    client-596bcb48d5-pnjxc        1/1     Running   0          8s
+    client-other-f56d65d7f-z2wg2   1/1     Running   0          8s
+    server-6bb4784ccc-wtz7f        1/1     Running   0          8s
+    ```
+    </details>
 
 Let's monitor both client attempts to call the server with additional terminal windows,
 so we can see the effects of our changes in real time.
 
-**Open a new terminal window [client]** and tail the client log:
-```bash
-kubectl logs -f --tail 1 -n otterize-tutorial-npol deploy/client
-```
-At this point the client should be able to communicate with the server:
-```
-Calling server...
-HTTP/1.1 200 OK
-accept-ranges: bytes
-cache-control: max-age=3600
-last-modified: Mon, 03 Oct 2022 10:29:04 GMT
-etag: W/"3557515-49-2022-10-03T10:29:04.343Z"
-content-length: 49
-content-type: text/html; charset=UTF-8
-Date: Mon, 03 Oct 2022 10:30:51 GMT
-Connection: keep-alive
-Keep-Alive: timeout=5
+2. **Open a new terminal window [client]** and tail the client log:
+    ```bash
+    kubectl logs -f --tail 1 -n otterize-tutorial-npol deploy/client
+    ```
+    At this point the client should be able to communicate with the server:
+    ```
+    Calling server...
+    HTTP/1.1 200 OK
+    accept-ranges: bytes
+    cache-control: max-age=3600
+    last-modified: Mon, 03 Oct 2022 10:29:04 GMT
+    etag: W/"3557515-49-2022-10-03T10:29:04.343Z"
+    content-length: 49
+    content-type: text/html; charset=UTF-8
+    Date: Mon, 03 Oct 2022 10:30:51 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
 
-Hi, I am the server, you called, may I help you?
-```
+    Hi, I am the server, you called, may I help you?
+    ```
 
-**Open another terminal window [client-other]** and tail the client-other log:
-```bash
-kubectl logs -f --tail 1 -n otterize-tutorial-npol deploy/client-other
-```
-At this point the client should be able to communicate with the server:
-```
-Calling server...
-HTTP/1.1 200 OK
-accept-ranges: bytes
-cache-control: max-age=3600
-last-modified: Mon, 03 Oct 2022 10:29:04 GMT
-etag: W/"3557515-49-2022-10-03T10:29:04.343Z"
-content-length: 49
-content-type: text/html; charset=UTF-8
-Date: Mon, 03 Oct 2022 10:30:51 GMT
-Connection: keep-alive
-Keep-Alive: timeout=5
+3. **Open another terminal window [client-other]** and tail the client-other log:
+    ```bash
+    kubectl logs -f --tail 1 -n otterize-tutorial-npol deploy/client-other
+    ```
+    At this point the client should be able to communicate with the server:
+    ```
+    Calling server...
+    HTTP/1.1 200 OK
+    accept-ranges: bytes
+    cache-control: max-age=3600
+    last-modified: Mon, 03 Oct 2022 10:29:04 GMT
+    etag: W/"3557515-49-2022-10-03T10:29:04.343Z"
+    content-length: 49
+    content-type: text/html; charset=UTF-8
+    Date: Mon, 03 Oct 2022 10:30:51 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
 
-Hi, I am the server, you called, may I help you?
-```
+    Hi, I am the server, you called, may I help you?
+    ```
 
 ## Apply intents
 We will now declare that the **client** intends to call the **server**.
