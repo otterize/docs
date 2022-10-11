@@ -58,7 +58,7 @@ For the complete list of annotation parameters please follow the SPIRE integrati
 [documentation](/components/spire-integration-operator/).
 
 - `spire-integration.otterize.com/tls-secret-name`  - The name of the k8s secret in which the certificate data is stored
-- `spire-integration.otterize.com/dns-names` - A comma-separated list of additional dns names to be registered as part of the
+- `spire-integration.otterize.com/dns-names` - A comma-separated list of additional dns names to be registered as part of the certificate's SAN (Subject Alternative Name) extension.
 - `spire-integration.otterize.com/cert-ttl` - The certificate TTL. Defaults to SPIRE-server's configured default TTL
 
 :::note
