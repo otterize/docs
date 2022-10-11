@@ -89,15 +89,19 @@ User:* has ALLOW permission for operations: ALL from hosts: *), zkVersion : 0
 
 ## Deploy clients
 
-To generate credentials for the pod we simply need to update the deployment by annotating it.
-The required steps are to
-1. Annotate the pod; Otterize automatically identifies the `otterize/tls-secret-name` annotation, generates
-mTLS credentials, and stores them as a K8s secret, where the name of the secret is specified by the annotation.
-2. Mount the credentials stored as a K8s secret as a volume
-3. Mount the volume into the container
+To use mTLS credentials in a pod we simply need to update its deployment to **generate** and then **mount** the credentials.
+
+Generate
+* Update the pod's deployment by annotating it.
+Otterize automatically identifies the `otterize/tls-secret-name` annotation, generates
+mTLS credentials, and stores them as K8s secret named as the annotation value.
+
+Mount
+* Mount the K8s secret as a volume
+* Mount the volume into the container
 
 <details>
-    <summary>Expand to see a detailed example for the configuration</summary>
+<summary>Expand to see a detailed example for the configuration</summary>
 
 ```yaml
 spec:
@@ -106,13 +110,15 @@ spec:
         ...
         annotations:
             # highlight-next-line
-            otterize/tls-secret-name: client-credentials-secret       # 1 Generate credentials
+            # 1 Generate credentials
+            otterize/tls-secret-name: client-credentials-secret
     spec:
         volumes:
         # highlight-start
         - name: otterize-credentials
           secret:
-            secretName: client-credentials-secret                         # 2 Mount credentials as a volume
+            # 2 Mount credentials as a volume
+            secretName: client-credentials-secret
         # highlight-end
         containers:
         - name: client
@@ -120,7 +126,8 @@ spec:
     volumeMounts:
     # highlight-start
       - name: otterize-credentials
-        mountPath: /var/otterize/credentials                          # 3 Mount volume into container
+        # 3 Mount volume into container
+        mountPath: /var/otterize/credentials
         readOnly: true
     # highlight-end
 ```
