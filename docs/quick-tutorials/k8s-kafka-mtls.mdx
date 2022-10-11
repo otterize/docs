@@ -182,7 +182,7 @@ kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/all.yaml
 <details>
 <summary>Optional: check deployment status</summary>
 
-Check that the `client` pod was deployed:
+Check that the client pods were deployed:
 
 ```bash
 kubectl get pods -n otterize-tutorial-kafka-mtls
@@ -195,7 +195,7 @@ myclient-other-59647b448c-w4cpq   1/1     Running   0          21s
 ```
 </details>
 
-Let's monitor both client attempts to call the server with additional terminal windows,
+Let's monitor, in separate terminal windows, both clients' attempts to call Kafka,
 so we can see the effects of our changes in real time.
 
 **Open a new terminal window [myclient]** and tail the client log:
