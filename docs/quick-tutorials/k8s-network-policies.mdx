@@ -150,19 +150,9 @@ Otterize will add a network policy to allow the intended calls
 (**client** &rarr; **server**) and fail all unintended calls (e.g., **client-other** &rarr; **server**).
 
 1. Here is the `intents.yaml` declaration of the client, which we will apply below:
-   ```yaml
-   apiVersion: k8s.otterize.com/v1alpha1
-   kind: ClientIntents
-   metadata:
-     name: client
-     namespace:  otterize-tutorial-npol
-   spec:
-     service:
-       name: client
-     calls:
-       - name: server
-         type: http
-   ```
+```yaml
+{@include: ../../static/code-examples/automate-network-policies/intents.yaml}
+```
 :::tip
 Client intents are the cornerstone of [intent-based access control (IBAC)](https://otterize.com/ibac).
 :::
