@@ -6,7 +6,7 @@ metadata:
 data:
   myclient.go: |
     package main
-
+    
     import (
         "crypto/tls"
         "crypto/x509"
@@ -18,57 +18,64 @@ data:
     )
     
     const (
-        kafkaAddr     = "kafka.kafka:9092"
+        kafkaAddr = "kafka.kafka:9092"
         testTopicName = "mytopic"
-        certFile      = "/var/otterize/credentials/svid.pem"
-        keyFile       = "/var/otterize/credentials/key.pem"
-        rootCAFile    = "/var/otterize/credentials/bundle.pem"
+        certFile = "/var/otterize/credentials/svid.pem"
+        keyFile = "/var/otterize/credentials/key.pem"
+        rootCAFile = "/var/otterize/credentials/bundle.pem"
     )
     
-    func getTLSConfig() (*tls.Config, error) {
-        cert, err := tls.LoadX509KeyPair(certFile, keyFile)
+    func getTLSConfig()( * tls.Config, error) {
+        cert, err: = tls.LoadX509KeyPair(certFile, keyFile)
         if err != nil {
             return nil, fmt.Errorf("failed loading x509 key pair: %w", err)
         }
     
-        pool := x509.NewCertPool()
-        rootCAPEM, err := ioutil.ReadFile(rootCAFile)
+        pool: = x509.NewCertPool()
+        rootCAPEM, err: = ioutil.ReadFile(rootCAFile)
         if err != nil {
             return nil, fmt.Errorf("failed loading root CA PEM file: %w ", err)
         }
         pool.AppendCertsFromPEM(rootCAPEM)
     
-        return &tls.Config{
-            Certificates: []tls.Certificate{cert},
-            RootCAs:      pool,
+        return &tls.Config {
+            Certificates: [] tls.Certificate {
+                cert
+            },
+            RootCAs: pool,
         }, nil
     }
     
     func send_messages(producer sarama.SyncProducer) {
-        i := 1
+        i: = 1
         for {
-          msg := fmt.Sprintf("Message %d [sent by client]", i)
-          _, _, err := producer.SendMessage(&sarama.ProducerMessage{
-              Topic:     testTopicName,
-              Partition: -1,
-              Value:     sarama.StringEncoder(msg),
-          })
-          if err != nil {
-              return
-          }
-          fmt.Printf("Sent message - %s\n", msg)
-          time.Sleep(2 * time.Second)
-          i++
+            msg: = fmt.Sprintf("Message %d [sent by client]", i)
+            _,
+            _,
+            err: = producer.SendMessage( & sarama.ProducerMessage {
+                Topic: testTopicName,
+                Partition: -1,
+                Value: sarama.StringEncoder(msg),
+            })
+            if err != nil {
+                return
+            }
+            fmt.Printf("Sent message - %s\n", msg)
+            time.Sleep(2 * time.Second)
+            i++
         }
     }
     
     func loop_kafka() error {
-        addrs := []string{kafkaAddr}
+        addrs: = [] string {
+            kafkaAddr
+        }
     
-        config := sarama.NewConfig()
+            config: = sarama.NewConfig()
         fmt.Println("Loading mTLS certificates")
         config.Net.TLS.Enable = true
-        tlsConfig, err := getTLSConfig()
+        tlsConfig,
+        err: = getTLSConfig()
         if err != nil {
             return err
         }
@@ -77,7 +84,8 @@ data:
         config.Net.DialTimeout = 5 * time.Second
         config.Net.ReadTimeout = 5 * time.Second
         config.Net.WriteTimeout = 5 * time.Second
-        client, err := sarama.NewClient(addrs, config)
+        client,
+        err: = sarama.NewClient(addrs, config)
         if err != nil {
             return err
         }
@@ -87,24 +95,27 @@ data:
         config.Consumer.MaxWaitTime = 5 * time.Second
         config.Producer.Return.Errors = true
         config.Consumer.Return.Errors = true
-        producer, err := sarama.NewSyncProducerFromClient(client)
+        producer,
+        err: = sarama.NewSyncProducerFromClient(client)
         if err != nil {
             return err
         }
     
-        consumer, err := sarama.NewConsumerFromClient(client)
+        consumer,
+        err: = sarama.NewConsumerFromClient(client)
         if err != nil {
             return err
         }
         fmt.Println("Sending messages")
         go send_messages(producer)
     
-        partConsumer, err := consumer.ConsumePartition(testTopicName, 0, 0)
+        partConsumer,
+        err: = consumer.ConsumePartition(testTopicName, 0, 0)
         if err != nil {
             return err
         }
     
-        for msg := range partConsumer.Messages() {
+        for msg: = range partConsumer.Messages() {
             fmt.Printf("Read message - %s\n", msg.Value)
         }
         return nil
@@ -112,7 +123,7 @@ data:
     
     func main() {
         for {
-            err := loop_kafka()
+            err: = loop_kafka()
             logrus.WithError(err).Println()
             fmt.Println("Loop exited")
             time.Sleep(2 * time.Second)
