@@ -12,16 +12,14 @@ Otterize can automatically provision mTLS credentials by baking existing K8s wor
 :::
 -->
 
-## Mounting mTLS credentials into pods
-To generate credentials for the pod we simply need to update the deployment by annotating it.
-The required steps are to
-1. Annotate the pod - Otterize automatically identifies the `otterize/tls-secret-name` annotation, generates
-mTLS credentials, and stores them as K8s secret named as the annotation value.
-2. Mount the credentials stored as a K8s secret as a volume
-3. Mount the volume into the container
-
-<details>
-<summary>Expand to see a detailed explanation for the annotations</summary>
+## Provisioning mTLS credentials
+To use mTLS credentials in a pod we simply need to update its deployment to **generate** and then **mount** the credentials.
+### Generate
+To generate credentials we need to update the pod's deployment by annotating it.
+Otterize automatically identifies the `otterize/tls-secret-name` annotation, generates
+mTLS credentials, and stores them as K8s secret named as the annotation value. We recommend
+using a secret name that corresponds to the deployment name as it needs to be unique within
+its namespace.
 
 ```yaml
 spec:
@@ -29,51 +27,51 @@ spec:
     metadata:
       ...
       annotations:
-        # 1 Generate credentials
+        # Generate credentials
         # highlight-next-line
         otterize/tls-secret-name: client-credentials-secret
-    spec:
-      volumes:
-        # highlight-start
-        - name: otterize-credentials
-          secret:
-            # 2 Mount credentials as a volume
-            secretName: client-credentials-secret
-            # highlight-end
-      containers:
-        - name: client
-        ...
-        volumeMounts:
-          # highlight-start
-          - name: otterize-credentials
-            # 3 Mount volume into container
-            mountPath: /var/otterize/credentials
-            readOnly: true
-            # highlight-end
 ```
-</details>
 
-### Annotation parameters
+:::tip
 For the complete list of annotation parameters please follow the SPIRE integration operator
 [documentation](/components/spire-integration-operator/).
-
-- `spire-integration.otterize.com/tls-secret-name`  - The name of the k8s secret in which the certificate data is stored
-- `spire-integration.otterize.com/dns-names` - A comma-separated list of additional dns names to be registered as part of the certificate's SAN (Subject Alternative Name) extension.
-- `spire-integration.otterize.com/cert-ttl` - The certificate TTL. Defaults to SPIRE-server's configured default TTL
-
-:::note
-Otterize defaults to generating credentials with an expiry time of 1 day. The certificates are
-automatically refreshed before expiring, and you must take care to always read the credentials from file, rather than caching them for this reason.
-
-To set a longer expiration time, set the `spire-integration.otterize.com/cert-ttl` annotation for your pods. For more information, see the documentation for the [SPIRE Integration Operator](/components/spire-integration-operator)
 :::
+
+### Mount
+To mount the credentials into the pod you need to:
+* Mount the K8s secret as a volume
+* Mount the volume into the container
+
+```yaml
+spec:
+  volumes:
+    # highlight-start
+    - name: otterize-credentials
+      secret:
+        # Mount credentials as a volume
+        secretName: client-credentials-secret
+        # highlight-end
+  containers:
+    - name: client
+    ...
+    volumeMounts:
+      # highlight-start
+      - name: otterize-credentials
+        # Mount volume into container
+        mountPath: /var/otterize/credentials
+        readOnly: true
+        # highlight-end
+```
 
 :::tip
 Certificates are automatically refreshed before expiring. We recommend loading certificates each time before using them where possible.
 :::
 
 ## Using mTLS credentials
-
+Credentials can be used by services directly in their native programming languages using common SDKs.
+The following examples showcase how to use the generated credentials for mTLS between
+* HTTP - clients and servers
+* Kafka - clients and brokers
 ### HTTP
 
 #### Client
