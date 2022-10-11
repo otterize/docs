@@ -1,9 +1,9 @@
-Below are instructions for setting up a cluster with Network Policies.
+Below are instructions for setting up a cluster with network policies.
 If you don't have a cluster already, we recommend starting out with a Minikube cluster.
 
 <Tabs groupId="cni">
-<TabItem value="minikube" label="minikube">
-    Start your minikube cluster. <a href="https://minikube.sigs.k8s.io/docs/start/">Don't have the minikube CLI? Read the installation instructions</a>
+<TabItem value="minikube" label="Minikube">
+    Start your Minikube cluster. <a href="https://minikube.sigs.k8s.io/docs/start/">Don't have the Minikube CLI? Read the installation instructions</a>
 
 ```bash
 minikube start --network-plugin=cni
@@ -50,7 +50,7 @@ Run the following command to enable network policy enforcement on your cluster, 
 2. On the Google Kubernetes Engine page, click Create.
 3. Configure your cluster as desired.
 4. From the navigation pane, under Cluster, click Networking.
-5. Select the Enable network policy checkbox.
+5. Select the checkbox to Enable network policy.
 6. Click Create.
 
 
@@ -60,9 +60,9 @@ Run the following command to enable network policy enforcement on your cluster, 
 
 2. In the cluster list, click the name of the cluster you want to modify.
 3. Under Networking, in the Network policy field, click Edit network policy.
-4. Select the Enable network policy for master checkbox and click Save Changes.
+4. Select the checkbox to Enable network policy for master and click Save Changes.
 5. Wait for your changes to apply, and then click Edit network policy again.
-6. Select the Enable network policy for nodes checkbox.
+6. Select the checkbox to Enable network policy for nodes.
 7. Click Save Changes.
 
 </TabItem>
@@ -80,7 +80,7 @@ kubectl apply -f https://raw.githubusercontent.com/aws/amazon-vpc-cni-k8s/master
 </TabItem>
 <TabItem value="aks" label="Azure AKS">
 
-You can setup an AKS cluster using this [guide](https://learn.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-cli).
+You can set up an AKS cluster using this [guide](https://learn.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-cli).
 
 For network policy support, no setup is required: Azure AKS comes with a built-in network policy implementation called Azure Network Policy Manager. You choose whether you'd like to use this option or Calico when you create a cluster.
 
