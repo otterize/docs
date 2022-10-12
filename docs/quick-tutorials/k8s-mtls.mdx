@@ -22,11 +22,50 @@ You can skip this section if Otterize is already installed in your cluster.
 
 ## Deploy the example
 
-Our example consists of two pods, "client" and "server", communicating over HTTP with mTLS, using credentials
-provisioned by the Otterize SPIRE integration operator.
+Our example consists of two pods, "client" and "server", communicating over HTTP with mTLS.
+Otterize makes mTLS easy, requiring just 3 simple changes to a client pod spec:
+1. **Generate credentials**: add the `otterize/tls-secret-name` annotation, which tells the Otterize
+   SPIRE integration operator to generate mTLS credentials, and to store them in a Kubernetes secret
+   whose name is the value of this annotation.
+2. **Expose credentials in a volume**: add a volume containing this secret to the pod.
+3. **Mount the volume**: mount the volume in every container in the pod.
 
 <details>
-<summary>Expand to see the example YAML files</summary>
+<summary>Expand to see this structure</summary>
+
+```yaml
+spec:
+  template:
+    metadata:
+      annotations:
+        # highlight-next-line
+        # 1. Generate credentials as a secret called "client-credentials-secret":
+        otterize/tls-secret-name: client-credentials-secret
+        ...
+    spec:
+      volumes:
+        # highlight-start
+        # 2. Create a volume containing this secret:
+        - name: otterize-credentials
+          secret:
+            secretName: client-credentials-secret
+        # highlight-end
+        ...
+      containers:
+        - name: client
+          ...
+          volumeMounts:
+            # highlight-start
+            # 3. Mount volume into container
+            - name: otterize-credentials
+              mountPath: /var/otterize/credentials
+              readOnly: true
+            # highlight-end
+```
+</details>
+
+<details>
+<summary>Expand to see the complete YAML files of the example</summary>
 <Tabs>
 
 <TabItem value="namespace.yaml" label="namespace.yaml" default>
@@ -112,46 +151,6 @@ https.createServer(
 
 </TabItem>
 </Tabs>
-</details>
-
-The client will authenticate to the server using mTLS. Otterize makes this easy, requiring just 3 simple changes to the client pod spec:
-1. **Generate credentials**: add the `otterize/tls-secret-name` annotation, which tells Otterize to generate mTLS credentials and store them in a Kubernetes secret whose name is the value of this annotation.
-2. **Expose credentials in a volume**: add a volume containing this secret to the pod.
-3. **Mount the volume**: mount the volume in every container in the pod.
-To use mTLS credentials in a pod we simply need to update its deployment to **generate** and then **mount** the credentials.
-
-<details>
-<summary>Expand to see this structure</summary>
-
-```yaml
-spec:
-  template:
-    metadata:
-      annotations:
-        # highlight-next-line
-        # 1. Generate credentials as a secret called "client-credentials-secret":
-        otterize/tls-secret-name: client-credentials-secret
-        ...
-    spec:
-      volumes:
-        # highlight-start
-        # 2. Create a volume containing this secret:
-        - name: otterize-credentials
-          secret:
-            secretName: client-credentials-secret
-        # highlight-end
-        ...
-      containers:
-        - name: client
-          ...
-          volumeMounts:
-            # highlight-start
-            # 3. Mount volume into container
-            - name: otterize-credentials
-              mountPath: /var/otterize/credentials
-              readOnly: true
-            # highlight-end
-```
 </details>
 
 Deploy the client and server using `kubectl`:
