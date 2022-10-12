@@ -28,6 +28,12 @@ In regular TLS, only the server is authenticated. For example, when you connect 
 nd your browser authenticates google.com using its certificate, you're using TLS;
 but google.com does not authenticate you, as the client, with a certificate, so the communication isn't using mTLS, just TLS.
 
+### SPIRE
+An open-source system that implements the [SPIFFE](https://github.com/spiffe/spire) specification. Used for workload attestation and credential management.
+[Read more about SPIRE in the official documentation](https://spiffe.io/docs/latest/spire-about/).
+### SPIRE integration operator
+The Otterize SPIRE integration operator automatically resolves pods to dev-friendly service names, registers them with a SPIRE server, and provisions credentials as a Kubernetes Secrets.
+
 ## Enforcement
 
 ### Network Policies
