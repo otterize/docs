@@ -4,7 +4,7 @@ title: Otterize OSS Helm chart
 ---
 
 The [Otterize OSS helm chart](https://github.com/otterize/helm-charts/tree/main/otterize-kubernetes) is a chart that installs all Otterize components and supporting components together, and configures them to work with each other.
-For example, it configures the SPIRE Integration Operator to work with the deployed SPIRE server, and the Intents Operator to get mTLS credentials from the SPIRE Integration Operator.
+For example, it configures the SPIRE integration operator to work with the deployed SPIRE server, and the Intents Operator to get mTLS credentials from the SPIRE integration operator.
 
 :::note
 The [network mapper](/components/network-mapper) is not deployed by this chart. You can deploy it with [its own chart](/components/network-mapper/helm-chart).
@@ -13,32 +13,32 @@ The [network mapper](/components/network-mapper) is not deployed by this chart. 
 # Parameters
 ## Deployment parameters
 
-| Key                                   | Description                                 | Default |
-|---------------------------------------|---------------------------------------------|---------|
-| `deployment.spire`                    | Whether or not to deploy spire.             | `true`  |
-| `deployment.spireIntegrationOperator` | Whether or not to deploy spire-integration. | `true`  |
-| `deployment.intentsOperator`          | Whether or not to deploy intents-operator.  | `true`  |
+| Key                                   | Description                                              | Default |
+|---------------------------------------|----------------------------------------------------------|---------|
+| `deployment.spire`                    | Whether or not to deploy SPIRE.                          | `true`  |
+| `deployment.spireIntegrationOperator` | Whether or not to deploy the SPIRE integration operator. | `true`  |
+| `deployment.intentsOperator`          | Whether or not to deploy the intents operator.           | `true`  |
 
 ## Global parameters
 
 These parameters are used by multiple charts, and must be kept the same for the correct functioning of the separate components.
 
-| Key                                    | Description                                                           | Default         |
-|----------------------------------------|-----------------------------------------------------------------------|-----------------|
-| `global.spiffe.CASubject`              | The Subject that CA certificates should use (see below).	             |                 |
-| `global.spiffe.CASubject.country`      | SPIRE's CA certificates `Country` value.                              | `"US"`          |
-| `global.spiffe.CASubject.organization` | SPIRE's CA certificates `Organization` Value.                         | `"SPIRE"`       |
-| `global.spiffe.trustDomain`            | The trust domain that SPIRE will use.	                             | `"example.org"` |
-| `global.spire.serverServiceName`       | Name of the Kubernetes service that will be created for spire-server. |                 |
-| `global.allowGetAllResources`          | If defined overrides `allowGetAllResources` in subcharts. Gives get, list and watch permission to watch on all resources. This is used to resolve service names when pods have owners that are custom resources. When disabled, a limited set of permissions is used that only allows access to built-in Kubernetes resources that deploy Pods and Pods themselves - Deployments, StatefulSets, DaemonSets, ReplicaSets and Services. Resolving may not be able to complete if the owning resource is not one of those.                         |                 |
+| Key                                    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                            | Default         |
+|----------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------|
+| `global.spiffe.CASubject`              | The Subject that CA certificates should use (see below).	                                                                                                                                                                                                                                                                                                                                                                                                              |                 |
+| `global.spiffe.CASubject.country`      | SPIRE's CA certificate `Country` value.                                                                                                                                                                                                                                                                                                                                                                                                                                | `"US"`          |
+| `global.spiffe.CASubject.organization` | SPIRE's CA certificate `Organization` Value.                                                                                                                                                                                                                                                                                                                                                                                                                           | `"SPIRE"`       |
+| `global.spiffe.trustDomain`            | The trust domain that SPIRE will use.	                                                                                                                                                                                                                                                                                                                                                                                                                                 | `"example.org"` |
+| `global.spire.serverServiceName`       | Name of the Kubernetes service that will be created for spire-server.                                                                                                                                                                                                                                                                                                                                                                                                  |                 |
+| `global.allowGetAllResources`          | Provides *get*, *list* and *watch* permission to watch on all resources. Used to resolve service names when pods have owners that are custom resources. When disabled, a limited set of permissions is used that only allows access to built-in Kubernetes resources that deploy Pods and Pods themselves - Deployments, StatefulSets, DaemonSets, ReplicaSets and Services. Resolving process may not be able to complete if the owning resource is not one of those. |                 |
 
 ## Intents operator parameters
-All configurable parameters of intents-operator can be configured under the alias `intentsOperator`.
-Further information about intents-operator parameters can be found [in the Intents Operator's helm chart](../components/helm-chart).
+All configurable parameters of the intents operator can be configured under the alias `intentsOperator`.
+Further information about the intents operator parameters can be found [in the Intents Operator's helm chart](../components/helm-chart).
 
 | Key                                                  | Description                                                    | Default          |
 |------------------------------------------------------|----------------------------------------------------------------|------------------|
-| intentsOperator.autoGenerateTLSUsingSpireIntegration | Use spire-integration to create TLS cert for intents-operator. | `true`           |
+| intentsOperator.autoGenerateTLSUsingSpireIntegration | Use spire-integration to create TLS cert for the intents operator. | `true`           |
 
 ## SPIRE parameters
 All configurable parameters of SPIRE can be configured under the alias `spire`.
@@ -46,4 +46,4 @@ Further information about SPIRE parameters can be found [in SPIRE's helm chart](
 
 ## SPIRE integration operator parameters
 All configurable parameters of the SPIRE integration operator can be configured under the alias `spireIntegrationOperator`.
-Further information about SPIRE integration operator parameters can be found [in the SPIRE integration operator's chart]((../components/spire-integration-operator/helm-chart)).
+Further information about SPIRE integration operator parameters can be found [in the SPIRE integration operator chart]((../components/spire-integration-operator/helm-chart)).
