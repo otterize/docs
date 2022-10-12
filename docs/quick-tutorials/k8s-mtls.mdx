@@ -22,7 +22,7 @@ You can skip this section if Otterize is already installed in your cluster.
 
 ## Deploy the example
 
-Our example consists of two pods: client and server communicating over HTTPS using credentials
+Our example consists of two pods, "client" and "server", communicating over HTTP with mTLS, using credentials
 provisioned by the Otterize SPIRE integration operator.
 
 <details>
@@ -114,55 +114,47 @@ https.createServer(
 </Tabs>
 </details>
 
-
+The client will authenticate to the server using mTLS. Otterize makes this easy, requiring just 3 simple changes to the client pod spec:
+1. **Generate credentials**: add the `otterize/tls-secret-name` annotation, which tells Otterize to generate mTLS credentials and store them in a Kubernetes secret whose name is the value of this annotation.
+2. **Expose credentials in a volume**: add a volume containing this secret to the pod.
+3. **Mount the volume**: mount the volume in every container in the pod.
 To use mTLS credentials in a pod we simply need to update its deployment to **generate** and then **mount** the credentials.
 
-Generate
-* Update the pod's deployment by annotating it.
-Otterize automatically identifies the `otterize/tls-secret-name` annotation, generates
-mTLS credentials, and stores them as K8s secret named as the annotation value.
-
-Mount
-* Mount the K8s secret as a volume
-* Mount the volume into the container
-
 <details>
-<summary>Expand to see a detailed example for the configuration</summary>
+<summary>Expand to see this structure</summary>
 
 ```yaml
 spec:
-    template:
-        metadata:
+  template:
+    metadata:
+      annotations:
+        # highlight-next-line
+        # 1. Generate credentials as a secret called "client-credentials-secret":
+        otterize/tls-secret-name: client-credentials-secret
         ...
-        annotations:
-            # highlight-next-line
-            # 1 Generate credentials
-            otterize/tls-secret-name: client-credentials-secret
     spec:
-        volumes:
+      volumes:
         # highlight-start
+        # 2. Create a volume containing this secret:
         - name: otterize-credentials
           secret:
-            # 2 Mount credentials as a volume
             secretName: client-credentials-secret
         # highlight-end
-        containers:
-        - name: client
         ...
-    volumeMounts:
-    # highlight-start
-      - name: otterize-credentials
-        # 3 Mount volume into container
-        mountPath: /var/otterize/credentials
-        readOnly: true
-    # highlight-end
+      containers:
+        - name: client
+          ...
+          volumeMounts:
+            # highlight-start
+            # 3. Mount volume into container
+            - name: otterize-credentials
+              mountPath: /var/otterize/credentials
+              readOnly: true
+            # highlight-end
 ```
 </details>
 
-
-
-
-Deploy the `client` and `server` using `kubectl`.
+Deploy the client and server using `kubectl`:
 ```bash
 kubectl apply -f https://docs.otterize.com/code-examples/mtls/all.yaml
 ```
@@ -183,26 +175,26 @@ server-6698c58cbc-v9n9b   1/1     Running   0          34s
 
 ## Watch it in action
 
-1. Confirm that the client can successfully call the server using HTTP over mTLS. The client makes requests, and the server replies
-   with the server's certificate's `common name` as well as the `client`'s certificate `common name`.
+1. Confirm that the client can successfully call the server using HTTP with mTLS:
 
    ```bash
    kubectl logs --tail 3 -n otterize-tutorial-mtls deploy/client
    ```
 
-   You should see the following line:
+   The client makes requests and prints out the server's response; our example server will respond with
+   the `common name` of the server's certificate as well as the `common name` of the client's certificate:
 
    ```shell
    mTLS hello world
    from: server.otterize-tutorial-mtls          # server's common name in the certificate
    to client: client.otterize-tutorial-mtls     # client's common name in the certificate
    ```
-2. You can also follow the server's output log with:
+2. You can also confirm ojn the server side that it sees requests from this authenticated client:
    ```bash
    kubectl logs --tail 1 -n otterize-tutorial-mtls deploy/server
    ```
 
-   You should see the following output:
+   The example server logs the common name of every client that makes a request:
 
    ```shell
    client.otterize-tutorial-mtls:  GET /hello
@@ -210,16 +202,16 @@ server-6698c58cbc-v9n9b   1/1     Running   0          34s
 
 ## Inspect credentials
 
-We can use openssl to inspect the generated credentials. The credentials are stored as a K8s secret and are then mounted as a file into the container.
+We can use `openssl` to inspect the generated credentials. The credentials are stored as a Kubernetes secret
+and are then mounted as a file into the container.
 
-1.
-   To retrieve the credentials from the K8s secret, run the following:
+1. Retrieve the credentials from the Kubernetes secret:
 
    ```shell
    kubectl get secret -n otterize-tutorial-mtls client-credentials-secret -o jsonpath='{.data.svid\.pem}' | base64 -d > svid.pem
    ```
 
-2. And then inspect them with:
+2. Inspect the credentials with `openssl`:
 
    ```shell
    openssl x509 -in svid.pem -text | head -n 15
@@ -244,27 +236,29 @@ We can use openssl to inspect the generated credentials. The credentials are sto
                    pub:
    ```
 
-3. You can see that Otterize generated an X.509 keypair using the pod's name `client` and namespace `otterize-tutorial-mtls`: `client.otterize-tutorial-mtls`.
-   The certificate belongs to a chain of trust starting at the SPIRE server.
+3. You can see that Otterize generated an X.509 keypair using the pod's name ("client")
+   and namespace ("otterize-tutorial-mtls"): `client.otterize-tutorial-mtls`.
+   The certificate belongs to a chain of trust rooted at the SPIRE server.
 
 <details>
 <summary>Expand to see what happened behind the scenes</summary>
 
 1. We annotated the pods to let Otterize know it should generate mTLS credentials.
-2. The Otterize SPIRE integration operator
-    1. Created an entries for the annotated pods with the SPIRE server.
+2. The Otterize SPIRE integration operator:
+    1. Created entries in the SPIRE server for the annotated pods.
     2. Generated matching mTLS credentials using the SPIRE server.
-    3. Stored the mTLS credentials into a K8s secret.
+    3. Stored the mTLS credentials into Kubernetes secrets.
 3. The secrets were mounted (separately) into each pod's container.
 4. The pods communicated with each other using mutual TLS-authenticated HTTPS.
 
 </details>
 
-:::note
+:::tip
 Otterize defaults to generating credentials with an expiry time of 1 day. The certificates are
 automatically refreshed before expiring, and therefore you must always read the credentials from file rather than caching them.
 
-To set a longer expiration time, set the `spire-integration.otterize.com/cert-ttl` annotation for your pods. For more information, see the documentation for the [SPIRE integration operator](/components/spire-integration-operator)
+To set a longer expiration time, set the `spire-integration.otterize.com/cert-ttl` annotation for your pods.
+For more information, see [the documentation for the SPIRE integration operator](/components/spire-integration-operator)
 :::
 
 ## What's next
