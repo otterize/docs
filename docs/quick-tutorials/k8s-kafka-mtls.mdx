@@ -290,6 +290,25 @@ and define a place on their filesystem where they'll get the appropriate credent
 - The next `kubectl apply` ensures that all the appropriate certs are issued and distributed,
 and that Kafka ACLs are configured to reflect precisely the intended topic-level access.
 
+<details>
+<summary>Expand to see what happened behind the scenes</summary>
+
+We configured the Kafka helm chart to:
+* Use the SSL protocol for its listeners
+* Let Otterize know it should generate mTLS credentials in the Java Key Store and Java Trust Store format and store them as a K8s secret.
+* Use the K8s secret for its credentials.
+
+We configured out clients to
+* Let Otterize know it should generate mTLS credentials in a PEM format.
+* Use the K8s secret for its credentials.
+
+By this point we had an mTLS between both clients and Kafka.
+
+Then we applied intents:
+* To allow only intended access from the *client* pod.
+
+</details>
+
 :::tip Bonus tutorial
 Try to create an intents file yourself for **client-other**, and apply it to allow this other client to access the topic.
 :::
