@@ -33,17 +33,17 @@ These parameters are used by multiple charts, and must be kept the same for the 
 | `global.allowGetAllResources`          | Provides *get*, *list* and *watch* permission to watch on all resources. Used to resolve service names when pods have owners that are custom resources. When disabled, a limited set of permissions is used that only allows access to built-in Kubernetes resources that deploy Pods and Pods themselves - Deployments, StatefulSets, DaemonSets, ReplicaSets and Services. Resolving process may not be able to complete if the owning resource is not one of those. |                 |
 
 ## Intents operator parameters
-All configurable parameters of the intents operator can be configured under the alias `intentsOperator`.
+All configurable parameters of the intents operator can be configured under the alias **intentsOperator**.
 Further information about the intents operator parameters can be found [in the Intents Operator's helm chart](../components/helm-chart).
 
 | Key                                                  | Description                                                    | Default          |
 |------------------------------------------------------|----------------------------------------------------------------|------------------|
-| intentsOperator.autoGenerateTLSUsingSpireIntegration | Use spire-integration to create TLS cert for the intents operator. | `true`           |
+| intentsOperator.autoGenerateTLSUsingSpireIntegration | Use spire integration to create TLS cert for the intents operator. | `true`           |
 
 ## SPIRE parameters
-All configurable parameters of SPIRE can be configured under the alias `spire`.
+All configurable parameters of SPIRE can be configured under the alias **spire**.
 Further information about SPIRE parameters can be found [in SPIRE's helm chart](https://github.com/otterize/helm-charts/tree/main/spire).
 
 ## SPIRE integration operator parameters
-All configurable parameters of the SPIRE integration operator can be configured under the alias `spireIntegrationOperator`.
+All configurable parameters of the SPIRE integration operator can be configured under the alias **spireIntegrationOperator**.
 Further information about SPIRE integration operator parameters can be found [in the SPIRE integration operator chart]((../components/spire-integration-operator/helm-chart)).
