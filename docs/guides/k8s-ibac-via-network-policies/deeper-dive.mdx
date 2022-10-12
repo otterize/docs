@@ -147,12 +147,12 @@ blocking pods from accepting incoming calls unless another network policy explic
 </Tabs>
 </details>
 
-1. Deploy the client, server, and the default deny network policy using `kubectl`.
+1. Deploy the **client**, **server**, and the default deny network policy using `kubectl`.
 
    ```shell
    kubectl apply -f https://docs.otterize.com/code-examples/automate-network-policies/all.yaml
    ```
-2. Check that the **client** and server **pods** were deployed
+2. Check that the **client** and **server** pods were deployed
    ```bash
    kubectl get pods -n otterize-tutorial-npol
    ```
@@ -163,7 +163,7 @@ blocking pods from accepting incoming calls unless another network policy explic
    server-6698c58cbc-v9n9b   1/1     Running   0          34s
    ```
 
-3. The client intents to call the server are declared with this `intents.yaml` file:
+3. The **client** intents to call the server are declared with this `intents.yaml` file:
 
    ```yaml
    {@include: ../../../static/code-examples/automate-network-policies/intents.yaml}
