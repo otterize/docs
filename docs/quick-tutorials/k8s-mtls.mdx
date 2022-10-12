@@ -199,6 +199,13 @@ server-6698c58cbc-v9n9b   1/1     Running   0          34s
    client.otterize-tutorial-mtls:  GET /hello
    ```
 
+:::info Certificate lifecycle management
+Otterize leverages SPIRE to manage certificate lifecycle management tasks such as rotation, revocation, etc.
+
+We recommend reloading credentials before each use, as Otterize makes sure
+the mounted credentials are constantly refreshed and up to date.
+:::
+
 ## Inspect credentials
 
 We can use `openssl` to inspect the generated credentials. The credentials are stored as a Kubernetes secret
