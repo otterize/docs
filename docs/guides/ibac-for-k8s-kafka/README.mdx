@@ -213,17 +213,17 @@ Topic selectors can be set by using a `prefix` match or a `literal` match patter
 Read more [here](https://docs.confluent.io/platform/current/kafka/authorization.html#prefixed-acls).
 
 Permission levels are set by
-- Unauthenticated - client identity not required
+- **Unauthenticated** - client identity not required
    ```bash
    clientIdentityRequired: false
    intentsRequired: false
    ```
-- Authenticated - client identity required
+- **Authenticated** - client identity required
    ```bash
    clientIdentityRequired: true
    intentsRequired: false
    ```
-- Authorized - client identity and an intent are required
+- **Authorized** - client identity and an intent are required
    ```bash
    clientIdentityRequired: true
    intentsRequired: true
@@ -460,6 +460,71 @@ on which you'd like to require intents,
 and on which you don't require any of those.
 [Read more about Kafka configuration here.](/components/intents-operator/configuration).
 
+## Configuring intents
+### Common use cases
+Client intents can be configured to allow different access patterns for different clients.
+A basic intents file for a client intending to **produce** to a topic looks as follows.
+
+```yaml
+apiVersion: k8s.otterize.com/v1alpha1
+kind: ClientIntents
+metadata:
+  name: myclient
+spec:
+  service:
+    name: myclient
+  calls:
+    - name: kafka
+      namespace: kafka
+      type: kafka
+      topics:
+        - name: mytopic
+          operation: produce
+```
+
+To configure a different access pattern for the client we need to set its **operation** field to the desired value.
+
+Common access patterns
+- **all** - allow all operations for the topic.
+```yaml
+- name: mytopic
+  operation: all
+```
+- **produce** - allow the *produce* access pattern for a topic.
+```yaml
+- name: mytopic
+  operation: produce
+```
+- **consume** - allow the *consume* access pattern for a topic.
+```yaml
+- name: mytopic
+  operation: consume
+```
+- **produce and create** - allow the *produce* and *create* access pattern for a topic.
+```yaml
+- name: mytopic
+  operation: produce
+- name: mytopic
+  operation: create
+```
+
+### All options
+Available topic operations are as follows. For more details read [here](https://docs.confluent.io/platform/current/kafka/authorization.html#operations)
+
+| option            | Operation       |
+|-------------------|-----------------|
+| `all`             | All             |
+| `consume`         | Read            |
+| `produce`         | Write           |
+| `create`          | Create          |
+| `alter`           | Alter           |
+| `delete`          | Delete          |
+| `describe`        | Describe        |
+| `ClusterAction`   | ClusterAction   |
+| `DescribeConfigs` | DescribeConfigs |
+| `AlterConfigs`    | AlterConfigs    |
+| `IdempotentWrite` | IdempotentWrite |
+
 ## Otterize identities, intents and Kafka ACLs
 In the following example, there is one client (`myclient`) running in the namespace `ibac-for-kafka`
 and an intent to access a single topic (`my-topic`).
@@ -532,6 +597,9 @@ Set(User:ANONYMOUS has DENY permission for operations: ALL from hosts: *,
     User:CN=myclient.ibac-for-kafka,O=SPIRE,C=US has ALLOW permission for operations: ALL from hosts: *)
 , zkVersion : 5 (kafka.security.authorizer.AclAuthorizer)
 ```
+
+
+
 
 ## Teardown
 To remove the deployed examples run:
