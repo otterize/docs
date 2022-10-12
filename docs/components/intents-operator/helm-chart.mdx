@@ -3,8 +3,8 @@ sidebar_position: 1
 title: Helm chart
 ---
 
-You can use the [operator's Helm chart](https://github.com/otterize/helm-charts/tree/main/intents-operator) to deploy the intents Ooerator on its own, and configure it to work with a SPIRE integration operator to acquire mTLS credentials.
-It is recommended to deploy the operator as part of the Otterize chart, which comes with a SPIRE server and the SPIRE integration operator, rather than managing it independently.
+You can use the [intents operator's Helm chart](https://github.com/otterize/helm-charts/tree/main/intents-operator) to deploy the intents operator on its own, and configure it to work with the Otterize SPIRE integration operator to acquire mTLS credentials.
+But it is recommended to deploy the operator as part of the [Otterize OSS Helm chart](https://github.com/otterize/helm-charts/tree/main/otterize-kubernetes), which comes with a SPIRE server and the SPIRE integration operator, rather than managing it independently.
 
 If you would like to deploy it on its own, add the Otterize Helm chart repository and configure the operator:
 ```bash
@@ -18,11 +18,11 @@ If you would like to deploy it on its own, add the Otterize Helm chart repositor
 
 | Key                                             | Description                                                                                                        | Default            |
 |-------------------------------------------------|--------------------------------------------------------------------------------------------------------------------|--------------------|
-| `operator.image.repository`                     | Intents Operator image repository.                                                                                 | `otterize`         |
-| `operator.image.image`                          | Intents Operator image.                                                                                            | `intents-operator` |
-| `operator.image.tag`                            | Intents Operator image tag.                                                                                        | `latest`           |
-| `operator.pullPolicy`                           | Intents Operator image pull policy.                                                                                | `(none)`           |
-| `operator.autoGenerateTLSUsingSpireIntegration` | If true, adds the necessary pod annotations in order to integrate with spire-integration, and get tls certificate. | `false`            |
+| `operator.image.repository`                     | Intents operator image repository.                                                                                 | `otterize`         |
+| `operator.image.image`                          | Intents operator image.                                                                                            | `intents-operator` |
+| `operator.image.tag`                            | Intents operator image tag.                                                                                        | `latest`           |
+| `operator.pullPolicy`                           | Intents operator image pull policy.                                                                                | `(none)`           |
+| `operator.autoGenerateTLSUsingSpireIntegration` | If true, adds the necessary pod annotations in order to generate mTLS credentials using the Otterize SPIRE integration operator. | `false`            |
 | `operator.resources`                            | Resources override.                                                                                                |                    |
 
 
@@ -34,10 +34,10 @@ If you would like to deploy it on its own, add the Otterize Helm chart repositor
 | `watcher.image.image`      | Watcher image.             | `intents-operator-pod-watcher` |
 | `watcher.image.tag`        | Watcher image tag.         | `latest`                       |
 | `watcher.pullPolicy`       | Watcher image pull policy. | `(none)`                       |
-| `watcher.resources`        | Watcher Resources.         |                                |
+| `watcher.resources`        | Watcher resources.         |                                |
 
 ## Common parameters
 
 | Key                    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Default |
 |------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
-| `allowGetAllResources` | Gives get, list and watch permission to watch on all resources. This is used to resolve service names when pods have owners that are custom resources. When disabled, a limited set of permissions is used that only allows access to built-in Kubernetes resources that deploy Pods and Pods themselves - Deployments, StatefulSets, DaemonSets, ReplicaSets and Services. Resolving may not be able to complete if the owning resource is not one of those. | `true`  |
+| `allowGetAllResources` | Gives get, list and watch permission to watch on all resources. This is used to resolve service names when pods have owners that are custom resources. When disabled, a limited set of permissions is used that only allows access to Pods and to built-in Kubernetes resources that deploy Pods: Deployments, StatefulSets, DaemonSets, ReplicaSets and Services. Resolving may not be able to complete if the owning resource is not one of those. | `true`  |

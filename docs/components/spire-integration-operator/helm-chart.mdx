@@ -2,8 +2,8 @@
 sidebar_position: 1
 title: Helm chart
 ---
-You can use the [operator's Helm chart](https://github.com/otterize/helm-charts/tree/main/spire-integration-operator) to deploy the SPIRE integration operator on its own, and configure a SPIRE server for it to work with according to the parameters value.
-It is recommended to deploy the operator as part of the Otterize chart, which comes with a SPIRE server and the intents operator, rather than managing it independently.
+You can use the [SPIRE integration operator's Helm chart](https://github.com/otterize/helm-charts/tree/main/spire-integration-operator) to deploy the SPIRE integration operator on its own, and configure a SPIRE server for it to work with according to the parameters value.
+But it is recommended to deploy the operator as part of the [Otterize OSS Helm chart](https://github.com/otterize/helm-charts/tree/main/otterize-kubernetes), which comes with a SPIRE server and the intents operator, rather than managing it independently.
 
 If you would like to deploy it on its own, add the Otterize Helm chart repository and configure the operator:
 ```bash
@@ -12,12 +12,12 @@ If you would like to deploy it on its own, add the Otterize Helm chart repositor
   helm install otterize-spire-integration-operator otterize/spire-integration-operator -n otterize-system --create-namespace
 ```
 
-## Spire parameters
+## SPIRE parameters
 
 | Key                   | Description                                                                                                    | Default                |
 |-----------------------|----------------------------------------------------------------------------------------------------------------|------------------------|
-| `spire.serverAddress` | Specify the spire-server's address. You should use either this OR `global.spire.serverServiceName` (not both). |                        |
-| `spire.socketsPath`   | Spire sockets path. The operator will expect to find agent.sock in the host-mounted folder                     | `"/run/spire/sockets"` |
+| `spire.serverAddress` | Specify the SPIRE server's address. You should use either this OR `global.spire.serverServiceName` (not both). |                        |
+| `spire.socketsPath`   | SPIRE sockets path. The operator will expect to find `agent.sock` in the host-mounted folder                     | `"/run/spire/sockets"` |
 
 ## Operator parameters
 
@@ -32,6 +32,6 @@ If you would like to deploy it on its own, add the Otterize Helm chart repositor
 
 | Key                    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Default |
 |------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
-| `allowGetAllResources` | Gives get, list and watch permission to watch on all resources. This is used to resolve service names when pods have owners that are custom resources. When disabled, a limited set of permissions is used that only allows access to built-in Kubernetes resources that deploy Pods and Pods themselves - Deployments, StatefulSets, DaemonSets, ReplicaSets and Services. Resolving may not be able to complete if the owning resource is not one of those. | `true`  |
+| `allowGetAllResources` | Gives get, list and watch permission to watch on all resources. This is used to resolve service names when pods have owners that are custom resources. When disabled, a limited set of permissions is used that only allows access to Pods and to built-in Kubernetes resources that deploy Pods: Deployments, StatefulSets, DaemonSets, ReplicaSets and Services. Resolving may not be able to complete if the owning resource is not one of those. | `true`  |
 | `resources`            | Resources of the container                                                                                                                                                                                                                                                                                                                                                                                                                                    | `{}`    |
 
