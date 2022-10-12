@@ -5,7 +5,7 @@ title: Map your cluster
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-The network mapper allows you to map pod-to-pod traffic within your K8s cluster. This tutorial will guide you
+The network mapper and the Otterize CLI work in tandem to allow you to map pod-to-pod traffic within your K8s cluster. This tutorial will guide you
 through installing Otterize, mapping traffic and tracking changes.
 
 In this tutorial, we will:
@@ -30,6 +30,8 @@ Before you start, you need to have a Kubernetes cluster. Having a cluster with a
 ## Map the cluster
 
 The network mapper starts to sniff traffic and build an in-memory network map as soon as it's installed.
+The Otterize CLI allows you to interact with the network mapper to grab a snapshot of current mapped traffic,
+reset its state and more. For a complete list of the CLI capabilities read the [CLI command reference](/cli/#network-mapper).
 
 ### Deploy demo to simulate traffic
 
