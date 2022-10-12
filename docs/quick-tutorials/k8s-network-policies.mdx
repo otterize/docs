@@ -153,14 +153,14 @@ Otterize will add a network policy to allow the intended calls
    ```yaml
    {@include: ../../static/code-examples/automate-network-policies/intents.yaml}
    ```
-   :::tip
-   Client intents are the cornerstone of [intent-based access control (IBAC)](https://otterize.com/ibac).
-   :::
    Keep an eye on the logs being tailed in the **[client-other]** terminal window,
    and apply this `intents.yaml` file in your **main terminal window** using:
    ```shell
    kubectl apply -f https://docs.otterize.com/code-examples/automate-network-policies/intents.yaml
    ```
+:::tip
+Client intents are the cornerstone of [intent-based access control (IBAC)](https://otterize.com/ibac).
+:::
 2. You should quickly see in the **[client-other]** terminal that it times out when calling the server,
    as expected since it didn't declare its intents:
    ```bash
