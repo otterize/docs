@@ -1,14 +1,13 @@
 ---
 sidebar_position: 9
-title: Service identities
+title: Service identities and resolution
 ---
 
-All about service names, identities, labels, and credentials
+Otterize introduces the concept of universal service identities, that are used by all Otterize components to refer to
+services, regardless of which infrastructure they run on. Every service has a name which is specified in Otterize client intents to request access to other services.
 
-## Pod identity resolution
-
-Client intents files use service names to refer to client and server services. How do Otterize operators decide what is
-the name of the service that runs within the pod? The algorithm is as follows:
+## Kubernetes service identity resolution
+How do Otterize operators decide what is the name of the service that runs within the pod? The algorithm is as follows:
 
 1. If the pod has an `otterize/service-name` label, its value is used as the service name. This allows developers and
    automations to explicitly name services, if needed.
