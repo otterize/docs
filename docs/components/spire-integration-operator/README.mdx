@@ -4,7 +4,9 @@ title: SPIRE integration operator
 ---
 
 The Otterize SPIRE integration operator automatically resolves pods to dev-friendly service names, registers them with a SPIRE server, and optionally provisions credentials as Kubernetes Secrets. In this role, it is similar to how a SPIRE agent behaves.
-Alongside the SPIRE integration operator, you could use SPIRE agents and the SPIRE SDK to work with the same SPIRE server. To learn more, check the documentation for [SPIRE](https://spiffe.io/docs/latest/spire-about/spire-concepts/). Note that to use the SPIRE integration operator, you do not need to work directly with SPIRE or SPIRE agents, and can do everything completely using annotations and Kubernetes Secrets.
+Alongside the SPIRE integration operator, you could use SPIRE agents and the SPIRE SDK to work with the same SPIRE server.
+
+To learn more, check the documentation for [SPIRE](https://spiffe.io/docs/latest/spire-about/spire-concepts/). Note that to use the SPIRE integration operator, you do not need to work directly with SPIRE or SPIRE agents, and can do everything completely using annotations and Kubernetes Secrets.
 
 ## Deploying the SPIRE integration operator
 To deploy the operator, [use the Helm chart](helm-chart).
