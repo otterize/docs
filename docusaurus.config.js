@@ -132,7 +132,7 @@ const config = {
                         class: 'navbar_external_logo_first',
                     },
                     {
-                        href: 'https://otterizecommunity.slack.com',
+                        href: 'https://joinslack.otterize.com/',
                         html: '<img src="/img/slack-logo-no-border.svg" />',
                         position: 'right',
                         class: 'navbar_external_logo',
