@@ -14,6 +14,9 @@ An Otterize service is either a client or a server, and is referred to by client
 ### CLI
 The Otterize CLI is a command-line utility used to control and interact with the Otterize network mapper, manipulate local Intents files, and (coming soon!) interact with Otterize Cloud.
 
+### Intent (or ClientIntents)
+Otterize intents are a way to declare that one service should be able to connect to another. Otterize uses them to apply authorization rules, currently either network policies or Kafka ACLs, to enable the services to communicate. [Learn more about intents](/intents-and-intents-files).
+
 ## Identity
 
 ### PKI
@@ -36,7 +39,7 @@ The Otterize SPIRE integration operator automatically resolves pods to dev-frien
 
 ## Enforcement
 
-### Network Policies
+### Network policies
 Kubernetes network policies can be used to control network access between pods in a Kubernetes cluster.
 To do so they require the installation of a Kubernetes CNI network plugin that supports network policy enforcement.
 One commonly supported CNI is Calico.
@@ -46,3 +49,11 @@ One commonly supported CNI is Calico.
 ACLs stand for Access Control Lists, a built-in mechanism in Kafka (and other systems) for authorizing access
 to Kafka resources such as topics.
 [Read more about Kafka ACLs in the official documentation](https://docs.confluent.io/platform/current/kafka/authorization.html#authorization-using-acls).
+
+## Kubernetes
+### Custom resource
+A Kubernetes custom resource refers to a resource that is not present in the base distribution of Kubernetes (such as Deployment or Pod), but comes with an installed operator. The [Otterize ClientIntents](/intents-and-intents-files/) are one such resource. [Read more about Kubernetes custom resources](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/).
+
+### CNI (Container Network Interface)
+CNI is a CNCF project that provides libraries for implementing plugins for configuring network interfacs in Linux containers, and is used by Kubernetes to provide pods running in a cluster with network connectivity.
+Examples of CNI plugins are Calico, Cilium, the AWS VPC CNI plugin. [Read more about Kubernetes CNI plugins](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/).
