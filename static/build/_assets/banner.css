@@ -1,0 +1,19 @@
+[role="banner"] {
+    height: 0;
+}
+
+.navbar {
+    height: 76px;
+}
+
+.navbar__inner {
+    padding-top: 85px;
+}
+
+.table-of-contents {
+    padding-top: 50px;
+}
+
+.DocSearch-Container {
+    padding-top: 85px;
+}
