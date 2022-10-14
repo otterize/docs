@@ -3,17 +3,18 @@
 }
 
 .navbar {
-    height: 76px;
+    height: 125px;
+    padding-top: 80px;
 }
 
-.navbar__inner {
-    padding-top: 85px;
-}
+/*.navbar__inner {*/
+/*    padding-top: 85px;*/
+/*}*/
 
-.table-of-contents {
-    padding-top: 50px;
-}
+/*.table-of-contents {*/
+/*    padding-top: 50px;*/
+/*}*/
 
-.DocSearch-Container {
-    padding-top: 85px;
-}
+/*.DocSearch-Container {*/
+/*    padding-top: 85px;*/
+/*}*/
