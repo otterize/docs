@@ -55,3 +55,19 @@
 pre.prism-code {
   white-space : pre-wrap;
 }
+
+/* Remove icon for external link */
+.navbar__item>svg {
+    display: none;
+}
+
+.navbar_external_logo_first {
+  width: 2rem;
+  margin-right: .5rem;
+  margin-left: 5rem;
+}
+.navbar_external_logo {
+  width: 2rem;
+  margin-right: .5rem;
+  margin-left: .5rem;
+}
