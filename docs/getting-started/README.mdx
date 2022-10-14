@@ -22,9 +22,11 @@ export const LinkButton = (props) => (
 
 ### Otterize OSS
 
-Otterize OSS is a standalone open-source implementation of intent-based access control (IBAC) in a single Kubernetes cluster.
+Otterize OSS is a standalone open-source implementation of intent-based access control (IBAC) for a single Kubernetes cluster. As well as being open source, Otterize OSS is completely free, licensed under the Apache 2.0 license and does not require Otterize Cloud.
 
-It consists of several components:
+Want to try it out? [Skip to the getting started section](#getting-started-with-otterize-oss).
+
+Otterize OSS consists of several components:
 - The [Otterize intents operator](/components/intents-operator) that translates ClientIntents resources to
 access controls: currently, network policies for pod-to-pod access, and ACLs for in-cluster Kafka client access.
 - The [Otterize SPIRE integration operator](/components/spire-integration-operator) that integrates with SPIFFE/SPIRE
