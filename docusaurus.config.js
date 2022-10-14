@@ -77,7 +77,7 @@ const config = {
             navbar: {
                 logo: {
                     alt: 'Otterize',
-                    src: 'img/otterize-logo-dark.svg',
+                    src: 'img/otterize-logo-light.svg',
                     srcDark: 'img/otterize-logo-light.svg',
                     href: 'https://otterize.com',
                     target: '_self',
