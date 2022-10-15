@@ -17,15 +17,22 @@
   --ifm-code-border-radius: 5px;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
 
+  --ifm-navbar-height: 5rem;
+
   --ifm-footer-background-color: black;
   --ifm-footer-color: white;
   --ifm-footer-link-color: white;
   --ifm-footer-padding-vertical: 11px;
   --ifm-footer-padding-horizontal: 20px;
+
 }
 
 .navbar__title {
   color: #2186E6;
+}
+
+.navbar__item:hover {
+    color: rgb(183 183 183);
 }
 
 .coming-soon-h2 {
@@ -70,11 +77,20 @@ pre.prism-code {
 
 /* Temporary attempt to style header/footer after main website */
 
+.navbar__link {
+    font-weight: 500;
+    font-size: 1.05rem;
+}
+.navbar__link--active {
+    color: rgb(129 174 217);
+}
+
 .navbar_external_logo_first {
   width: 2rem;
   margin-right: .5rem;
   margin-left: 5rem;
 }
+
 .navbar_external_logo {
   width: 2rem;
   margin-right: .5rem;

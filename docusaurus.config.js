@@ -81,6 +81,7 @@ const config = {
                     srcDark: 'img/otterize-logo-light.svg',
                     href: 'https://otterize.com',
                     target: '_self',
+                    style: { paddingLeft: '15px' },
                 },
                 items: [
                     {
