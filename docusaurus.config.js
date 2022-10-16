@@ -72,7 +72,7 @@ const config = {
                 algoliaOptions: {}
             },
             hotjar: {
-                applicationId: '3152141',
+                applicationId: '3156902',
             },
             navbar: {
                 logo: {
