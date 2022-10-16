@@ -479,7 +479,7 @@ spec:
       type: kafka
       topics:
         - name: mytopic
-          operation: produce
+          operations: [ produce ]
 ```
 
 To configure a different access pattern for the client we need to set its **operation** field to the desired value.
@@ -488,24 +488,22 @@ Common access patterns
 - **all** - allow all operations for the topic.
 ```yaml
 - name: mytopic
-  operation: all
+  operations: [ all ]
 ```
 - **produce** - allow the *produce* access pattern for a topic.
 ```yaml
 - name: mytopic
-  operation: produce
+  operations: [ produce ]
 ```
 - **consume** - allow the *consume* access pattern for a topic.
 ```yaml
 - name: mytopic
-  operation: consume
+  operations: [ consume ]
 ```
 - **produce and create** - allow the *produce* and *create* access pattern for a topic.
 ```yaml
 - name: mytopic
-  operation: produce
-- name: mytopic
-  operation: create
+  operations: [ create ]
 ```
 
 ### All options
