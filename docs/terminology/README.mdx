@@ -9,13 +9,13 @@ If you think a term is missing here, please [let us know](https://github.com/ott
 ## Basics
 
 ### Service
-An Otterize service is a client or a server (and potentially both), and is referred to by client intents. [Learn how service identity resolution happens](/service-identities).
+An Otterize service is the logical "atom" of service-to-service authentication and authorization. It can be a client or a server or both. Services are connected through client intents: one service intends to call another service. [Learn how service identity resolution happens](/service-identities).
 
 ### CLI
-The Otterize CLI is a command-line utility used to control and interact with the Otterize network mapper, manipulate local Intents files, and (coming soon!) interact with Otterize Cloud.
+The [Otterize CLI](/cli) is a command-line utility used to control and interact with the Otterize network mapper, manipulate local Intents files, and (coming soon!) interact with Otterize Cloud.
 
-### Intent
-Otterize intents are a way to declare that one service should be able to connect to another. Otterize uses them to apply authorization rules, currently either network policies or Kafka ACLs, to enable the services to communicate. [Learn more about intents](/intents-and-intents-files).
+### Intent (or client intent)
+Otterize intents are a way to declare that one service intends to call another service. Otterize uses them to apply authorization rules to enable the calls to go through, and block any unintended calls. An *intent* refers to a client declaring a particular call to a server; *all* a given client's intents to the servers it intends to call are collected in a single *client intents file*. [Learn more about intents](/intents-and-intents-files).
 
 ## Identity
 
@@ -32,10 +32,10 @@ nd your browser authenticates google.com using its certificate, you're using TLS
 but google.com does not authenticate you, as the client, with a certificate, so the communication isn't using mTLS, just TLS.
 
 ### SPIRE
-An open-source system that implements the [SPIFFE](https://github.com/spiffe/spire) specification. Used for workload attestation and credential management.
-[Read more about SPIRE in the official documentation](https://spiffe.io/docs/latest/spire-about/).
+An open-source implementation of the [SPIFFE](https://github.com/spiffe/spire) specification. It's used for workload attestation and credential management. [Read more about SPIRE in the official documentation](https://spiffe.io/docs/latest/spire-about/).
+
 ### SPIRE integration operator
-The Otterize SPIRE integration operator automatically resolves pods to dev-friendly service names, registers them with a SPIRE server, and provisions credentials as a Kubernetes Secrets.
+The Otterize [SPIRE integration operator](/components/spire-integration-operator) automatically resolves pods to dev-friendly service names, registers them with a SPIRE server, and provisions credentials as a Kubernetes Secrets.
 
 ## Enforcement
 
@@ -52,8 +52,8 @@ to Kafka resources such as topics.
 
 ## Kubernetes
 ### Custom resource
-A Kubernetes custom resource refers to a resource that is not present in the base distribution of Kubernetes (such as Deployment or Pod), but comes with an installed operator. The [Otterize ClientIntents](/intents-and-intents-files/) are one such resource. [Read more about Kubernetes custom resources](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/).
+A Kubernetes custom resource refers to a resource that is not present in the base distribution of Kubernetes (such as Deployment or Pod), but comes with an installed operator. The [Otterize ClientIntents](/intents-and-intents-files/) are one such resource. [Read more about Kubernetes custom resources here](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/).
 
 ### CNI (Container Network Interface)
-CNI is a CNCF project that provides libraries for implementing plugins for configuring network interfacs in Linux containers, and is used by Kubernetes to provide pods running in a cluster with network connectivity.
-Examples of CNI plugins are Calico, Cilium, the AWS VPC CNI plugin. [Read more about Kubernetes CNI plugins](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/).
+CNI is a CNCF project that provides libraries for implementing plugins for configuring network interfaces in Linux containers, and is used by Kubernetes to provide pods running in a cluster with network connectivity.
+Examples of CNI plugins are Calico, Cilium, the AWS VPC CNI plugin. [Read more about Kubernetes CNI plugins here](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/).
