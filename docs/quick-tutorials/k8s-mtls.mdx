@@ -189,7 +189,7 @@ server-6698c58cbc-v9n9b   1/1     Running   0          34s
    from: server.otterize-tutorial-mtls          # server's common name in the certificate
    to client: client.otterize-tutorial-mtls     # client's common name in the certificate
    ```
-2. You can also confirm ojn the server side that it sees requests from this authenticated client:
+2. You can also confirm on the server side that it sees requests from this authenticated client:
    ```bash
    kubectl logs --tail 1 -n otterize-tutorial-mtls deploy/server
    ```
