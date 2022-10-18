@@ -30,7 +30,7 @@ window.addEventListener("load", () => {
     //
 
     try {
-      const url = "http://localhost:3000/newsletterSubscribeEndPoint";
+      const url = "https://otterize.com/newsletterSubscribeEndPoint";
       const method = "post";
       const formData = new FormData(e.currentTarget);
 
