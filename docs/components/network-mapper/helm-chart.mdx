@@ -9,12 +9,14 @@ To deploy the network mapper, do the following:
 Consult the guide on [mapping pod-to-pod calls in Kubernetes](/guides/k8s-mapping-pod-to-pod-calls) for more.
 
 ## Mapper parameters
-| Key                       | Description              | Default                                                               |
-|---------------------------|--------------------------|-----------------------------------------------------------------------|
-| `mapper.image.repository` | Mapper image repository. | `otterize`                                                            |
-| `mapper.image.image`      | Mapper image.            | `network-mapper`                                                      |
-| `mapper.image.tag`        | Mapper image tag.        | `latest`                                                              |
-| `mapper.pullPolicy`       | Mapper pull policy.      | `(none)`                                                              |
+| Key                       | Description              | Default          |
+|---------------------------|--------------------------|------------------|
+| `mapper.image.repository` | Mapper image repository. | `otterize`       |
+| `mapper.image.image`      | Mapper image.            | `network-mapper` |
+| `mapper.image.tag`        | Mapper image tag.        | `latest`         |
+| `mapper.pullPolicy`       | Mapper pull policy.      | `(none)`         |
+| `mapper.resources`        | Resources override.      | `(none)`         |
+
 
 
 ## Sniffer parameters
@@ -24,6 +26,7 @@ Consult the guide on [mapping pod-to-pod calls in Kubernetes](/guides/k8s-mappin
 | `sniffer.image.image`      | Sniffer image.            | `network-mapper-sniffer` |
 | `sniffer.image.tag`        | Sniffer image tag.        | `latest`                 |
 | `sniffer.pullPolicy`       | Sniffer pull policy.      | `(none)`                 |
+| `sniffer.resources`        | Resources override.       | `(none)`                 |
 
 
 ## Global parameters
