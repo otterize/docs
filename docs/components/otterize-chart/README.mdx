@@ -47,3 +47,12 @@ Further information about SPIRE parameters can be found [in SPIRE's helm chart](
 ## SPIRE integration operator parameters
 All configurable parameters of the SPIRE integration operator can be configured under the alias **spireIntegrationOperator**.
 Further information about SPIRE integration operator parameters can be found [in the SPIRE integration operator chart]((../components/spire-integration-operator/helm-chart)).
+
+## Resource configuration
+| Component                  | Key                                  | Default  |
+|----------------------------|--------------------------------------|----------|
+| Intents Operator           | `intentsOperator.operator.resources` | `(none)` |
+| Intents Operator - Watcher | `intentsOperator.watcher.resources`  | `(none)` |
+| Spire Server               | `spire.server.resources`             | `(none)` |
+| Spire Agent                | `spire.agent.resources`              | `(none)` |
+| Spire Integration Operator | `spireIntegrationOperator.resources` | `(none)` |
