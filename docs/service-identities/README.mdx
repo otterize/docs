@@ -16,10 +16,3 @@ How do Otterize operators decide what is the name of the service that runs withi
    a `Deployment` named `checkoutservice`, which then creates and owns a `ReplicaSet`, which then creates and owns
    a `Pod`, then the service name for that pod is `checkoutservice` - same as the name of the `Deployment`. This is
    intended to capture the likely-more-meaningful "human name" of the service.
-
-Pods are then labeled with values derived from service names. For example,
-the service name is combined with the namespace of the pod and hashed to form the value of the label `otterize/server`.
-This label is then used as a selector for network policies. Another
-label, `otterize/access-server-<servicename>-<servicehash>`, is applied to client pods which have declared their intent
-to access the server. This label is used as the selector to determine which client pods are allowed to access the server
-pod.

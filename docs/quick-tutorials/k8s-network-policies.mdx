@@ -235,11 +235,11 @@ Otterize did its job of both protecting *and* allowing intended access.
 Otterize generated a specific network policy on the ingress of the pods of a server, allowing the server to
 be accessed by the pods of a client. Otterize uses labels to define the network policy and associate it
 with a server in a namespace and a client in a namespace, as follows:
-1. The server's pods are given a label `otterize/server` whose value uniquely represents that server.
+1. The server's pods are given a label `intents.otterize.com/server` whose value uniquely represents that server.
    The network policy stipulates that it applies to the ingress of server pods with this label.
-2. The client's pods are given a label `otterize/access-...` derived from the server's unique `otterize/server` value.
+2. The client's pods are given a label `intents.otterize.com/access-...` derived from the server's unique `intents.otterize.com/server` value.
    The network policy stipulates that only client pods with this matching label can access the server.
-3. The client's namespace is given a label `otterize/namespace-name` whose value is the namespace of the client.
+3. The client's namespace is given a label `intents.otterize.com/namespace-name` whose value is the namespace of the client.
    The network policy stipulates that only client pods whose namespaces have this label can access the server.
    This is used to allow cross-namespace intents.
 
