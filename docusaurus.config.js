@@ -72,15 +72,16 @@ const config = {
                 algoliaOptions: {}
             },
             hotjar: {
-                applicationId: '3152141',
+                applicationId: '3156902',
             },
             navbar: {
                 logo: {
                     alt: 'Otterize',
-                    src: 'img/otterize-logo-dark.svg',
+                    src: 'img/otterize-logo-light.svg',
                     srcDark: 'img/otterize-logo-light.svg',
                     href: 'https://otterize.com',
                     target: '_self',
+                    style: { paddingLeft: '15px' },
                 },
                 items: [
                     {
@@ -140,45 +141,45 @@ const config = {
                ],
             },
             footer: {
-                style: 'dark',
                 links: [
                     {
-                        title: 'Docs',
-                        items: [
-                            {
-                                label: 'Tutorial',
-                                to: '/docs/intro',
-                            },
-                        ],
+                        html:
+                        `<div class="footer_left">
+                            <div class="footer_signup">
+                                Sign up for updates
+                            </div>
+                            <div class="footer_left-links">
+                                <form class="footer_signup-form" name="embedded-subscribe-form">
+                                    <input type="email" name="EMAIL" class="footer_signup-input" placeholder="Email address" required="">
+                                    <button type="submit" class="footer_signup-button">
+                                        <img src="/img/arrow_right_alt.svg" alt="Right arrow icon" class="footer_signup-img">
+                                    </button>
+                                </form>
+                            </div>
+                          </div>`
+                    },
+                   {
+                        html:
+                        `<div class="footer_right">
+                            <div class="footer_privacy-policy">
+                                <a href="https://otterize.com/privacy">privacy policy</a>
+                            </div>
+                            <div class="footer_right-links">
+                                <a href="https://github.com/otterize/"><img src="/img/github-icon.svg" /></a>
+                                <a href="https://linkedin.com/"><img src="/img/linkedin-icon.svg" /></a>
+                                <a href="https://joinslack.otterize.com/"><img src="/img/slack-icon.svg" /></a>
+                            </div>
+                         </div>`
                     },
                     {
-                        title: 'Community',
-                        items: [
-                            {
-                                label: 'Join us on Slack',
-                                href: '...',
-                            },
-                        ],
+                        html:
+                        `<div class="footer_copyright">
+                            Built with DocuSaurus
+                            <p />
+                            © ${new Date().getFullYear()} Otterize, Inc. All rights reserved.
+                        </div>`,
                     },
-                    {
-                        title: 'More',
-                        items: [
-                            {
-                                label: 'Otterize',
-                                to: 'https://otterize.com',
-                            },
-                            {
-                                label: 'Blog',
-                                to: 'https://otterize.com/blog',
-                            },
-                            {
-                                label: 'GitHub',
-                                href: 'https://github.com/otterize',
-                            },
-                        ],
-                    },
-                ],
-                copyright: `Built with Docusaurus`,
+                 ],
             },
             prism: {
                 theme: lightCodeTheme,

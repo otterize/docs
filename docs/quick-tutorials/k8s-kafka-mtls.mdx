@@ -293,19 +293,30 @@ and that Kafka ACLs are configured to reflect precisely the intended topic-level
 <details>
 <summary>Expand to see what happened behind the scenes</summary>
 
-We configured the Kafka helm chart to:
-* Use the SSL protocol for its listeners
-* Let Otterize know it should generate mTLS credentials in the Java Key Store and Java Trust Store format and store them as a K8s secret.
-* Use the K8s secret for its credentials.
+### One-time setups:
 
-We configured out clients to
-* Let Otterize know it should generate mTLS credentials in a PEM format.
-* Use the K8s secret for its credentials.
+We configured the Helm chart for Kafka to:
+* Allow the Otterize intents operator to be a Kafka super user (authenticated with a certificate).
+* Use the SSL protocol for the Kafka listeners.
+* Let Otterize know it should generate mTLS credentials in the Java Key Store and Java Trust Store formats, and store them as a Kubernetes secret.
+* Use mTLS to authenticate clients, using this Kubernetes secret.
 
-By this point we had an mTLS between both clients and Kafka.
+We configured Kafka itself to:
+* Add the TLS certificates of the Otterize SPIRE integration operator.
+* Set the default ACL for all topics to allow anonymous access.
+
+### Per-client setups:
+
+We configured each of our clients to:
+* Let Otterize know it should generate mTLS credentials for that client.
+* Mount the Kubernetes secret in a local volume.
+
+This already enables mTLS authentication between both clients and Kafka.
 
 Then we applied intents:
-* To allow only intended access from the *client* pod.
+* We only declared that the *client* pod (not the *client-other* pod) needed to access the `mytopic` topic.
+
+This allowed the *client* pod its access and protected `mytopic` from any unintended access, such as from *client-other*.
 
 </details>
 

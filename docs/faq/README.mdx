@@ -95,13 +95,14 @@ to see how to roll out IBAC gradually for various use cases.
 <details>
 
 <summary>How is Otterize different from a service mesh?</summary>
-Otterize's approach is to use your existing infrastructure as much as possible, rather than replacing existing components, and help you achieve zero-trust through effective use of authentication and authorization across heterogeneous infrastructure and tech stacks.
 
-On the other hand, service meshes aim to solve a whole slew of problems and tasks related to microservices, such as request routing and load balancing, circuit breaking, retries, rate limiting, blue/green deployment, service discovery, observability and metrics, as well as authentication and authorization. Otterize does not aim to do all of these things; only authentication and authorization.
+Otterize's approach is to configure and use your existing infrastructure as much as possible, rather than replacing existing components, and help you achieve zero-trust through effective use of authentication and authorization across heterogeneous infrastructures and tech stacks. The drivers for authentication and authorization are client intents: metadata that's used to configure enforcement points.
 
-Unlike Otterize, Service meshes generally aim to be the a one-stop-shop for all your needs, and aim to replace the way you may already achieve some of these tasks. For many, this actually turns out to be friction - especially if you just want to apply authorization, and are happy with how you've solved some of these other problems.
+In contrast, service meshes aim to solve a whole slew of problems and tasks related to microservices, such as request routing and load balancing, circuit breaking, retries, rate limiting, blue/green deployment, service discovery, observability and metrics, as well as authentication and authorization. Otterize does not aim to do all of these things &mdash; only authentication and authorization. And even there, it does not aim to replace enforcement points for authN/authZ &mdash; it just configures them based on client intents and any overriding rules. So if a service mesh is used to enforce access, Otterize would configure it based on client intents (and any override rules) &mdash; when we add support for service meshes.
 
-Because of all of these, Otterize is not a replacement for a service mesh - a service mesh does many things Otterize doesn't and vice versa. If you use a service mesh in a Kubernetes cluster, but also have other services that live outside a service mesh, Otterize aims to help you achieve effective zero-trust between those services when they communicate, without demanding that you replace the tech stack for one or the other, but helping them coexist peacefully.
+Unlike Otterize, service meshes generally aim to be the a one-stop-shop for all your needs, replacing many of the technologies you currently use. For many, this actually turns out to be friction, especially if you just want to apply authorization, and don't wish to change various technologies that are already working for you.
+
+In summary, Otterize is not a replacement for a service mesh: a service mesh does many things Otterize doesn't, and vice versa. If you use a service mesh in a Kubernetes cluster, but also have other services that live outside a service mesh, Otterize aims to help you achieve effective zero-trust between those services when they communicate, without demanding that you replace the tech stack for one or the other, instead helping them coexist peacefully.
 </details>
 <details>
 

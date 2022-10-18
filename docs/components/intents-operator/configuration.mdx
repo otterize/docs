@@ -124,7 +124,7 @@ service:
       type: kafka
       topics:
         - name: mytopic-intended
-          operation: all
+          operations: [ all ]
 ```
 Translates into
 ```yaml title="Kafka ACL"

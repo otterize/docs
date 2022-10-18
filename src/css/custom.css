@@ -16,10 +16,23 @@
   --ifm-code-font-size: 95%;
   --ifm-code-border-radius: 5px;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+
+  --ifm-navbar-height: 5rem;
+
+  --ifm-footer-background-color: black;
+  --ifm-footer-color: white;
+  --ifm-footer-link-color: white;
+  --ifm-footer-padding-vertical: 11px;
+  --ifm-footer-padding-horizontal: 20px;
+
 }
 
 .navbar__title {
   color: #2186E6;
+}
+
+.navbar__item:hover {
+    color: rgb(183 183 183);
 }
 
 .coming-soon-h2 {
@@ -44,6 +57,7 @@
   --ifm-color-primary-lighter: #7bb1d5;
   --ifm-color-primary-lightest: #9cc5df;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+
 }
 
 /* Allow for slightly longer sidebar items than the default width */
@@ -57,8 +71,18 @@ pre.prism-code {
 }
 
 /* Remove icon for external link */
-.navbar__item>svg {
+.navbar__item svg {
     display: none;
+}
+
+/* Temporary attempt to style header/footer after main website */
+
+.navbar__link {
+    font-weight: 500;
+    font-size: 1.05rem;
+}
+.navbar__link--active {
+    color: rgb(129 174 217);
 }
 
 .navbar_external_logo_first {
@@ -66,8 +90,111 @@ pre.prism-code {
   margin-right: .5rem;
   margin-left: 5rem;
 }
+
 .navbar_external_logo {
   width: 2rem;
   margin-right: .5rem;
   margin-left: .5rem;
 }
+
+.footer__link-separator {
+    display: none;
+}
+
+.footer__link-item {
+    display: block;
+}
+
+.footer_privacy-policy {
+    padding-right: 70px;
+    font-size: 1.05rem;
+    float: left;
+}
+
+.footer_privacy-policy a {
+    color: white;
+}
+
+.footer_left {
+    margin-top: 25px;
+    margin-bottom: -0.9rem;
+    float: left;
+}
+
+.footer_right {
+    margin-top: 32px;
+    margin-bottom: -0.9rem;
+    float: right;
+}
+
+.footer_copyright {
+    padding-top: 55px;
+    margin-bottom: -0.9rem;
+    opacity: 0.64;
+    overflow: hidden;
+    color: white;
+}
+
+.footer_right-links {
+}
+
+.footer_right-links img {
+    width: 3rem;
+}
+
+.footer_left-links {
+}
+
+.footer_signup {
+    text-align: left;
+    font-size: 1.3rem;
+    font-weight:500;
+    color: white;
+    z-index: 10;
+}
+
+.footer_signup-form {
+    border-radius: 0.5rem;
+    height: 3rem;
+    display: flex;
+}
+
+.footer_signup-input {
+    padding-left: 1rem;
+    padding-top: 1.25rem;
+    padding-bottom: 1.25rem;
+    background-color: black;
+    border-color: white;
+    border-width: 2px;
+    border-top-left-radius: 0.75rem;
+    border-bottom-left-radius: 0.75rem;
+    border-style: solid;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    font-size: 100%;
+}
+.footer_signup-input::placeholder {
+    color: #9ea3ae;
+}
+
+.footer_signup-button {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    background-color: white;
+    border-color: white;
+    border-width: 2px;
+    border-top-right-radius: 0.75rem;
+    border-bottom-right-radius: 0.75rem;
+    border-style: solid;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.footer_signup-img {
+}
+
+
