@@ -150,10 +150,11 @@ Otterize will add a network policy to allow the intended calls
 (**client** &rarr; **server**) and fail all unintended calls (e.g., **client-other** &rarr; **server**).
 
 1. Here is the `intents.yaml` declaration of the client, which we will apply below:
-   ```yaml
-   {@include: ../../static/code-examples/automate-network-policies/intents.yaml}
-   ```
-   Keep an eye on the logs being tailed in the **[client-other]** terminal window,
+```yaml
+{@include: ../../static/code-examples/automate-network-policies/intents.yaml}
+```
+
+Keep an eye on the logs being tailed in the **[client-other]** terminal window,
    and apply this `intents.yaml` file in your **main terminal window** using:
    ```shell
    kubectl apply -f https://docs.otterize.com/code-examples/automate-network-policies/intents.yaml
