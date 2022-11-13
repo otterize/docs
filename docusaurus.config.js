@@ -25,7 +25,10 @@ const config = {
     defaultLocale: "en",
     locales: ["en"],
   },
-  scripts: [{ src: "/newsLetterSubscription.js", async: true }],
+  scripts: [
+    { src: "/newsLetterSubscription.js", async: true },
+    { src: "/googleTagManager.js", async: true },
+  ],
   plugins: [
     ["docusaurus-plugin-includes", {}],
     ["docusaurus-plugin-hotjar", {}],
@@ -188,8 +191,3 @@ const config = {
 };
 
 module.exports = config;
-
-// document.getElementById("mailchimp_form")?.addEventListener("submit", (e) => {
-//     e.preventDefault();
-//     console.log("works");
-// })
