@@ -8,3 +8,7 @@
   j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
   f.parentNode.insertBefore(j, f);
 })(window, document, "script", "dataLayer", "GTM-NG7HJD8");
+
+/**
+ * I have read and understood the CLA and hereby agree to its terms by making this Pull Request Comment.
+ */
