@@ -45,6 +45,17 @@ label, `intents.otterize.com/access-server-<servicename>-<servicehash>`, is appl
 to access the server. This label is used as the selector to determine which client pods are allowed to access the server
 pod.
 
+#### Handling external traffic
+The intents operator has automatic behavior for allowing external traffic for pods which have indicated that they are supposed to accept external traffic, such as by creating a `Service` of type `NodePort` or `LoadBalancer`, or an `Ingress` resource.
+
+As the intents operator creates network policies, and the semantics of network policies dictate that:
+1. if no network policies apply to a pod, then all traffic is allowed.
+2. once any network policy applies to a pod, only the traffic explicitly allowed in the policy is allowed
+
+This meant that if you had no network policies on a pod, and created ClientIntents for that pod, then external traffic would be blocked. To make it easy to enable pod-to-pod traffic without affecting expected external traffic, the intents operator automatically detects resources of kind `Service` of type `NodePort` or `LoadBalancer`, or an `Ingress` resource, and if it creates the first network policy to affect those pods, it also creates a network policy that allows external traffic to those pods, as specified by the external `Service`/`Ingress` - for example, it only allows traffic to the specified ports, not all traffic.
+
+This behavior can be disabled using the Helm chart's values.
+
 
 ### Kafka mTLS & ACLs
 The intents operator automatically creates, updates, and deletes ACLs in Kafka clusters running within your Kubernetes cluster according to the declared intents. It does not modify other ACLs. It works together with SPIRE and the [Otterize SPIRE integration operator](/components/spire-integration-operator) to easily enable secure access to Kafka from client pods, all in your Kubernetes cluster.

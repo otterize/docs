@@ -22,7 +22,8 @@ If you would like to deploy it on its own, add the Otterize Helm chart repositor
 | `operator.image.image`                          | Intents operator image.                                                                                            | `intents-operator` |
 | `operator.image.tag`                            | Intents operator image tag.                                                                                        | `latest`           |
 | `operator.pullPolicy`                           | Intents operator image pull policy.                                                                                | `(none)`           |
-| `operator.autoGenerateTLSUsingSpireIntegration` | If true, adds the necessary pod annotations in order to generate mTLS credentials using the Otterize SPIRE integration operator. | `false`            |
+| `operator.autoGenerateTLSUsingSpireIntegration` | If true, adds the necessary pod annotations in order to generate mTLS credentials using the Otterize SPIRE integration operator. | `true`            |
+| `operator.autoCreateNetworkPoliciesForExternalTraffic` | Automatically allow external traffic, if a new ClientIntents resource would result in blocking external (internet) traffic and there is an Ingress/Service resource indicating external traffic is expected. | `true`           |
 | `operator.resources`                            | Resources override.                                                                                                |                    |
 
 
