@@ -12,6 +12,7 @@ const config = {
   onBrokenLinks: "warn",
   onBrokenMarkdownLinks: "warn",
   favicon: "img/favicon.svg",
+  trailingSlash: true,
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
@@ -187,6 +188,7 @@ const config = {
         disableSwitch: true,
         respectPrefersColorScheme: false,
       },
+      metadata: [{name: 'keywords', content: 'cooking, blog'}],
     }),
 };
 
