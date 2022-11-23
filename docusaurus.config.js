@@ -188,7 +188,6 @@ const config = {
         disableSwitch: true,
         respectPrefersColorScheme: false,
       },
-      metadata: [{name: 'keywords', content: 'cooking, blog'}],
     }),
 };
 
