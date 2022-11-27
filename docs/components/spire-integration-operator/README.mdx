@@ -9,7 +9,7 @@ Alongside the SPIRE integration operator, you could use SPIRE agents and the SPI
 To learn more, check the documentation for [SPIRE](https://spiffe.io/docs/latest/spire-about/spire-concepts/). Note that to use the SPIRE integration operator, you do not need to work directly with SPIRE or SPIRE agents, and can do everything completely using annotations and Kubernetes Secrets.
 
 ## Deploying the SPIRE integration operator
-To deploy the operator, [use the Helm chart](helm-chart).
+To deploy the operator, [use the Helm chart](/components/spire-integration-operator/helm-chart).
 
 ## Acquiring mTLS credentials using the SPIRE integration operator
 The SPIRE integration operator is controlled using annotations placed on pods. The operator automatically registers pods with SPIRE. To also have it create credentials, you must specify `spire-integration.otterize.com/tls-secret-name`. 
