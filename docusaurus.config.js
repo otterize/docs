@@ -28,7 +28,7 @@ const config = {
   },
   scripts: [
     { src: "/newsLetterSubscription.js", async: true },
-    { src: "/googleTagManager.js", async: true },
+    { src: "/pixels.js", async: true },
   ],
   plugins: [
     ["docusaurus-plugin-includes", {}],
