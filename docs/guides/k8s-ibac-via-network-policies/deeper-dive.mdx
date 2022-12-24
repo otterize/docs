@@ -105,8 +105,7 @@ would block existing traffic like **loadgenerator** -> **frontend**.
 ## How intents translate to network policies.
 Let's follow an example scenario and track how Otterize configures network policies when we apply intents.
 ### Deploy example
-Our example consists of two pods: an HTTP server and a client that calls it. We also deploy a default-deny ingress network policy,
-blocking pods from accepting incoming calls unless another network policy explicitly allows them.
+Our example consists of two pods: an HTTP server and a client that calls it.
 
 <details>
 <summary>Expand to see the example YAML files</summary>
@@ -137,17 +136,10 @@ blocking pods from accepting incoming calls unless another network policy explic
 
 </TabItem>
 
-<TabItem value="default-deny.yaml" label="default-deny.yaml" default>
-
-```yaml
-{@include: ../../../static/code-examples/automate-network-policies/default-deny-network-policy.yaml}
-```
-
-</TabItem>
 </Tabs>
 </details>
 
-1. Deploy the **client**, **server**, and the default deny network policy using `kubectl`:
+1. Deploy the **client** and **server** using `kubectl`:
 
    ```shell
    kubectl apply -f https://docs.otterize.com/code-examples/automate-network-policies/all.yaml
