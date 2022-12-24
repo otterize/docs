@@ -12,8 +12,8 @@ installed. Some popular options are Calico and Cilium.
 
 ## Closer look at a network policy
 Let's take a look at an example showing a network policy allowing traffic:
-- From pods labeled **app:backend** in namespaces labeled **env:production**
-- To pods labeled **app:db** in the namespace  **production-db**
+- From pods labeled **app:backend** in namespaces labeled **env:production**.
+- To pods labeled **app:db** in the namespace  **production-db**.
 
 ```yaml
 apiVersion: networking.k8s.io/v1
@@ -44,7 +44,7 @@ spec:
 
 ## Setting security scope via default network policies
 
-Two common approaches for working with network policies are
+Two common approaches for working with network policies are:
 
 - Allow all traffic between pods, protect some pods by applying ingress network policies to them.
 - Block all traffic between pods except allowed traffic by network policies.
@@ -54,7 +54,7 @@ namespaces).
 
 ## Default deny network policy
 To block all traffic within a namespace (e.g. _production_) you can apply a default deny network policy like the
-following example
+following example:
 
 ```yaml
 apiVersion: networking.k8s.io/v1
@@ -70,10 +70,10 @@ spec:
 
 ## Auto-generating network policies for external traffic
 The intents operator defaults to automatically generate network policies for Kubernetes **Services** (type **LoadBalancer** and **NodePort**), and Ingress traffic
-when an intent will generate a network policy that can block external traffic. To disable this feature, consult the [documentation for the intents operator](/components/intents-operator)
+when an intent will generate a network policy that can block external traffic. To disable this feature, consult the [documentation for the intents operator](/components/intents-operator).
 
 
-Let's look at an example from our demo. We have a **frontend** service being accessed from multiple sources
+Let's look at an example from our demo. We have a **frontend** service being accessed from multiple sources:
 - **loadgenerator** calls it from within the cluster to generate traffic, by accessing the **frontend** **ClusterIP Service**.
 - **frontend-external** is a **Service** with type **LoadBalancer** directing traffic from outside the cluster to the frontend pods. The **LoadBalancer** type means that a cloud provider load balancer will be created and point traffic from the Internet to these pods.
 
@@ -139,16 +139,16 @@ Our example consists of two pods: an HTTP server and a client that calls it.
 </Tabs>
 </details>
 
-1. Deploy the **client** and **server** using `kubectl`.
+1. Deploy the **client** and **server** using `kubectl`:
 
    ```shell
    kubectl apply -f https://docs.otterize.com/code-examples/automate-network-policies/all.yaml
    ```
-2. Check that the **client** and **server** pods were deployed
+2. Check that the **client** and **server** pods were deployed:
    ```bash
    kubectl get pods -n otterize-tutorial-npol
    ```
-   You should see
+   You should see:
    ```
    NAME                      READY   STATUS    RESTARTS   AGE
    client-5689997b5c-grlnt   1/1     Running   0          35s
@@ -175,7 +175,7 @@ After applying the intents file Otterize performed multiple actions to allow acc
   ```bash
   kubectl describe networkpolicies -n otterize-tutorial-npol access-to-server-from-otterize-tutorial-npol
   ```
-  You should see (without the comments)
+  You should see (without the comments):
   ```yaml
   Name:         access-to-server-from-otterize-tutorial-npol
   # [Target filter] namespace
@@ -206,14 +206,14 @@ After applying the intents file Otterize performed multiple actions to allow acc
   ```bash
   kubectl get pods -n otterize-tutorial-npol --show-labels
   ```
-  You should see
+  You should see:
   ```bash
   NAME                      READY   STATUS    RESTARTS   AGE     LABELS
   client-5cb67b748-l25vg    1/1     Running   0          7m57s   intents.otterize.com/access-server-otterize-tutorial-np-7e16db=true,intents.otterize.com/client=true,intents.otterize.com/server=client-otterize-tutorial-np-699302,pod-template-hash=5cb67b748,spire-integration.otterize.com/service-name=client
   server-564b56f596-54str   1/1     Running   0          7m56s   intents.otterize.com/server=server-otterize-tutorial-np-7e16db,pod-template-hash=564b56f596,spire-integration.otterize.com/service-name=server
   ```
 
-  And when we break down the label structure we can see
+  When we break down the label structure we can see:
   - For the server - <span style={{color:'gray'}}>intents.otterize.com/server</span>=<span style={{color:'magenta'}}>server</span>-<span style={{color:'red'}}>otterize-tutorial-np</span>-<span style={{color:'green'}}>7e16db</span>
     - <span style={{color:'gray'}}>intents.otterize.com/server</span> - Label prefix for servers
     - <span style={{color:'magenta'}}>server</span> - Server pod name
