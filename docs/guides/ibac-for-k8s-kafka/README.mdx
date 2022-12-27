@@ -62,18 +62,18 @@ Kafka [chart](https://github.com/bitnami/charts/tree/master/bitnami/kafka):
     - Having the credentials stored in a Java KeyStore (JKS) format stored in a K8s secret called `kafka-tls-secret`
       with a password set to `password`.
     - Deny anonymous access
-```yaml
-auth:
- clientProtocol: mtls
- interBrokerProtocol: mtls
- tls:
-   type: jks
-   existingSecrets:
-     - kafka-tls-secret
-   password: password
-authorizerClassName: kafka.security.authorizer.AclAuthorizer
-allowEveryoneIfNoAclFound: true
-```
+    ```yaml
+    auth:
+     clientProtocol: mtls
+     interBrokerProtocol: mtls
+     tls:
+       type: jks
+       existingSecrets:
+         - kafka-tls-secret
+       password: password
+    authorizerClassName: kafka.security.authorizer.AclAuthorizer
+    allowEveryoneIfNoAclFound: true
+    ```
 5. Add pod annotations to let Otterize know it needs to generate the JKS credentials and store them at the specified K8s
    secret:
    ```yaml
