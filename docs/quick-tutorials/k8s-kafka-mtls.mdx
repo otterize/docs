@@ -45,7 +45,6 @@ The following command will deploy a Kafka cluster with this chart:
  helm repo add bitnami https://charts.bitnami.com/bitnami
  helm repo update
  helm install --create-namespace -n kafka \
-   --version 14.x.x \
    -f https://docs.otterize.com/code-examples/kafka-mtls/helm/values.yaml kafka bitnami/kafka
  ```
 
