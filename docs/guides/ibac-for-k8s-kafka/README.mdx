@@ -81,7 +81,7 @@ Kafka [chart](https://github.com/bitnami/charts/tree/master/bitnami/kafka):
      spire-integration.otterize.com/cert-type: jks
      spire-integration.otterize.com/tls-secret-name: kafka-tls-secret
      spire-integration.otterize.com/truststore-file-name: kafka.truststore.jks
-     spire-integration.otterize.com/keystore-file-name: kafka-keystore.jks
+     spire-integration.otterize.com/keystore-file-name: kafka.keystore.jks
      spire-integration.otterize.com/dns-names: "kafka-0.kafka-headless.kafka.svc.cluster.local,kafka.kafka.svc.cluster.local"
      spire-integration.otterize.com/cert-ttl: "31536000" # 1 year
    ```
@@ -101,7 +101,6 @@ with permissions for Otterize to configure ACLs:
  helm repo add bitnami https://charts.bitnami.com/bitnami
  helm repo update
  helm install -n kafka \
- --version 14.x.x \
  -f https://docs.otterize.com/code-examples/kafka-mtls/helm/values.yaml --create-namespace kafka bitnami/kafka
  ```
 You can watch for all pods to be `Ready` using `kubectl get pods -n kafka -w`.
