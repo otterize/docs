@@ -27,11 +27,11 @@ Otterize OSS is a standalone open-source implementation of intent-based access c
 Want to try it out? [Skip to getting started with Otterize OSS](#getting-started-with-otterize-oss).
 
 Otterize OSS consists of several components:
-- The [Otterize intents operator](/components/intents-operator) that translates ClientIntents resources to
+- The [Otterize intents operator](concepts/otterize-oss/componentsintents-operator) that translates ClientIntents resources to
 access controls: currently, network policies for pod-to-pod access, and ACLs for in-cluster Kafka client access.
-- The [Otterize SPIRE integration operator](/components/spire-integration-operator) that integrates with SPIFFE/SPIRE
+- The [Otterize SPIRE integration operator](concepts/otterize-oss/componentsspire-integration-operator) that integrates with SPIFFE/SPIRE
 to handle pod identities and manage certificates.
-- The [Otterize network mapper](/components/network-mapper) that sniffs pod-to-pod traffic and builds a network map,
+- The [Otterize network mapper](concepts/otterize-oss/componentsnetwork-mapper) that sniffs pod-to-pod traffic and builds a network map,
 which is useful on its own and may also be exported as client intents files for bootstrapping IBAC.
 
 

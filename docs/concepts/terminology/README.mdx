@@ -1,0 +1,59 @@
+---
+sidebar_position: 5
+title: Terminology
+---
+
+An overview of the terminology used in Otterize OSS documentation.
+If you think a term is missing here, please [let us know](https://github.com/otterize/docs/issues/new).
+
+## Basics
+
+### Service
+An Otterize service is the logical "atom" of service-to-service authentication and authorization. It can be a client or a server or both. Services are connected through client intents: one service intends to call another service. [Learn how service identity resolution happens](/service-identities).
+
+### CLI
+The [Otterize CLI](/reference/cli) is a command-line utility used to control and interact with the Otterize network mapper, manipulate local Intents files, and (coming soon!) interact with Otterize Cloud.
+
+### Intent (or client intent)
+Otterize intents are a way to declare that one service intends to call another service. Otterize uses them to apply authorization rules to enable the calls to go through, and block any unintended calls. An *intent* refers to a client declaring a particular call to a server; *all* a given client's intents to the servers it intends to call are collected in a single *client intents file*. [Learn more about intents](/intents-and-intents-files).
+
+## Identity
+
+### PKI
+PKI stands for public key infrastructure, and refers to the infrastructure used to provision X.509 credentials.
+ A common use case for PKI is to support mTLS.
+
+### mTLS
+mTLS stands for mutual TLS, and is a form of TLS where both the client and server mutually authenticate to each other.
+In other words, mTLS is mutual TLS.
+
+In regular TLS, only the server is authenticated. For example, when you connect to google.com, a
+nd your browser authenticates google.com using its certificate, you're using TLS;
+but google.com does not authenticate you, as the client, with a certificate, so the communication isn't using mTLS, just TLS.
+
+### SPIRE
+An open-source implementation of the [SPIFFE](https://github.com/spiffe/spire) specification. It's used for workload attestation and credential management. [Read more about SPIRE in the official documentation](https://spiffe.io/docs/latest/spire-about/).
+
+### SPIRE integration operator
+The Otterize [SPIRE integration operator](concepts/otterize-oss/componentsspire-integration-operator) automatically resolves pods to dev-friendly service names, registers them with a SPIRE server, and provisions credentials as a Kubernetes Secrets.
+
+## Enforcement
+
+### Network policies
+Kubernetes network policies can be used to control network access between pods in a Kubernetes cluster.
+To do so they require the installation of a Kubernetes CNI network plugin that supports network policy enforcement.
+One commonly supported CNI is Calico.
+[Read more about network policies in the official documentation](https://kubernetes.io/docs/concepts/services-networking/network-policies/).
+
+### Kafka ACLs
+ACLs stand for Access Control Lists, a built-in mechanism in Kafka (and other systems) for authorizing access
+to Kafka resources such as topics.
+[Read more about Kafka ACLs in the official documentation](https://docs.confluent.io/platform/current/kafka/authorization.html#authorization-using-acls).
+
+## Kubernetes
+### Custom resource
+A Kubernetes custom resource refers to a resource that is not present in the base distribution of Kubernetes (such as Deployment or Pod), but comes with an installed operator. The [Otterize ClientIntents](/intents-and-intents-files/) are one such resource. [Read more about Kubernetes custom resources here](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/).
+
+### CNI (Container Network Interface)
+CNI is a CNCF project that provides libraries for implementing plugins for configuring network interfaces in Linux containers, and is used by Kubernetes to provide pods running in a cluster with network connectivity.
+Examples of CNI plugins are Calico, Cilium, the AWS VPC CNI plugin. [Read more about Kubernetes CNI plugins here](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/).

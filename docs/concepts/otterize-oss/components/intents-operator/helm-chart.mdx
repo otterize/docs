@@ -1,0 +1,44 @@
+---
+sidebar_position: 1
+title: (UPDATE) Helm chart
+---
+
+You can use the [intents operator's Helm chart](https://github.com/otterize/helm-charts/tree/main/intents-operator) to deploy the intents operator on its own, and configure it to work with the Otterize SPIRE integration operator to acquire mTLS credentials.
+But it is recommended to deploy the operator as part of the [Otterize OSS Helm chart](https://github.com/otterize/helm-charts/tree/main/otterize-kubernetes), which comes with a SPIRE server and the SPIRE integration operator, rather than managing it independently.
+
+If you would like to deploy it on its own, add the Otterize Helm chart repository and configure the operator:
+```bash
+  helm repo add otterize https://helm.otterize.com
+  helm repo update
+  helm install otterize-intents-operator otterize/intents-operator -n otterize-system --create-namespace
+```
+
+
+## Operator parameters
+
+| Key                                             | Description                                                                                                        | Default            |
+|-------------------------------------------------|--------------------------------------------------------------------------------------------------------------------|--------------------|
+| `operator.image.repository`                     | Intents operator image repository.                                                                                 | `otterize`         |
+| `operator.image.image`                          | Intents operator image.                                                                                            | `intents-operator` |
+| `operator.image.tag`                            | Intents operator image tag.                                                                                        | `latest`           |
+| `operator.pullPolicy`                           | Intents operator image pull policy.                                                                                | `(none)`           |
+| `operator.autoGenerateTLSUsingSpireIntegration` | If true, adds the necessary pod annotations in order to generate mTLS credentials using the Otterize SPIRE integration operator. | `true`            |
+| `operator.autoCreateNetworkPoliciesForExternalTraffic` | Automatically allow external traffic, if a new ClientIntents resource would result in blocking external (internet) traffic and there is an Ingress/Service resource indicating external traffic is expected. | `true`           |
+| `operator.resources`                            | Resources override.                                                                                                |                    |
+
+
+## Watcher parameters
+
+| Key                        | Description                | Default                        |
+|----------------------------|----------------------------|--------------------------------|
+| `watcher.image.repository` | Watcher image repository.  | `otterize`                     |
+| `watcher.image.image`      | Watcher image.             | `intents-operator-pod-watcher` |
+| `watcher.image.tag`        | Watcher image tag.         | `latest`                       |
+| `watcher.pullPolicy`       | Watcher image pull policy. | `(none)`                       |
+| `watcher.resources`        | Watcher resources.         |                                |
+
+## Common parameters
+
+| Key                    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Default |
+|------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
+| `allowGetAllResources` | Gives get, list and watch permission to watch on all resources. This is used to resolve service names when pods have owners that are custom resources. When disabled, a limited set of permissions is used that only allows access to Pods and to built-in Kubernetes resources that deploy Pods: Deployments, StatefulSets, DaemonSets, ReplicaSets and Services. Resolving may not be able to complete if the owning resource is not one of those. | `true`  |
