@@ -2,3 +2,162 @@
 sidebar_position: 5
 title: Shadow mode
 ---
+
+import CodeBlock from "@theme/CodeBlock";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+:::danger
+Write intro
+:::
+
+In this tutorial, we will:
+
+- Deploy a demo reference lab,
+which is based on the [Google microservices demo](https://github.com/GoogleCloudPlatform/microservices-demo)
+simulating an e-commerce application.
+- Use the access graph and Shadow mode in tandem with intents to see how Otterize can help in gradually rolling out secure access.
+
+## Prerequisites
+<details>
+<summary>Prepare a cluster that supports network policies</summary>
+
+Before you start, you need a Kubernetes cluster with a [CNI](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/) that supports [NetworkPolicies](https://kubernetes.io/docs/concepts/services-networking/network-policies/).
+
+{@include: ../_common/cluster-setup.md}
+</details>
+
+### Install Otterize on your cluster
+
+:::note
+You can skip this section if Otterize is already installed in your cluster.
+:::
+
+{@include: ../_common/install-otterize.md}
+
+### Connect to Otterize Cloud
+{@include: ../_common/connect-otterize-to-cloud.md}
+
+## Deploy the reference lab
+
+Create a namespace to hold the services, and deploy them:
+```bash
+kubectl create namespace otterize-ecom-demo
+kubectl apply -n otterize-ecom-demo -f https://docs.otterize.com/code-examples/microservices-demo/kubernetes-manifests.yml
+```
+<details>
+  <summary>Optional: check that the lab was deployed...</summary>
+  <div>
+
+
+To see all the pods in the lab:
+```bash
+kubectl get pods -n otterize-ecom-demo
+```
+The pods should all be ready and running:
+```bash
+NAME                                     READY   STATUS    RESTARTS   AGE
+adservice-694f4ff98-cz4nn                1/1     Running   0          23m
+cartservice-85f8bc44fd-45cbk             1/1     Running   0          23m
+checkoutservice-8fc47bbbd-9lhfv          1/1     Running   0          23m
+currencyservice-597bdf576b-8hftc         1/1     Running   0          23m
+emailservice-d5c6f74dd-qlwc4             1/1     Running   0          23m
+frontend-7ffbf49884-j9rhz                1/1     Running   0          23m
+loadgenerator-65779994db-tgdxk           1/1     Running   0          23m
+paymentservice-76b9c8b87d-ktfcd          1/1     Running   0          23m
+productcatalogservice-6969d4f5fd-xdw99   1/1     Running   0          23m
+recommendationservice-58798d5c8-2f4rz    1/1     Running   0          23m
+redis-cart-6f65887b5d-xwpz5              1/1     Running   0          23m
+shippingservice-ff5f4d7d-qcjw8           1/1     Running   0          23m
+```
+
+
+  </div>
+</details>
+
+## Map the cluster
+
+![Discovered intents](/img/quick-tutorials/shadow-mode/phase-0.png)
+
+## Try out IBAC
+Let’s try just declaring that the Frontend intends to call the recommendation service.
+
+We expect this will provide secure access, allowing the intended access from the Fronted while protecting the recommendation service from unintended access.
+
+```yaml
+{@include: ../..//static/code-examples/shadow-mode/phase-1.yaml}
+```
+
+Apply this intents file with
+```bash
+kubectl apply -f code-examples/shadow-mode/phase-1.yaml
+```
+
+Look at the access graph again:
+
+![Discovered intents](/img/quick-tutorials/shadow-mode/phase-1.png)
+
+We’re not enforcing access controls, but we can see the Frontend will still be able to call the recommendation service, and the latter would be protected from any other calls. Nice.
+
+## Declare more intents
+Let’s add another intent, this time from recommendation-service → product-catalog-service.
+
+```yaml
+{@include: ../..//static/code-examples/shadow-mode/phase-2.yaml}
+```
+
+Apply this intents file with
+```bash
+kubectl apply -f code-examples/shadow-mode/phase-2.yaml
+```
+
+Look at the access graph again:
+
+![Discovered intents](/img/quick-tutorials/shadow-mode/phase-2.png)
+
+What happened? The access graph is warning us that when we’ll protect the product catalog service, only the recommendation service will be able to reach it: the Frontend and the checkout service will be blocked. Good to know!
+
+Let's add the intents for the checkout-service and product-catalog-service.
+
+<Tabs>
+<TabItem value="frontend" label="frontend" default>
+
+```yaml
+{@include: ../..//static/code-examples/shadow-mode/phase-3-frontend.yaml}
+```
+</TabItem>
+<TabItem value="checkout-service" label="checkout-service" default>
+
+```yaml
+{@include: ../..//static/code-examples/shadow-mode/phase-3-checkout.yaml}
+```
+</TabItem>
+</Tabs>
+
+Apply these intents files with
+```bash
+kubectl apply -f code-examples/shadow-mode/phase-3.yaml
+```
+
+![Discovered intents](/img/quick-tutorials/shadow-mode/phase-3.png)
+
+## Protect everything easily
+I can see how to roll out IBAC gradually: pick a service to protect, make sure its clients declare intents to call it, apply.
+
+Could I also just bootstrap the whole cluster and protect it? Yes!
+
+Export all discovered intents with the Otterize CLI ([Installation instructions](/getting-started/k8s-installation#install-the-otterize-cli)).
+```bash
+otterize mapper export -n otterize-ecom-demo --output-type dir --output intents
+```
+
+And apply them
+```bash
+kubectl apply -f intents
+```
+
+Look at the access graph again:
+
+![Discovered intents](/img/quick-tutorials/shadow-mode/phase-4.png)
+
+Looks like everything is protected and nothing intended should be blocked.

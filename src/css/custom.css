@@ -44,7 +44,7 @@
   background-color: green;
   color: white;
   border-radius: 4px;
-  font-size: 40%;
+  font-size: 70%;
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
@@ -197,4 +197,11 @@ pre.prism-code {
 .footer_signup-img {
 }
 
+
+
+.cloud:after {
+    /*content: "🦦☁️";*/
+    /*float: right;*/
+    /*margin: 0 0 0 0;*/
+}
 

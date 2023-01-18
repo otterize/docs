@@ -1,0 +1,110 @@
+You can view mapped traffic by calling the CLI `list` or `export` commands.
+The latter supports multiple output formats, namely `intents` (client intents files) and `json`.
+The following shows the CLI output filtered for the namespace (`otterize-tutorial-mapper`)
+of the example above.
+
+<Tabs>
+  <TabItem value="list" label="List" default>
+
+1. List the pod-to-pod network map built up ("sniffed") so far:
+
+   ```shell
+   otterize mapper list -n otterize-tutorial-mapper
+   ```
+2. For the simple example above, you should see:
+   ```shell
+   client in namespace otterize-tutorial-mapper calls:
+     - server
+   client2 in namespace otterize-tutorial-mapper calls:
+     - server
+   ```
+
+</TabItem>
+  <TabItem value="intents" label="Export as intents" default>
+
+1. Export as YAML client intents (the default format) the pod-to-pod network map built up so far:
+
+   ```shell
+   otterize mapper export -n otterize-tutorial-mapper
+   ```
+2. For the simple example above, you should see (concatenated into one YAML file):
+   ```yaml
+   apiVersion: k8s.k8s.otterize.com/v1
+   kind: ClientIntents
+   metadata:
+     name: client
+     namespace: otterize-tutorial-mapper
+   spec:
+     service:
+       name: client
+     calls:
+       - name: server
+   ---
+   apiVersion: k8s.k8s.otterize.com/v1
+   kind: ClientIntents
+   metadata:
+     name: server
+     namespace: otterize-tutorial-mapper
+   spec:
+     service:
+       name: client2
+     calls:
+       - name: server
+   ```
+
+</TabItem>
+  <TabItem value="json" label="Export as JSON">
+
+1. Export as JSON the pod-to-pod network map built up so far:
+   ```shell
+   otterize mapper export -n otterize-tutorial-mapper --format json
+   ```
+2. For the simple example above, you should see:
+
+   ```json
+   [
+     {
+       "kind": "ClientIntents",
+       "apiVersion": "k8s.otterize.com/v1alpha1",
+       "metadata": {
+         "name": "client",
+         "namespace": "otterize-tutorial-mapper"
+       },
+       "spec": {
+         "service": {
+           "name": "client"
+         },
+         "calls": [
+           {
+             "name": "server"
+           }
+         ]
+       }
+     },
+     {
+       "kind": "ClientIntents",
+       "apiVersion": "k8s.otterize.com/v1alpha1",
+       "metadata": {
+         "name": "client",
+         "namespace": "otterize-tutorial-mapper"
+       },
+       "spec": {
+         "service": {
+           "name": "client"
+         },
+         "calls": [
+           {
+             "name": "server"
+           }
+         ]
+       }
+     }
+   ]
+   ```
+
+</TabItem>
+</Tabs>
+
+:::info
+See the [CLI documentation](/reference/cli) for more details about the CLI.
+:::

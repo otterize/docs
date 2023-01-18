@@ -1,21 +1,21 @@
 ---
 sidebar_position: 1
-title: Installing Otterize in Kubernetes
+title: Install Otterize OSS
 ---
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-## Make sure you have a cluster that supports network policies
+<details>
+<summary>Make sure you have a cluster that supports network policies</summary>
+
 Before you start, you need to have a Kubernetes cluster with a [CNI](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/) that supports [NetworkPolicies](https://kubernetes.io/docs/concepts/services-networking/network-policies/).
 
 {@include: ../_common/cluster-setup.md}
+</details>
 
-Install Otterize on a Kubernetes cluster using helm.
 ## Install Otterize
 {@include: ../_common/install-otterize.md}
 
-## Upgrade Otterize
-{@include: ../_common/upgrade-otterize.md}
 
 ## Install the network mapper
 
@@ -24,35 +24,3 @@ Install Otterize on a Kubernetes cluster using helm.
 ## Install the Otterize CLI
 
 {@include: ../_common/install-otterize-cli.md}
-
-## Install Otterize components separately
-You can install Otterize components by disabling the deployment of some of the components in the chart.
-For a complete list of the Helm values the chart accepts, consult the [Helm chart documentation](concepts/otterize-oss/componentsintents-operator/helm-chart).
-
-### Network policies only
-{@include: ../_common/install-otterize-network-policies.md}
-
-
-### Kafka & mTLS only
-{@include: ../_common/install-otterize-kafka.md}
-
-
-## Uninstall Otterize
-### Before uninstalling
-Before uninstalling Otterize, you should make sure to delete any resources created by users: `ClientIntents` and `KafkaServerConfig`s.
-
-When you remove these resources, the Intents Operator will clean up network policies and Kafka ACLs it created. If you remove the operator before doing so, it will not be able to clean up.
-
-If, however, you want the network policies and ACLs to stay in place (because you're redeploying with different configuration, for example), don't remove them.
-
-1. First check if any `ClientIntents` exist: `kubectl get clientintents --all-namespaces`
-2. If so, remove them.
-3. Check if any `KafkaServerConfig`s exist: `kubectl get kafkaserverconfig --all-namespaces`
-4. If so, remove them.
-
-It's important to remove `ClientIntents` before removing `KafkaServerConfig`s, as once you remove the `KafkaServerConfig` for a Kafka cluster, the intents operator will no longer know how to connect to it and perform cleanup.
-
-### Uninstallation
-```bash
-helm uninstall otterize -n otterize-system
-```

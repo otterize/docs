@@ -177,64 +177,64 @@ Our simple example consists of a two client pods &mdash; "client" and "client-ot
 </details>
 
 1. Deploy the two clients into a namespace called `otterize-tutorial-kafka-mtls` using `kubectl`:
-    ```bash
-    kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/all.yaml
-    ```
+```bash
+kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/all.yaml
+```
 
-    <details>
-    <summary>Optional: check deployment status</summary>
+<details>
+<summary>Optional: check deployment status</summary>
 
-    Check that the client pods were deployed:
+Check that the client pods were deployed:
 
-    ```bash
-    kubectl get pods -n otterize-tutorial-kafka-mtls
-    ```
-    You should see:
-    ```
-    NAME                              READY   STATUS    RESTARTS   AGE
-    myclient-5d9646fc46-tw5hs         1/1     Running   0          21s
-    myclient-other-59647b448c-w4cpq   1/1     Running   0          21s
-    ```
-    </details>
+```bash
+kubectl get pods -n otterize-tutorial-kafka-mtls
+```
+You should see:
+```
+NAME                              READY   STATUS    RESTARTS   AGE
+myclient-5d9646fc46-tw5hs         1/1     Running   0          21s
+myclient-other-59647b448c-w4cpq   1/1     Running   0          21s
+```
+</details>
 
-    Let's monitor, in separate terminal windows, both clients' attempts to call Kafka,
-    so we can see the effects of our changes in real time.
+Let's monitor, in separate terminal windows, both clients' attempts to call Kafka,
+so we can see the effects of our changes in real time.
 
 2. **Open a new terminal window [myclient]** and tail the client log:
-    ```bash
-    kubectl logs -f --tail 1 -n otterize-tutorial-kafka-mtls deploy/myclient
-    ```
-    This client should be able to communicate with the server:
-    ```
-    Loading mTLS certificates
-    Connecting to Kafka
-    Creating a producer and a consumer for - mytopic
-    Sending messages
-    Sent message - Message 1 [sent by client]
-    Read message - Message 1 [sent by client]
-    Read message - Message 1 [sent by client-other]
-    Sent message - Message 2 [sent by client]
-    Read message - Message 2 [sent by client-other]
-    Read message - Message 2 [sent by client]
-    Read message - Message 3 [sent by client-other]
-    Sent message - Message 3 [sent by client]
-    Read message - Message 3 [sent by client]
-    ```
+```bash
+kubectl logs -f --tail 1 -n otterize-tutorial-kafka-mtls deploy/myclient
+```
+This client should be able to communicate with the server:
+```
+Loading mTLS certificates
+Connecting to Kafka
+Creating a producer and a consumer for - mytopic
+Sending messages
+Sent message - Message 1 [sent by client]
+Read message - Message 1 [sent by client]
+Read message - Message 1 [sent by client-other]
+Sent message - Message 2 [sent by client]
+Read message - Message 2 [sent by client-other]
+Read message - Message 2 [sent by client]
+Read message - Message 3 [sent by client-other]
+Sent message - Message 3 [sent by client]
+Read message - Message 3 [sent by client]
+```
 
 3. **Open another terminal window [myclient-other]** and tail the client-other log:
-    ```bash
-    kubectl logs -f --tail 1 -n otterize-tutorial-kafka-mtls deploy/myclient-other
-    ```
-    This other client should also be able to communicate with the server:
-    ```
-    Loading mTLS certificates
-    Connecting to Kafka
-    Creating a producer for - mytopic
-    Sending messages
-    Sent message - Message 1 [sent by client-other]
-    Sent message - Message 2 [sent by client-other]
-    Sent message - Message 3 [sent by client-other]
-    ```
+```bash
+kubectl logs -f --tail 1 -n otterize-tutorial-kafka-mtls deploy/myclient-other
+```
+This other client should also be able to communicate with the server:
+```
+Loading mTLS certificates
+Connecting to Kafka
+Creating a producer for - mytopic
+Sending messages
+Sent message - Message 1 [sent by client-other]
+Sent message - Message 2 [sent by client-other]
+Sent message - Message 3 [sent by client-other]
+```
 
 ## Apply intents
 1. The client declares its intent to call the server with this `intents.yaml` file:
@@ -247,37 +247,37 @@ Client intents are the cornerstone of [intent-based access control](https://otte
 :::
 
 2. Keep an eye on the logs being tailed in the **[client-other]** while you apply this `intents.yaml` file in your **main terminal window** using:
-   ```bash
-   kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/client-intents.yaml
-   ```
+```bash
+kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/client-intents.yaml
+```
 
-   You should quickly see in the **[client-other]** that the **other client cannot** access the topic:
-   ```
-   Sent message - Message 12 [sent by client-other]            # <- before applying the intents file
-   Sent message - Message 13 [sent by client-other]            # <- before applying the intents file
-   time="2022-10-06T09:44:53Z" level=info error="kafka server: # <- after applying the intents file
-     The client is not authorized to access this topic"
-   Loop exited
-   ```
-   Meanwhile, in the **[client]** terminal you can see that the **client can** access the topic:
-   ```
-   Sent message - Message 24 [sent by client]
-   Read message - Message 24 [sent by client]
-   Sent message - Message 25 [sent by client]
-   Read message - Message 25 [sent by client]
-   ```
+You should quickly see in the **[client-other]** that the **other client cannot** access the topic:
+```
+Sent message - Message 12 [sent by client-other]            # <- before applying the intents file
+Sent message - Message 13 [sent by client-other]            # <- before applying the intents file
+time="2022-10-06T09:44:53Z" level=info error="kafka server: # <- after applying the intents file
+ The client is not authorized to access this topic"
+Loop exited
+```
+Meanwhile, in the **[client]** terminal you can see that the **client can** access the topic:
+```
+Sent message - Message 24 [sent by client]
+Read message - Message 24 [sent by client]
+Sent message - Message 25 [sent by client]
+Read message - Message 25 [sent by client]
+```
 3. Verify that an ACL for this client was configured on the Kafka broker:
-   ```bash
-   kubectl logs -n kafka statefulset/kafka | grep "Processing Acl change" | grep mytopic | tail -n 1
-   ```
-   You should see:
-   ```
-   [2022-09-13 10:44:52,803] INFO Processing Acl change notification for
-   ResourcePattern(resourceType=TOPIC, name=mytopic, patternType=LITERAL), 
-   versionedAcls : Set(User:ANONYMOUS has DENY permission for operations: 
-   ALL from hosts: *, User:CN=myclient.otterize-tutorial-kafka-mtls,O=SPIRE,C=US has ALLOW permission
-   for operations: ALL from hosts: *), zkVersion : 6 (kafka.security.authorizer.AclAuthorizer)
-   ```
+```bash
+kubectl logs -n kafka statefulset/kafka | grep "Processing Acl change" | grep mytopic | tail -n 1
+```
+You should see:
+```
+[2022-09-13 10:44:52,803] INFO Processing Acl change notification for
+ResourcePattern(resourceType=TOPIC, name=mytopic, patternType=LITERAL),
+versionedAcls : Set(User:ANONYMOUS has DENY permission for operations:
+ALL from hosts: *, User:CN=myclient.otterize-tutorial-kafka-mtls,O=SPIRE,C=US has ALLOW permission
+for operations: ALL from hosts: *), zkVersion : 6 (kafka.security.authorizer.AclAuthorizer)
+```
 
 ## What did we accomplish?
 

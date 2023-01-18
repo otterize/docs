@@ -1,0 +1,25 @@
+apiVersion: k8s.otterize.com/v1alpha1
+kind: ClientIntents
+metadata:
+  name: frontend
+  namespace:  otterize-ecom-demo
+spec:
+  service:
+    name: frontend
+  calls:
+    - name: recommendationservice
+      type: http
+    - name: productcatalogservice
+      type: http
+---
+apiVersion: k8s.otterize.com/v1alpha1
+kind: ClientIntents
+metadata:
+  name: checkoutservice
+  namespace:  otterize-ecom-demo
+spec:
+  service:
+    name: checkoutservice
+  calls:
+    - name: productcatalogservice
+      type: http

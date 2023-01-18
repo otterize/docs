@@ -1,6 +1,6 @@
 ---
 sidebar_position: 2
-title: Map your cluster
+title: Map your cluster switch
 ---
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
@@ -21,11 +21,21 @@ Before you start, you need to have a Kubernetes cluster. Having a cluster with a
 {@include: ../_common/cluster-setup.md}
 </details>
 
-## Install the network mapper on your cluster
+## Install the network mapper on your K8s cluster
+<Tabs groupId="oss-cloud">
+<TabItem value="k8s" label="K8s" attributes={{className: styles.red}}>
+
 {@include: ../_common/install-otterize-network-mapper.md}
 
-## Connect to Otterize Cloud (optional)
+</TabItem>
+<TabItem value="cloud" label="K8s+Cloud ☁️" attributes={{className: styles.orange}}>
+
 {@include: ../_common/connect-otterize-to-cloud.md}
+</TabItem>
+</Tabs>
+
+
+
 
 ## Map the cluster
 
@@ -44,11 +54,22 @@ kubectl apply -n otterize-tutorial-mapper -f https://docs.otterize.com/code-exam
 
 ### Show mapped traffic
 
+<Tabs groupId="oss-cloud">
+<TabItem value="k8s" label="K8s" attributes={{className: styles.red}}>
+<details>
+<summary>Install the Otterize CLI</summary>
+{@include: ../_common/install-otterize-cli.md}
+</details>
+
 {@include: ../getting-started/_show_mapped_traffic_cli.mdx}
 
-### Visualize using the access graph (Cloud)
+</TabItem>
+<TabItem value="cloud" label="K8s+Cloud ☁️" attributes={{className: styles.orange}}>
 
 {@include: ../getting-started/_show_mapped_traffic_cloud.mdx}
+</TabItem>
+</Tabs>
+
 
 
 ## What's next
@@ -65,7 +86,6 @@ Where to go next?
 - You might also dive deeper into the guide for [IBAC with network policies](../capabilities/network-policies).
   - It even contains a bootstrapping exercise at the end!
 - For a deeper dive into the network mapper, see the guide for [mapping pod-to-pod calls](../capabilities/k8s-mapping-pod-to-pod-calls).
-- Explore how [Shadow Mode](/quick-tutorials/k8s-shadow-mode) can expand these capabilities.
 
 ### Teardown
 
