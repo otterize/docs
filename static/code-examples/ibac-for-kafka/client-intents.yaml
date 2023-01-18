@@ -7,8 +7,7 @@ spec:
   service:
     name: myclient
   calls:
-    - name: kafka
-      namespace: kafka
+    - name: kafka.kafka
       type: kafka
       topics:
         - name: my-topic
