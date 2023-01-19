@@ -35,8 +35,8 @@ WIth Otterize you can:
 
 ## Components
 
-### Cluster local
-The cluster local components are standalone open-source projects that implement intent-based access control (IBAC) for a single Kubernetes cluster. This same set of components are used to integrate with Otterize Cloud.
+### Otterize OSS
+The Otterize OSS components are standalone open-source projects that implement intent-based access control (IBAC) for a single Kubernetes cluster. This same set of components is used to integrate with Otterize Cloud.
 - [Otterize intents operator](concepts/otterize-oss/componentsintents-operator) translates ClientIntents resources to access controls: currently, network policies for pod-to-pod access, and ACLs for in-cluster Kafka client access.
 <a href="https://github.com/otterize/intents-operator"><img style={{'vertical-align': 'middle', 'height': '1em'}} src='https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png' alt="GitHub repository"/></a>
 - [Otterize credential operator](concepts/otterize-oss/componentsspire-integration-operator) integrates with SPIFFE/SPIRE to handle pod identities and manage certificates.
