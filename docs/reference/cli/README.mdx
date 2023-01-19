@@ -45,7 +45,7 @@ Here's the result of converting a directory containing two client intents file i
 The result is YAML describing two Kubernetes resources separated with the YAML `---` separator.
 
 ```shell
-apiVersion: k8s.otterize.com/v1alpha1
+apiVersion: k8s.otterize.com/v1alpha2
 kind: ClientIntents
 metadata:
   name: cartservice
@@ -57,7 +57,7 @@ spec:
     - name: redis-cart
       type: http
 ---
-apiVersion: k8s.otterize.com/v1alpha1
+apiVersion: k8s.otterize.com/v1alpha2
 kind: ClientIntents
 metadata:
   name: checkoutservice
@@ -148,7 +148,7 @@ as [client intents file(s)](/intents-and-intents-files/#intents-file-formats) in
 Here's a partial output from `otterize mapper export -n otterize-ecom-demo`:
 
 ```shell
-apiVersion: k8s.otterize.com/v1alpha1
+apiVersion: k8s.otterize.com/v1alpha2
 kind: ClientIntents
 metadata:
   name: cartservice
@@ -160,7 +160,7 @@ spec:
     - name: redis-cart
       type: http
 ---
-apiVersion: k8s.otterize.com/v1alpha1
+apiVersion: k8s.otterize.com/v1alpha2
 kind: ClientIntents
 metadata:
   name: checkoutservice

@@ -12,7 +12,7 @@ Here is an annotated example of a `KafkaServerConfig`, followed by an in-depth e
 
 ## Full annotated example
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha1
+apiVersion: k8s.otterize.com/v1alpha2
 kind: KafkaServerConfig
 metadata:
   name: kafkabroker  # the name of the KafkaServerConfig resource
@@ -35,7 +35,7 @@ spec:
 The name of the service as it appears in ClientIntents.
 For example:
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha1
+apiVersion: k8s.otterize.com/v1alpha2
 kind: ClientIntents
 [...]
 spec:
