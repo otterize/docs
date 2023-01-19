@@ -2,7 +2,6 @@ apiVersion: k8s.otterize.com/v1alpha2
 kind: ClientIntents
 metadata:
   name: recommendationservice
-  namespace:  otterize-ecom-demo
 spec:
   service:
     name: recommendationservice
