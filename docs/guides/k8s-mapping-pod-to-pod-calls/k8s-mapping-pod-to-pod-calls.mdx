@@ -136,7 +136,7 @@ of the reference lab we deployed above.
 2. The result is a long YAML file stream that concatenates individual YAML intents documents,
 one for each service that makes calls to other services:
    ```yaml
-   apiVersion: k8s.otterize.com/v1alpha1
+   apiVersion: k8s.otterize.com/v1alpha2
    kind: ClientIntents
    metadata:
      name: cartservice
@@ -148,7 +148,7 @@ one for each service that makes calls to other services:
        - name: redis-cart
          type: http
    ---
-   apiVersion: k8s.otterize.com/v1alpha1
+   apiVersion: k8s.otterize.com/v1alpha2
    kind: ClientIntents
    metadata:
      name: checkoutservice
@@ -170,7 +170,7 @@ one for each service that makes calls to other services:
        - name: shippingservice
          type: http
    ---
-   apiVersion: k8s.otterize.com/v1alpha1
+   apiVersion: k8s.otterize.com/v1alpha2
    kind: ClientIntents
    metadata:
      name: frontend
@@ -194,7 +194,7 @@ one for each service that makes calls to other services:
        - name: shippingservice
          type: http
    ---
-   apiVersion: k8s.otterize.com/v1alpha1
+   apiVersion: k8s.otterize.com/v1alpha2
    kind: ClientIntents
    metadata:
      name: loadgenerator
@@ -206,7 +206,7 @@ one for each service that makes calls to other services:
        - name: frontend
          type: http
    ---
-   apiVersion: k8s.otterize.com/v1alpha1
+   apiVersion: k8s.otterize.com/v1alpha2
    kind: ClientIntents
    metadata:
      name: recommendationservice
@@ -236,7 +236,7 @@ client codes live, so they can be evolved along with the code. To do this, use
    [
      {
        "kind": "ClientIntents",
-       "apiVersion": "k8s.otterize.com/v1alpha1",
+       "apiVersion": "k8s.otterize.com/v1alpha2",
        "metadata": {
          "name": "cartservice",
          "namespace": "otterize-ecom-demo",
@@ -256,7 +256,7 @@ client codes live, so they can be evolved along with the code. To do this, use
      },
      {
        "kind": "ClientIntents",
-       "apiVersion": "k8s.otterize.com/v1alpha1",
+       "apiVersion": "k8s.otterize.com/v1alpha2",
        "metadata": {
          "name": "checkoutservice",
          "namespace": "otterize-ecom-demo",
@@ -296,7 +296,7 @@ client codes live, so they can be evolved along with the code. To do this, use
      },
      {
        "kind": "ClientIntents",
-       "apiVersion": "k8s.otterize.com/v1alpha1",
+       "apiVersion": "k8s.otterize.com/v1alpha2",
        "metadata": {
          "name": "frontend",
          "namespace": "otterize-ecom-demo",
@@ -340,7 +340,7 @@ client codes live, so they can be evolved along with the code. To do this, use
      },
      {
        "kind": "ClientIntents",
-       "apiVersion": "k8s.otterize.com/v1alpha1",
+       "apiVersion": "k8s.otterize.com/v1alpha2",
        "metadata": {
          "name": "loadgenerator",
          "namespace": "otterize-ecom-demo",
@@ -360,7 +360,7 @@ client codes live, so they can be evolved along with the code. To do this, use
      },
      {
        "kind": "ClientIntents",
-       "apiVersion": "k8s.otterize.com/v1alpha1",
+       "apiVersion": "k8s.otterize.com/v1alpha2",
        "metadata": {
          "name": "recommendationservice",
          "namespace": "otterize-ecom-demo",
