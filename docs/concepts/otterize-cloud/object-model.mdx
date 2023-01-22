@@ -2,5 +2,58 @@
 sidebar_position: 1
 title: Object model
 ---
+In Otterize Cloud, as across all of the Otterize product, the central object is the **intent**. Intent-based access control (IBAC) bases the authorization model of a server on the set of calls its clients declare they intend to make, granting them access to make declared calls, while blocking undeclared calls.
 
+## Intents
 
+An **intent** is a declaration that service A (the client service) intends to call service B (the server service), often with more granular information about the type of call (e.g. "HTTP" or "Kafka") and other details of the call (e.g. which HTTP resources and methods, or which Kafka topics and operations).
+
+The intent is expressed as a file, specifically a Kubernetes custom resource YAML declaration, that is then created in a specific Kubernetes cluster and namespace via `kubectl apply`.
+
+The intents applied in this way to a cluster are processed by the **Otterize intents operator** running in the cluster, which -- if configured to enforce intents -- manages Kubernetes network policies and Kafka ACLs according to those intents. When the intents operator is integrated with Otterize Cloud, it also reports those intents to the Cloud, to build an overall model of service-to-service access called the **access graph**.
+
+The declared, applied intents form the basis of IBAC. But to controllably and confidently roll out IBAC to a working cluster, it's important to compare the declared access to the actual access (or attempted access) happening in the cluster. To that end, the **Otterize network mapper** detects attempted access automatically, and generates **discovered intents**: these reflect the intentions of services to call one another based on discovering the actual call attempts themselves. In other words, discovered intents form a network map of services actually calling each other, while applied intents reflect explicit declarations of services to call each other. When the network mapper is integrated with Otterize Cloud, the access graph in the Cloud will includes both discovered and applied intents, and will yield many more insights.
+
+Currently, Otterize only supports intents within a cluster (i.e. client and service are within the same cluster), not across clusters.
+
+## Services
+
+While applied and discovered intents are the edges of the access graph, **services** are its nodes. A service may be a client of other services, a server to other services, or both. (Note the difference between a "Kubernetes service" which is a specific construct used to make a pod callable by other pods, and an Otterize service that's the more general concept, in the sense of a microservice or a workload.)
+
+In Otterize Cloud, services are _inferred_ from the intents reported to the Cloud by the intents operator and the network mapper: whenever an intent is reported, it carries the information about the client and server of that intent. The intents operator adds more information when the service is identified as a Kafka service (the **Kafka server config**), and the credentials operator, when integrated, adds yet more information about any **certificates** issued to that service.
+
+A service name is unique within a namespace in a cluster, but not in general unique across the cluster or across clusters.
+
+## Namespaces and environments
+
+In a Kubernetes cluster, all services are contained within **namespaces**. Namespaces are used to group services that are similar in some way, and to separate them from other groups of services.
+
+When intents are reported to Otterize Cloud, they include information about which namespaces their services are in. If the client and server are in different namespaces, the intent is called a cross-namespace intent. In any case, Otterize Cloud contains representations of all the namespaces reported to it by their association with intents, as well as which services they contain.
+
+Because different namespaces may be mapped to different environments, intents may also be cross-environment.
+
+In Kubernetes, namespace names must be unique within a cluster.
+
+Otterize Cloud adds the concept of **environments**. These have the same meaning usually used in software development: dev, staging, production, etc.
+
+You can create and manage as many environments as you need in Otterize Cloud. Just make sure they are meaningful to you. To map them to your cluster, map each namespace to the appropriate environment. All services in a namespace in a cluster are in the same environment. In configuring the integration of the cluster with Otterize Cloud, you will define the **default environment** to which namespaces in that cluster are mapped. Namespaces will be assigned to that environment until you map them to a different environment. If in your situation a cluster is considered to all be within an environment, you won't have to do anything once you've defined the default environment for namespaces in that cluster.
+
+Environment names must be unique within an organization.
+
+## Clusters
+
+When a Kubernetes cluster is connected to Otterize Cloud, it is represented in the Cloud by a **cluster** object. You'll name it when you add it in the UI or through the API/CLI, or when you create the integration directly (in the UI or API/CLI).
+
+The Otterize operators -- intents operator, network mapper, and/or credentials operator -- running in your cluster will inform the Cloud about the intents, services, and credentials within this cluster, and will also convey their configuration (e.g. shadow or enforcement mode) within this cluster. Thus the cluster object in Otterize Cloud contains a lot of useful information about your Kubernetes cluster -- information used to deliver insights when you view your cluster in through the lens of the access graph.
+
+Note that, while a cluster and its namespaces and services could be in a single environment, and an environment could contain multiple clusters, many other combinations are possible. For example, a cluster could contain namespaces in multiple environments. Or, environments may contain some namespaces in one cluster and other namespaces in another cluster. Use whatever mappings make sense for your situation.
+
+Cluster names must be unique within an organization.
+
+## Integrations
+
+Otterize Cloud currently supports two types of integrations: **Kubernetes integrations** and **generic integrations**. In the future, many other types of integrations will be added, allowing Otterize Cloud to work seamlessly with all your infrastructures and systems.
+
+A Kubernetes integration is used to connect a Kubernetes cluster with Otterize Cloud via any or all of the Otterize operators: the intents operator, the network mapper, and the credentials operator. When a Kubernetes-type integration is created, it is always linked to an Otterize Cloud cluster object. It contains the credentials needed by the operators running in the Kubernetes cluster to communicate with the Cloud on behalf of that cluster, i.e., it ties together the physical Kubernetes cluster with its representation in Otterize Cloud. The integration also determines the environment to which namespaces in that clusters will be associated by default. The name of a Kubernetes integration is derived from the name of the cluster; since cluster names are unique per organization, so are Kubernetes-type integration names.
+
+A generic integration is used to connect generically an external system to Otterize Cloud. It provides that system credentials to access the Otterize API/CLI, in a way that doesn't involve any specific Otterize user. That makes it ideal for building automations on top of the Otterize API. For example, new clusters provisioned for the development team could be automatically connected to Otterize Cloud, or a CI/CD system could automatically look in the access graph for services that would be blocked or intents that were not declared and applied and fail the build. The name of the integration should reflect the way it will be used. The names of generic-type integrations must be unique within an organization.
