@@ -44,7 +44,7 @@ The following command will deploy a Kafka cluster with this chart:
  ```bash
  helm repo add bitnami https://charts.bitnami.com/bitnami
  helm repo update
- helm install --create-namespace -n kafka \
+ helm install --create-namespace -n kafka --wait \
    -f https://docs.otterize.com/code-examples/kafka-mtls/helm/values.yaml kafka bitnami/kafka
  ```
 
@@ -272,10 +272,9 @@ Client intents are the cornerstone of [intent-based access control](https://otte
    You should see:
    ```
    [2022-09-13 10:44:52,803] INFO Processing Acl change notification for
-   ResourcePattern(resourceType=TOPIC, name=mytopic, patternType=LITERAL), 
-   versionedAcls : Set(User:ANONYMOUS has DENY permission for operations: 
-   ALL from hosts: *, User:CN=myclient.otterize-tutorial-kafka-mtls,O=SPIRE,C=US has ALLOW permission
-   for operations: ALL from hosts: *), zkVersion : 6 (kafka.security.authorizer.AclAuthorizer)
+   ResourcePattern(resourceType=TOPIC, name=mytopic, patternType=LITERAL), versionedAcls :
+   Set(User:CN=myclient.otterize-tutorial-kafka-mtls has ALLOW permission for operations: ALL from hosts: *),
+   zkVersion : 0 (kafka.security.authorizer.AclAuthorizer)
    ```
 
 ## What did we accomplish?
