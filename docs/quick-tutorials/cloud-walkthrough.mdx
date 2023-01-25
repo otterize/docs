@@ -1,6 +1,6 @@
 ---
-sidebar_position: 5
-title: Shadow mode
+sidebar_position: 1
+title: Cloud walk through
 ---
 
 import CodeBlock from "@theme/CodeBlock";
@@ -133,7 +133,7 @@ Look at the access graph again:
 
 We’re not enforcing access controls, but we can see the Frontend will still be able to call the recommendation service, and the latter would be protected from any other calls. Nice.
 
-## Declare more intents
+### Declare more intents
 Let’s add another intent, this time from recommendation-service → product-catalog-service.
 
 ```yaml
@@ -175,7 +175,7 @@ kubectl apply -n otterize-ecom-demo -f code-examples/shadow-mode/phase-3.yaml
 
 ![Discovered intents](/img/quick-tutorials/shadow-mode/phase-3.png)
 
-## Protect everything easily
+### Protect everything easily
 I can see how to roll out IBAC gradually: pick a service to protect, make sure its clients declare intents to call it, apply.
 
 Could I also just bootstrap the whole cluster and protect it? Yes!
@@ -218,7 +218,7 @@ You can browse the lab suing the browser to see it works as intended.
 ## Protect Kafka
 We can use Otterize to configure Kafka ACLs and deploy mTLS certificates for its clients.
 
-## Deploy the reference lab with mTLS for Kafka and its clients
+### Deploy the reference lab with mTLS for Kafka and its clients
 
 ```bash
 kubectl apply -n otterize-ecom-demo -f code-examples/shadow-mode/ecom-demo-mtls.yaml
@@ -254,7 +254,7 @@ shippingservice-ff5f4d7d-qcjw8           1/1     Running   0          23m
 </details>
 
 
-## Manage Kafka access with Otterize
+### Manage Kafka access with Otterize
 
 Let's connect Kafka with Otterize by applying a `KafkaServerConfig`:
 ```bash
@@ -281,7 +281,7 @@ We can see in the access graph that the node is marked with a `Kafka` and `KSC` 
 
 ![Kafka Server Config](/img/quick-tutorials/shadow-mode/KSC.png)
 
-## Declare Kafka specific intents
+### Declare Kafka specific intents
 
 Otterize can now configure Kafka ACLs so let's go ahead and create client intents files for the services communicating with Kafka.
 

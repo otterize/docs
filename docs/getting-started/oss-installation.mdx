@@ -1,6 +1,6 @@
 ---
 sidebar_position: 1
-title: Installing Otterize in Kubernetes - advanced
+title: Install Otterize OSS
 ---
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
@@ -16,27 +16,13 @@ Before you start, you need to have a Kubernetes cluster with a [CNI](https://kub
 ## Install Otterize
 {@include: ../_common/install-otterize.md}
 
-## Upgrade Otterize
+### Upgrade Otterize
 {@include: ../_common/upgrade-otterize.md}
-
-## Install the network mapper
-
-{@include: ../_common/install-otterize-network-mapper.md}
-
 ## Install the Otterize CLI
 
+To install (or upgrade) the Otterize CLI run
+
 {@include: ../_common/install-otterize-cli.md}
-
-## Install Otterize components separately
-You can install Otterize components by disabling the deployment of some of the components in the chart.
-For a complete list of the Helm values the chart accepts, consult the [Helm chart documentation](concepts/otterize-oss/componentsintents-operator/helm-chart).
-
-### Network policies only
-{@include: ../_common/install-otterize-network-policies.md}
-
-
-### Kafka & mTLS only
-{@include: ../_common/install-otterize-kafka.md}
 
 
 ## Uninstall Otterize
