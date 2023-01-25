@@ -27,23 +27,201 @@ Before you start, you need a Kubernetes cluster with a [CNI](https://kubernetes.
 {@include: ../_common/cluster-setup.md}
 </details>
 
-### Install Otterize on your cluster
+### Install Otterize enforcement=false on your cluster
 
-:::note
-You can skip this section if Otterize is already installed in your cluster.
-:::
-
-{@include: ../_common/install-otterize.md}
+{@include: ../_common/install-otterize-cloud-enforcement-off.md}
 
 ### Connect to Otterize Cloud
-{@include: ../_common/connect-otterize-to-cloud.md}
+:::danger
+Needs to be in a single step, with previous as we must make sure users are running with enforcement=false
+:::
 
 ## Deploy the reference lab
 
-Create a namespace to hold the services, and deploy them:
 ```bash
 kubectl create namespace otterize-ecom-demo
-kubectl apply -n otterize-ecom-demo -f https://docs.otterize.com/code-examples/microservices-demo/kubernetes-manifests.yml
+kubectl apply -n otterize-ecom-demo -f code-examples/shadow-mode/ecom-demo.yaml
+```
+
+<details>
+<summary>Optional: check that the lab was deployed...</summary>
+<div>
+
+
+To see all the pods in the lab:
+```bash
+kubectl get pods -n otterize-ecom-demo
+```
+The pods should all be ready and running:
+```bash
+    NAME                                     READY   STATUS    RESTARTS      AGE
+    adservice-65494cbb9d-5lrv6               1/1     Running   0             115s
+    cartservice-6d84fc45bb-hdtwn             1/1     Running   0             115s
+    checkoutservice-5599486df-dvj9n          1/1     Running   3 (79s ago)   115s
+    currencyservice-6d64686d74-lxb7x         1/1     Running   0             115s
+    emailservice-7c6cbfbbd7-xjxlt            1/1     Running   0             115s
+    frontend-f9448d7d4-6dmnr                 1/1     Running   0             115s
+    kafka-0                                  1/1     Running   2 (83s ago)   115s
+    loadgenerator-7f6987f59-bchgm            1/1     Running   0             114s
+    orderservice-7ffdbf6df-wzzfd             1/1     Running   0             115s
+    otterize-ecom-demo-zookeeper-0           1/1     Running   0             115s
+    paymentservice-86855d78db-zjjfn          1/1     Running   0             115s
+    productcatalogservice-5944c7f666-2rjc6   1/1     Running   0             115s
+    recommendationservice-6c8d848498-zm2rm   1/1     Running   0             114s
+    redis-cart-6b79c5b497-xpms2              1/1     Running   0             115s
+    shippingservice-85694cb9bd-v54xp         1/1     Running   0             114s
+```
+
+
+</div>
+</details>
+
+### Browse the lab
+<Tabs groupId="frontend-addr">
+<TabItem value="k8s" label="K8s">
+
+To get the externally-accessible URL where your demo front end is available, run:
+```bash
+kubectl get service -n otterize-ecom-demo frontend-external | awk '{print $4}'
+```
+The result should be similar to (if running on AWS EKS):
+```
+a11843075fd254f8099a986467098647-1889474685.us-east-1.elb.amazonaws.com
+```
+Go ahead and browse to the URL above to "shop" and get a feel for the reference lab's behavior.
+(The URL might take some time to populate across DNS servers. Note that we are accessing an HTTP and not an HTTPS website.)
+</TabItem>
+<TabItem value="minikube" label="Minikube">
+
+To get the externally-accessible URL where your demo front end is available, run:
+```
+kubectl port-forward -n otterize-ecom-demo service/frontend-external 8080:80 &
+```
+The demo is now accessible at:
+```
+http://localhost:8080
+```
+Go ahead and browse to the URL above to "shop" and get a feel for the reference lab's behavior.
+</TabItem>
+</Tabs>
+
+## Map the cluster
+
+Locate your deployment in the [access graph](https://app.staging.otterize.com/access-graph). You should see the following map for the deployed lab.
+
+![Discovered intents](/img/quick-tutorials/shadow-mode/phase-0.png)
+
+The access graph allows you to quickly inspect your network, map services communication and prepare for gradual rollout using its **shadow mode** features.
+
+## Try out IBAC with shadow mode
+Let’s try just declaring that the Frontend intends to call the recommendation service.
+
+We expect this will provide secure access, allowing the intended access from the Fronted while protecting the recommendation service from unintended access.
+
+```yaml
+{@include: ../..//static/code-examples/shadow-mode/phase-1.yaml}
+```
+
+Apply this intents file with
+```bash
+kubectl apply -n otterize-ecom-demo -f code-examples/shadow-mode/phase-1.yaml
+```
+
+Look at the access graph again:
+
+![Discovered intents](/img/quick-tutorials/shadow-mode/phase-1.png)
+
+We’re not enforcing access controls, but we can see the Frontend will still be able to call the recommendation service, and the latter would be protected from any other calls. Nice.
+
+## Declare more intents
+Let’s add another intent, this time from recommendation-service → product-catalog-service.
+
+```yaml
+{@include: ../..//static/code-examples/shadow-mode/phase-2.yaml}
+```
+
+Apply this intents file with
+```bash
+kubectl apply -n otterize-ecom-demo -f code-examples/shadow-mode/phase-2.yaml
+```
+
+Look at the access graph again:
+
+![Discovered intents](/img/quick-tutorials/shadow-mode/phase-2.png)
+
+What happened? The access graph is warning us that when we’ll protect the product catalog service, only the recommendation service will be able to reach it: the Frontend and the checkout service will be blocked. Good to know!
+
+Let's add the intents for the checkout-service and product-catalog-service.
+
+<Tabs>
+<TabItem value="frontend" label="frontend" default>
+
+```yaml
+{@include: ../..//static/code-examples/shadow-mode/phase-3-frontend.yaml}
+```
+</TabItem>
+<TabItem value="checkout-service" label="checkout-service" default>
+
+```yaml
+{@include: ../..//static/code-examples/shadow-mode/phase-3-checkout.yaml}
+```
+</TabItem>
+</Tabs>
+
+Apply these intents files with
+```bash
+kubectl apply -n otterize-ecom-demo -f code-examples/shadow-mode/phase-3.yaml
+```
+
+![Discovered intents](/img/quick-tutorials/shadow-mode/phase-3.png)
+
+## Protect everything easily
+I can see how to roll out IBAC gradually: pick a service to protect, make sure its clients declare intents to call it, apply.
+
+Could I also just bootstrap the whole cluster and protect it? Yes!
+
+Export all discovered intents with the Otterize CLI ([Installation instructions](/getting-started/k8s-installation#install-the-otterize-cli)).
+```bash
+otterize mapper export -n otterize-ecom-demo --output-type dir --output intents
+```
+
+And apply them
+```bash
+kubectl apply -f intents
+```
+
+Or use our already generated intents with
+```bash
+kubectl apply -n otterize-ecom-demo -f code-examples/shadow-mode/all.yaml
+```
+
+Look at the access graph again:
+
+![Discovered intents](/img/quick-tutorials/shadow-mode/phase-4.png)
+
+Looks like everything is protected and nothing intended should be blocked.
+
+## Enable enforcement
+Otterize Cloud's shadow mode allowed us to gain confidence in the effects of applying network policies using client intents and we can move on to enabling enforcement.
+
+Let's enable enforcement with
+
+{@include: ../_common/install-otterize-cloud.md}
+
+### Browse the lab
+You can browse the lab suing the browser to see it works as intended.
+
+### Inspect the access graph
+![Enforcement enabled](/img/quick-tutorials/shadow-mode/phase-5.png)
+
+
+## Protect Kafka
+We can use Otterize to configure Kafka ACLs and deploy mTLS certificates for its clients.
+
+## Deploy the reference lab with mTLS for Kafka and its clients
+
+```bash
+kubectl apply -n otterize-ecom-demo -f code-examples/shadow-mode/ecom-demo-mtls.yaml
 ```
 <details>
   <summary>Optional: check that the lab was deployed...</summary>
@@ -75,89 +253,67 @@ shippingservice-ff5f4d7d-qcjw8           1/1     Running   0          23m
   </div>
 </details>
 
-## Map the cluster
 
-![Discovered intents](/img/quick-tutorials/shadow-mode/phase-0.png)
+## Manage Kafka access with Otterize
 
-## Try out IBAC
-Let’s try just declaring that the Frontend intends to call the recommendation service.
+Let's connect Kafka with Otterize by applying a `KafkaServerConfig`:
+```bash
+kubectl apply -n otterize-ecom-demo -f code-examples/shadow-mode/kafkaserverconfig.yaml
+```
+<details>
+<summary>Expand to see the KafkaServerConfig</summary>
+<Tabs>
 
-We expect this will provide secure access, allowing the intended access from the Fronted while protecting the recommendation service from unintended access.
+<TabItem value="kafkaserverconfig.yaml" label="kafkaserverconfig.yaml">
 
 ```yaml
-{@include: ../..//static/code-examples/shadow-mode/phase-1.yaml}
+{@include: ../..//static/code-examples/shadow-mode/kafkaserverconfig.yaml}
 ```
 
-Apply this intents file with
-```bash
-kubectl apply -f code-examples/shadow-mode/phase-1.yaml
-```
+</TabItem>
+</Tabs>
+</details>
 
-Look at the access graph again:
+Upon applying the KafkaServerConfig, an ACL will configure Kafka to allow anonymous access all topics.
+This will be the base state, from which we will gradually roll out secure access to Kafka.
 
-![Discovered intents](/img/quick-tutorials/shadow-mode/phase-1.png)
+We can see in the access graph that the node is marked with a `Kafka` and `KSC` icons.
 
-We’re not enforcing access controls, but we can see the Frontend will still be able to call the recommendation service, and the latter would be protected from any other calls. Nice.
+![Kafka Server Config](/img/quick-tutorials/shadow-mode/KSC.png)
 
-## Declare more intents
-Let’s add another intent, this time from recommendation-service → product-catalog-service.
+## Declare Kafka specific intents
 
-```yaml
-{@include: ../..//static/code-examples/shadow-mode/phase-2.yaml}
-```
-
-Apply this intents file with
-```bash
-kubectl apply -f code-examples/shadow-mode/phase-2.yaml
-```
-
-Look at the access graph again:
-
-![Discovered intents](/img/quick-tutorials/shadow-mode/phase-2.png)
-
-What happened? The access graph is warning us that when we’ll protect the product catalog service, only the recommendation service will be able to reach it: the Frontend and the checkout service will be blocked. Good to know!
-
-Let's add the intents for the checkout-service and product-catalog-service.
+Otterize can now configure Kafka ACLs so let's go ahead and create client intents files for the services communicating with Kafka.
 
 <Tabs>
-<TabItem value="frontend" label="frontend" default>
+<TabItem value="checkoutservice" label="checkoutservice" default>
 
 ```yaml
-{@include: ../..//static/code-examples/shadow-mode/phase-3-frontend.yaml}
+{@include: ../..//static/code-examples/shadow-mode/phase-4-checkout.yaml}
 ```
 </TabItem>
-<TabItem value="checkout-service" label="checkout-service" default>
+<TabItem value="orderservice" label="orderservice" default>
 
 ```yaml
-{@include: ../..//static/code-examples/shadow-mode/phase-3-checkout.yaml}
+{@include: ../..//static/code-examples/shadow-mode/phase-4-order.yaml}
+```
+</TabItem>
+<TabItem value="paymentservice" label="paymentservice" default>
+
+```yaml
+{@include: ../..//static/code-examples/shadow-mode/phase-4-payment.yaml}
 ```
 </TabItem>
 </Tabs>
 
-Apply these intents files with
+And apply them with
+
 ```bash
-kubectl apply -f code-examples/shadow-mode/phase-3.yaml
+kubectl apply -n otterize-ecom-demo -f code-examples/shadow-mode/phase-4.yaml
 ```
 
-![Discovered intents](/img/quick-tutorials/shadow-mode/phase-3.png)
+You can verify that the reference lab still functions as intended.
 
-## Protect everything easily
-I can see how to roll out IBAC gradually: pick a service to protect, make sure its clients declare intents to call it, apply.
+In the access we can see that edges connecting to Kafka are marked with a Kafka icon.
 
-Could I also just bootstrap the whole cluster and protect it? Yes!
-
-Export all discovered intents with the Otterize CLI ([Installation instructions](/getting-started/k8s-installation#install-the-otterize-cli)).
-```bash
-otterize mapper export -n otterize-ecom-demo --output-type dir --output intents
-```
-
-And apply them
-```bash
-kubectl apply -f intents
-```
-
-Look at the access graph again:
-
-![Discovered intents](/img/quick-tutorials/shadow-mode/phase-4.png)
-
-Looks like everything is protected and nothing intended should be blocked.
+![Kafka icon](/img/quick-tutorials/shadow-mode/phase-6.png)

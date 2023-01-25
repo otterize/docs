@@ -1,0 +1,18 @@
+apiVersion: k8s.otterize.com/v1alpha2
+kind: KafkaServerConfig
+metadata:
+  name: kafkaserverconfig
+  namespace: otterize-ecom-demo
+spec:
+  service:
+    name: kafka
+  addr: kafka-headless.otterize-ecom-demo:9092
+  tls:
+    certFile: /etc/otterize-spire/svid.pem
+    keyFile: /etc/otterize-spire/key.pem
+    rootCAFile: /etc/otterize-spire/bundle.pem
+  topics:
+    - topic: "*"
+      pattern: prefix
+      clientIdentityRequired: false
+      intentsRequired: false
