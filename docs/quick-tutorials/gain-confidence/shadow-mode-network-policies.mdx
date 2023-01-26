@@ -1,6 +1,6 @@
 ---
 sidebar_position: 1
-title: Cloud walk through
+title: Shadow mode - network policies
 ---
 
 import CodeBlock from "@theme/CodeBlock";
@@ -24,17 +24,14 @@ simulating an e-commerce application.
 
 Before you start, you need a Kubernetes cluster with a [CNI](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/) that supports [NetworkPolicies](https://kubernetes.io/docs/concepts/services-networking/network-policies/).
 
-{@include: ../_common/cluster-setup.md}
+{@include: ../../_common/cluster-setup.md}
 </details>
 
-### Install Otterize enforcement=false on your cluster
+<details>
+<summary>Integrate Otterize Cloud with your cluster (enforcement=false)</summary>
 
-{@include: ../_common/install-otterize-cloud-enforcement-off.md}
-
-### Connect to Otterize Cloud
-:::danger
-Needs to be in a single step, with previous as we must make sure users are running with enforcement=false
-:::
+{@include: ../../_common/install-otterize-cloud-enforcement-off.md}
+</details>
 
 ## Deploy the reference lab
 
@@ -54,29 +51,30 @@ kubectl get pods -n otterize-ecom-demo
 ```
 The pods should all be ready and running:
 ```bash
-    NAME                                     READY   STATUS    RESTARTS      AGE
-    adservice-65494cbb9d-5lrv6               1/1     Running   0             115s
-    cartservice-6d84fc45bb-hdtwn             1/1     Running   0             115s
-    checkoutservice-5599486df-dvj9n          1/1     Running   3 (79s ago)   115s
-    currencyservice-6d64686d74-lxb7x         1/1     Running   0             115s
-    emailservice-7c6cbfbbd7-xjxlt            1/1     Running   0             115s
-    frontend-f9448d7d4-6dmnr                 1/1     Running   0             115s
-    kafka-0                                  1/1     Running   2 (83s ago)   115s
-    loadgenerator-7f6987f59-bchgm            1/1     Running   0             114s
-    orderservice-7ffdbf6df-wzzfd             1/1     Running   0             115s
-    otterize-ecom-demo-zookeeper-0           1/1     Running   0             115s
-    paymentservice-86855d78db-zjjfn          1/1     Running   0             115s
-    productcatalogservice-5944c7f666-2rjc6   1/1     Running   0             115s
-    recommendationservice-6c8d848498-zm2rm   1/1     Running   0             114s
-    redis-cart-6b79c5b497-xpms2              1/1     Running   0             115s
-    shippingservice-85694cb9bd-v54xp         1/1     Running   0             114s
+NAME                                     READY   STATUS    RESTARTS      AGE
+adservice-65494cbb9d-5lrv6               1/1     Running   0             115s
+cartservice-6d84fc45bb-hdtwn             1/1     Running   0             115s
+checkoutservice-5599486df-dvj9n          1/1     Running   3 (79s ago)   115s
+currencyservice-6d64686d74-lxb7x         1/1     Running   0             115s
+emailservice-7c6cbfbbd7-xjxlt            1/1     Running   0             115s
+frontend-f9448d7d4-6dmnr                 1/1     Running   0             115s
+kafka-0                                  1/1     Running   2 (83s ago)   115s
+loadgenerator-7f6987f59-bchgm            1/1     Running   0             114s
+orderservice-7ffdbf6df-wzzfd             1/1     Running   0             115s
+otterize-ecom-demo-zookeeper-0           1/1     Running   0             115s
+paymentservice-86855d78db-zjjfn          1/1     Running   0             115s
+productcatalogservice-5944c7f666-2rjc6   1/1     Running   0             115s
+recommendationservice-6c8d848498-zm2rm   1/1     Running   0             114s
+redis-cart-6b79c5b497-xpms2              1/1     Running   0             115s
+shippingservice-85694cb9bd-v54xp         1/1     Running   0             114s
 ```
 
 
 </div>
 </details>
 
-### Browse the lab
+<details>
+<summary>Optional: Browse the lab</summary>
 <Tabs groupId="frontend-addr">
 <TabItem value="k8s" label="K8s">
 
@@ -104,6 +102,7 @@ http://localhost:8080
 Go ahead and browse to the URL above to "shop" and get a feel for the reference lab's behavior.
 </TabItem>
 </Tabs>
+</details>
 
 ## Map the cluster
 
@@ -119,7 +118,7 @@ Let’s try just declaring that the Frontend intends to call the recommendation 
 We expect this will provide secure access, allowing the intended access from the Fronted while protecting the recommendation service from unintended access.
 
 ```yaml
-{@include: ../..//static/code-examples/shadow-mode/phase-1.yaml}
+{@include: ../../..//static/code-examples/shadow-mode/phase-1.yaml}
 ```
 
 Apply this intents file with
@@ -137,7 +136,7 @@ We’re not enforcing access controls, but we can see the Frontend will still be
 Let’s add another intent, this time from recommendation-service → product-catalog-service.
 
 ```yaml
-{@include: ../..//static/code-examples/shadow-mode/phase-2.yaml}
+{@include: ../../..//static/code-examples/shadow-mode/phase-2.yaml}
 ```
 
 Apply this intents file with
@@ -157,13 +156,13 @@ Let's add the intents for the checkout-service and product-catalog-service.
 <TabItem value="frontend" label="frontend" default>
 
 ```yaml
-{@include: ../..//static/code-examples/shadow-mode/phase-3-frontend.yaml}
+{@include: ../../..//static/code-examples/shadow-mode/phase-3-frontend.yaml}
 ```
 </TabItem>
 <TabItem value="checkout-service" label="checkout-service" default>
 
 ```yaml
-{@include: ../..//static/code-examples/shadow-mode/phase-3-checkout.yaml}
+{@include: ../../..//static/code-examples/shadow-mode/phase-3-checkout.yaml}
 ```
 </TabItem>
 </Tabs>
@@ -206,117 +205,13 @@ Otterize Cloud's shadow mode allowed us to gain confidence in the effects of app
 
 Let's enable enforcement with
 
-{@include: ../_common/install-otterize-cloud.md}
+{@include: ../../_common/install-otterize-cloud.md}
 
 ### Browse the lab
-You can browse the lab suing the browser to see it works as intended.
+You can browse the lab using the browser to see it works as intended.
 
 ### Inspect the access graph
 ![Enforcement enabled](/img/quick-tutorials/shadow-mode/phase-5.png)
-
-
-## Protect Kafka
-We can use Otterize to configure Kafka ACLs and deploy mTLS certificates for its clients.
-
-### Deploy the reference lab with mTLS for Kafka and its clients
-
-```bash
-kubectl apply -n otterize-ecom-demo -f code-examples/shadow-mode/ecom-demo-mtls.yaml
-```
-<details>
-  <summary>Optional: check that the lab was deployed...</summary>
-  <div>
-
-
-To see all the pods in the lab:
-```bash
-kubectl get pods -n otterize-ecom-demo
-```
-The pods should all be ready and running:
-```bash
-NAME                                     READY   STATUS    RESTARTS   AGE
-adservice-694f4ff98-cz4nn                1/1     Running   0          23m
-cartservice-85f8bc44fd-45cbk             1/1     Running   0          23m
-checkoutservice-8fc47bbbd-9lhfv          1/1     Running   0          23m
-currencyservice-597bdf576b-8hftc         1/1     Running   0          23m
-emailservice-d5c6f74dd-qlwc4             1/1     Running   0          23m
-frontend-7ffbf49884-j9rhz                1/1     Running   0          23m
-loadgenerator-65779994db-tgdxk           1/1     Running   0          23m
-paymentservice-76b9c8b87d-ktfcd          1/1     Running   0          23m
-productcatalogservice-6969d4f5fd-xdw99   1/1     Running   0          23m
-recommendationservice-58798d5c8-2f4rz    1/1     Running   0          23m
-redis-cart-6f65887b5d-xwpz5              1/1     Running   0          23m
-shippingservice-ff5f4d7d-qcjw8           1/1     Running   0          23m
-```
-
-
-  </div>
-</details>
-
-
-### Manage Kafka access with Otterize
-
-Let's connect Kafka with Otterize by applying a `KafkaServerConfig`:
-```bash
-kubectl apply -n otterize-ecom-demo -f code-examples/shadow-mode/kafkaserverconfig.yaml
-```
-<details>
-<summary>Expand to see the KafkaServerConfig</summary>
-<Tabs>
-
-<TabItem value="kafkaserverconfig.yaml" label="kafkaserverconfig.yaml">
-
-```yaml
-{@include: ../..//static/code-examples/shadow-mode/kafkaserverconfig.yaml}
-```
-
-</TabItem>
-</Tabs>
-</details>
-
-Upon applying the KafkaServerConfig, an ACL will configure Kafka to allow anonymous access all topics.
-This will be the base state, from which we will gradually roll out secure access to Kafka.
-
-We can see in the access graph that the node is marked with a `Kafka` and `KSC` icons.
-
-![Kafka Server Config](/img/quick-tutorials/shadow-mode/KSC.png)
-
-### Declare Kafka specific intents
-
-Otterize can now configure Kafka ACLs so let's go ahead and create client intents files for the services communicating with Kafka.
-
-<Tabs>
-<TabItem value="checkoutservice" label="checkoutservice" default>
-
-```yaml
-{@include: ../..//static/code-examples/shadow-mode/phase-4-checkout.yaml}
-```
-</TabItem>
-<TabItem value="orderservice" label="orderservice" default>
-
-```yaml
-{@include: ../..//static/code-examples/shadow-mode/phase-4-order.yaml}
-```
-</TabItem>
-<TabItem value="paymentservice" label="paymentservice" default>
-
-```yaml
-{@include: ../..//static/code-examples/shadow-mode/phase-4-payment.yaml}
-```
-</TabItem>
-</Tabs>
-
-And apply them with
-
-```bash
-kubectl apply -n otterize-ecom-demo -f code-examples/shadow-mode/phase-4.yaml
-```
-
-You can verify that the reference lab still functions as intended.
-
-In the access we can see that edges connecting to Kafka are marked with a Kafka icon.
-
-![Kafka icon](/img/quick-tutorials/shadow-mode/phase-6.png)
 
 ## What's next
 

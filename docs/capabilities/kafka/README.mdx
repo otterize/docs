@@ -101,7 +101,6 @@ with permissions for Otterize to configure ACLs:
  helm repo add bitnami https://charts.bitnami.com/bitnami
  helm repo update
  helm install -n kafka \
- --version 14.x.x \
  -f https://docs.otterize.com/code-examples/kafka-mtls/helm/values.yaml --create-namespace kafka bitnami/kafka
  ```
 You can watch for all pods to be `Ready` using `kubectl get pods -n kafka -w`.

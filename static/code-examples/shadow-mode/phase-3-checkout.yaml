@@ -7,4 +7,3 @@ spec:
     name: checkoutservice
   calls:
     - name: productcatalogservice
-      type: http

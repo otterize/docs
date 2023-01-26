@@ -7,6 +7,4 @@ spec:
     name: frontend
   calls:
     - name: recommendationservice
-      type: http
     - name: productcatalogservice
-      type: http

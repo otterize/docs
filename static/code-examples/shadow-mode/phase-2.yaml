@@ -7,4 +7,3 @@ spec:
     name: recommendationservice
   calls:
     - name: productcatalogservice
-      type: http

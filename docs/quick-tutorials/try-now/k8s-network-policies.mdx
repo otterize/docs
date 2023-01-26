@@ -25,7 +25,7 @@ In this tutorial, we will:
 
 Before you start, you need a Kubernetes cluster with a [CNI](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/) that supports [NetworkPolicies](https://kubernetes.io/docs/concepts/services-networking/network-policies/).
 
-{@include: ../_common/cluster-setup.md}
+{@include: ../../_common/cluster-setup.md}
 </details>
 
 ## Install Otterize on your cluster
@@ -34,7 +34,7 @@ Before you start, you need a Kubernetes cluster with a [CNI](https://kubernetes.
 You can skip this section if Otterize is already installed in your cluster.
 :::
 
-{@include: ../_common/install-otterize.md}
+{@include: ../../_common/install-otterize.md}
 
 
 ## Deploy the server, client, client-other
@@ -48,7 +48,7 @@ Our simple example consists of three pods: an HTTP server and two clients that c
 <TabItem value="namespace.yaml" label="namespace.yaml" default>
 
 ```yaml
-{@include: ../../static/code-examples/automate-network-policies/namespace.yaml}
+{@include: ../../../static/code-examples/automate-network-policies/namespace.yaml}
 ```
 
 </TabItem>
@@ -56,23 +56,23 @@ Our simple example consists of three pods: an HTTP server and two clients that c
 <TabItem value="server.yaml" label="server.yaml" default>
 
 ```yaml
-{@include: ../../static/code-examples/automate-network-policies/server-deployment.yaml}
+{@include: ../../../static/code-examples/automate-network-policies/server-deployment.yaml}
 ---
-{@include: ../../static/code-examples/automate-network-policies/server-service.yaml}
+{@include: ../../../static/code-examples/automate-network-policies/server-service.yaml}
 ```
 
 </TabItem>
 <TabItem value="client.yaml" label="client.yaml" default>
 
 ```yaml
-{@include: ../../static/code-examples/automate-network-policies/client-deployment.yaml}
+{@include: ../../../static/code-examples/automate-network-policies/client-deployment.yaml}
 ```
 
 </TabItem>
 <TabItem value="client-other.yaml" label="client-other.yaml" default>
 
 ```yaml
-{@include: ../../static/code-examples/automate-network-policies/client-other-deployment.yaml}
+{@include: ../../../static/code-examples/automate-network-policies/client-other-deployment.yaml}
 ```
 
 </TabItem>
@@ -101,6 +101,13 @@ client-other-f56d65d7f-z2wg2   1/1     Running   0          8s
 server-6bb4784ccc-wtz7f        1/1     Running   0          8s
 ```
 </details>
+
+The network layout for the deployed workloads looks as follows:
+![Network policies](/img/quick-tutorials/network-policies/base.png)
+
+:::tip
+Check out this [tutorial](/quick-tutorials/try-now/k8s-network-mapper) to learn how you can use [Otterize Cloud](/otterize-cloud) to get these kind of visualizations.
+:::
 
 Let's monitor both client attempts to call the server with additional terminal windows,
 so we can see the effects of our changes in real time.
@@ -146,7 +153,7 @@ Otterize will add a network policy to allow the intended calls
 
 1. Here is the `intents.yaml` declaration of the client, which we will apply below:
 ```yaml
-{@include: ../../static/code-examples/automate-network-policies/intents.yaml}
+{@include: ../../../static/code-examples/automate-network-policies/intents.yaml}
 ```
 
 Keep an eye on the logs being tailed in the **[client-other]** terminal window,
@@ -198,6 +205,15 @@ default-deny-ingress                           <none>                           
 :::tip Done!
 Otterize did its job of both protecting *and* allowing intended access.
 :::
+
+### Visualize using Otterize Cloud
+Otterize cloud allows you to visualize and understand how your intents shape network policies and what their effects are. In this case we can see **client** can make secure calls to **server** and that **client-other** is blocked.
+![Network policies](/img/quick-tutorials/network-policies/protected.png)
+
+:::tip
+Otterize Cloud can help you gain confidence when deploying network policies using intents. With its [shadow mode](/quick-tutorials/gain-confidence/shadow-mode-network-policies) you can see how workload communication is about to be affected by network policies (and more) before actually rolling out enforcement.
+:::
+
 ## What did we accomplish?
 
 - Controlling access through network policies no longer means touching network policies at all.
