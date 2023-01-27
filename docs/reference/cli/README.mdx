@@ -4,9 +4,9 @@ title: CLI
 ---
 
 The Otterize command line interface (CLI) offers the following capabilities:
-- Interact with the [Otterize network mapper](/quick-tutorials/k8s-network-mapper).
-- Transform [intents files](/intents-and-intents-files/#intents-file-formats) from plain YAML format to Kubernetes custom resource YAML format.
-- (Coming soon) Interact with the Otterize Cloud, through its API.
+- [Interact with](#network-mapper) the [Otterize network mapper](/quick-tutorials/k8s-network-mapper) running in a Kubernetes cluster.
+- [Transform](#otterize-intents-convert--f-path) [intents files](/intents-and-intents-files/#intents-file-formats) from plain YAML format to Kubernetes custom resource YAML format.
+- Interact with the Otterize Cloud, through its REST API.
 
 This CLI is open-source software. To see its source or build it yourself,
 see [https://github.com/otterize/otterize-cli](https://github.com/otterize/otterize-cli).
@@ -26,51 +26,6 @@ easy to access on the fly.
 - `otterize OBJECT OPERATION -h` or `otterize OBJECT OPERATION --help` offers help on the specified operation
 
 `otterize completion` offers instruction for generating command completions in various shells.
-
-## Intents
-
-### `otterize intents convert [-f PATH]`
-
-Convert client intents files in plain YAML format to Kubernetes ClientIntents resource format.
-
-#### Options
-
-| Name | Default | Description |
-| --- | --- | --- |
-| `-f` or `--filename` | `'.'` | The client intents filename, or a directory containing client intents files. |
-
-#### Returns
-
-Here's the result of converting a directory containing two client intents file in plain YAML format.
-The result is YAML describing two Kubernetes resources separated with the YAML `---` separator.
-
-```shell
-apiVersion: k8s.otterize.com/v1alpha2
-kind: ClientIntents
-metadata:
-  name: cartservice
-  namespace: otterize-ecom-demo
-spec:
-  service:
-    name: cartservice
-  calls:
-    - name: redis-cart
-      type: http
----
-apiVersion: k8s.otterize.com/v1alpha2
-kind: ClientIntents
-metadata:
-  name: checkoutservice
-  namespace: otterize-ecom-demo
-spec:
-  service:
-    name: checkoutservice
-  calls:
-    - name: cartservice
-      type: http
-    - name: currencyservice
-      type: http
-```
 
 ## Network mapper
 
@@ -173,4 +128,704 @@ spec:
       type: http
     - name: currencyservice
       type: http
+```
+
+:::danger
+Document global options
+:::
+
+## Login
+
+### `otterize login [--switch-account] [--switch-org]`
+
+Login to Otterize Cloud using a web browser.
+
+If `--switch-account` is specified, re-authenticating is forced in the browser, so a new user can be chosen.
+
+If `--switch-org` is specified, and the current user belongs to multiple org, the new org can be chosen interactively.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| `--switch-account` |  | Login to a different user account than the one currently set. |
+| `--switch-org` |  | Switch to a different organization than the one currently set. |
+
+#### Returns
+
+Outputs login process progress messages, including registering a user if needed, creating an org if needed,
+and setting the user and org to use by default in other commands.
+
+```shell
+Please login to Otterize using your browser: https://...
+Login completed successfully! logged in as: my-username@example.com
+
+Querying user info from Otterize server
+Logged in as Otterize user usr_1234567 (my-username@example.com)
+Only 1 organization found - auto-selecting this organization for use.
+Selected organization org_1234567
+To change your organization selection, log-in again with --switch-org.
+
+```
+
+## API version
+
+### `otterize api-version`
+
+Queries the Otterize Cloud for the current API version (e.g. `v1`) and revision (hash of the current API definition).
+
+#### Returns
+
+Returns the current version and revision of the Otterize REST API, as well as the version and revision against which this CLI is built.
+
+Note that the Otterize CLI is mostly a thin but useful utility for invoking the Otterize Cloud REST API, so if the Cloud API has changed since the CLI was built, the CLI might be missing some Cloud capabilities, and some CLI commands might fail.
+
+```shell
+Current Cloud API:
+    version: v1
+    revision: 465ba4174008682f54f99e37d0b7791148aade14
+This CLI was built against:
+    version: v1
+    revision: 91efb6f8acb98985fc2b993baa8d279049c8b302
+
+Caution: this CLI was built with a different version/revision of the Otterize Cloud API.
+Some Cloud CLI commands may fail.
+Upgrade your CLI to the latest build to resolve this issue.
+```
+
+## Clusters
+
+### `otterize clusters list [_OPTIONS_]`
+
+ACTION DESCRIPTION.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+
+#### Returns
+
+RESULTS DESCRIPTION
+
+```shell
+EXAMPLE
+```
+
+### `otterize clusters get [_OPTIONS_]`
+
+ACTION DESCRIPTION.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+
+#### Returns
+
+RESULTS DESCRIPTION
+
+```shell
+EXAMPLE
+```
+
+### `otterize clusters create [_OPTIONS_]`
+
+ACTION DESCRIPTION.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+
+#### Returns
+
+RESULTS DESCRIPTION
+
+```shell
+EXAMPLE
+```
+
+### `otterize clusters update [_OPTIONS_]`
+
+ACTION DESCRIPTION.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+
+#### Returns
+
+RESULTS DESCRIPTION
+
+```shell
+EXAMPLE
+```
+
+### `otterize clusters delete [_OPTIONS_]`
+
+ACTION DESCRIPTION.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+
+#### Returns
+
+RESULTS DESCRIPTION
+
+```shell
+EXAMPLE
+```
+
+## Environments
+
+### `otterize environments list [_OPTIONS_]`
+
+ACTION DESCRIPTION.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+
+#### Returns
+
+RESULTS DESCRIPTION
+
+```shell
+EXAMPLE
+```
+
+### `otterize environments get [_OPTIONS_]`
+
+ACTION DESCRIPTION.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+
+#### Returns
+
+RESULTS DESCRIPTION
+
+```shell
+EXAMPLE
+```
+
+### `otterize environments create [_OPTIONS_]`
+
+ACTION DESCRIPTION.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+
+#### Returns
+
+RESULTS DESCRIPTION
+
+```shell
+EXAMPLE
+```
+
+### `otterize environments update [_OPTIONS_]`
+
+ACTION DESCRIPTION.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+
+#### Returns
+
+RESULTS DESCRIPTION
+
+```shell
+EXAMPLE
+```
+
+### `otterize environments delete [_OPTIONS_]`
+
+ACTION DESCRIPTION.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+
+#### Returns
+
+RESULTS DESCRIPTION
+
+```shell
+EXAMPLE
+```
+
+## Integrations
+
+### `otterize integrations list [_OPTIONS_]`
+
+ACTION DESCRIPTION.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+
+#### Returns
+
+RESULTS DESCRIPTION
+
+```shell
+EXAMPLE
+```
+
+### `otterize integrations get [_OPTIONS_]`
+
+ACTION DESCRIPTION.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+
+#### Returns
+
+RESULTS DESCRIPTION
+
+```shell
+EXAMPLE
+```
+
+### `otterize integrations create [_OPTIONS_]`
+
+ACTION DESCRIPTION.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+
+#### Returns
+
+RESULTS DESCRIPTION
+
+```shell
+EXAMPLE
+```
+
+### `otterize integrations update [_OPTIONS_]`
+
+ACTION DESCRIPTION.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+
+#### Returns
+
+RESULTS DESCRIPTION
+
+```shell
+EXAMPLE
+```
+
+### `otterize integrations delete [_OPTIONS_]`
+
+ACTION DESCRIPTION.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+
+#### Returns
+
+RESULTS DESCRIPTION
+
+```shell
+EXAMPLE
+```
+
+## Intents
+
+### `otterize intents convert [-f PATH]`
+
+Convert client intents files in plain YAML format to Kubernetes ClientIntents resource format.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| `-f` or `--filename` | `'.'` | The client intents filename, or a directory containing client intents files. |
+
+#### Returns
+
+Here's the result of converting a directory containing two client intents file in plain YAML format.
+The result is YAML describing two Kubernetes resources separated with the YAML `---` separator.
+
+```shell
+apiVersion: k8s.otterize.com/v1alpha2
+kind: ClientIntents
+metadata:
+  name: cartservice
+  namespace: otterize-ecom-demo
+spec:
+  service:
+    name: cartservice
+  calls:
+    - name: redis-cart
+      type: http
+---
+apiVersion: k8s.otterize.com/v1alpha2
+kind: ClientIntents
+metadata:
+  name: checkoutservice
+  namespace: otterize-ecom-demo
+spec:
+  service:
+    name: checkoutservice
+  calls:
+    - name: cartservice
+      type: http
+    - name: currencyservice
+      type: http
+```
+
+### `otterize intents list [_OPTIONS_]`
+
+ACTION DESCRIPTION.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+
+#### Returns
+
+RESULTS DESCRIPTION
+
+```shell
+EXAMPLE
+```
+
+### `otterize intents get [_OPTIONS_]`
+
+ACTION DESCRIPTION.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+
+#### Returns
+
+RESULTS DESCRIPTION
+
+```shell
+EXAMPLE
+```
+
+## Invites
+
+### `otterize invites list [_OPTIONS_]`
+
+ACTION DESCRIPTION.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+
+#### Returns
+
+RESULTS DESCRIPTION
+
+```shell
+EXAMPLE
+```
+
+### `otterize invites create [_OPTIONS_]`
+
+ACTION DESCRIPTION.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+
+#### Returns
+
+RESULTS DESCRIPTION
+
+```shell
+EXAMPLE
+```
+
+### `otterize invites accept [_OPTIONS_]`
+
+ACTION DESCRIPTION.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+
+#### Returns
+
+RESULTS DESCRIPTION
+
+```shell
+EXAMPLE
+```
+
+### `otterize invites delete [_OPTIONS_]`
+
+ACTION DESCRIPTION.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+
+#### Returns
+
+RESULTS DESCRIPTION
+
+```shell
+EXAMPLE
+```
+
+## Namespaces
+
+### `otterize namespaces list [_OPTIONS_]`
+
+ACTION DESCRIPTION.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+
+#### Returns
+
+RESULTS DESCRIPTION
+
+```shell
+EXAMPLE
+```
+
+### `otterize namespaces get [_OPTIONS_]`
+
+ACTION DESCRIPTION.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+
+#### Returns
+
+RESULTS DESCRIPTION
+
+```shell
+EXAMPLE
+```
+
+### `otterize integrations update [_OPTIONS_]`
+
+ACTION DESCRIPTION.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+
+#### Returns
+
+RESULTS DESCRIPTION
+
+```shell
+EXAMPLE
+```
+
+## Organizations
+
+### `otterize organizations list [_OPTIONS_]`
+
+ACTION DESCRIPTION.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+
+#### Returns
+
+RESULTS DESCRIPTION
+
+```shell
+EXAMPLE
+```
+
+### `otterize organizations get [_OPTIONS_]`
+
+ACTION DESCRIPTION.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+
+#### Returns
+
+RESULTS DESCRIPTION
+
+```shell
+EXAMPLE
+```
+
+### `otterize organizations create [_OPTIONS_]`
+
+ACTION DESCRIPTION.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+
+#### Returns
+
+RESULTS DESCRIPTION
+
+```shell
+EXAMPLE
+```
+
+### `otterize organizations update [_OPTIONS_]`
+
+ACTION DESCRIPTION.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+
+#### Returns
+
+RESULTS DESCRIPTION
+
+```shell
+EXAMPLE
+```
+
+## Services
+
+### `otterize services list [_OPTIONS_]`
+
+ACTION DESCRIPTION.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+
+#### Returns
+
+RESULTS DESCRIPTION
+
+```shell
+EXAMPLE
+```
+
+### `otterize services get [_OPTIONS_]`
+
+ACTION DESCRIPTION.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+
+#### Returns
+
+RESULTS DESCRIPTION
+
+```shell
+EXAMPLE
+```
+
+## Users
+
+### `otterize services list [_OPTIONS_]`
+
+ACTION DESCRIPTION.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+
+#### Returns
+
+RESULTS DESCRIPTION
+
+```shell
+EXAMPLE
+```
+
+### `otterize services get [_OPTIONS_]`
+
+ACTION DESCRIPTION.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+
+#### Returns
+
+RESULTS DESCRIPTION
+
+```shell
+EXAMPLE
 ```
