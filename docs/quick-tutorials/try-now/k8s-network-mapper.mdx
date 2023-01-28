@@ -21,15 +21,25 @@ Before you start, you need to have a Kubernetes cluster. Having a cluster with a
 {@include: ../../_common/cluster-setup.md}
 </details>
 
-## Install the network mapper on your cluster
-{@include: ../../_common/install-otterize-network-mapper.md}
+<details>
+<summary>Install Otterize on your cluster</summary>
 
-## Connect to Otterize Cloud (optional)
+:::note
+You can skip this section if Otterize is already installed in your cluster.
+:::
+
+{@include: ../../_common/install-otterize.md}
+
+</details>
+
+<details>
+<summary>Connect to Otterize Cloud (optional)</summary>
 Upgrade/install your Otterize OSS deployment using the *client id* and *client secret* generated for your integration.
 
 {@include: ../../_common/install-otterize-cloud.md}
 
 For a detailed instructions follow this [guide](/getting-started/connect-to-cloud#integrate-your-cluster)
+</details>
 
 ## Map the cluster
 
