@@ -113,9 +113,9 @@ Locate your deployment in the [access graph](https://app.staging.otterize.com/ac
 The access graph allows you to quickly inspect your network, map services communication and prepare for gradual rollout using its **shadow mode** features.
 
 ## Try out IBAC with shadow mode
-Let’s try just declaring that the Frontend intends to call the recommendation service.
+Let’s declare that the `frontend` intends to call the `recommendationservice`.
 
-We expect this will provide secure access, allowing the intended access from the Fronted while protecting the recommendation service from unintended access.
+We expect this will provide secure access, allowing the intended access from the `fronted` while protecting the `recommendationservice` from unintended access.
 
 ```yaml
 {@include: ../../..//static/code-examples/shadow-mode/phase-1.yaml}
@@ -130,10 +130,10 @@ Look at the access graph again:
 
 ![Discovered intents](/img/quick-tutorials/shadow-mode/phase-1.png)
 
-We’re not enforcing access controls, but we can see the Frontend will still be able to call the recommendation service, and the latter would be protected from any other calls. Nice.
+We’re not enforcing access controls, but we can see the `frontend` will still be able to call the `recommendationservice`, and the latter would be protected from any other calls.
 
 ### Declare more intents
-Let’s add another intent, this time from recommendation-service → product-catalog-service.
+Let’s add another intent, this time from `recommendationservice` to `productcatalogservice`.
 
 ```yaml
 {@include: ../../..//static/code-examples/shadow-mode/phase-2-only.yaml}
@@ -148,9 +148,9 @@ Look at the access graph again:
 
 ![Discovered intents](/img/quick-tutorials/shadow-mode/phase-2.png)
 
-What happened? The access graph is warning us that when we’ll protect the product catalog service, only the recommendation service will be able to reach it: the Frontend and the checkout service will be blocked. Good to know!
+What happened? The access graph is warning us that when we’ll protect the `productcatalogservice`, only the `recommendationservice` will be able to reach it and the `frontend` and the `checkoutservice` will be blocked.
 
-Let's add the intents for the checkout-service and product-catalog-service.
+Let's add the required intents for the `checkoutservice` and `frontend`.
 
 <Tabs>
 <TabItem value="frontend" label="frontend" default>
@@ -174,12 +174,12 @@ kubectl apply -n otterize-ecom-demo -f code-examples/shadow-mode/phase-3.yaml
 
 ![Discovered intents](/img/quick-tutorials/shadow-mode/phase-3.png)
 
+We can see how to roll out IBAC gradually: pick a service to protect, make sure its clients declare intents to call it and apply. The access graph and shadow mode allow us to gain confidence by highlighting any required configuration changes.
+
 ### Protect everything easily
-I can see how to roll out IBAC gradually: pick a service to protect, make sure its clients declare intents to call it, apply.
+Could we also bootstrap the whole cluster and protect it? Yes!
 
-Could I also just bootstrap the whole cluster and protect it? Yes!
-
-Export all discovered intents with the Otterize CLI ([Installation instructions](/getting-started/k8s-installation#install-the-otterize-cli)).
+You can use the Otterize CLI ([Installation instructions](/getting-started/k8s-installation#install-the-otterize-cli)) to export all discovered intents with the following command:
 ```bash
 otterize mapper export -n otterize-ecom-demo --output-type dir --output intents
 ```
@@ -201,7 +201,8 @@ Look at the access graph again:
 Looks like everything is protected and nothing intended should be blocked.
 
 ## Enable enforcement
-Otterize Cloud's shadow mode allowed us to gain confidence in the effects of applying network policies using client intents and we can move on to enabling enforcement.
+Otterize Cloud's shadow mode allowed us to gain confidence in the effects of
+applying network policies using client intents and we can move on to enabling enforcement.
 
 Let's enable enforcement with
 
@@ -214,10 +215,7 @@ You can browse the lab using the browser to see it works as intended.
 ![Enforcement enabled](/img/quick-tutorials/shadow-mode/phase-5.png)
 
 ## What's next
-
-:::danger
-To complete
-:::
+- Learn how to [manage secure access for Kafka](/quick-tutorials/gain-confidence/visualize-kafka-protection) using the demo lab tutorial.
 
 ## Teardown
 

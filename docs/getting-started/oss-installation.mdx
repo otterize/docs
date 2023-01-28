@@ -18,6 +18,34 @@ Before you start, you need to have a Kubernetes cluster with a [CNI](https://kub
 
 ### Upgrade Otterize
 {@include: ../_common/upgrade-otterize.md}
+
+## Connect Otterize OSS to Otterize Cloud
+To connect Otterize OSS to Otterize Cloud you will need to [login](https://app.otterize.com), create a cluster, and follow the instructions.
+
+The Otterize Cloud will provide you with a *client id* and a *client secret* which you will need to run the following command:
+<Tabs>
+<TabItem value="enforcement-disabled" label="Enforcement disabled" default>
+
+```shell
+helm upgrade --install otterize otterize/otterize-kubernetes \
+-n otterize-system --create-namespace \
+--set global.otterizeCloud.credentials.clientId=client_id \
+--set global.otterizeCloud.credentials.clientSecret=client_secret \
+--set intentsOperator.operator.enableEnforcement=false
+```
+</TabItem>
+<TabItem value="enforcement-enabled" label="Enforcement enabled" default>
+
+```shell
+helm upgrade --install otterize otterize/otterize-kubernetes \
+-n otterize-system --create-namespace \
+--set global.otterizeCloud.credentials.clientId=client_id \
+--set global.otterizeCloud.credentials.clientSecret=client_secret
+```
+</TabItem>
+</Tabs>
+
+
 ## Install the Otterize CLI
 
 To install (or upgrade) the Otterize CLI run
