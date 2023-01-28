@@ -4,11 +4,11 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: kafka
-  namespace: "otterize-ecom-demo"
+  namespace: "otterize-ecom-kafka-demo"
   labels:
     app.kubernetes.io/name: kafka
     helm.sh/chart: kafka-20.0.4
-    app.kubernetes.io/instance: otterize-ecom-demo
+    app.kubernetes.io/instance: otterize-ecom-kafka-demo
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: kafka
   annotations:
@@ -19,11 +19,11 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: zookeeper-scripts
-  namespace: otterize-ecom-demo
+  namespace: otterize-ecom-kafka-demo
   labels:
     app.kubernetes.io/name: zookeeper
     helm.sh/chart: zookeeper-11.0.3
-    app.kubernetes.io/instance: otterize-ecom-demo
+    app.kubernetes.io/instance: otterize-ecom-kafka-demo
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: zookeeper
 data:
@@ -54,11 +54,11 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: kafka-scripts
-  namespace: "otterize-ecom-demo"
+  namespace: "otterize-ecom-kafka-demo"
   labels:
     app.kubernetes.io/name: kafka
     helm.sh/chart: kafka-20.0.4
-    app.kubernetes.io/instance: otterize-ecom-demo
+    app.kubernetes.io/instance: otterize-ecom-kafka-demo
     app.kubernetes.io/managed-by: Helm
 data:
   setup.sh: |-
@@ -91,11 +91,11 @@ apiVersion: v1
 kind: Service
 metadata:
   name: zookeeper-headless
-  namespace: otterize-ecom-demo
+  namespace: otterize-ecom-kafka-demo
   labels:
     app.kubernetes.io/name: zookeeper
     helm.sh/chart: zookeeper-11.0.3
-    app.kubernetes.io/instance: otterize-ecom-demo
+    app.kubernetes.io/instance: otterize-ecom-kafka-demo
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: zookeeper
 spec:
@@ -114,7 +114,7 @@ spec:
       targetPort: election
   selector:
     app.kubernetes.io/name: zookeeper
-    app.kubernetes.io/instance: otterize-ecom-demo
+    app.kubernetes.io/instance: otterize-ecom-kafka-demo
     app.kubernetes.io/component: zookeeper
 ---
 # Source: lab/charts/kafka/charts/zookeeper/templates/svc.yaml
@@ -122,11 +122,11 @@ apiVersion: v1
 kind: Service
 metadata:
   name: zookeeper
-  namespace: otterize-ecom-demo
+  namespace: otterize-ecom-kafka-demo
   labels:
     app.kubernetes.io/name: zookeeper
     helm.sh/chart: zookeeper-11.0.3
-    app.kubernetes.io/instance: otterize-ecom-demo
+    app.kubernetes.io/instance: otterize-ecom-kafka-demo
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: zookeeper
 spec:
@@ -145,7 +145,7 @@ spec:
       targetPort: election
   selector:
     app.kubernetes.io/name: zookeeper
-    app.kubernetes.io/instance: otterize-ecom-demo
+    app.kubernetes.io/instance: otterize-ecom-kafka-demo
     app.kubernetes.io/component: zookeeper
 ---
 # Source: lab/charts/kafka/templates/svc-headless.yaml
@@ -153,11 +153,11 @@ apiVersion: v1
 kind: Service
 metadata:
   name: kafka-headless
-  namespace: "otterize-ecom-demo"
+  namespace: "otterize-ecom-kafka-demo"
   labels:
     app.kubernetes.io/name: kafka
     helm.sh/chart: kafka-20.0.4
-    app.kubernetes.io/instance: otterize-ecom-demo
+    app.kubernetes.io/instance: otterize-ecom-kafka-demo
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: kafka
 spec:
@@ -175,7 +175,7 @@ spec:
       targetPort: kafka-internal
   selector:
     app.kubernetes.io/name: kafka
-    app.kubernetes.io/instance: otterize-ecom-demo
+    app.kubernetes.io/instance: otterize-ecom-kafka-demo
     app.kubernetes.io/component: kafka
 ---
 # Source: lab/charts/kafka/templates/svc.yaml
@@ -183,11 +183,11 @@ apiVersion: v1
 kind: Service
 metadata:
   name: kafka
-  namespace: "otterize-ecom-demo"
+  namespace: "otterize-ecom-kafka-demo"
   labels:
     app.kubernetes.io/name: kafka
     helm.sh/chart: kafka-20.0.4
-    app.kubernetes.io/instance: otterize-ecom-demo
+    app.kubernetes.io/instance: otterize-ecom-kafka-demo
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: kafka
 spec:
@@ -201,7 +201,7 @@ spec:
       nodePort: null
   selector:
     app.kubernetes.io/name: kafka
-    app.kubernetes.io/instance: otterize-ecom-demo
+    app.kubernetes.io/instance: otterize-ecom-kafka-demo
     app.kubernetes.io/component: kafka
 ---
 # Source: lab/templates/adservice.yaml
@@ -209,7 +209,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: adservice
-  namespace: otterize-ecom-demo
+  namespace: otterize-ecom-kafka-demo
 spec:
   type: ClusterIP
   selector:
@@ -224,7 +224,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: cartservice
-  namespace: otterize-ecom-demo
+  namespace: otterize-ecom-kafka-demo
 spec:
   type: ClusterIP
   selector:
@@ -239,7 +239,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: checkoutservice
-  namespace: otterize-ecom-demo
+  namespace: otterize-ecom-kafka-demo
 spec:
   type: ClusterIP
   selector:
@@ -254,7 +254,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: currencyservice
-  namespace: otterize-ecom-demo
+  namespace: otterize-ecom-kafka-demo
 spec:
   type: ClusterIP
   selector:
@@ -269,7 +269,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: emailservice
-  namespace: otterize-ecom-demo
+  namespace: otterize-ecom-kafka-demo
 spec:
   type: ClusterIP
   selector:
@@ -287,7 +287,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: frontend
-  namespace: otterize-ecom-demo
+  namespace: otterize-ecom-kafka-demo
 spec:
   type: ClusterIP
   selector:
@@ -302,7 +302,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: frontend-external
-  namespace: otterize-ecom-demo
+  namespace: otterize-ecom-kafka-demo
 spec:
   type: LoadBalancer
   selector:
@@ -317,7 +317,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: orderservice
-  namespace: otterize-ecom-demo
+  namespace: otterize-ecom-kafka-demo
 spec:
   type: ClusterIP
   selector:
@@ -332,7 +332,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: paymentservice
-  namespace: otterize-ecom-demo
+  namespace: otterize-ecom-kafka-demo
 spec:
   type: ClusterIP
   selector:
@@ -347,7 +347,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: productcatalogservice
-  namespace: otterize-ecom-demo
+  namespace: otterize-ecom-kafka-demo
 spec:
   type: ClusterIP
   selector:
@@ -362,7 +362,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: recommendationservice
-  namespace: otterize-ecom-demo
+  namespace: otterize-ecom-kafka-demo
 spec:
   type: ClusterIP
   selector:
@@ -377,7 +377,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: redis-cart
-  namespace: otterize-ecom-demo
+  namespace: otterize-ecom-kafka-demo
 spec:
   type: ClusterIP
   selector:
@@ -392,7 +392,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: shippingservice
-  namespace: otterize-ecom-demo
+  namespace: otterize-ecom-kafka-demo
 spec:
   type: ClusterIP
   selector:
@@ -421,7 +421,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: adservice
-  namespace: otterize-ecom-demo
+  namespace: otterize-ecom-kafka-demo
 spec:
   strategy:
     type: Recreate
@@ -485,7 +485,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: cartservice
-  namespace: otterize-ecom-demo
+  namespace: otterize-ecom-kafka-demo
 spec:
   strategy:
     type: Recreate
@@ -544,7 +544,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: checkoutservice
-  namespace: otterize-ecom-demo
+  namespace: otterize-ecom-kafka-demo
 spec:
   strategy:
     type: Recreate
@@ -641,7 +641,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: currencyservice
-  namespace: otterize-ecom-demo
+  namespace: otterize-ecom-kafka-demo
 spec:
   strategy:
     type: Recreate
@@ -704,7 +704,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: emailservice
-  namespace: otterize-ecom-demo
+  namespace: otterize-ecom-kafka-demo
 spec:
   strategy:
     type: Recreate
@@ -768,7 +768,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: frontend
-  namespace: otterize-ecom-demo
+  namespace: otterize-ecom-kafka-demo
 spec:
   strategy:
     type: Recreate
@@ -867,7 +867,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: loadgenerator
-  namespace: otterize-ecom-demo
+  namespace: otterize-ecom-kafka-demo
 spec:
   strategy:
     type: Recreate
@@ -923,7 +923,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: orderservice
-  namespace: otterize-ecom-demo
+  namespace: otterize-ecom-kafka-demo
 spec:
   strategy:
     type: Recreate
@@ -1006,7 +1006,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: paymentservice
-  namespace: otterize-ecom-demo
+  namespace: otterize-ecom-kafka-demo
 spec:
   strategy:
     type: Recreate
@@ -1072,7 +1072,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: productcatalogservice
-  namespace: otterize-ecom-demo
+  namespace: otterize-ecom-kafka-demo
 spec:
   strategy:
     type: Recreate
@@ -1136,7 +1136,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: recommendationservice
-  namespace: otterize-ecom-demo
+  namespace: otterize-ecom-kafka-demo
 spec:
   strategy:
     type: Recreate
@@ -1202,7 +1202,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: redis-cart
-  namespace: otterize-ecom-demo
+  namespace: otterize-ecom-kafka-demo
 spec:
   strategy:
     type: Recreate
@@ -1261,7 +1261,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: shippingservice
-  namespace: otterize-ecom-demo
+  namespace: otterize-ecom-kafka-demo
 spec:
   strategy:
     type: Recreate
@@ -1315,11 +1315,11 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: zookeeper
-  namespace: otterize-ecom-demo
+  namespace: otterize-ecom-kafka-demo
   labels:
     app.kubernetes.io/name: zookeeper
     helm.sh/chart: zookeeper-11.0.3
-    app.kubernetes.io/instance: otterize-ecom-demo
+    app.kubernetes.io/instance: otterize-ecom-kafka-demo
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: zookeeper
     role: zookeeper
@@ -1329,7 +1329,7 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: zookeeper
-      app.kubernetes.io/instance: otterize-ecom-demo
+      app.kubernetes.io/instance: otterize-ecom-kafka-demo
       app.kubernetes.io/component: zookeeper
   serviceName: zookeeper-headless
   updateStrategy:
@@ -1341,7 +1341,7 @@ spec:
       labels:
         app.kubernetes.io/name: zookeeper
         helm.sh/chart: zookeeper-11.0.3
-        app.kubernetes.io/instance: otterize-ecom-demo
+        app.kubernetes.io/instance: otterize-ecom-kafka-demo
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/component: zookeeper
     spec:
@@ -1356,7 +1356,7 @@ spec:
                 labelSelector:
                   matchLabels:
                     app.kubernetes.io/name: zookeeper
-                    app.kubernetes.io/instance: otterize-ecom-demo
+                    app.kubernetes.io/instance: otterize-ecom-kafka-demo
                     app.kubernetes.io/component: zookeeper
                 topologyKey: kubernetes.io/hostname
               weight: 1
@@ -1410,7 +1410,7 @@ spec:
             - name: ZOO_MAX_SESSION_TIMEOUT
               value: "40000"
             - name: ZOO_SERVERS
-              value: zookeeper-0.zookeeper-headless.otterize-ecom-demo.svc.cluster.local:2888:3888::1 
+              value: zookeeper-0.zookeeper-headless.otterize-ecom-kafka-demo.svc.cluster.local:2888:3888::1 
             - name: ZOO_ENABLE_AUTH
               value: "no"
             - name: ZOO_ENABLE_QUORUM_AUTH
@@ -1475,11 +1475,11 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: kafka
-  namespace: "otterize-ecom-demo"
+  namespace: "otterize-ecom-kafka-demo"
   labels:
     app.kubernetes.io/name: kafka
     helm.sh/chart: kafka-20.0.4
-    app.kubernetes.io/instance: otterize-ecom-demo
+    app.kubernetes.io/instance: otterize-ecom-kafka-demo
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: kafka
 spec:
@@ -1488,7 +1488,7 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: kafka
-      app.kubernetes.io/instance: otterize-ecom-demo
+      app.kubernetes.io/instance: otterize-ecom-kafka-demo
       app.kubernetes.io/component: kafka
   serviceName: kafka-headless
   updateStrategy:
@@ -1499,12 +1499,12 @@ spec:
       labels:
         app.kubernetes.io/name: kafka
         helm.sh/chart: kafka-20.0.4
-        app.kubernetes.io/instance: otterize-ecom-demo
+        app.kubernetes.io/instance: otterize-ecom-kafka-demo
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/component: kafka
       annotations:
         spire-integration.otterize.com/cert-type: jks
-        spire-integration.otterize.com/dns-names: kafka,kafka-headless,kafka.otterize-ecom-demo,kafka-headless.otterize-ecom-demo,kafka-0.kafka-headless.otterize-ecom-demo.svc.cluster.local,kafka.otterize-ecom-demo.svc.cluster.local
+        spire-integration.otterize.com/dns-names: kafka,kafka-headless,kafka.otterize-ecom-kafka-demo,kafka-headless.otterize-ecom-kafka-demo,kafka-0.kafka-headless.otterize-ecom-kafka-demo.svc.cluster.local,kafka.otterize-ecom-kafka-demo.svc.cluster.local
         spire-integration.otterize.com/keystore-file-name: kafka.keystore.jks
         spire-integration.otterize.com/tls-secret-name: kafka-tls-secret
         spire-integration.otterize.com/truststore-file-name: kafka.truststore.jks
@@ -1521,7 +1521,7 @@ spec:
                 labelSelector:
                   matchLabels:
                     app.kubernetes.io/name: kafka
-                    app.kubernetes.io/instance: otterize-ecom-demo
+                    app.kubernetes.io/instance: otterize-ecom-kafka-demo
                     app.kubernetes.io/component: kafka
                 topologyKey: kubernetes.io/hostname
               weight: 1

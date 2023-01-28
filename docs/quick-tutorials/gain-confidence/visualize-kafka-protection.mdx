@@ -29,16 +29,17 @@ Before you start, you need a Kubernetes cluster with a [CNI](https://kubernetes.
 </details>
 
 <details>
-<summary>Integrate Otterize Cloud with your cluster (enforcement=false)</summary>
+<summary>Integrate Otterize Cloud with your cluster</summary>
 
-{@include: ../../_common/install-otterize-cloud-enforcement-off.md}
+{@include: ../../_common/install-otterize-cloud.md}
 </details>
 
 ## Environment setup
 ### Deploy the reference lab with mTLS for Kafka and its clients
 
 ```bash
-kubectl apply -n otterize-ecom-demo -f code-examples/shadow-mode/ecom-demo-mtls.yaml
+kubectl create namespace otterize-ecom-kafka-demo
+kubectl apply -n otterize-ecom-kafka-demo -f code-examples/shadow-mode/ecom-demo-mtls.yaml
 ```
 <details>
 <summary>Optional: check that the lab was deployed...</summary>
@@ -47,7 +48,7 @@ kubectl apply -n otterize-ecom-demo -f code-examples/shadow-mode/ecom-demo-mtls.
 
 To see all the pods in the lab:
 ```bash
-kubectl get pods -n otterize-ecom-demo
+kubectl get pods -n otterize-ecom-kafka-demo
 ```
 The pods should all be ready and running:
 ```bash
@@ -76,7 +77,7 @@ shippingservice-ff5f4d7d-qcjw8           1/1     Running   0          23m
 
 To get the externally-accessible URL where your demo front end is available, run:
 ```bash
-kubectl get service -n otterize-ecom-demo frontend-external | awk '{print $4}'
+kubectl get service -n otterize-ecom-kafka-demo frontend-external | awk '{print $4}'
 ```
 The result should be similar to (if running on AWS EKS):
 ```
@@ -89,7 +90,7 @@ Go ahead and browse to the URL above to "shop" and get a feel for the reference 
 
 To get the externally-accessible URL where your demo front end is available, run:
 ```
-kubectl port-forward -n otterize-ecom-demo service/frontend-external 8080:80 &
+kubectl port-forward -n otterize-ecom-kafka-demo service/frontend-external 8080:80 &
 ```
 The demo is now accessible at:
 ```
@@ -102,14 +103,14 @@ Go ahead and browse to the URL above to "shop" and get a feel for the reference 
 
 ### Apply intents for workloads
 ```bash
-kubectl apply -n otterize-ecom-demo -f code-examples/shadow-mode/all.yaml
+kubectl apply -n otterize-ecom-kafka-demo -f code-examples/shadow-mode/all.yaml
 ```
 
 ## Manage Kafka access with Otterize
 
 Let's connect Kafka with Otterize by applying a `KafkaServerConfig`:
 ```bash
-kubectl apply -n otterize-ecom-demo -f code-examples/shadow-mode/kafkaserverconfig.yaml
+kubectl apply -n otterize-ecom-kafka-demo -f code-examples/shadow-mode/kafkaserverconfig.yaml
 ```
 <details>
 <summary>Expand to see the KafkaServerConfig</summary>
@@ -164,7 +165,7 @@ Otterize can now configure Kafka ACLs so let's go ahead and create client intent
 And apply them with
 
 ```bash
-kubectl apply -n otterize-ecom-demo -f code-examples/shadow-mode/phase-4.yaml
+kubectl apply -n otterize-ecom-kafka-demo -f code-examples/shadow-mode/kafka-intents.yaml
 ```
 
 You can verify that the reference lab still functions as intended.
@@ -189,5 +190,9 @@ To complete
 To remove the deployed reference lab run:
 
 ```bash
-kubectl delete namespace otterize-ecom-demo
+kubectl delete -n otterize-ecom-kafka-demo -f code-examples/shadow-mode/kafka-intents.yaml
+kubectl delete -n otterize-ecom-kafka-demo -f code-examples/shadow-mode/all.yaml
+kubectl delete -n otterize-ecom-kafka-demo -f code-examples/shadow-mode/kafkaserverconfig.yaml
+kubectl delete -n otterize-ecom-kafka-demo -f code-examples/shadow-mode/ecom-demo-mtls.yaml
+kubectl delete namespace otterize-ecom-kafka-demo
 ```

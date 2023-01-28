@@ -10,7 +10,7 @@ spec:
       type: kafka
       topics:
         - name: payments
-          operations: [ produce ]
+          operations: [ all ]
 ---
 apiVersion: k8s.otterize.com/v1alpha2
 kind: ClientIntents
