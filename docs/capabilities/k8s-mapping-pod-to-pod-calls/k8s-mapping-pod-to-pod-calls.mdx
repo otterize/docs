@@ -98,7 +98,7 @@ of the reference lab we deployed above.
 1. List the pod-to-pod network map built up ("sniffed") so far:
 
    ```shell
-   otterize mapper list -n otterize-ecom-demo
+   otterize network-mapper list -n otterize-ecom-demo
    ```
 2. You should see the rich network map of the reference e-commerce lab we deployed above:
    ```shell
@@ -131,7 +131,7 @@ of the reference lab we deployed above.
 1. Export as YAML client intents (the default format) the pod-to-pod network map built up so far:
 
    ```shell
-   otterize mapper export -n otterize-ecom-demo
+   otterize network-mapper export -n otterize-ecom-demo
    ```
 2. The result is a long YAML file stream that concatenates individual YAML intents documents,
 one for each service that makes calls to other services:
@@ -221,7 +221,7 @@ one for each service that makes calls to other services:
 
 Note that you can also export a collection of individual YAML files, suitable for moving to the repos where their corresponding
 client codes live, so they can be evolved along with the code. To do this, use
-`otterize mapper export -n otterize-ecom-demo --output-type dir`
+`otterize network-mapper export -n otterize-ecom-demo --output-type dir`
 
 </TabItem>
   <TabItem value="json" label="Export as JSON">
@@ -229,7 +229,7 @@ client codes live, so they can be evolved along with the code. To do this, use
 1. Export as JSON the pod-to-pod network map built up so far:
 
    ```shell
-   otterize mapper export -n otterize-ecom-demo --format json
+   otterize network-mapper export -n otterize-ecom-demo --format json
    ```
 2. The result shows the network map of the reference lab in JSON format:
    ```json
@@ -388,9 +388,9 @@ client codes live, so they can be evolved along with the code. To do this, use
 For a complete list of Otterize network mapper capabilities,
 refer to the [CLI command reference](/reference/cli/#network-mapper).
 
-For example, we've already seen how to filter by namespace, using `otterize mapper list -n <namespace>`.
+For example, we've already seen how to filter by namespace, using `otterize network-mapper list -n <namespace>`.
 
-You might also try to reset the network map with `otterize mapper reset`, then quickly run `otterize mapper list`
+You might also try to reset the network map with `otterize network-mapper reset`, then quickly run `otterize network-mapper list`
 before the load generator runs again, and see the smaller map generated from the more limited traffic observed.
 :::
 
@@ -402,7 +402,7 @@ We call this process "**Sniff&Diff**".
 
 1. Let's save the list of the current network map into a file, that will serve as a baseline:
    ```shell
-   otterize mapper list -n otterize-ecom-demo > intents-original.txt
+   otterize network-mapper list -n otterize-ecom-demo > intents-original.txt
    ```
 
 2. Now let's add a new service, `testingservice`, that calls the `frontend` over HTTP every couple of seconds:
@@ -425,7 +425,7 @@ testingservice-7b8cc77c67-9ksk8   1/1     Running   0          3m3s
 
 3. Will the network mapper pick it up? Let's wait a few seconds and list the network map now:
    ```shell
-   otterize mapper list -n otterize-ecom-demo
+   otterize network-mapper list -n otterize-ecom-demo
    ```
 
    You should now see that the list is a bit longer. It now includes calls between the testing service and the frontend:
@@ -458,7 +458,7 @@ testingservice-7b8cc77c67-9ksk8   1/1     Running   0          3m3s
    ```
 5. We can also compare both outputs to see the difference. Start by saving the updated list to a file:
    ```bash
-   otterize mapper list -n otterize-ecom-demo > intents-updated.txt
+   otterize network-mapper list -n otterize-ecom-demo > intents-updated.txt
    ```
 6. Now compare the original file with the updated file using:
    ```bash
