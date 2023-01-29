@@ -437,7 +437,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: server
-        image: '353146681200.dkr.ecr.us-east-1.amazonaws.com/otterize:adservice-latest'
+        image: 'otterize/lab:adservice-latest'
         imagePullPolicy: Always
         ports:
         - containerPort: 9555
@@ -501,7 +501,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: server
-        image: '353146681200.dkr.ecr.us-east-1.amazonaws.com/otterize:cartservice-latest'
+        image: 'otterize/lab:cartservice-latest'
         imagePullPolicy: Always
         ports:
         - containerPort: 7070
@@ -561,7 +561,7 @@ spec:
       serviceAccountName: default
       containers:
         - name: server
-          image: '353146681200.dkr.ecr.us-east-1.amazonaws.com/otterize:checkoutservice-latest'
+          image: 'otterize/lab:checkoutservice-latest'
           imagePullPolicy: Always
           ports:
           - containerPort: 5050
@@ -657,7 +657,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: server
-        image: '353146681200.dkr.ecr.us-east-1.amazonaws.com/otterize:currencyservice-latest'
+        image: 'otterize/lab:currencyservice-latest'
         imagePullPolicy: Always
         ports:
         - name: grpc
@@ -720,7 +720,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: server
-        image: '353146681200.dkr.ecr.us-east-1.amazonaws.com/otterize:emailservice-latest'
+        image: 'otterize/lab:emailservice-latest'
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
@@ -785,7 +785,7 @@ spec:
       serviceAccountName: default
       containers:
         - name: server
-          image: '353146681200.dkr.ecr.us-east-1.amazonaws.com/otterize:frontend-latest'
+          image: 'otterize/lab:frontend-latest'
           imagePullPolicy: Always
           ports:
           - containerPort: 8080
@@ -903,7 +903,7 @@ spec:
           value: "frontend:80"
       containers:
       - name: main
-        image: '353146681200.dkr.ecr.us-east-1.amazonaws.com/otterize:loadgenerator-latest'
+        image: 'otterize/lab:loadgenerator-latest'
         imagePullPolicy: Always
         env:
         - name: FRONTEND_ADDR
@@ -940,7 +940,7 @@ spec:
       serviceAccountName: default
       containers:
         - name: server
-          image: '353146681200.dkr.ecr.us-east-1.amazonaws.com/otterize:orderservice-latest'
+          image: 'otterize/lab:orderservice-latest'
           imagePullPolicy: Always
           ports:
           - containerPort: 8091
@@ -1028,7 +1028,7 @@ spec:
             secretName: paymentservice-credentials-secret
       containers:
       - name: server
-        image: '353146681200.dkr.ecr.us-east-1.amazonaws.com/otterize:paymentservice-latest'
+        image: 'otterize/lab:paymentservice-latest'
         imagePullPolicy: Always
         ports:
           - containerPort: 50051
@@ -1088,7 +1088,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: server
-        image: '353146681200.dkr.ecr.us-east-1.amazonaws.com/otterize:productcatalogservice-latest'
+        image: 'otterize/lab:productcatalogservice-latest'
         imagePullPolicy: Always
         ports:
         - containerPort: 3550
@@ -1152,7 +1152,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: server
-        image: '353146681200.dkr.ecr.us-east-1.amazonaws.com/otterize:recommendationservice-latest'
+        image: 'otterize/lab:recommendationservice-latest'
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
@@ -1276,7 +1276,7 @@ spec:
       serviceAccountName: default
       containers:
       - name: server
-        image: '353146681200.dkr.ecr.us-east-1.amazonaws.com/otterize:shippingservice-latest'
+        image: 'otterize/lab:shippingservice-latest'
         imagePullPolicy: Always
         ports:
         - containerPort: 50051
