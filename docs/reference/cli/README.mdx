@@ -29,7 +29,7 @@ easy to access on the fly.
 
 ## Network mapper
 
-All `otterize mapper` commands share a set of optional flags which will not be repeated in the documentation
+All `otterize network-mapper` commands share a set of optional flags which will not be repeated in the documentation
 for each command.
 
 #### Common options
@@ -41,11 +41,11 @@ for each command.
 | `--mapper-service-name` | `otterize-service-port` | Specifies the port on which the mapper service is listening. |
 
 
-### `otterize mapper reset`
+### `otterize network-mapper reset`
 
 Resets the network mapper by deleting all map information built up so far in memory.
 
-### `otterize mapper list`
+### `otterize network-mapper list`
 
 Return the network map built by the network mapper since it started, or since it was reset,
 as a list of clients and the servers they call.
@@ -58,7 +58,7 @@ as a list of clients and the servers they call.
 
 #### Returns
 
-Here's a partial output from `otterize mapper list -n otterize-ecom-demo`:
+Here's a partial output from `otterize network-mapper list -n otterize-ecom-demo`:
 
 ```shell
 cartservice in namespace otterize-ecom-demo calls:
@@ -84,7 +84,7 @@ recommendationservice in namespace otterize-ecom-demo calls:
   - productcatalogservice
 ```
 
-### `otterize mapper export`
+### `otterize network-mapper export`
 
 Return the network map built by the network mapper since it started, or since it was reset,
 as [client intents file(s)](/intents-and-intents-files/#intents-file-formats) in various formats.
@@ -100,7 +100,50 @@ as [client intents file(s)](/intents-and-intents-files/#intents-file-formats) in
 
 #### Returns
 
-Here's a partial output from `otterize mapper export -n otterize-ecom-demo`:
+Here's a partial output from `otterize network-mapper export -n otterize-ecom-demo`:
+
+```shell
+apiVersion: k8s.otterize.com/v1alpha2
+kind: ClientIntents
+metadata:
+  name: cartservice
+  namespace: otterize-ecom-demo
+spec:
+  service:
+    name: cartservice
+  calls:
+    - name: redis-cart
+      type: http
+---
+apiVersion: k8s.otterize.com/v1alpha2
+kind: ClientIntents
+metadata:
+  name: checkoutservice
+  namespace: otterize-ecom-demo
+spec:
+  service:
+    name: checkoutservice
+  calls:
+    - name: cartservice
+      type: http
+    - name: currencyservice
+      type: http
+```
+
+### `otterize network-mapper intents-convert [-f PATH]`
+
+Convert client intents files in plain YAML format to Kubernetes ClientIntents resource format.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| `-f` or `--filename` | `'.'` | The client intents filename, or a directory containing client intents files. |
+
+#### Returns
+
+Here's the result of converting a directory containing two client intents file in plain YAML format.
+The result is YAML describing two Kubernetes resources separated with the YAML `---` separator.
 
 ```shell
 apiVersion: k8s.otterize.com/v1alpha2
@@ -470,49 +513,6 @@ EXAMPLE
 ```
 
 ## Intents
-
-### `otterize intents convert [-f PATH]`
-
-Convert client intents files in plain YAML format to Kubernetes ClientIntents resource format.
-
-#### Options
-
-| Name | Default | Description |
-| --- | --- | --- |
-| `-f` or `--filename` | `'.'` | The client intents filename, or a directory containing client intents files. |
-
-#### Returns
-
-Here's the result of converting a directory containing two client intents file in plain YAML format.
-The result is YAML describing two Kubernetes resources separated with the YAML `---` separator.
-
-```shell
-apiVersion: k8s.otterize.com/v1alpha2
-kind: ClientIntents
-metadata:
-  name: cartservice
-  namespace: otterize-ecom-demo
-spec:
-  service:
-    name: cartservice
-  calls:
-    - name: redis-cart
-      type: http
----
-apiVersion: k8s.otterize.com/v1alpha2
-kind: ClientIntents
-metadata:
-  name: checkoutservice
-  namespace: otterize-ecom-demo
-spec:
-  service:
-    name: checkoutservice
-  calls:
-    - name: cartservice
-      type: http
-    - name: currencyservice
-      type: http
-```
 
 ### `otterize intents list [_OPTIONS_]`
 
