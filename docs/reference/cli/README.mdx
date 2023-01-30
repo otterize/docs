@@ -45,7 +45,7 @@ for each command.
 
 Resets the network mapper by deleting all map information built up so far in memory.
 
-### `otterize mapper list`
+### `otterize mapper list [-n <namespace1>,<namespace2>,...]`
 
 Return the network map built by the network mapper since it started, or since it was reset,
 as a list of clients and the servers they call.
@@ -84,7 +84,7 @@ recommendationservice in namespace otterize-ecom-demo calls:
   - productcatalogservice
 ```
 
-### `otterize mapper export`
+### `otterize mapper export [--format] [-n <namespace1>,<namespace2>,...] [-o <path>] [--output-type <output-type>]`
 
 Return the network map built by the network mapper since it started, or since it was reset,
 as [client intents file(s)](/intents-and-intents-files/#intents-file-formats) in various formats.
@@ -178,7 +178,14 @@ Queries the Otterize Cloud for the current API version (e.g. `v1`) and revision 
 
 Returns the current version and revision of the Otterize REST API, as well as the version and revision against which this CLI is built.
 
-Note that the Otterize CLI is mostly a thin but useful utility for invoking the Otterize Cloud REST API, so if the Cloud API has changed since the CLI was built, the CLI might be missing some Cloud capabilities, and some CLI commands might fail.
+Note that the Otterize CLI is mostly a thin but useful utility for invoking the Otterize Cloud REST API.
+API versions that differ by version number may break backwards compatibility, while those that only differ by revision are backwards compatible: revisions add functionality or documentation but preserve all previous functionality.
+
+If only the Cloud API has changed since the CLI was built (revisions don't match), the CLI might be missing some Cloud capabilities.
+
+If also the Cloud API version is later than the CLI version, some CLI commands might fail.
+
+Beta version of the Cloud API (e.g. `v1beta`) are volatile: they can change and break backwards compatibility until they are out of beta.
 
 ```shell
 Current Cloud API:
@@ -195,52 +202,62 @@ Upgrade your CLI to the latest build to resolve this issue.
 
 ## Clusters
 
-### `otterize clusters list [_OPTIONS_]`
+### `otterize clusters list [-n <cluster-name>]`
 
-ACTION DESCRIPTION.
+List all clusters, optionally filtered by name.
+
+Clusters in Otterize Cloud represent Kubernetes clusters that are integrated with Otterize Cloud. The list also includes clusters that were not integrated or are no longer integrated, as long as they were not deleted.
 
 #### Options
 
 | Name | Default | Description |
 | --- | --- | --- |
-| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+| `-n` or `--name` |  | Filter the list by cluster name. Since cluster names are unique, this will always return at most one cluster. |
 
 #### Returns
 
-RESULTS DESCRIPTION
+Returns a table of information about the clusters.
 
 ```shell
-EXAMPLE
+id                 name        status       namespace count service count configuration.globalDefaultDeny
+────────────────── ─────────── ──────────── ─────────────── ───────────── ───────────────────────────────
+cluster_64fetu3i2t my-cluster1 CONNECTED    4               50            false
+cluster_7g4tre319g my-cluster2 DISCONNECTED 12              127           true
+
 ```
 
-### `otterize clusters get [_OPTIONS_]`
+### `otterize clusters get <cluster-id>`
 
-ACTION DESCRIPTION.
-
-#### Options
-
-| Name | Default | Description |
-| --- | --- | --- |
-| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+Gets a single cluster by id.
 
 #### Returns
 
-RESULTS DESCRIPTION
+Returns a table of information about the cluster.
 
 ```shell
-EXAMPLE
+id                 name        status       namespace count service count configuration.globalDefaultDeny
+────────────────── ─────────── ──────────── ─────────────── ───────────── ───────────────────────────────
+cluster_64fetu3i2t my-cluster1 CONNECTED    4               50            false
 ```
 
-### `otterize clusters create [_OPTIONS_]`
+### `otterize clusters create -n <cluster-name>`
 
-ACTION DESCRIPTION.
+Creates a cluster in Otterize Cloud with the given name.
+
+To connect it to a Kubernetes cluster, i.e. to the Otterize OSS operators in that cluster:
+- You'll need an environment to which all namespaces in the cluster are assigned by default. If needed, create an environment with `otterize environments create -n <env-name>`.
+- Create an integration with `otterize integrations create kubernetes --cluster-id <cluster-id> --env-id <env-id>`.
+- Follow [the guide to installing or upgrading Otterize OSS](https://docs.otterize.com/getting-started/oss-installation) and use the integration's credentials.
 
 #### Options
 
 | Name | Default | Description |
 | --- | --- | --- |
-| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+| `-n` or `--name`` |  | The name to give the cluster, in Otterize Cloud. |
 
+:::danger
+Document once cluster creation is fixed.
+:::
 #### Returns
 
 RESULTS DESCRIPTION
@@ -287,22 +304,31 @@ EXAMPLE
 
 ## Environments
 
-### `otterize environments list [_OPTIONS_]`
+### `otterize environments list [-l label1,label2] [-n name]`
 
-ACTION DESCRIPTION.
+List all environments, optionally filtered by labels or name.
 
 #### Options
 
 | Name | Default | Description |
 | --- | --- | --- |
-| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+| `-l` or `--labels` |  | Return only the environments that contain all the given labels. A label may be of the form `key` or `key:value`. |
+| `-n` or `--name` |  | Filter the list by environment name. Since environment names are unique, this will always return at most one cluster. |
 
 #### Returns
 
-RESULTS DESCRIPTION
+Returns a table of information about the environments.
 
 ```shell
-EXAMPLE
+id             name                     labels            integrations_count applied_intents_count
+────────────── ──────────────────────── ───────────────── ────────────────── ─────────────────────
+env_yg64fe8ty2 staging                  region-EU                            15
+env_glohhjfowc phase 1                                                       1
+env_o6tdthl6qz phase 2                                                       2
+env_zfndrpvqgp phase 3                                                       3
+env_5mzzqxrr2f eks1_default_environment key1=,key2=value2                    0
+env_lqrcfkam5g phase 0                  phase1=                              0
+
 ```
 
 ### `otterize environments get [_OPTIONS_]`
