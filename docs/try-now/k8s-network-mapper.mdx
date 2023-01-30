@@ -18,7 +18,7 @@ In this tutorial, we will:
 
 Before you start, you need to have a Kubernetes cluster. Having a cluster with a [CNI](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/) that supports [NetworkPolicies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) isn't required for this tutorial, but is recommended so that your cluster works with other tutorials.
 
-{@include: ../../_common/cluster-setup.md}
+{@include: ../_common/cluster-setup.md}
 </details>
 
 <details>
@@ -28,7 +28,7 @@ Before you start, you need to have a Kubernetes cluster. Having a cluster with a
 You can skip this section if Otterize is already installed in your cluster.
 :::
 
-{@include: ../../_common/install-otterize.md}
+{@include: ../_common/install-otterize.md}
 
 </details>
 
@@ -36,7 +36,7 @@ You can skip this section if Otterize is already installed in your cluster.
 <summary>Connect to Otterize Cloud (optional)</summary>
 Upgrade/install your Otterize OSS deployment using the *client id* and *client secret* generated for your integration.
 
-{@include: ../../_common/install-otterize-cloud.md}
+{@include: ../_common/install-otterize-cloud.md}
 
 For a detailed instructions follow this [guide](/getting-started/connect-to-cloud#integrate-your-cluster)
 </details>
@@ -58,11 +58,11 @@ kubectl apply -n otterize-tutorial-mapper -f https://docs.otterize.com/code-exam
 
 ### Show mapped traffic
 
-{@include: ../../getting-started/_show_mapped_traffic_cli.mdx}
+{@include: ../getting-started/_show_mapped_traffic_cli.mdx}
 
 ### Visualize using the access graph (Cloud)
 
-{@include: ../../getting-started/_show_mapped_traffic_cloud.mdx}
+{@include: ../getting-started/_show_mapped_traffic_cloud.mdx}
 
 
 ## What's next
@@ -74,12 +74,12 @@ the intents files. We'll see more of that below.
 
 Where to go next?
 
-- If you haven't already, see the [automate network policies tutorial](/quick-tutorials/k8s-network-policies).
-- Or go to the next tutorial to [automate secure access for Kafka](/quick-tutorials/k8s-kafka-mtls).
+- If you haven't already, see the [automate network policies tutorial](/k8s-network-policies).
+- Or go to the next tutorial to [automate secure access for Kafka](/k8s-kafka-mtls).
 - You might also dive deeper into the guide for [IBAC with network policies](../capabilities/network-policies).
   - It even contains a bootstrapping exercise at the end!
 - For a deeper dive into the network mapper, see the guide for [mapping pod-to-pod calls](../capabilities/k8s-mapping-pod-to-pod-calls).
-- Explore how [Shadow Mode](/quick-tutorials/k8s-shadow-mode) can expand these capabilities.
+- Explore how [Shadow Mode](/k8s-shadow-mode) can expand these capabilities.
 
 ### Teardown
 

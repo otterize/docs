@@ -25,13 +25,13 @@ simulating an e-commerce application.
 
 Before you start, you need a Kubernetes cluster with a [CNI](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/) that supports [NetworkPolicies](https://kubernetes.io/docs/concepts/services-networking/network-policies/).
 
-{@include: ../../_common/cluster-setup.md}
+{@include: ../_common/cluster-setup.md}
 </details>
 
 <details>
 <summary>Integrate Otterize Cloud with your cluster</summary>
 
-{@include: ../../_common/install-otterize-cloud.md}
+{@include: ../_common/install-otterize-cloud.md}
 </details>
 
 ## Environment setup
@@ -119,7 +119,7 @@ kubectl apply -n otterize-ecom-kafka-demo -f code-examples/shadow-mode/kafkaserv
 <TabItem value="kafkaserverconfig.yaml" label="kafkaserverconfig.yaml">
 
 ```yaml
-{@include: ../../..//static/code-examples/shadow-mode/kafkaserverconfig.yaml}
+{@include: ../..//static/code-examples/shadow-mode/kafkaserverconfig.yaml}
 ```
 
 </TabItem>
@@ -145,19 +145,19 @@ Otterize can now configure Kafka ACLs so let's go ahead and create client intent
 <TabItem value="checkoutservice" label="checkoutservice" default>
 
 ```yaml
-{@include: ../../..//static/code-examples/shadow-mode/phase-4-checkout.yaml}
+{@include: ../..//static/code-examples/shadow-mode/phase-4-checkout.yaml}
 ```
 </TabItem>
 <TabItem value="orderservice" label="orderservice" default>
 
 ```yaml
-{@include: ../../..//static/code-examples/shadow-mode/phase-4-order.yaml}
+{@include: ../..//static/code-examples/shadow-mode/phase-4-order.yaml}
 ```
 </TabItem>
 <TabItem value="paymentservice" label="paymentservice" default>
 
 ```yaml
-{@include: ../../..//static/code-examples/shadow-mode/phase-4-payment.yaml}
+{@include: ../..//static/code-examples/shadow-mode/phase-4-payment.yaml}
 ```
 </TabItem>
 </Tabs>

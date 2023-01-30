@@ -21,7 +21,7 @@ In this tutorial, we will:
 You can skip this section if Otterize is already installed in your cluster.
 :::
 
-{@include: ../../_common/install-otterize.md}
+{@include: ../_common/install-otterize.md}
 
 </details>
 
@@ -77,7 +77,7 @@ spec:
 <TabItem value="namespace.yaml" label="namespace.yaml" default>
 
 ```yaml
-{@include: ../../../static/code-examples/kafka-mtls/namespace.yaml}
+{@include: ../../static/code-examples/kafka-mtls/namespace.yaml}
 ```
 
 </TabItem>
@@ -85,7 +85,7 @@ spec:
 <TabItem value="client-deployment.yaml" label="client-deployment.yaml">
 
 ```yaml
-{@include: ../../../static/code-examples/kafka-mtls/client-deployment.yaml}
+{@include: ../../static/code-examples/kafka-mtls/client-deployment.yaml}
 ```
 
 </TabItem>
@@ -93,7 +93,7 @@ spec:
 <TabItem value="client-configmap.yaml" label="client-configmap.yaml">
 
 ```yaml
-{@include: ../../../static/code-examples/kafka-mtls/client-configmap.yaml}
+{@include: ../../static/code-examples/kafka-mtls/client-configmap.yaml}
 ```
 
 </TabItem>
@@ -277,7 +277,7 @@ For more information, see [the documentation for the SPIRE integration operator]
 
 - Learn how to manage and [automatically provision mTLS](/k8s-mtls) credentials within a Kubernetes cluster.
 - Read about how to [integrate](/k8s-mtls/#using-mtls-credentials) mTLS into common SDKs and frameworks.
-- Enforce [secure Kafka access](/quick-tutorials/k8s-kafka-mtls) with mTLS.
+- Enforce [secure Kafka access](/k8s-kafka-mtls) with mTLS.
 - Learn more about how the [Otterize SPIRE integration operator](concepts/otterize-oss/componentsspire-integration-operator) works.
 
 ## Teardown

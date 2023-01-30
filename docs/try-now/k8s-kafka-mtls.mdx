@@ -21,7 +21,7 @@ For this tutorial, we'll disable the network policy component, to focus on the K
 If you already have Otterize installed, redeploy it as shown below. You can always re-enable the network policy component
 later by deploying it as shown below but without the `--set` flag.
 :::
-{@include: ../../_common/install-otterize-kafka.md}
+{@include: ../_common/install-otterize-kafka.md}
 
 ## Install Kafka
 
@@ -36,7 +36,7 @@ In the chart we will configure Kafka to:
 <summary>Expand to see the Helm values.yaml used with the Bitnami chart</summary>
 
 ```yaml
-{@include: ../../../static/code-examples/kafka-mtls/helm/values.yaml}
+{@include: ../../static/code-examples/kafka-mtls/helm/values.yaml}
 ```
 </details>
 
@@ -64,7 +64,7 @@ kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/kafkaserverc
 <TabItem value="kafkaserverconfig.yaml" label="kafkaserverconfig.yaml">
 
 ```yaml
-{@include: ../../../static/code-examples/kafka-mtls/kafkaserverconfig.yaml}
+{@include: ../../static/code-examples/kafka-mtls/kafkaserverconfig.yaml}
 ```
 
 </TabItem>
@@ -135,7 +135,7 @@ Our simple example consists of a two client pods &mdash; "client" and "client-ot
 <TabItem value="namespace.yaml" label="namespace.yaml" default>
 
 ```yaml
-{@include: ../../../static/code-examples/kafka-mtls/namespace.yaml}
+{@include: ../../static/code-examples/kafka-mtls/namespace.yaml}
 ```
 
 </TabItem>
@@ -143,7 +143,7 @@ Our simple example consists of a two client pods &mdash; "client" and "client-ot
 <TabItem value="client-deployment.yaml" label="client-deployment.yaml">
 
 ```yaml
-{@include: ../../../static/code-examples/kafka-mtls/client-deployment.yaml}
+{@include: ../../static/code-examples/kafka-mtls/client-deployment.yaml}
 ```
 
 </TabItem>
@@ -151,7 +151,7 @@ Our simple example consists of a two client pods &mdash; "client" and "client-ot
 <TabItem value="client-configmap.yaml" label="client-configmap.yaml">
 
 ```yaml
-{@include: ../../../static/code-examples/kafka-mtls/client-configmap.yaml}
+{@include: ../../static/code-examples/kafka-mtls/client-configmap.yaml}
 ```
 
 </TabItem>
@@ -159,7 +159,7 @@ Our simple example consists of a two client pods &mdash; "client" and "client-ot
 <TabItem value="client-other-deployment.yaml" label="client-other-deployment.yaml">
 
 ```yaml
-{@include: ../../../static/code-examples/kafka-mtls/client-other-deployment.yaml}
+{@include: ../../static/code-examples/kafka-mtls/client-other-deployment.yaml}
 ```
 
 </TabItem>
@@ -167,7 +167,7 @@ Our simple example consists of a two client pods &mdash; "client" and "client-ot
 <TabItem value="client-other-configmap.yaml" label="client-other-configmap.yaml">
 
 ```yaml
-{@include: ../../../static/code-examples/kafka-mtls/client-other-configmap.yaml}
+{@include: ../../static/code-examples/kafka-mtls/client-other-configmap.yaml}
 ```
 
 </TabItem>
@@ -239,7 +239,7 @@ Sent message - Message 3 [sent by client-other]
 1. The client declares its intent to call the server with this `intents.yaml` file:
 
 ```yaml
-{@include: ../../../static/code-examples/kafka-mtls/client-intents.yaml}
+{@include: ../../static/code-examples/kafka-mtls/client-intents.yaml}
 ```
 :::tip
 Client intents are the cornerstone of [intent-based access control](https://otterize.com/ibac).

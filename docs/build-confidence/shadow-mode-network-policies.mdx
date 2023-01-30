@@ -24,13 +24,13 @@ simulating an e-commerce application.
 
 Before you start, you need a Kubernetes cluster with a [CNI](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/) that supports [NetworkPolicies](https://kubernetes.io/docs/concepts/services-networking/network-policies/).
 
-{@include: ../../_common/cluster-setup.md}
+{@include: ../_common/cluster-setup.md}
 </details>
 
 <details>
 <summary>Integrate Otterize Cloud with your cluster (enforcement=false)</summary>
 
-{@include: ../../_common/install-otterize-cloud-enforcement-off.md}
+{@include: ../_common/install-otterize-cloud-enforcement-off.md}
 </details>
 
 ## Deploy the reference lab
@@ -118,7 +118,7 @@ Let’s declare that the `frontend` intends to call the `recommendationservice`.
 We expect this will provide secure access, allowing the intended access from the `fronted` while protecting the `recommendationservice` from unintended access.
 
 ```yaml
-{@include: ../../..//static/code-examples/shadow-mode/phase-1.yaml}
+{@include: ../..//static/code-examples/shadow-mode/phase-1.yaml}
 ```
 
 Apply this intents file with
@@ -136,7 +136,7 @@ We’re not enforcing access controls, but we can see the `frontend` will still 
 Let’s add another intent, this time from `recommendationservice` to `productcatalogservice`.
 
 ```yaml
-{@include: ../../..//static/code-examples/shadow-mode/phase-2-only.yaml}
+{@include: ../..//static/code-examples/shadow-mode/phase-2-only.yaml}
 ```
 
 Apply this intents file with
@@ -156,13 +156,13 @@ Let's add the required intents for the `checkoutservice` and `frontend`.
 <TabItem value="frontend" label="frontend" default>
 
 ```yaml
-{@include: ../../..//static/code-examples/shadow-mode/phase-3-frontend.yaml}
+{@include: ../..//static/code-examples/shadow-mode/phase-3-frontend.yaml}
 ```
 </TabItem>
 <TabItem value="checkout-service" label="checkout-service" default>
 
 ```yaml
-{@include: ../../..//static/code-examples/shadow-mode/phase-3-checkout.yaml}
+{@include: ../..//static/code-examples/shadow-mode/phase-3-checkout.yaml}
 ```
 </TabItem>
 </Tabs>
@@ -206,7 +206,7 @@ applying network policies using client intents and we can move on to enabling en
 
 Let's enable enforcement with
 
-{@include: ../../_common/install-otterize-cloud.md}
+{@include: ../_common/install-otterize-cloud.md}
 
 ### Browse the lab
 You can browse the lab using the browser to see it works as intended.
@@ -215,7 +215,7 @@ You can browse the lab using the browser to see it works as intended.
 ![Enforcement enabled](/img/quick-tutorials/shadow-mode/phase-5.png)
 
 ## What's next
-- Learn how to [manage secure access for Kafka](/quick-tutorials/gain-confidence/visualize-kafka-protection) using the demo lab tutorial.
+- Learn how to [manage secure access for Kafka](/build-confidence/visualize-kafka-protection) using the demo lab tutorial.
 
 ## Teardown
 
