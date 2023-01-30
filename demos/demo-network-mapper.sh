@@ -29,6 +29,6 @@ sleep 1
 pei "# Show the map in namespace \"labstg\" as a list"
 prompt
 sleep 1
-pei "otterize mapper list -n labstg"
+pei "otterize network-mapper list -n labstg"
 prompt
 sleep 10

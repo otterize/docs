@@ -9,7 +9,7 @@ of the example above.
 1. List the pod-to-pod network map built up ("sniffed") so far:
 
    ```shell
-   otterize mapper list -n otterize-tutorial-mapper
+   otterize network-mapper list -n otterize-tutorial-mapper
    ```
 2. For the simple example above, you should see:
    ```shell
@@ -25,7 +25,7 @@ of the example above.
 1. Export as YAML client intents (the default format) the pod-to-pod network map built up so far:
 
    ```shell
-   otterize mapper export -n otterize-tutorial-mapper
+   otterize network-mapper export -n otterize-tutorial-mapper
    ```
 2. For the simple example above, you should see (concatenated into one YAML file):
    ```yaml
@@ -57,7 +57,7 @@ of the example above.
 
 1. Export as JSON the pod-to-pod network map built up so far:
    ```shell
-   otterize mapper export -n otterize-tutorial-mapper --format json
+   otterize network-mapper export -n otterize-tutorial-mapper --format json
    ```
 2. For the simple example above, you should see:
 

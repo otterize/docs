@@ -100,7 +100,50 @@ as [client intents file(s)](/intents-and-intents-files/#intents-file-formats) in
 
 #### Returns
 
-Here's a partial output from `otterize mapper export -n otterize-ecom-demo`:
+Here's a partial output from `otterize network-mapper export -n otterize-ecom-demo`:
+
+```shell
+apiVersion: k8s.otterize.com/v1alpha2
+kind: ClientIntents
+metadata:
+  name: cartservice
+  namespace: otterize-ecom-demo
+spec:
+  service:
+    name: cartservice
+  calls:
+    - name: redis-cart
+      type: http
+---
+apiVersion: k8s.otterize.com/v1alpha2
+kind: ClientIntents
+metadata:
+  name: checkoutservice
+  namespace: otterize-ecom-demo
+spec:
+  service:
+    name: checkoutservice
+  calls:
+    - name: cartservice
+      type: http
+    - name: currencyservice
+      type: http
+```
+
+### `otterize network-mapper intents-convert [-f PATH]`
+
+Convert client intents files in plain YAML format to Kubernetes ClientIntents resource format.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| `-f` or `--filename` | `'.'` | The client intents filename, or a directory containing client intents files. |
+
+#### Returns
+
+Here's the result of converting a directory containing two client intents file in plain YAML format.
+The result is YAML describing two Kubernetes resources separated with the YAML `---` separator.
 
 ```shell
 apiVersion: k8s.otterize.com/v1alpha2
