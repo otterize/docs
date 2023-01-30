@@ -1,16 +1,6 @@
 apiVersion: k8s.otterize.com/v1alpha2
 kind: ClientIntents
 metadata:
-  name: frontend
-spec:
-  service:
-    name: frontend
-  calls:
-    - name: recommendationservice
----
-apiVersion: k8s.otterize.com/v1alpha2
-kind: ClientIntents
-metadata:
   name: recommendationservice
 spec:
   service:

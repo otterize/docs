@@ -7,10 +7,7 @@ import CodeBlock from "@theme/CodeBlock";
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-:::danger
-Write intro
-This tutorial is the second part in the **gain confidence** series. You are not required to run through the first tutorial in the series, but you will need to run through the **environment setup** steps to align your environment.
-:::
+
 
 In this tutorial, we will:
 
@@ -102,6 +99,9 @@ Go ahead and browse to the URL above to "shop" and get a feel for the reference 
 </details>
 
 ### Apply intents for workloads
+:::info
+This demo picks up where the network policies demo left off, so we'll put in place the same intents that we had in that demo and then add the kafka intents
+:::
 ```bash
 kubectl apply -n otterize-ecom-kafka-demo -f code-examples/shadow-mode/all.yaml
 ```

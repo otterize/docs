@@ -136,7 +136,7 @@ We’re not enforcing access controls, but we can see the `frontend` will still 
 Let’s add another intent, this time from `recommendationservice` to `productcatalogservice`.
 
 ```yaml
-{@include: ../..//static/code-examples/shadow-mode/phase-2-only.yaml}
+{@include: ../..//static/code-examples/shadow-mode/phase-2.yaml}
 ```
 
 Apply this intents file with
@@ -207,6 +207,45 @@ applying network policies using client intents and we can move on to enabling en
 Let's enable enforcement with
 
 {@include: ../_common/install-otterize-cloud.md}
+
+<details>
+<summary>See generated network policies</summary>
+Otterize automatically generated network policies according to your declared (and applied) intents.
+
+To list all generated network policies run
+```bash
+get netpol -n otterize-ecom-demo
+```
+
+let's inspect one of these network policies with
+```bash
+kubectl get netpol -n otterize-ecom-demo access-to-recommendationservice-from-otterize-ecom-demo -o yaml
+```
+And we will get the following output
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: access-to-recommendationservice-from-otterize-ecom-demo
+  namespace: otterize-ecom-demo
+  ...
+spec:
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          intents.otterize.com/namespace-name: otterize-ecom-demo
+      podSelector:
+        matchLabels:
+          intents.otterize.com/access-recommendationservic-otterize-ecom-demo-850ad9: "true"
+  podSelector:
+    matchLabels:
+      intents.otterize.com/server: recommendationservic-otterize-ecom-demo-850ad9
+  policyTypes:
+  - Ingress
+```
+</details>
+
 
 ### Browse the lab
 You can browse the lab using the browser to see it works as intended.
