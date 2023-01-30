@@ -29,7 +29,7 @@ easy to access on the fly.
 
 ## Network mapper
 
-All `otterize mapper` commands share a set of optional flags which will not be repeated in the documentation
+All `otterize network-mapper` commands share a set of optional flags which will not be repeated in the documentation
 for each command.
 
 #### Common options
@@ -41,11 +41,11 @@ for each command.
 | `--mapper-service-name` | `otterize-service-port` | Specifies the port on which the mapper service is listening. |
 
 
-### `otterize mapper reset`
+### `otterize network-mapper reset`
 
 Resets the network mapper by deleting all map information built up so far in memory.
 
-### `otterize mapper list [-n <namespace1>,<namespace2>,...]`
+### `otterize network-mapper list [-n <namespace1>,<namespace2>,...]`
 
 Return the network map built by the network mapper since it started, or since it was reset,
 as a list of clients and the servers they call.
@@ -84,7 +84,7 @@ recommendationservice in namespace otterize-ecom-demo calls:
   - productcatalogservice
 ```
 
-### `otterize mapper export [--format] [-n <namespace1>,<namespace2>,...] [-o <path>] [--output-type <output-type>]`
+### `otterize network-mapper export [--format] [-n <namespace1>,<namespace2>,...] [-o <path>] [--output-type <output-type>]`
 
 Return the network map built by the network mapper since it started, or since it was reset,
 as [client intents file(s)](/intents-and-intents-files/#intents-file-formats) in various formats.
@@ -271,7 +271,7 @@ cluster_7g4tre319g my-cluster2 DISCONNECTED 12              127           true
 
 ### `otterize clusters get <cluster-id>`
 
-Gets a single cluster by id.
+Returns information about a single cluster, specified by its id.
 
 #### Returns
 
@@ -298,51 +298,54 @@ To connect it to a Kubernetes cluster, i.e. to the Otterize OSS operators in tha
 | --- | --- | --- |
 | `-n` or `--name`` |  | The name to give the cluster, in Otterize Cloud. |
 
+#### Returns
+
+Returns a table of information about the newly-created cluster.
+
+```shell
+id                 name     default environment id integration id namespace count service count configuration                                                        intents operator                  credentials operator              network mapper
+────────────────── ──────── ────────────────────── ────────────── ─────────────── ───────────── ──────────────────────────────────────────────────────────────────── ───────────────────────────────── ───────────────────────────────── ─────────────────────────────────
+cluster_kbw9ex7dfa cluster1                                       8               0             {GlobalDefaultDeny:false UseNetworkPoliciesInAccessGraphStates:true} NOT_INTEGRATED (last seen: never) NOT_INTEGRATED (last seen: never) NOT_INTEGRATED (last seen: never)
+
+```
+
+### `otterize clusters update <cluster-id> --global-default-deny=[true|false]`
+
+Updates the user-settable properties of the cluster in Otterize Cloud.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| --global-default-deny | true | Whether a global default deny network policy is in effect. |
 :::danger
-Document once cluster creation is fixed.
+What about UseNetworkPoliciesInAccessGraphStates?
 :::
+
 #### Returns
 
-RESULTS DESCRIPTION
+Returns a confirmation and a table of information about the updated cluster.
 
 ```shell
-EXAMPLE
+Cluster updated
+id                 name     default environment id integration id namespace count service count configuration                                                         intents operator                  credentials operator              network mapper
+────────────────── ──────── ────────────────────── ────────────── ─────────────── ───────────── ───────────────────────────────────────────────────────────────────── ───────────────────────────────── ───────────────────────────────── ─────────────────────────────────
+cluster_kbw9ex7dfa cluster1                                       8               0             {GlobalDefaultDeny:false UseNetworkPoliciesInAccessGraphStates:false} NOT_INTEGRATED (last seen: never) NOT_INTEGRATED (last seen: never) NOT_INTEGRATED (last seen: never)
+
 ```
 
-### `otterize clusters update [_OPTIONS_]`
+### `otterize clusters delete <cluster-id>`
 
-ACTION DESCRIPTION.
+Deletes the given cluster, if it doesn't have an integration.
 
-#### Options
-
-| Name | Default | Description |
-| --- | --- | --- |
-| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+To delete a cluster with an integration, first delete its integration.
 
 #### Returns
 
-RESULTS DESCRIPTION
+Returns a confirmation of the deletion.
 
 ```shell
-EXAMPLE
-```
-
-### `otterize clusters delete [_OPTIONS_]`
-
-ACTION DESCRIPTION.
-
-#### Options
-
-| Name | Default | Description |
-| --- | --- | --- |
-| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
-
-#### Returns
-
-RESULTS DESCRIPTION
-
-```shell
-EXAMPLE
+Deleted cluster cluster_kbw9ex7dfa
 ```
 
 ## Environments
@@ -355,7 +358,7 @@ List all environments, optionally filtered by labels or name.
 
 | Name | Default | Description |
 | --- | --- | --- |
-| `-l` or `--labels` |  | Return only the environments that contain all the given labels. A label may be of the form `key` or `key:value`. |
+| `-l` or `--labels` |  | Return only the environments that contain all the given labels. A label may be of the form `key` or `key=value`. |
 | `-n` or `--name` |  | Filter the list by environment name. Since environment names are unique, this will always return at most one cluster. |
 
 #### Returns
@@ -369,137 +372,225 @@ env_yg64fe8ty2 staging                  region-EU                            15
 env_glohhjfowc phase 1                                                       1
 env_o6tdthl6qz phase 2                                                       2
 env_zfndrpvqgp phase 3                                                       3
-env_5mzzqxrr2f eks1_default_environment key1=,key2=value2                    0
-env_lqrcfkam5g phase 0                  phase1=                              0
+env_5mzzqxrr2f eks1_default_environment key1,key2=value2                     0
+env_lqrcfkam5g phase 0                  phase1                               0
 
 ```
 
-### `otterize environments get [_OPTIONS_]`
+### `otterize environments get <environment-id>`
 
-ACTION DESCRIPTION.
+Returns information about a single environment, specified by its id.
+
+#### Returns
+
+Returns a table of information about the specified environment.
+
+```shell
+id             name    labels service count namespaces count applied intents count
+────────────── ─────── ────── ───────────── ──────────────── ─────────────────────
+env_o6tdthl6qz staging        12            1                2
+
+```
+
+### `otterize environments create -n <environment-name> [-l label1,label2]`
+
+Creates a new environment with the given name, and optionally with the given labels.
+
+Environment names must be unique in an organization.
+
+The keys of the labels on a given environment must be unique.
 
 #### Options
 
 | Name | Default | Description |
 | --- | --- | --- |
-| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+| `-n` or `--name` |  | The name to give the new environment. |
+| `-l` or `--labels` |  | Label the new environment with the given labels. A label may be of the form `key` or `key=value`. |
 
 #### Returns
 
-RESULTS DESCRIPTION
+Returns a table of information about the newly-created environment.
 
 ```shell
-EXAMPLE
+id             name labels                    service count namespaces count applied intents count
+────────────── ──── ───────────────────────── ───────────── ──────────────── ─────────────────────
+env_bzzustqrek qa   anonymized=true,us-east-1 0             0                0
 ```
 
-### `otterize environments create [_OPTIONS_]`
+### `otterize environments update <environment-id> [-l label1,label2] [-n name]`
 
-ACTION DESCRIPTION.
+Updates an environment, specified by its id, optionally changing its name and optionally changing its labels.
+
+Environment names must be unique in an organization.
+
+The keys of the labels on a given environment must be unique.
 
 #### Options
 
 | Name | Default | Description |
 | --- | --- | --- |
-| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+| `-l` or `--labels` |  | Relabel the environment with the specified labels. A label may be of the form `key` or `key=value`. |
+| `-n` or `--name` |  | Rename the environment with the specified name. |
 
 #### Returns
 
-RESULTS DESCRIPTION
+Returns a confirmation of the update, and a table of information about the newly-updated environment.
 
 ```shell
-EXAMPLE
+Environment updated
+id             name labels                     service count namespaces count applied intents count
+────────────── ──── ────────────────────────── ───────────── ──────────────── ─────────────────────
+env_bzzustqrek qa1  anonymized=false,us-east-2 0             0                0
 ```
 
-### `otterize environments update [_OPTIONS_]`
+### `otterize environments update add-label <environment-id> --key=<key> [--value=<value>]`
 
-ACTION DESCRIPTION.
+Updates an environment, specified by its id, by adding a label.
+
+If a label with the specified key already exists on this environment, with or without a value, it is replaced.
 
 #### Options
 
 | Name | Default | Description |
 | --- | --- | --- |
-| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+| `--key` |  | Specifies a key for the added label. |
+| `--value` |  | Specifies a value for the added label. |
 
 #### Returns
 
-RESULTS DESCRIPTION
+Returns a table of information about the newly-updated environment.
 
 ```shell
-EXAMPLE
+Environment updated
+id             name labels                               service count namespaces count applied intents count
+────────────── ──── ──────────────────────────────────── ───────────── ──────────────── ─────────────────────
+env_uchr33prjg qa   size=small,anonymized=true,us-east-1 0             0                0
 ```
 
-### `otterize environments delete [_OPTIONS_]`
+### `otterize environments update remove-label <environment-id> --key=<key>`
 
-ACTION DESCRIPTION.
+Updates an environment, specified by its id, by removing a label.
+
+The label with the specified key is removed whether or not it has a value.
 
 #### Options
 
 | Name | Default | Description |
 | --- | --- | --- |
-| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+| `--key` |  | Specifies the key for the label to be removed. |
 
 #### Returns
 
-RESULTS DESCRIPTION
+Returns a table of information about the newly-updated environment.
 
 ```shell
-EXAMPLE
+Environment updated
+id             name labels                    service count namespaces count applied intents count
+────────────── ──── ───────────────────────── ───────────── ──────────────── ─────────────────────
+env_uchr33prjg qa   anonymized=true,us-east-1 0             0                0
+```
+
+### `otterize environments delete <environment-id>>`
+
+Deletes the specified environment.
+
+If the environment is being used as the default environment for a Kubernetes integration, that integration must first be updated with a different environment, or deleted.
+
+#### Returns
+
+Returns confirmation of the deletion.
+
+```shell
+Deleted environment env_bzzustqrek
 ```
 
 ## Integrations
 
-### `otterize integrations list [_OPTIONS_]`
+### `otterize integrations list [--cluster-id=<cluster-id>] [--env-id=<env-id>] [--name=<name>] [--type=GENERIC | --type=KUBERNETES]`
 
-ACTION DESCRIPTION.
+List all integrations, optionally filtered by cluster, environment, name, or type.
 
 #### Options
 
 | Name | Default | Description |
 | --- | --- | --- |
-| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+| `--cluster-id` |  | Show only the integration associated with the specified cluster.  |
+| `--env-id` |  | Show only the integrations with the specified environment as their default environment.  |
+| `-n` or `--name` |  | Show only the integration with the specified name.  |
+| `--type` |  | Show only integrations with the specified type: `GENERIC` or `KUBERNETES`.  |
 
 #### Returns
 
-RESULTS DESCRIPTION
+Returns a table of information about the integrations.
 
 ```shell
-EXAMPLE
+id             type       name          cluster id         default environment id intents operator                                               credentials operator              network mapper
+────────────── ────────── ───────────── ────────────────── ────────────────────── ────────────────────────────────────────────────────────────── ───────────────────────────────── ──────────────────────────────────────────────────────────────
+int_7b7rc988i3 KUBERNETES eks1          cluster_dvlwk4q25r env_5mzzqxrr2f         DISCONNECTED (last seen: 2023-01-26 08:55:53.909965 +0000 UTC) NOT_INTEGRATED (last seen: never) DISCONNECTED (last seen: 2023-01-26 08:56:29.608348 +0000 UTC)
+int_ltdad8mcfc GENERIC    my-automation
 ```
 
-### `otterize integrations get [_OPTIONS_]`
+### `otterize integrations get <integration-id>`
 
-ACTION DESCRIPTION.
-
-#### Options
-
-| Name | Default | Description |
-| --- | --- | --- |
-| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+Returns information about a single integration, specified by its id.
 
 #### Returns
 
-RESULTS DESCRIPTION
+Returns a table of information about the specified integration.
 
 ```shell
-EXAMPLE
+id             type       name cluster id         default environment id intents operator                                               credentials operator              network mapper
+────────────── ────────── ──── ────────────────── ────────────────────── ────────────────────────────────────────────────────────────── ───────────────────────────────── ──────────────────────────────────────────────────────────────
+int_7b7rc988i3 KUBERNETES eks1 cluster_dvlwk4q25r env_5mzzqxrr2f         DISCONNECTED (last seen: 2023-01-26 08:55:53.909965 +0000 UTC) NOT_INTEGRATED (last seen: never) DISCONNECTED (last seen: 2023-01-26 08:56:29.608348 +0000 UTC)
 ```
 
-### `otterize integrations create [_OPTIONS_]`
+### `otterize integrations create generic -n=<name>`
 
-ACTION DESCRIPTION.
+Creates a new generic-type integration with the specified name.
+
+Generic-type integrations are used for any kind of automated access to the Otterize Cloud API.
+
+Integration names must be unique, per integration type, within an organization.
 
 #### Options
 
 | Name | Default | Description |
 | --- | --- | --- |
-| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+| `-n` or `--name` |  | Specify the name of the new integration.  |
 
 #### Returns
 
-RESULTS DESCRIPTION
+Returns a table of information about the newly-created integration.
 
 ```shell
-EXAMPLE
+id             type    name   cluster id default environment id intents operator credentials operator network mapper client id      client secret
+────────────── ─────── ────── ────────── ────────────────────── ──────────────── ──────────────────── ────────────── ────────────── ────────────────────────────────────────────────────────────────
+int_nx2twtcqwt GENERIC my-bot                                                                                        cli_csn8mb55b3 7adba16e331bdf9fe9d2c1ec7d2d78a1c7e56df34sc2c5ff98e4dec4aa232c3c
+```
+
+### `otterize integrations create kubernetes --cluster-id=<cluster-id> --env-id=<env-id>`
+
+Creates a new Kubernetes-type integration for the specified cluster and with the specified default environment.
+
+The cluster must have already been created in Otterize Cloud before the new integration is created and used with it.
+
+The default environment must also have already been created. All namespaces in the cluster are associated with this environment by default; each namespace may then be associated with a different environment by updating it.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| `cluster-id` |  | The id of the cluster to use with this integration. |
+| `env-id` |  | The id of the environment to use as the default environment for this integration. |
+
+#### Returns
+
+Returns a table of information about the newly-created integration.
+
+```shell
+id             type       name                      cluster id         default environment id intents operator                  credentials operator              network mapper                    client id      client secret
+────────────── ────────── ───────────────────────── ────────────────── ────────────────────── ───────────────────────────────── ───────────────────────────────── ───────────────────────────────── ────────────── ────────────────────────────────────────────────────────────────
+int_hbspxl9te3 KUBERNETES Integration - dev-cluster cluster_c8uo5cc8fs env_h29ujjm8q8         NOT_INTEGRATED (last seen: never) NOT_INTEGRATED (last seen: never) NOT_INTEGRATED (last seen: never) cli_6l44xifr7l 8fc161f883d89d44bddc0279f41ff24c0697e482e2cd9c5edec4a525f0af06f7
 ```
 
 ### `otterize integrations update [_OPTIONS_]`
