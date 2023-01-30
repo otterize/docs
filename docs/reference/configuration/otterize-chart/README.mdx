@@ -7,7 +7,7 @@ The [Otterize OSS helm chart](https://github.com/otterize/helm-charts/tree/main/
 For example, it configures the Credentials operator to work with the deployed SPIRE server, and the Intents Operator to get mTLS credentials from the Credentials operator.
 
 :::note
-The [network mapper](otterize-oss/components/network-mapper) is not deployed by this chart. You can deploy it with [its own chart](otterize-oss/components/network-mapper/helm-chart).
+The [network mapper](reference/configuration/network-mapper) is not deployed by this chart. You can deploy it with [its own chart](reference/configuration/network-mapper/helm-chart).
 :::end
 
 # Parameters
@@ -34,7 +34,7 @@ These parameters are used by multiple charts, and must be kept the same for the 
 
 ## Intents operator parameters
 All configurable parameters of the intents operator can be configured under the alias **intentsOperator**.
-Further information about the intents operator parameters can be found [in the Intents Operator's helm chart](otterize-oss/components/intents-operator/helm-chart).
+Further information about the intents operator parameters can be found [in the Intents Operator's helm chart](reference/configuration/intents-operator/helm-chart).
 
 | Key                                                  | Description                                                    | Default          |
 |------------------------------------------------------|----------------------------------------------------------------|------------------|
@@ -47,7 +47,7 @@ Further information about SPIRE parameters can be found [in SPIRE's helm chart](
 
 ## Credentials operator parameters
 All configurable parameters of the Credentials operator can be configured under the alias **credentialsOperator**.
-Further information about credentials operator parameters can be found [in the credentials operator chart](otterize-oss/components/credentials-operator/helm-chart).
+Further information about credentials operator parameters can be found [in the credentials operator chart](reference/configuration/credentials-operator/helm-chart).
 
 ## Resource configuration
 | Component                  | Key                                  | Default  |
