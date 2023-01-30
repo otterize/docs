@@ -187,12 +187,17 @@ To complete
 
 ## Teardown
 
-To remove the deployed reference lab run:
-
+To remove the deployed lab delete the client intents:
 ```bash
-kubectl delete -n otterize-ecom-kafka-demo -f code-examples/shadow-mode/kafka-intents.yaml
 kubectl delete -n otterize-ecom-kafka-demo -f code-examples/shadow-mode/all.yaml
+```
+
+Then remove the Kafka Server Config:
+```bash
 kubectl delete -n otterize-ecom-kafka-demo -f code-examples/shadow-mode/kafkaserverconfig.yaml
+```
+And then remove the lab and the namespace:
+```bash
 kubectl delete -n otterize-ecom-kafka-demo -f code-examples/shadow-mode/ecom-demo-mtls.yaml
 kubectl delete namespace otterize-ecom-kafka-demo
 ```
