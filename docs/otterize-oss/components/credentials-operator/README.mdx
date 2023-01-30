@@ -9,7 +9,7 @@ Alongside the Credentials operator, you could use SPIRE agents and the SPIRE SDK
 To learn more, check the documentation for [SPIRE](https://spiffe.io/docs/latest/spire-about/spire-concepts/). Note that to use the Credentials operator, you do not need to work directly with SPIRE or SPIRE agents, and can do everything completely using annotations and Kubernetes Secrets.
 
 ## Deploying the Credentials operator
-To deploy the operator, [use the Helm chart](concepts/otterize-oss/componentscredentials-operator/helm-chart).
+To deploy the operator, [use the Helm chart](otterize-oss/components/credentials-operator/helm-chart).
 
 ## Acquiring mTLS credentials using the Credentials operator
 The Credentials operator is controlled using annotations placed on pods. The operator automatically registers pods with SPIRE. To also have it create credentials, you must specify `credentials-operator.otterize.com/tls-secret-name`.
