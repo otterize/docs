@@ -551,7 +551,7 @@ and an intent to access a single topic (`my-topic`).
 
 
 ### Generating credentials
-By annotating the pod with `spire-integration.otterize.com/tls-secret-name: myclient-credentials-secret` Otterize
+By annotating the pod with `credentials-operator.otterize.com/tls-secret-name: myclient-credentials-secret` Otterize
 automatically generates mTLS credentials for the pod.
 
 The certificate's `CN` is set to be `myclient.ibac-for-kafka`. This is determined by taking the [Otterize service name](/service-identities) and appending the namespace. This value will be used in the

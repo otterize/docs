@@ -6,7 +6,7 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
 Otterize can automatically provision mTLS credentials by using the service identities implied by Kubernetes.
-This tutorial will walk you through deploying mTLS certificates on a sample client-server deployment using the [Otterize Credentials operator](concepts/otterize-oss/componentsspire-integration-operator), which works with a [SPIRE server](https://spiffe.io/docs/latest/spire-about/) to achieve this.
+This tutorial will walk you through deploying mTLS certificates on a sample client-server deployment using the [Otterize Credentials operator](concepts/otterize-oss/componentscredentials-operator), which works with a [SPIRE server](https://spiffe.io/docs/latest/spire-about/) to achieve this.
 
 In this tutorial, we will:
 
@@ -269,8 +269,8 @@ and are then mounted as a file into the container.
 Otterize defaults to generating credentials with an expiry time of 1 day. The certificates are
 automatically refreshed before expiring, and therefore you must always read the credentials from file rather than caching them.
 
-To set a longer expiration time, set the `spire-integration.otterize.com/cert-ttl` annotation for your pods.
-For more information, see [the documentation for the Credentials operator](concepts/otterize-oss/componentsspire-integration-operator)
+To set a longer expiration time, set the `credentials-operator.otterize.com/cert-ttl` annotation for your pods.
+For more information, see [the documentation for the Credentials operator](concepts/otterize-oss/componentscredentials-operator)
 :::
 
 ## What's next
@@ -278,7 +278,7 @@ For more information, see [the documentation for the Credentials operator](conce
 - Learn how to manage and [automatically provision mTLS](/k8s-mtls) credentials within a Kubernetes cluster.
 - Read about how to [integrate](/k8s-mtls/#using-mtls-credentials) mTLS into common SDKs and frameworks.
 - Enforce [secure Kafka access](/k8s-kafka-mtls) with mTLS.
-- Learn more about how the [Otterize Credentials operator](concepts/otterize-oss/componentsspire-integration-operator) works.
+- Learn more about how the [Otterize Credentials operator](concepts/otterize-oss/componentscredentials-operator) works.
 
 ## Teardown
 

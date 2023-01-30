@@ -209,8 +209,8 @@ After applying the intents file Otterize performed multiple actions to allow acc
   You should see:
   ```bash
   NAME                      READY   STATUS    RESTARTS   AGE     LABELS
-  client-5cb67b748-l25vg    1/1     Running   0          7m57s   intents.otterize.com/access-server-otterize-tutorial-np-7e16db=true,intents.otterize.com/client=true,intents.otterize.com/server=client-otterize-tutorial-np-699302,pod-template-hash=5cb67b748,spire-integration.otterize.com/service-name=client
-  server-564b56f596-54str   1/1     Running   0          7m56s   intents.otterize.com/server=server-otterize-tutorial-np-7e16db,pod-template-hash=564b56f596,spire-integration.otterize.com/service-name=server
+  client-5cb67b748-l25vg    1/1     Running   0          7m57s   intents.otterize.com/access-server-otterize-tutorial-np-7e16db=true,intents.otterize.com/client=true,intents.otterize.com/server=client-otterize-tutorial-np-699302,pod-template-hash=5cb67b748,credentials-operator.otterize.com/service-name=client
+  server-564b56f596-54str   1/1     Running   0          7m56s   intents.otterize.com/server=server-otterize-tutorial-np-7e16db,pod-template-hash=564b56f596,credentials-operator.otterize.com/service-name=server
   ```
 
   When we break down the label structure we can see:
