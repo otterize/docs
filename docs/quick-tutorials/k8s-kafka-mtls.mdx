@@ -29,7 +29,7 @@ We will deploy a Kafka cluster using Bitnami's [Helm chart](https://github.com/b
 In the chart we will configure Kafka to:
 - Recognize the Otterize intents operator as a super user so it can configure ACLs;
 - Use TLS (Kafka calls it SSL) for its listeners;
-- Tell the Otterize SPIRE integration operator, via pod annotations, how credentials should be created; and
+- Tell the Otterize Credentials operator, via pod annotations, how credentials should be created; and
 - Authenticate clients using mTLS credentials provided as a Kubernetes secret
 
 <details>
@@ -301,7 +301,7 @@ We configured the Helm chart for Kafka to:
 * Use mTLS to authenticate clients, using this Kubernetes secret.
 
 We configured Kafka itself to:
-* Add the TLS certificates of the Otterize SPIRE integration operator.
+* Add the TLS certificates of the Otterize Credentials operator.
 * Set the default ACL for all topics to allow anonymous access.
 
 ### Per-client setups:

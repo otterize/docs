@@ -70,7 +70,7 @@ spec:
 
 ## Auto-generating network policies for external traffic
 The intents operator defaults to automatically generate network policies for Kubernetes **Services** (type **LoadBalancer** and **NodePort**), and Ingress traffic
-when an intent will generate a network policy that can block external traffic. To disable this feature, consult the [documentation for the intents operator](concepts/otterize-oss/componentsintents-operator).
+when an intent will generate a network policy that can block external traffic. To disable this feature, consult the [documentation for the intents operator](reference/configuration/intents-operator).
 
 
 Let's look at an example from our demo. We have a **frontend** service being accessed from multiple sources:
@@ -209,8 +209,8 @@ After applying the intents file Otterize performed multiple actions to allow acc
   You should see:
   ```bash
   NAME                      READY   STATUS    RESTARTS   AGE     LABELS
-  client-5cb67b748-l25vg    1/1     Running   0          7m57s   intents.otterize.com/access-server-otterize-tutorial-np-7e16db=true,intents.otterize.com/client=true,intents.otterize.com/server=client-otterize-tutorial-np-699302,pod-template-hash=5cb67b748,spire-integration.otterize.com/service-name=client
-  server-564b56f596-54str   1/1     Running   0          7m56s   intents.otterize.com/server=server-otterize-tutorial-np-7e16db,pod-template-hash=564b56f596,spire-integration.otterize.com/service-name=server
+  client-5cb67b748-l25vg    1/1     Running   0          7m57s   intents.otterize.com/access-server-otterize-tutorial-np-7e16db=true,intents.otterize.com/client=true,intents.otterize.com/server=client-otterize-tutorial-np-699302,pod-template-hash=5cb67b748,credentials-operator.otterize.com/service-name=client
+  server-564b56f596-54str   1/1     Running   0          7m56s   intents.otterize.com/server=server-otterize-tutorial-np-7e16db,pod-template-hash=564b56f596,credentials-operator.otterize.com/service-name=server
   ```
 
   When we break down the label structure we can see:

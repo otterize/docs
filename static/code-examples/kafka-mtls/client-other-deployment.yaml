@@ -12,7 +12,7 @@ spec:
       labels:
         app: myclient-other
       annotations:
-        spire-integration.otterize.com/tls-secret-name: myclient-other-credentials-secret
+        credentials-operator.otterize.com/tls-secret-name: myclient-other-credentials-secret
     spec:
       containers:
         - name: myclient-other

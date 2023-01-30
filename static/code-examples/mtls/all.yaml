@@ -48,7 +48,7 @@ spec:
       labels:
         app: client
       annotations:
-        spire-integration.otterize.com/tls-secret-name: client-credentials-secret
+        credentials-operator.otterize.com/tls-secret-name: client-credentials-secret
     spec:
       containers:
         - name: client
@@ -121,7 +121,7 @@ spec:
         app: server
       annotations:
         #        to rename credentials-secret-nam   e
-        spire-integration.otterize.com/tls-secret-name: server-credentials-secret
+        credentials-operator.otterize.com/tls-secret-name: server-credentials-secret
     spec:
       containers:
         - name: server

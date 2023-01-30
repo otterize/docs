@@ -556,7 +556,9 @@ spec:
       labels:
         app: checkoutservice
       annotations:
-        spire-integration.otterize.com/tls-secret-name: checkoutservice-credentials-secret
+        credentials-operator.otterize.com/tls-secret-name: checkoutservice-credentials-secret
+        credentials-operator.otterize.com/cert-file-name: svid.pem
+        credentials-operator.otterize.com/ca-file-name: bundle.pem
     spec:
       serviceAccountName: default
       containers:
@@ -935,7 +937,9 @@ spec:
       labels:
         app: orderservice
       annotations:
-        spire-integration.otterize.com/tls-secret-name: orderservice-credentials-secret
+        credentials-operator.otterize.com/tls-secret-name: orderservice-credentials-secret
+        credentials-operator.otterize.com/cert-file-name: svid.pem
+        credentials-operator.otterize.com/ca-file-name: bundle.pem
     spec:
       serviceAccountName: default
       containers:
@@ -1018,7 +1022,9 @@ spec:
       labels:
         app: paymentservice
       annotations:
-        spire-integration.otterize.com/tls-secret-name: paymentservice-credentials-secret
+        credentials-operator.otterize.com/tls-secret-name: paymentservice-credentials-secret
+        credentials-operator.otterize.com/cert-file-name: svid.pem
+        credentials-operator.otterize.com/ca-file-name: bundle.pem
     spec:
       serviceAccountName: default
       terminationGracePeriodSeconds: 5
@@ -1503,11 +1509,11 @@ spec:
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/component: kafka
       annotations:
-        spire-integration.otterize.com/cert-type: jks
-        spire-integration.otterize.com/dns-names: kafka,kafka-headless,kafka.otterize-ecom-kafka-demo,kafka-headless.otterize-ecom-kafka-demo,kafka-0.kafka-headless.otterize-ecom-kafka-demo.svc.cluster.local,kafka.otterize-ecom-kafka-demo.svc.cluster.local
-        spire-integration.otterize.com/keystore-file-name: kafka.keystore.jks
-        spire-integration.otterize.com/tls-secret-name: kafka-tls-secret
-        spire-integration.otterize.com/truststore-file-name: kafka.truststore.jks
+        credentials-operator.otterize.com/cert-type: jks
+        credentials-operator.otterize.com/dns-names: kafka,kafka-headless,kafka.otterize-ecom-kafka-demo,kafka-headless.otterize-ecom-kafka-demo,kafka-0.kafka-headless.otterize-ecom-kafka-demo.svc.cluster.local,kafka.otterize-ecom-kafka-demo.svc.cluster.local
+        credentials-operator.otterize.com/keystore-file-name: kafka.keystore.jks
+        credentials-operator.otterize.com/tls-secret-name: kafka-tls-secret
+        credentials-operator.otterize.com/truststore-file-name: kafka.truststore.jks
     spec:
       
       hostNetwork: false
