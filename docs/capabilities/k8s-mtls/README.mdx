@@ -27,7 +27,7 @@ spec:
       annotations:
         # highlight-next-line
         # 1. Generate credentials as a secret called "client-credentials-secret":
-        spire-integration.otterize.com/tls-secret-name: client-credentials-secret
+        credentials-operator.otterize.com/tls-secret-name: client-credentials-secret
         ...
     spec:
       volumes:
@@ -52,7 +52,7 @@ spec:
 
 :::tip
 For the complete list of annotation parameters please consult the
-[Otterize SPIRE integration operator documentation](concepts/otterize-oss/componentsspire-integration-operator/).
+[Otterize SPIRE integration operator documentation](concepts/otterize-oss/componentscredentials-operator/).
 :::
 
 :::tip
@@ -206,4 +206,4 @@ The certificate belongs to a chain of trust rooted at the SPIRE server.
 ## What's next
 
 - Configure secure access between pods and Kafka running within the same Kubernetes cluster with this [guide](/capabilities/kafka/).
-- Read more about the [Otterize SPIRE integration operator](concepts/otterize-oss/componentsspire-integration-operator/)
+- Read more about the [Otterize SPIRE integration operator](concepts/otterize-oss/componentscredentials-operator/)

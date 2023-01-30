@@ -36,7 +36,7 @@ later by deploying it as shown below but without the `--set` flag.
 To configure a Kafka broker for secure access, we need to configure the broker itself as well as adding Otterize-specific
 annotations to indicate that we want mTLS credential generation to happen.
 For the complete list of annotation parameters please follow the SPIRE integration operator
-[documentation](concepts/otterize-oss/componentsspire-integration-operator/).
+[documentation](concepts/otterize-oss/componentscredentials-operator/).
 
 The following example shows how to configure Bitnami's popular
 Kafka [chart](https://github.com/bitnami/charts/tree/master/bitnami/kafka):
@@ -78,12 +78,12 @@ Kafka [chart](https://github.com/bitnami/charts/tree/master/bitnami/kafka):
    secret:
    ```yaml
    podAnnotations:
-     spire-integration.otterize.com/cert-type: jks
-     spire-integration.otterize.com/tls-secret-name: kafka-tls-secret
-     spire-integration.otterize.com/truststore-file-name: kafka.truststore.jks
-     spire-integration.otterize.com/keystore-file-name: kafka-keystore.jks
-     spire-integration.otterize.com/dns-names: "kafka-0.kafka-headless.kafka.svc.cluster.local,kafka.kafka.svc.cluster.local"
-     spire-integration.otterize.com/cert-ttl: "31536000" # 1 year
+     credentials-operator.otterize.com/cert-type: jks
+     credentials-operator.otterize.com/tls-secret-name: kafka-tls-secret
+     credentials-operator.otterize.com/truststore-file-name: kafka.truststore.jks
+     credentials-operator.otterize.com/keystore-file-name: kafka-keystore.jks
+     credentials-operator.otterize.com/dns-names: "kafka-0.kafka-headless.kafka.svc.cluster.local,kafka.kafka.svc.cluster.local"
+     credentials-operator.otterize.com/cert-ttl: "31536000" # 1 year
    ```
 
 <details>

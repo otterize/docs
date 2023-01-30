@@ -2,14 +2,14 @@
 sidebar_position: 1
 title: (UPDATE) Helm chart
 ---
-You can use the [SPIRE integration operator's Helm chart](https://github.com/otterize/helm-charts/tree/main/spire-integration-operator) to deploy the SPIRE integration operator on its own, and configure a SPIRE server for it to work with according to the parameters value.
+You can use the [SPIRE integration operator's Helm chart](https://github.com/otterize/helm-charts/tree/main/credentials-operator) to deploy the SPIRE integration operator on its own, and configure a SPIRE server for it to work with according to the parameters value.
 But it is recommended to deploy the operator as part of the [Otterize OSS Helm chart](https://github.com/otterize/helm-charts/tree/main/otterize-kubernetes), which comes with a SPIRE server and the intents operator, rather than managing it independently.
 
 If you would like to deploy it on its own, add the Otterize Helm chart repository and configure the operator:
 ```bash
   helm repo add otterize https://helm.otterize.com
   helm repo update
-  helm install otterize-spire-integration-operator otterize/spire-integration-operator -n otterize-system --create-namespace
+  helm install otterize-credentials-operator otterize/credentials-operator -n otterize-system --create-namespace
 ```
 
 ## SPIRE parameters
@@ -24,7 +24,7 @@ If you would like to deploy it on its own, add the Otterize Helm chart repositor
 | Key                         | Description                | Default                      |
 |-----------------------------|----------------------------|------------------------------|
 | `operator.image.repository` | Operator image repository. | `otterize`                   |
-| `operator.image.image`      | Operator image.            | `spire-integration-operator` |
+| `operator.image.image`      | Operator image.            | `credentials-operator` |
 | `operator.image.tag`        | Operator image tag.        | `latest`                     |
 | `operator.pullPolicy`       | Operator pull policy.      | `(none)`                     |
 

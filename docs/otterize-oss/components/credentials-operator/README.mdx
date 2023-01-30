@@ -1,0 +1,52 @@
+---
+sidebar_position: 3
+title: SPIRE integration operator
+---
+
+The Otterize SPIRE integration operator automatically resolves pods to dev-friendly service names, registers them with a SPIRE server, and optionally provisions credentials as Kubernetes Secrets. In this role, it is similar to how a SPIRE agent behaves.
+Alongside the SPIRE integration operator, you could use SPIRE agents and the SPIRE SDK to work with the same SPIRE server.
+
+To learn more, check the documentation for [SPIRE](https://spiffe.io/docs/latest/spire-about/spire-concepts/). Note that to use the SPIRE integration operator, you do not need to work directly with SPIRE or SPIRE agents, and can do everything completely using annotations and Kubernetes Secrets.
+
+## Deploying the SPIRE integration operator
+To deploy the operator, [use the Helm chart](concepts/otterize-oss/componentscredentials-operator/helm-chart).
+
+## Acquiring mTLS credentials using the SPIRE integration operator
+The SPIRE integration operator is controlled using annotations placed on pods. The operator automatically registers pods with SPIRE. To also have it create credentials, you must specify `credentials-operator.otterize.com/tls-secret-name`.
+
+### Pod annotations
+
+| Annotation                                                          | Description                                                                                                                                                          | Default                                                   |
+|---------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------|
+| `credentials-operator.otterize.com/tls-secret-name`                    | If set, the operator will create a secret with this name with mTLS credentials for this pod.                                                                         | N/A                                                       |
+| `credentials-operator.otterize.com/dns-names`                          | If set, overrides the list of subject alternative names in the certificate. Should include the hostname of Kubernetes services that will be used to access this pod. | N/A                                                       |
+| `credentials-operator.otterize.com/cert-ttl`                           | Override for the expiration time for the certificate in seconds.                                                                                                     | If deployed with the bundled SPIRE server, 1 day (86400). |
+| `credentials-operator.otterize.com/cert-type`                          | Type of the credential bundle - `pem` or `jks`.                                                                                                                      | `pem`                                                     |
+| `credentials-operator.otterize.com/cert-file-name`                     | Certificate key name in the secret. When mounted, this is the filename for the certificate (when using spire it's the SVID file). Only used when cert-type is `pem`.                                | `svid.pem`                                                |
+| `credentials-operator.otterize.com/ca-file-name`                   | Bundle (certificate chain bundle) key name in the secret. When mounted, this is the filename for the certificate chain. Only used when cert-type is `pem`.           | `bundle.pem`                                              |
+| `credentials-operator.otterize.com/key-file-name`                      | Private key key name in the secret. When mounted, this is the filename for the private key. Only used when cert-type is `pem`.                                       | `key.pem`                                                 |
+| `credentials-operator.otterize.com/keystore-file-name`                 | Keystore key name in the secret. When mounted, this is the filename for the keystore. Only used when cert-type is `jks`.                                             | `keystore.jks`                                            |
+| `credentials-operator.otterize.com/truststore-file-name`               | Truststore key name in the secret. When mounted, this is the filename for the truststore. Only used when cert-type is `jks`.                                         | `truststore.jks`                                          |
+| `credentials-operator.otterize.com/jks-password`                       | Password for the JKS truststore and keystore. Only used when cert-type is `jks`.                                                                                     | `password`                                                |
+| `credentials-operator.otterize.com/restart-pod-on-certificate-renewal` | A pod with this annotation (no matter the value) will be restarted after certificate renewal, along with any replicas. Should be ideally set through the pod owner's `template` spec so it will persist between restarts. | N/A                                                   |
+| `intents.otterize.com/service-name`                                 | Otterize-wide override for this service's name. Used by the operator when registering the service with SPIRE and generating credentials.                             | See [Service identities](/service-identities)             |
+
+## How does the SPIRE integration operator work?
+
+### SPIRE entry registration
+Once the operator [resolves the service name](#service-name-resolution-and-automatic-pod-labeling) for a pod, it labels the pod and registers an entry with the SPIRE server.
+
+### Credential generation
+After the operator has registered the pod, which happens automatically upon startup, the pod can use the SPIRE Workload API to generate credentials for the SVID `<servicename>.<namespace>`.
+
+Additionally, the operator consults the label `spire-integration.otterize.com/tls-secret-name`. If that label exists, the operator creates a secret named after the value of the label with X.509 credentials within (a SPIRE SVID). This way, the pod can get autogenerated credentials without modifying its code.
+
+For more information, see the docs.
+
+### Service name resolution and automatic pod labeling
+Service name resolution is performed one of two ways:
+1. If an `intents.otterize.com/service-name` annotation is present, that name is used.
+2. If not, a recursive look up is performed for the Kubernetes resource owner for a Pod until the root is reached. For example, if you have a `Deployment` named `client`, which then creates and owns a `ReplicaSet`, which then creates and owns a `Pod`, then the service name for that pod is `client` - same as the name of the `Deployment`.
+
+The value resulting from this process forms the value of the label `spire-integration.otterize.com/service-name`.
+
