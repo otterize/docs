@@ -593,6 +593,9 @@ id             type       name                      cluster id         default e
 int_hbspxl9te3 KUBERNETES Integration - dev-cluster cluster_c8uo5cc8fs env_h29ujjm8q8         NOT_INTEGRATED (last seen: never) NOT_INTEGRATED (last seen: never) NOT_INTEGRATED (last seen: never) cli_6l44xifr7l 8fc161f883d89d44bddc0279f41ff24c0697e482e2cd9c5edec4a525f0af06f7
 ```
 
+```danger
+Update this after the implementation is fixed.
+```
 ### `otterize integrations update [_OPTIONS_]`
 
 ACTION DESCRIPTION.
@@ -611,22 +614,16 @@ RESULTS DESCRIPTION
 EXAMPLE
 ```
 
-### `otterize integrations delete [_OPTIONS_]`
+### `otterize integrations delete <integration-id>`
 
-ACTION DESCRIPTION.
-
-#### Options
-
-| Name | Default | Description |
-| --- | --- | --- |
-| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+Deletes the specified integration.
 
 #### Returns
 
-RESULTS DESCRIPTION
+Returns confirmation of the deletion.
 
 ```shell
-EXAMPLE
+Deleted integration int_nx2twtcqwt
 ```
 
 ## Intents
