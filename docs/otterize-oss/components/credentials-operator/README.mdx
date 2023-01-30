@@ -1,18 +1,18 @@
 ---
 sidebar_position: 3
-title: SPIRE integration operator
+title: Credentials operator
 ---
 
-The Otterize SPIRE integration operator automatically resolves pods to dev-friendly service names, registers them with a SPIRE server, and optionally provisions credentials as Kubernetes Secrets. In this role, it is similar to how a SPIRE agent behaves.
-Alongside the SPIRE integration operator, you could use SPIRE agents and the SPIRE SDK to work with the same SPIRE server.
+The Otterize Credentials operator automatically resolves pods to dev-friendly service names, registers them with a SPIRE server, and optionally provisions credentials as Kubernetes Secrets. In this role, it is similar to how a SPIRE agent behaves.
+Alongside the Credentials operator, you could use SPIRE agents and the SPIRE SDK to work with the same SPIRE server.
 
-To learn more, check the documentation for [SPIRE](https://spiffe.io/docs/latest/spire-about/spire-concepts/). Note that to use the SPIRE integration operator, you do not need to work directly with SPIRE or SPIRE agents, and can do everything completely using annotations and Kubernetes Secrets.
+To learn more, check the documentation for [SPIRE](https://spiffe.io/docs/latest/spire-about/spire-concepts/). Note that to use the Credentials operator, you do not need to work directly with SPIRE or SPIRE agents, and can do everything completely using annotations and Kubernetes Secrets.
 
-## Deploying the SPIRE integration operator
+## Deploying the Credentials operator
 To deploy the operator, [use the Helm chart](concepts/otterize-oss/componentscredentials-operator/helm-chart).
 
-## Acquiring mTLS credentials using the SPIRE integration operator
-The SPIRE integration operator is controlled using annotations placed on pods. The operator automatically registers pods with SPIRE. To also have it create credentials, you must specify `credentials-operator.otterize.com/tls-secret-name`.
+## Acquiring mTLS credentials using the Credentials operator
+The Credentials operator is controlled using annotations placed on pods. The operator automatically registers pods with SPIRE. To also have it create credentials, you must specify `credentials-operator.otterize.com/tls-secret-name`.
 
 ### Pod annotations
 
@@ -31,7 +31,7 @@ The SPIRE integration operator is controlled using annotations placed on pods. T
 | `credentials-operator.otterize.com/restart-pod-on-certificate-renewal` | A pod with this annotation (no matter the value) will be restarted after certificate renewal, along with any replicas. Should be ideally set through the pod owner's `template` spec so it will persist between restarts. | N/A                                                   |
 | `intents.otterize.com/service-name`                                 | Otterize-wide override for this service's name. Used by the operator when registering the service with SPIRE and generating credentials.                             | See [Service identities](/service-identities)             |
 
-## How does the SPIRE integration operator work?
+## How does the Credentials operator work?
 
 ### SPIRE entry registration
 Once the operator [resolves the service name](#service-name-resolution-and-automatic-pod-labeling) for a pod, it labels the pod and registers an entry with the SPIRE server.

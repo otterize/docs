@@ -6,7 +6,7 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
 Otterize can automatically provision mTLS credentials by using the service identities implied by Kubernetes.
-This tutorial will walk you through deploying mTLS certificates on a sample client-server deployment using the [Otterize SPIRE integration operator](concepts/otterize-oss/componentsspire-integration-operator), which works with a [SPIRE server](https://spiffe.io/docs/latest/spire-about/) to achieve this.
+This tutorial will walk you through deploying mTLS certificates on a sample client-server deployment using the [Otterize Credentials operator](concepts/otterize-oss/componentsspire-integration-operator), which works with a [SPIRE server](https://spiffe.io/docs/latest/spire-about/) to achieve this.
 
 In this tutorial, we will:
 
@@ -31,7 +31,7 @@ You can skip this section if Otterize is already installed in your cluster.
 Our example consists of two pods, "client" and "server", communicating over HTTP with mTLS.
 Otterize makes mTLS easy, requiring just 3 simple changes to a client pod spec:
 1. **Generate credentials**: add the `otterize/tls-secret-name` annotation, which tells the Otterize
-   SPIRE integration operator to generate mTLS credentials, and to store them in a Kubernetes secret
+   Credentials operator to generate mTLS credentials, and to store them in a Kubernetes secret
    whose name is the value of this annotation.
 2. **Expose credentials in a volume**: add a volume containing this secret to the pod.
 3. **Mount the volume**: mount the volume in every container in the pod.
@@ -256,7 +256,7 @@ and are then mounted as a file into the container.
 <summary>Expand to see what happened behind the scenes</summary>
 
 1. We annotated the pods to let Otterize know it should generate mTLS credentials.
-2. The Otterize SPIRE integration operator:
+2. The Otterize Credentials operator:
     1. Created entries in the SPIRE server for the annotated pods.
     2. Generated matching mTLS credentials using the SPIRE server.
     3. Stored the mTLS credentials into Kubernetes secrets.
@@ -270,7 +270,7 @@ Otterize defaults to generating credentials with an expiry time of 1 day. The ce
 automatically refreshed before expiring, and therefore you must always read the credentials from file rather than caching them.
 
 To set a longer expiration time, set the `spire-integration.otterize.com/cert-ttl` annotation for your pods.
-For more information, see [the documentation for the SPIRE integration operator](concepts/otterize-oss/componentsspire-integration-operator)
+For more information, see [the documentation for the Credentials operator](concepts/otterize-oss/componentsspire-integration-operator)
 :::
 
 ## What's next
@@ -278,7 +278,7 @@ For more information, see [the documentation for the SPIRE integration operator]
 - Learn how to manage and [automatically provision mTLS](/k8s-mtls) credentials within a Kubernetes cluster.
 - Read about how to [integrate](/k8s-mtls/#using-mtls-credentials) mTLS into common SDKs and frameworks.
 - Enforce [secure Kafka access](/k8s-kafka-mtls) with mTLS.
-- Learn more about how the [Otterize SPIRE integration operator](concepts/otterize-oss/componentsspire-integration-operator) works.
+- Learn more about how the [Otterize Credentials operator](concepts/otterize-oss/componentsspire-integration-operator) works.
 
 ## Teardown
 
