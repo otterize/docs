@@ -938,8 +938,6 @@ spec:
         app: orderservice
       annotations:
         credentials-operator.otterize.com/tls-secret-name: orderservice-credentials-secret
-        credentials-operator.otterize.com/cert-file-name: svid.pem
-        credentials-operator.otterize.com/ca-file-name: bundle.pem
     spec:
       serviceAccountName: default
       containers:

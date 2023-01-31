@@ -131,11 +131,12 @@ This will be the base state, from which we will gradually roll out secure access
 
 We can see in the access graph that the node is marked with a `Kafka` and `KSC` icons.
 
-![Kafka Server Config](/img/quick-tutorials/shadow-mode/KSC.png)
+![Kafka Server Config](/img/quick-tutorials/shadow-mode/kafka-node.png)
 
-:::danger
-Show how the KSC config looks like in the graph
-:::
+By clicking the Kafka node twice and switching to focus mode we'll be able to inspect its configuration and credentials.
+
+![Kafka Server Config](/img/quick-tutorials/shadow-mode/kafka-focus.png)
+
 
 ## Declare Kafka intents
 
@@ -168,16 +169,17 @@ And apply them with
 kubectl apply -n otterize-ecom-kafka-demo -f code-examples/shadow-mode/kafka-intents.yaml
 ```
 
+We can immediatly see that the relevant edges are marked with the Kafka icon.
+
+![Kafka Server Config](/img/quick-tutorials/shadow-mode/kafka-edges.png)
+
+And by clicking each of these edge we are able to see the specific topics declared by the client workload for access.
+
+![Kafka Server Config](/img/quick-tutorials/shadow-mode/kafka-edge-modal.png)
+
+:::note
 You can verify that the reference lab still functions as intended.
-
-In the access we can see that edges connecting to Kafka are marked with a Kafka icon.
-
-![Kafka icon](/img/quick-tutorials/shadow-mode/phase-6.png)
-
-
-Clicking on the edge between `orderservice` and `kafka` will allow us to inspect which topics are allowed for access by the `orderservice`.
-
-![Kafka intent](/img/quick-tutorials/shadow-mode/kafka-intent.png)
+:::
 
 ## What's next
 

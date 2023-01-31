@@ -108,7 +108,7 @@ Go ahead and browse to the URL above to "shop" and get a feel for the reference 
 
 Locate your deployment in the [access graph](https://app.staging.otterize.com/access-graph). You should see the following map for the deployed lab.
 
-![Discovered intents](/img/quick-tutorials/shadow-mode/phase-0.png)
+<img src="/img/quick-tutorials/shadow-mode/phase-0.png" alt="Discovered intents" width="600"/>
 
 The access graph allows you to quickly inspect your network, map services communication and prepare for gradual rollout using its **shadow mode** features.
 
@@ -128,7 +128,7 @@ kubectl apply -n otterize-ecom-demo -f code-examples/shadow-mode/phase-1.yaml
 
 Look at the access graph again:
 
-![Discovered intents](/img/quick-tutorials/shadow-mode/phase-1.png)
+<img src="/img/quick-tutorials/shadow-mode/phase-1.png" alt="Discovered intents" width="600"/>
 
 We’re not enforcing access controls, but we can see the `frontend` will still be able to call the `recommendationservice`, and the latter would be protected from any other calls.
 
@@ -146,7 +146,7 @@ kubectl apply -n otterize-ecom-demo -f code-examples/shadow-mode/phase-2.yaml
 
 Look at the access graph again:
 
-![Discovered intents](/img/quick-tutorials/shadow-mode/phase-2.png)
+<img src="/img/quick-tutorials/shadow-mode/phase-2.png" alt="Discovered intents" width="600"/>
 
 What happened? The access graph is warning us that when we’ll protect the `productcatalogservice`, only the `recommendationservice` will be able to reach it and the `frontend` and the `checkoutservice` will be blocked.
 
@@ -172,7 +172,7 @@ Apply these intents files with
 kubectl apply -n otterize-ecom-demo -f code-examples/shadow-mode/phase-3.yaml
 ```
 
-![Discovered intents](/img/quick-tutorials/shadow-mode/phase-3.png)
+<img src="/img/quick-tutorials/shadow-mode/phase-3.png" alt="Discovered intents" width="600"/>
 
 We can see how to roll out IBAC gradually: pick a service to protect, make sure its clients declare intents to call it and apply. The access graph and shadow mode allow us to gain confidence by highlighting any required configuration changes.
 
@@ -196,7 +196,7 @@ kubectl apply -n otterize-ecom-demo -f code-examples/shadow-mode/all.yaml
 
 Look at the access graph again:
 
-![Discovered intents](/img/quick-tutorials/shadow-mode/phase-4.png)
+<img src="/img/quick-tutorials/shadow-mode/phase-4.png" alt="Discovered intents" width="600"/>
 
 Looks like everything is protected and nothing intended should be blocked.
 
@@ -251,10 +251,10 @@ spec:
 You can browse the lab using the browser to see it works as intended.
 
 ### Inspect the access graph
-![Enforcement enabled](/img/quick-tutorials/shadow-mode/phase-5.png)
+<img src="/img/quick-tutorials/shadow-mode/phase-5.png" alt="Discovered intents" width="600"/>
 
 ## What's next
-- Learn how to [manage secure access for Kafka](/build-confidence/visualize-kafka-protection) using the demo lab tutorial.
+- Learn how to [manage secure access for Kafka](/realistic-example/visualize-kafka-protection) using the demo lab tutorial.
 
 ## Teardown
 
