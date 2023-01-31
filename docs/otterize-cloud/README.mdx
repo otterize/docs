@@ -26,7 +26,7 @@ the implied intents of clients actually calling servers ("discovered intents"), 
 All of this is presented in a unified, filtered view called the **access graph**: a knowledge graph of which services call each other,
 are they blocked or would they be blocked if enforcement were turned on, are they protected, and how are they configured.
 
-![Otterize Cloud - access graph](/img/access-graph-screenshot.png)
+![Otterize Cloud - access graph](/img/cloud-ui/access-graph-screenshot.png)
 
 The access graph **continuously** reflects the state of your cluster, as reported by the Otterize OSS operators. Any changes made in the cluster appear in real time in Otterize Cloud.
 
@@ -39,7 +39,7 @@ For example, to change between shadow mode (no enforcement) and active enforceme
 
 ### Filters
 
-The access graph may be viewed for **one cluster** at a time. Within a cluster, you may filter by **environment** and by **namespace**.
+The access graph may be viewed for one **cluster** at a time. Within a cluster, you may filter by **environment** and by **namespace**.
 
 The access graph shows all the services discovered in the selected cluster that meet the filter criteria. Services are discovered in one of two ways:
 - Via the network mapper, which collects pod-to-pod connections (attempted and successful) and builds a network map of "discovered intents".
@@ -52,7 +52,41 @@ To filter out old discovered intents and the services that only appear because o
 
 ### Understanding the access graph
 
-When viewing the access graph for a cluster, the cluster's configuration is displayed at the top, to help you better understand the access graph.
-For example, you can easily tell whether you're in shadow or active enforcement mode, and whether all operators are connected.
+When viewing the access graph for a cluster, the cluster's state is displayed at the top, to help you better understand the access graph.
 
-![Otterize Cloud - access graph](/img/access-graph-legend.png)
+![Otterize Cloud - access graph cluster state](/img/cloud-ui/access-graph-cluster-state.png)
+
+<details>
+<summary>You can easily tell whether whether all operators are <b>connected or not</b>.</summary>
+For example, if either the network mapper or the intents operator is not connected,
+the access graph will not be able to compare the discovered intents with the explicitly declared and applied intents and show what calls are or would be blocked.
+</details>
+<details>
+<summary>You can tell whether the operators are in <b>active</b> or <b>shadow</b> mode.</summary>
+
+- If active, they are managing network policies and Kafka ACLs to enforce access controls (and authorize intended access).
+
+- In shadow mode, you can build confidence in your IBAC rollout by seeing what would happen before you turn on enforcement.
+
+</details>
+<details>
+<summary>You can tell Otterize Cloud more about your cluster's non-Otterize configuration.</summary>
+
+- If you've set up a <b>global default deny</b> network policy that only allows pod-to-pod access if an explicit pod-to-pod network policy allows it, check this box.
+The access graph will know that services are always protected unless those explicit policies are in place, and will show blocking information accordingly.
+Note that the access graph assumes that Otterize is managing any (ingress) network policies beyond this global default deny.
+
+- If you aren't interested in using network policies at all, uncheck "<b>Use network policies to calculate access graph</b>".
+The access graph will not take network policies into account when calculating service and intents states,
+and will not show alerts or recommendations related to network policies.
+
+</details>
+
+The access graph combines all the information about the Kubernetes cluster and the services and intents in it to show you insights about service to service access.
+
+Here is the meaning of the various service and access states &mdash; the nodes and edges of the graph:
+
+![Otterize Cloud - access graph legend](/img/cloud-ui/access-graph-legend.png)
+
+
+
