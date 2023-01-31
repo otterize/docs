@@ -130,7 +130,7 @@ spec:
       type: http
 ```
 
-### `otterize network-mapper intents-convert [-f PATH]`
+### `otterize network-mapper intents-convert -f <path>`
 
 Convert client intents files in plain YAML format to Kubernetes ClientIntents resource format.
 
@@ -593,9 +593,9 @@ id             type       name                      cluster id         default e
 int_hbspxl9te3 KUBERNETES Integration - dev-cluster cluster_c8uo5cc8fs env_h29ujjm8q8         NOT_INTEGRATED (last seen: never) NOT_INTEGRATED (last seen: never) NOT_INTEGRATED (last seen: never) cli_6l44xifr7l 8fc161f883d89d44bddc0279f41ff24c0697e482e2cd9c5edec4a525f0af06f7
 ```
 
-```danger
+:::danger
 Update this after the implementation is fixed.
-```
+:::
 ### `otterize integrations update [_OPTIONS_]`
 
 ACTION DESCRIPTION.
@@ -628,7 +628,10 @@ Deleted integration int_nx2twtcqwt
 
 ## Intents
 
-### `otterize intents convert [-f PATH]`
+:::danger
+Update this after the implementation is restored to how it should be.
+:::
+### `otterize intents convert -f <path>`
 
 Convert client intents files in plain YAML format to Kubernetes ClientIntents resource format.
 
@@ -671,53 +674,96 @@ spec:
       type: http
 ```
 
-### `otterize intents list [_OPTIONS_]`
+### `otterize intents list [--client-service-id <id>] [--server-service-id <id>] [--env-id <id>]`
 
-ACTION DESCRIPTION.
+Returns the list of (applied) intents, optionally filtered by client, server, or environment.
 
 #### Options
 
 | Name | Default | Description |
 | --- | --- | --- |
-| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+| `--client-service-id` |  | Return only intents from the specified client service. |
+| `--server-service-id` |  | Return only intents to the specified server service. |
+| `--env-id` |  | Return only intents where either the client or the server belong to the specified environment. |
 
 #### Returns
 
-RESULTS DESCRIPTION
+A table of information about the intents.
+
+- When `type` is `HTTP`, the `object` and `action` columns will show the resource paths and methods, respectively.
+- When `type` is `KAFKA`, the `object` and `action` columns will show the topic names and operations, respectively.
 
 ```shell
-EXAMPLE
+id                client service id server service id type object action
+───────────────── ───────────────── ───────────────── ──── ────── ──────
+intent_ah8dix4uxv svc_dt7k4ay3bd    svc_kqkallmwsq    HTTP
+intent_6rhxnyngnh svc_p7qh7hhtmu    svc_r8fm2oiyvs    HTTP
+intent_5uzyy3q7aj svc_gji52kfake    svc_p7qh7hhtmu    HTTP
+intent_4ekwmaf2n2 svc_o5bg2me9h5    svc_nqhgkxlbwe    HTTP
+intent_2lnzhzn49a svc_lkb2omplkk    svc_lkyww4s6ad    HTTP
+intent_tz9e5buzcn svc_nqhgkxlbwe    svc_lkyww4s6ad    HTTP
 ```
 
-### `otterize intents get [_OPTIONS_]`
+### `otterize intents get <intent-id>`
 
-ACTION DESCRIPTION.
-
-#### Options
-
-| Name | Default | Description |
-| --- | --- | --- |
-| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+Returns information about a single (applied) intent, specified by its id.
 
 #### Returns
 
-RESULTS DESCRIPTION
+Returns a table of information about the intent.
 
 ```shell
-EXAMPLE
+id                client service id server service id type object action
+───────────────── ───────────────── ───────────────── ──── ────── ──────
+intent_ah8dix4uxv svc_dt7k4ay3bd    svc_kqkallmwsq    HTTP
 ```
 
 ## Invites
 
-### `otterize invites list [_OPTIONS_]`
+### `otterize invites list`
 
-ACTION DESCRIPTION.
+Lists invites for the current user.
+
+#### Returns
+Returns a table of information about the invites.
+
+```shell
+id               email               organization id inviter user id status  created at                              accepted at
+──────────────── ─────────────────── ─────────────── ─────────────── ─────── ─────────────────────────────────────── ───────────
+invite_u62tgd793 someone@example.com org_7iy3bg3e    user_ge52hdd8   PENDING 2023-01-31 20:49:17.199887853 +0000 UTC
+─────────
+```
+
+### `otterize invites create --email=<email>`
+
+Invites a user with the given email to the current organization.
+
+Note that currently the invitation isn't emailed by Otterize Cloud;
+it should be communicated to the invitee through whatever means make sense, e.g. email, text, or Slack.
 
 #### Options
 
 | Name | Default | Description |
 | --- | --- | --- |
-| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+| `--email` |  | The email of the user to be invited. |
+
+#### Returns
+
+Returns a table of information about the created invitation.
+
+```shell
+id             email                    organization id inviter user id status  created at                              accepted at
+────────────── ──────────────────────── ─────────────── ─────────────── ─────── ─────────────────────────────────────── ───────────
+inv_lexz7vxo9l someone-else@example.com org_fq6j2thfcx                  PENDING 2023-01-31 20:49:17.199887853 +0000 UTC
+```
+
+:::danger
+Document after getting this to work rather than returning a 404
+:::
+
+### `otterize invites accept <invite-id>`
+
+Accepts the specified invitation.
 
 #### Returns
 
@@ -727,58 +773,16 @@ RESULTS DESCRIPTION
 EXAMPLE
 ```
 
-### `otterize invites create [_OPTIONS_]`
+### `otterize invites delete <invite-id>`
 
-ACTION DESCRIPTION.
-
-#### Options
-
-| Name | Default | Description |
-| --- | --- | --- |
-| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+Deletes the specified invitation.
 
 #### Returns
 
-RESULTS DESCRIPTION
+Returns a confirmation that the invitation was deleted.
 
 ```shell
-EXAMPLE
-```
-
-### `otterize invites accept [_OPTIONS_]`
-
-ACTION DESCRIPTION.
-
-#### Options
-
-| Name | Default | Description |
-| --- | --- | --- |
-| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
-
-#### Returns
-
-RESULTS DESCRIPTION
-
-```shell
-EXAMPLE
-```
-
-### `otterize invites delete [_OPTIONS_]`
-
-ACTION DESCRIPTION.
-
-#### Options
-
-| Name | Default | Description |
-| --- | --- | --- |
-| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
-
-#### Returns
-
-RESULTS DESCRIPTION
-
-```shell
-EXAMPLE
+Deleted invite inv_lexz7vxo9l
 ```
 
 ## Namespaces
