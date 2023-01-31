@@ -1,18 +1,21 @@
 ---
 sidebar_position: 3
-title: Credentials operator (UPDATE)
+title: Credentials operator
 ---
 
-The Otterize Credentials operator automatically resolves pods to dev-friendly service names, registers them with a SPIRE server, and optionally provisions credentials as Kubernetes Secrets. In this role, it is similar to how a SPIRE agent behaves.
-Alongside the Credentials operator, you could use SPIRE agents and the SPIRE SDK to work with the same SPIRE server.
-
-To learn more, check the documentation for [SPIRE](https://spiffe.io/docs/latest/spire-about/spire-concepts/). Note that to use the Credentials operator, you do not need to work directly with SPIRE or SPIRE agents, and can do everything completely using annotations and Kubernetes Secrets.
+The Otterize Credentials operator automatically resolves pods to dev-friendly service names, registers them with a SPIRE server or with Otterize Cloud, and provisions credentials as Kubernetes Secrets.
 
 ## Deploying the Credentials operator
 To deploy the operator, [use the Helm chart](reference/configuration/credentials-operator/helm-chart).
 
 ## Acquiring mTLS credentials using the Credentials operator
-The Credentials operator is controlled using annotations placed on pods. The operator automatically registers pods with SPIRE. To also have it create credentials, you must specify `credentials-operator.otterize.com/tls-secret-name`.
+The Credentials operator is controlled using annotations placed on pods. To have it create credentials, you must specify `credentials-operator.otterize.com/tls-secret-name`.
+
+## Spire workload registrar
+When using Spire, the operator registers every pod (even those without annotations).
+Alongside the Credentials operator, you could use SPIRE agents and the SPIRE SDK to work with the same SPIRE server.
+To learn more, check the documentation for [SPIRE](https://spiffe.io/docs/latest/spire-about/spire-concepts/). Note that to use the Credentials operator, you do not need to work directly with SPIRE or SPIRE agents, and can do everything completely using annotations and Kubernetes Secrets.
+
 
 ### Pod annotations
 
