@@ -30,7 +30,7 @@ You can skip this section if Otterize is already installed in your cluster.
 
 Our example consists of two pods, "client" and "server", communicating over HTTP with mTLS.
 Otterize makes mTLS easy, requiring just 3 simple changes to a client pod spec:
-1. **Generate credentials**: add the `otterize/tls-secret-name` annotation, which tells the Otterize
+1. **Generate credentials**: add the `credentials-operator.otterize.com/tls-secret-name` annotation, which tells the Otterize
    Credentials operator to generate mTLS credentials, and to store them in a Kubernetes secret
    whose name is the value of this annotation.
 2. **Expose credentials in a volume**: add a volume containing this secret to the pod.
@@ -46,7 +46,7 @@ spec:
       annotations:
         # highlight-next-line
         # 1. Generate credentials as a secret called "client-credentials-secret":
-        otterize/tls-secret-name: client-credentials-secret
+        credentials-operator.otterize.com/tls-secret-name: client-credentials-secret
         ...
     spec:
       volumes:
