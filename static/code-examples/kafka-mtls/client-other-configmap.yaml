@@ -20,9 +20,9 @@ data:
     const (
         kafkaAddr = "kafka.kafka:9092"
         testTopicName = "mytopic"
-        certFile = "/var/otterize/credentials/svid.pem"
+        certFile = "/var/otterize/credentials/cert.pem"
         keyFile = "/var/otterize/credentials/key.pem"
-        rootCAFile = "/var/otterize/credentials/bundle.pem"
+        rootCAFile = "/var/otterize/credentials/ca.pem"
     )
     
     func getTLSConfig()( * tls.Config, error) {

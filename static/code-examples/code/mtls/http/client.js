@@ -6,9 +6,9 @@ const options = {
     port: 443,
     path: '/hello',
     method: 'GET',
-    cert: fs.readFileSync('/var/otterize/credentials/svid.pem'),
+    cert: fs.readFileSync('/var/otterize/credentials/cert.pem'),
     key: fs.readFileSync('/var/otterize/credentials/svid.key'),
-    ca: fs.readFileSync('/var/otterize/credentials/bundle.pem')
+    ca: fs.readFileSync('/var/otterize/credentials/ca.pem')
 }
 
 const req = https.request(

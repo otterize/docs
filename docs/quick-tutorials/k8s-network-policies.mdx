@@ -108,7 +108,7 @@ The network layout for the deployed workloads looks as follows:
 ![Network policies](/img/quick-tutorials/network-policies/base.png)
 
 :::tip
-Check out this [tutorial](/try-now/k8s-network-mapper) to learn how you can use [Otterize Cloud](/otterize-cloud) to get these kind of visualizations.
+Check out this [tutorial](/quick-tutorials/k8s-network-mapper) to learn how you can use [Otterize Cloud](/otterize-cloud) to get these kind of visualizations.
 :::
 
 Let's monitor both client attempts to call the server with additional terminal windows,
@@ -153,10 +153,21 @@ When the intents YAML is applied, creating a custom resource of type `ClientInte
 Otterize will add a network policy to allow the intended calls
 (**client** &rarr; **server**) and fail all unintended calls (e.g., **client-other** &rarr; **server**).
 
+
 1. Here is the `intents.yaml` declaration of the client, which we will apply below:
 ```yaml
 {@include: ../../static/code-examples/automate-network-policies/intents.yaml}
 ```
+
+### Visualize using Otterize Cloud
+Otterize Cloud allows you to visualize and understand how your intents shape network policies and what their effects are. In this case after applying the client intents file the access graph would show us that **client** can make secure calls to **server** and that **client-other** is blocked.
+![Network policies](/img/quick-tutorials/network-policies/protected.png)
+
+:::tip
+Otterize Cloud can help you gain confidence when deploying network policies using intents. With its [shadow mode](/realistic-example/shadow-mode-network-policies) you can see how workload communication is about to be affected by network policies (and more) before actually rolling out enforcement.
+:::
+
+### See it in action
 
 Keep an eye on the logs being tailed in the **[client-other]** terminal window,
    and apply this `intents.yaml` file in your **main terminal window** using:
@@ -208,13 +219,7 @@ default-deny-ingress                           <none>                           
 Otterize did its job of both protecting *and* allowing intended access.
 :::
 
-### Visualize using Otterize Cloud
-Otterize cloud allows you to visualize and understand how your intents shape network policies and what their effects are. In this case we can see **client** can make secure calls to **server** and that **client-other** is blocked.
-![Network policies](/img/quick-tutorials/network-policies/protected.png)
 
-:::tip
-Otterize Cloud can help you gain confidence when deploying network policies using intents. With its [shadow mode](/realistic-example/shadow-mode-network-policies) you can see how workload communication is about to be affected by network policies (and more) before actually rolling out enforcement.
-:::
 
 ## What did we accomplish?
 

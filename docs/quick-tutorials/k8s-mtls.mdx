@@ -108,9 +108,9 @@ const options = {
     port: 443,
     path: '/hello',
     method: 'GET',
-    cert: fs.readFileSync('/var/otterize/credentials/svid.pem'),
+    cert: fs.readFileSync('/var/otterize/credentials/cert.pem'),
     key: fs.readFileSync('/var/otterize/credentials/key.pem'),
-    ca: fs.readFileSync('/var/otterize/credentials/bundle.pem')
+    ca: fs.readFileSync('/var/otterize/credentials/ca.pem')
 }
 
 const req = https.request(
@@ -134,8 +134,8 @@ const fs = require(`fs`);
 
 const options = {
   key: fs.readFileSync('/var/otterize/credentials/key.pem'),
-  cert: fs.readFileSync('/var/otterize/credentials/svid.pem'),
-  ca: fs.readFileSync('/var/otterize/credentials/bundle.pem'),
+  cert: fs.readFileSync('/var/otterize/credentials/cert.pem'),
+  ca: fs.readFileSync('/var/otterize/credentials/ca.pem'),
   requestCert: true
 };
 
@@ -213,6 +213,13 @@ the mounted credentials are constantly refreshed and up to date.
 :::
 
 ## Inspect credentials
+
+### Using Otterize Cloud
+
+Otterize Cloud can be used for visualizing your network and overlay certificate infromation
+<img src="/img/quick-tutorials/mtls/creds.png" alt="Discovered intents" width="600"/>
+
+### Using CLI
 
 We can use `openssl` to inspect the generated credentials. The credentials are stored as a Kubernetes secret
 and are then mounted as a file into the container.

@@ -39,7 +39,7 @@ class TestMTLS:
         secret_svid = base64.b64decode(run(
             f"kubectl get secret -n {self.namespace}" + " client-credentials-secret -o jsonpath='{.data.svid\.pem}'")).decode()
         mounted_svid = run(
-            f"kubectl exec -n {self.namespace} -it deploy/client -- cat /var/otterize/credentials/svid.pem")
+            f"kubectl exec -n {self.namespace} -it deploy/client -- cat /var/otterize/credentials/cert.pem")
         assert secret_svid == mounted_svid
 
         # Check certificate cname

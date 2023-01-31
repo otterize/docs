@@ -172,7 +172,7 @@ kubectl get secret -n otterize-tutorial-mtls client-credentials-secret -o jsonpa
 
 Alternatively, retrieve the credentials from the container's mounted volume, e.g. by executing a shell command:
 ```shell
-kubectl exec -n otterize-tutorial-mtls -it deploy/client -- cat /var/otterize/credentials/svid.pem > svid.pem
+kubectl exec -n otterize-tutorial-mtls -it deploy/client -- cat /var/otterize/credentials/cert.pem > svid.pem
 ```
 
 The retrieved credentials can be inspected with:
