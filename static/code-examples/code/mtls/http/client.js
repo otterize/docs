@@ -7,7 +7,7 @@ const options = {
     path: '/hello',
     method: 'GET',
     cert: fs.readFileSync('/var/otterize/credentials/cert.pem'),
-    key: fs.readFileSync('/var/otterize/credentials/svid.key'),
+    key: fs.readFileSync('/var/otterize/credentials/key.pem'),
     ca: fs.readFileSync('/var/otterize/credentials/ca.pem')
 }
 

@@ -89,7 +89,7 @@ User:* has ALLOW permission for operations: ALL from hosts: *), zkVersion : 0
 ## Deploy clients
 
 Clients will authenticate to Kafka using mTLS. Otterize makes this easy, requiring just 3 simple changes to the client pod spec:
-1. **Generate credentials**: add the `otterize/tls-secret-name` annotation, which tells Otterize to generate mTLS credentials and store them in a Kubernetes secret whose name is the value of this annotation.
+1. **Generate credentials**: add the `credentials-operator.otterize.com/tls-secret-name` annotation, which tells Otterize to generate mTLS credentials and store them in a Kubernetes secret whose name is the value of this annotation.
 2. **Expose credentials in a volume**: add a volume containing this secret to the pod.
 3. **Mount the volume**: mount the volume in every container in the pod.
 
@@ -103,7 +103,7 @@ spec:
       annotations:
         # highlight-next-line
         # 1. Generate credentials as a secret called "client-credentials-secret":
-        otterize/tls-secret-name: client-credentials-secret
+        credentials-operator.otterize.com/tls-secret-name: client-credentials-secret
         ...
     spec:
       volumes:
