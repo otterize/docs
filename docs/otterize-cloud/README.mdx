@@ -1,5 +1,58 @@
 ---
-sidebar_position: 2
+title: Otterize Cloud
 ---
 
+Otterize Cloud provides a cloud-based control plane for deploying and managing [intents-based access control (IBAC)](https://otterize.com/ibac).
 
+It currently supports IBAC within Kubernetes clusters, configuring access between pods and access to Kafka nodes using network policies and Kafka ACLs.
+Soon, Otterize Cloud will also support IBAC across clusters and non-Kubernetes services and resources (e.g. standalone and managed Kafka, RDS, etc.).
+This page is focused on the current capabilities of Otterize Cloud.
+
+## What it does
+
+Otterize Cloud attaches to [Otterize OSS](/otterize-oss) operators (the intents operator, network mapper, and credentials operator) running in your Kubernetes clusters.
+While Otterize OSS does the heavy lifting &mdash; mapping pod-to-pod traffic, responding to intents files applied with `kubectl` and
+configuring network policies and Kafka ACLs &mdash; Otterize Cloud adds:
+- **Visibility**: visualize the network map of any connected cluster.
+- **Confidence**: run Otterize OSS in **shadow mode**, i.e. without enforcement, and see what *would* happen when you turn on enforcement.
+- **Operationalization**:
+  - Map namespaces to environments to see everything in the language of development cycle.
+  - Use the (optional) Otterize Cloud identity service instead of operating SPIRE yourself (the default for standalone Otterize OSS).
+
+## The access graph
+
+Otterize Cloud collects information from Otterize OSS, including the declared intents of clients to call servers ("discovered intents"),
+the implied intents of clients actually calling servers ("discovered intents"), certificate information, and various configurations.
+All of this is presented in a unified, filtered view called the **access graph**: a knowledge graph of which services call each other,
+are they blocked or would they be blocked if enforcement were turned on, are they protected, and how are they configured.
+
+![Otterize Cloud - access graph](/img/access-graph-screenshot.png)
+
+The access graph **continuously** reflects the state of your cluster, as reported by the Otterize OSS operators. Any changes made in the cluster appear in real time in Otterize Cloud.
+
+:::tip
+Otterize Cloud **reads** information from your cluster via Otterize OSS (when the latter is deployed with Otterize Cloud credentials)
+but Otterize Cloud **does not write** anything to your cluster: any modifications to your cluster only occur because of changes you make locally within your cluster.
+
+For example, to change between shadow mode (no enforcement) and active enforcement mode, you change the Otterize intents operator configuration locally in your cluster, and redeploy it.
+:::
+
+### Filters
+
+The access graph may be viewed for **one cluster** at a time. Within a cluster, you may filter by **environment** and by **namespace**.
+
+The access graph shows all the services discovered in the selected cluster that meet the filter criteria. Services are discovered in one of two ways:
+- Via the network mapper, which collects pod-to-pod connections (attempted and successful) and builds a network map of "discovered intents".
+- Via the intents operator, which reports intents declared by (client) services to call (server) services, applied via `kubectl`.
+
+*Note: currently, services that have neither discovered nor applied intents attached to them at all will not appear in the access graph. This will be addressed soon.*
+
+Since discovered intents history is kept indefinitely, the access graph will eventually contain services that are no longer relevant.
+To filter out old discovered intents and the services that only appear because of them, use the "**Since:**" filter.
+
+### Understanding the access graph
+
+When viewing the access graph for a cluster, the cluster's configuration is displayed at the top, to help you better understand the access graph.
+For example, you can easily tell whether you're in shadow or active enforcement mode, and whether all operators are connected.
+
+![Otterize Cloud - access graph](/img/access-graph-legend.png)

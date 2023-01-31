@@ -14,7 +14,7 @@ and how to verify them if needed.
 ## Provisioning mTLS credentials
 To provision mTLS credentials for a client pod with Otterize, make the following 3 simple changes to its Kubernetes spec:
 1. **Generate credentials**: add the `otterize/tls-secret-name` annotation, which tells the Otterize
-   SPIRE integration operator to generate mTLS credentials, and to store them in a Kubernetes secret
+   Credentials operator to generate mTLS credentials, and to store them in a Kubernetes secret
    whose name is the value of this annotation.
 2. **Expose credentials in a volume**: add a volume containing this secret to the pod.
 3. **Mount the volume**: mount the volume in every container in the pod.
@@ -27,7 +27,7 @@ spec:
       annotations:
         # highlight-next-line
         # 1. Generate credentials as a secret called "client-credentials-secret":
-        spire-integration.otterize.com/tls-secret-name: client-credentials-secret
+        credentials-operator.otterize.com/tls-secret-name: client-credentials-secret
         ...
     spec:
       volumes:
@@ -52,7 +52,7 @@ spec:
 
 :::tip
 For the complete list of annotation parameters please consult the
-[Otterize SPIRE integration operator documentation](concepts/otterize-oss/componentsspire-integration-operator/).
+[Otterize Credentials operator documentation](reference/configuration/credentials-operator/).
 :::
 
 :::tip
@@ -206,4 +206,4 @@ The certificate belongs to a chain of trust rooted at the SPIRE server.
 ## What's next
 
 - Configure secure access between pods and Kafka running within the same Kubernetes cluster with this [guide](/capabilities/kafka/).
-- Read more about the [Otterize SPIRE integration operator](concepts/otterize-oss/componentsspire-integration-operator/)
+- Read more about the [Otterize Credentials operator](reference/configuration/credentials-operator/)

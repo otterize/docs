@@ -62,7 +62,7 @@ def helm_install(namespace: str, name: str):
 
     deployments = {'intents-operator-controller-manager',
                    'otterize-watcher',
-                   'spire-integration-operator-controller-manager'}
+                   'credentials-operator-controller-manager'}
     wait_for_availability('deploy', '(.*?) *(\d+)/(\d+)', deployments, namespace)
     daemonsets = {'otterize-spire-agent'}
     wait_for_availability('daemonset', '(.*?) *(\d+) *\d+ *(\d+)', daemonsets, namespace)

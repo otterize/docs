@@ -4,10 +4,10 @@ title: (UPDATE) Otterize OSS Helm chart
 ---
 
 The [Otterize OSS helm chart](https://github.com/otterize/helm-charts/tree/main/otterize-kubernetes) is a chart that installs all Otterize components and supporting components together, and configures them to work with each other.
-For example, it configures the SPIRE integration operator to work with the deployed SPIRE server, and the Intents Operator to get mTLS credentials from the SPIRE integration operator.
+For example, it configures the Credentials operator to work with the deployed SPIRE server, and the Intents Operator to get mTLS credentials from the Credentials operator.
 
 :::note
-The [network mapper](concepts/otterize-oss/componentsnetwork-mapper) is not deployed by this chart. You can deploy it with [its own chart](concepts/otterize-oss/componentsnetwork-mapper/helm-chart).
+The [network mapper](reference/configuration/network-mapper) is not deployed by this chart. You can deploy it with [its own chart](reference/configuration/network-mapper/helm-chart).
 :::end
 
 # Parameters
@@ -16,7 +16,7 @@ The [network mapper](concepts/otterize-oss/componentsnetwork-mapper) is not depl
 | Key                                   | Description                                              | Default |
 |---------------------------------------|----------------------------------------------------------|---------|
 | `deployment.spire`                    | Whether or not to deploy SPIRE.                          | `true`  |
-| `deployment.spireIntegrationOperator` | Whether or not to deploy the SPIRE integration operator. | `true`  |
+| `deployment.credentialsOperator` | Whether or not to deploy the credentials operator. | `true`  |
 | `deployment.intentsOperator`          | Whether or not to deploy the intents operator.           | `true`  |
 
 ## Global parameters
@@ -34,20 +34,20 @@ These parameters are used by multiple charts, and must be kept the same for the 
 
 ## Intents operator parameters
 All configurable parameters of the intents operator can be configured under the alias **intentsOperator**.
-Further information about the intents operator parameters can be found [in the Intents Operator's helm chart](concepts/otterize-oss/componentsintents-operator/helm-chart).
+Further information about the intents operator parameters can be found [in the Intents Operator's helm chart](reference/configuration/intents-operator/helm-chart).
 
 | Key                                                  | Description                                                    | Default          |
 |------------------------------------------------------|----------------------------------------------------------------|------------------|
-| intentsOperator.autoGenerateTLSUsingSpireIntegration                | Use SPIRE integration to create TLS cert for the intents operator. | `true`           |
+| intentsOperator.autoGenerateTLSUsingCredentialsOperator                | Use Credentials operator to create TLS cert for the intents operator. | `true`           |
 | intentsOperator.operator.autoCreateNetworkPoliciesForExternalTraffic | Automatically allow external traffic, if a new ClientIntents resource would result in blocking external (internet) traffic and there is an Ingress/Service resource indicating external traffic is expected. | `true`           |
 
 ## SPIRE parameters
 All configurable parameters of SPIRE can be configured under the alias **spire**.
 Further information about SPIRE parameters can be found [in SPIRE's helm chart](https://github.com/otterize/helm-charts/tree/main/spire).
 
-## SPIRE integration operator parameters
-All configurable parameters of the SPIRE integration operator can be configured under the alias **spireIntegrationOperator**.
-Further information about SPIRE integration operator parameters can be found [in the SPIRE integration operator chart](concepts/otterize-oss/componentsspire-integration-operator/helm-chart).
+## Credentials operator parameters
+All configurable parameters of the Credentials operator can be configured under the alias **credentialsOperator**.
+Further information about credentials operator parameters can be found [in the credentials operator chart](reference/configuration/credentials-operator/helm-chart).
 
 ## Resource configuration
 | Component                  | Key                                  | Default  |
@@ -56,4 +56,4 @@ Further information about SPIRE integration operator parameters can be found [in
 | Intents Operator - Watcher | `intentsOperator.watcher.resources`  | `(none)` |
 | Spire Server               | `spire.server.resources`             | `(none)` |
 | Spire Agent                | `spire.agent.resources`              | `(none)` |
-| Spire Integration Operator | `spireIntegrationOperator.resources` | `(none)` |
+| Credentials Operator | `credentialsOperator.resources` | `(none)` |

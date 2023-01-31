@@ -3,8 +3,8 @@ sidebar_position: 1
 title: (UPDATE) Helm chart
 ---
 
-You can use the [intents operator's Helm chart](https://github.com/otterize/helm-charts/tree/main/intents-operator) to deploy the intents operator on its own, and configure it to work with the Otterize SPIRE integration operator to acquire mTLS credentials.
-But it is recommended to deploy the operator as part of the [Otterize OSS Helm chart](https://github.com/otterize/helm-charts/tree/main/otterize-kubernetes), which comes with a SPIRE server and the SPIRE integration operator, rather than managing it independently.
+You can use the [intents operator's Helm chart](https://github.com/otterize/helm-charts/tree/main/intents-operator) to deploy the intents operator on its own, and configure it to work with the Otterize Credentials operator to acquire mTLS credentials.
+But it is recommended to deploy the operator as part of the [Otterize OSS Helm chart](https://github.com/otterize/helm-charts/tree/main/otterize-kubernetes), which comes with a SPIRE server and the Credentials operator, rather than managing it independently.
 
 If you would like to deploy it on its own, add the Otterize Helm chart repository and configure the operator:
 ```bash
@@ -22,7 +22,7 @@ If you would like to deploy it on its own, add the Otterize Helm chart repositor
 | `operator.image.image`                          | Intents operator image.                                                                                            | `intents-operator` |
 | `operator.image.tag`                            | Intents operator image tag.                                                                                        | `latest`           |
 | `operator.pullPolicy`                           | Intents operator image pull policy.                                                                                | `(none)`           |
-| `operator.autoGenerateTLSUsingSpireIntegration` | If true, adds the necessary pod annotations in order to generate mTLS credentials using the Otterize SPIRE integration operator. | `true`            |
+| `operator.autoGenerateTLSUsingCredentialsOperator` | If true, adds the necessary pod annotations in order to generate mTLS credentials using the Otterize Credentials operator. | `true`            |
 | `operator.autoCreateNetworkPoliciesForExternalTraffic` | Automatically allow external traffic, if a new ClientIntents resource would result in blocking external (internet) traffic and there is an Ingress/Service resource indicating external traffic is expected. | `true`           |
 | `operator.resources`                            | Resources override.                                                                                                |                    |
 

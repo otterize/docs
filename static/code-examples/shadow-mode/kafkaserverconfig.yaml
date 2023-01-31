@@ -8,9 +8,9 @@ spec:
     name: kafka
   addr: kafka-headless.otterize-ecom-kafka-demo:9092
   tls:
-    certFile: /etc/otterize-spire/svid.pem
+    certFile: /etc/otterize-spire/cert.pem
     keyFile: /etc/otterize-spire/key.pem
-    rootCAFile: /etc/otterize-spire/bundle.pem
+    rootCAFile: /etc/otterize-spire/ca.pem
   topics:
     - topic: "*"
       pattern: prefix
