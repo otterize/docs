@@ -135,7 +135,7 @@ class Intents(K8sBase):
         namespace: {namespace}
         type: http"""
         return f"""
-apiVersion: k8s.otterize.com/v1alpha1
+apiVersion: k8s.otterize.com/v1alpha2
 kind: ClientIntents
 metadata:
   name: {self.name}
