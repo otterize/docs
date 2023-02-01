@@ -21,7 +21,7 @@ func main() {
 	http.HandleFunc("/hello", helloHandler)
 
 	// Create a CA certificate pool and add bundle.pem to it
-	caCert, err := ioutil.ReadFile("/var/otterize/credentials/bundle.pem")
+	caCert, err := ioutil.ReadFile("/var/otterize/credentials/ca.pem")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -42,5 +42,5 @@ func main() {
 	}
 
 	// Listen to HTTPS connections with the server certificate and wait
-	log.Fatal(server.ListenAndServeTLS("/var/otterize/credentials/svid.pem", "/var/otterize/credentials/key.pem"))
+	log.Fatal(server.ListenAndServeTLS("/var/otterize/credentials/cert.pem", "/var/otterize/credentials/key.pem"))
 }

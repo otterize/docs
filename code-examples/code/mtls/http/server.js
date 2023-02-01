@@ -3,8 +3,8 @@ const fs = require(`fs`);
 
 const options = {
     key: fs.readFileSync('/var/otterize/credentials/key.pem'),
-    cert: fs.readFileSync('/var/otterize/credentials/svid.pem'),
-    ca: fs.readFileSync('/var/otterize/credentials/bundle.pem'),
+    cert: fs.readFileSync('/var/otterize/credentials/cert.pem'),
+    ca: fs.readFileSync('/var/otterize/credentials/ca.pem'),
     requestCert: true
 };
 
