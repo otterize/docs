@@ -1,0 +1,69 @@
+---
+sidebar_position: 2
+title: Intents operator
+---
+
+The Otterize intents operator is an open source Kubernetes operator for easily managing service-to-service authorization
+by declaring the calls each service needs to make, using [client intents files](/intent-based-access-control).
+The intents operator uses these files to configure network policies, Kafka ACLs, and other enforcement points (in the future) to allow just the intended calls.
+
+If credentials such as X.509 certificates are needed for authentication &mdash; for example,
+to connect to Kafka using mTLS &mdash; the Otterize intents operator works with SPIRE via the
+[Credentials operator](reference/configuration/credentials-operator) to automatically:
+- Establish pod service identities.
+- Generate trusted credentials for each client service.
+- Deliver the credentials to the pod's containers within a locally-mounted volume.
+
+
+## Deploying the intents operator
+To deploy the operator, [use the Helm chart](reference/configuration/intents-operator/helm-chart).
+
+## Controlling access using the intents operator
+To learn how to use the intents operator to control access, consult the guides for [managing network policies using intents](/quick-tutorials/k8s-kafka-mtls) and [Kafka ACLs using intents](/quick-tutorials/k8s-kafka-mtls).
+
+## Pod annotations
+
+You can override the service name the intents operator uses when it computes network policies and Kafka ACLs with a pod annotation.
+
+
+| Annotation                          | Description                                                                                                                                          | Default                                       |
+|-------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------|
+| `intents.otterize.com/service-name` | Otterize-wide override for this service's name. Used by the operator when computing a pod's service name for use in network policies and Kafka ACLs. | See [Service identities](/service-identities) |
+
+## Supported enforcement types
+
+### Network policies
+The intents operator automatically creates, updates and deletes network policies, and automatically labels client and server pods, to reflect precisely the client-to-server calls declared in client intents files.
+
+In the example above, the `checkoutservice` intends to call the `shippingservice`. When the CRD is applied through `kubectl apply`, the intents operator labels the `checkoutservice` and `shippingservice` pods, and creates a network policy for the ingress of the `shippingservice` that references these labels and allows calls to the `shippingservice` from the `checkoutservice`.
+
+See [Service identities and resolution](/service-identities) to learn how service names are resolved for pods.
+
+The intents operator then uses the resolved identity as the service name, and combines it with the namespace of the pod and hashed to form the value of the label `intents.otterize.com/server`.
+This label is then used as a selector for network policies. Another
+label, `intents.otterize.com/access-server-<servicename>-<servicehash>`, is applied to client pods which have declared their intent
+to access the server. This label is used as the selector to determine which client pods are allowed to access the server
+pod.
+
+#### Handling external traffic
+The intents operator has automatic behavior for allowing external traffic for pods which have indicated that they are supposed to accept external traffic, such as by creating a `Service` of type `NodePort` or `LoadBalancer`, or an `Ingress` resource.
+
+As the intents operator creates network policies, and the semantics of network policies dictate that:
+1. if no network policies apply to a pod, then all traffic is allowed.
+2. once any network policy applies to a pod, only the traffic explicitly allowed in the policy is allowed
+
+This meant that if you had no network policies on a pod, and created ClientIntents for that pod, then external traffic would be blocked. To make it easy to enable pod-to-pod traffic without affecting expected external traffic, the intents operator automatically detects resources of kind `Service` of type `NodePort` or `LoadBalancer`, or an `Ingress` resource, and if it creates the first network policy to affect those pods, it also creates a network policy that allows external traffic to those pods, as specified by the external `Service`/`Ingress` - for example, it only allows traffic to the specified ports, not all traffic.
+
+This behavior can be disabled using the Helm chart's values.
+
+
+### Kafka mTLS & ACLs
+The intents operator automatically creates, updates, and deletes ACLs in Kafka clusters running within your Kubernetes cluster according to the declared intents. It does not modify other ACLs. It works together with SPIRE and the [Otterize Credentials operator](reference/configuration/credentials-operator) to easily enable secure access to Kafka from client pods, all in your Kubernetes cluster.
+
+The Otterize Credentials operator automatically registers client pods with a SPIRE server, and writes the trusted credentials generated by SPIRE into Kubernetes secrets for use by those pods. The intents operator takes `ClientIntents` with `type: kafka` and creates Kafka ACLs that grant the requested access to the cryptographic identities (SVIDs) created by the Credentials operator.
+
+#### ACL creation and consumer groups
+A Kafka client may specify a consumer group ID when consuming a topic. When it does so, it requires DESCRIBE and READ access to the consumer group resource.
+To enable this, the intents operator creates an ACL enabling all consumers to read and describe all consumer groups.
+The permission check performed by the AclAuthorizer for a consumer group also takes into account whether the consumer has the appropriate access to the topic
+it is attempting to read, so the end result is that the topic ACLs determine actual access.

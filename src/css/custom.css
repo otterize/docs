@@ -44,7 +44,31 @@
   background-color: green;
   color: white;
   border-radius: 4px;
-  font-size: 40%;
+  font-size: 70%;
+}
+
+.add-an-integration-h2 {
+    display: inline-block;
+    vertical-align: middle;
+    margin-bottom: 4px;
+    margin-left: 4px;
+    padding: 2px 6px 2px 6px;
+    background-color: blue;
+    color: white;
+    border-radius: 4px;
+    font-size: 70%;
+}
+
+.connect-button-h2 {
+    display: inline-block;
+    vertical-align: middle;
+    margin-bottom: 4px;
+    margin-left: 4px;
+    padding: 2px 6px 2px 6px;
+    background-color: white;
+    color: blue;
+    border-radius: 4px;
+    font-size: 70%;
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
@@ -197,4 +221,11 @@ pre.prism-code {
 .footer_signup-img {
 }
 
+
+
+.cloud:after {
+    /*content: "🦦☁️";*/
+    /*float: right;*/
+    /*margin: 0 0 0 0;*/
+}
 

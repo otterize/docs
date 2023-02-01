@@ -2,9 +2,9 @@ from kafka import KafkaConsumer
 
 ssl_kwargs = dict(
     security_protocol='SSL',
-    ssl_cafile="/var/otterize/credentials/bundle.pem",
+    ssl_cafile="/var/otterize/credentials/ca.pem",
     ssl_keyfile="/var/otterize/credentials/key.pem",
-    ssl_certfile="/var/otterize/credentials/svid.pem",
+    ssl_certfile="/var/otterize/credentials/cert.pem",
 )
 
 consumer = KafkaConsumer(

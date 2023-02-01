@@ -1,5 +1,5 @@
 ---
-sidebar_position: 3
+sidebar_position: 4
 title: Automate secure Kafka access
 ---
 import Tabs from '@theme/Tabs';
@@ -29,7 +29,7 @@ We will deploy a Kafka cluster using Bitnami's [Helm chart](https://github.com/b
 In the chart we will configure Kafka to:
 - Recognize the Otterize intents operator as a super user so it can configure ACLs;
 - Use TLS (Kafka calls it SSL) for its listeners;
-- Tell the Otterize SPIRE integration operator, via pod annotations, how credentials should be created; and
+- Tell the Otterize Credentials operator, via pod annotations, how credentials should be created; and
 - Authenticate clients using mTLS credentials provided as a Kubernetes secret
 
 <details>
@@ -44,7 +44,7 @@ The following command will deploy a Kafka cluster with this chart:
  ```bash
  helm repo add bitnami https://charts.bitnami.com/bitnami
  helm repo update
- helm install --create-namespace -n kafka --wait \
+ helm install --create-namespace -n kafka \
    -f https://docs.otterize.com/code-examples/kafka-mtls/helm/values.yaml kafka bitnami/kafka
  ```
 
@@ -89,7 +89,7 @@ User:* has ALLOW permission for operations: ALL from hosts: *), zkVersion : 0
 ## Deploy clients
 
 Clients will authenticate to Kafka using mTLS. Otterize makes this easy, requiring just 3 simple changes to the client pod spec:
-1. **Generate credentials**: add the `otterize/tls-secret-name` annotation, which tells Otterize to generate mTLS credentials and store them in a Kubernetes secret whose name is the value of this annotation.
+1. **Generate credentials**: add the `credentials-operator.otterize.com/tls-secret-name` annotation, which tells Otterize to generate mTLS credentials and store them in a Kubernetes secret whose name is the value of this annotation.
 2. **Expose credentials in a volume**: add a volume containing this secret to the pod.
 3. **Mount the volume**: mount the volume in every container in the pod.
 
@@ -103,7 +103,7 @@ spec:
       annotations:
         # highlight-next-line
         # 1. Generate credentials as a secret called "client-credentials-secret":
-        otterize/tls-secret-name: client-credentials-secret
+        credentials-operator.otterize.com/tls-secret-name: client-credentials-secret
         ...
     spec:
       volumes:
@@ -176,64 +176,64 @@ Our simple example consists of a two client pods &mdash; "client" and "client-ot
 </details>
 
 1. Deploy the two clients into a namespace called `otterize-tutorial-kafka-mtls` using `kubectl`:
-    ```bash
-    kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/all.yaml
-    ```
+```bash
+kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/all.yaml
+```
 
-    <details>
-    <summary>Optional: check deployment status</summary>
+<details>
+<summary>Optional: check deployment status</summary>
 
-    Check that the client pods were deployed:
+Check that the client pods were deployed:
 
-    ```bash
-    kubectl get pods -n otterize-tutorial-kafka-mtls
-    ```
-    You should see:
-    ```
-    NAME                              READY   STATUS    RESTARTS   AGE
-    myclient-5d9646fc46-tw5hs         1/1     Running   0          21s
-    myclient-other-59647b448c-w4cpq   1/1     Running   0          21s
-    ```
-    </details>
+```bash
+kubectl get pods -n otterize-tutorial-kafka-mtls
+```
+You should see:
+```
+NAME                              READY   STATUS    RESTARTS   AGE
+myclient-5d9646fc46-tw5hs         1/1     Running   0          21s
+myclient-other-59647b448c-w4cpq   1/1     Running   0          21s
+```
+</details>
 
-    Let's monitor, in separate terminal windows, both clients' attempts to call Kafka,
-    so we can see the effects of our changes in real time.
+Let's monitor, in separate terminal windows, both clients' attempts to call Kafka,
+so we can see the effects of our changes in real time.
 
 2. **Open a new terminal window [myclient]** and tail the client log:
-    ```bash
-    kubectl logs -f --tail 1 -n otterize-tutorial-kafka-mtls deploy/myclient
-    ```
-    This client should be able to communicate with the server:
-    ```
-    Loading mTLS certificates
-    Connecting to Kafka
-    Creating a producer and a consumer for - mytopic
-    Sending messages
-    Sent message - Message 1 [sent by client]
-    Read message - Message 1 [sent by client]
-    Read message - Message 1 [sent by client-other]
-    Sent message - Message 2 [sent by client]
-    Read message - Message 2 [sent by client-other]
-    Read message - Message 2 [sent by client]
-    Read message - Message 3 [sent by client-other]
-    Sent message - Message 3 [sent by client]
-    Read message - Message 3 [sent by client]
-    ```
+```bash
+kubectl logs -f --tail 1 -n otterize-tutorial-kafka-mtls deploy/myclient
+```
+This client should be able to communicate with the server:
+```
+Loading mTLS certificates
+Connecting to Kafka
+Creating a producer and a consumer for - mytopic
+Sending messages
+Sent message - Message 1 [sent by client]
+Read message - Message 1 [sent by client]
+Read message - Message 1 [sent by client-other]
+Sent message - Message 2 [sent by client]
+Read message - Message 2 [sent by client-other]
+Read message - Message 2 [sent by client]
+Read message - Message 3 [sent by client-other]
+Sent message - Message 3 [sent by client]
+Read message - Message 3 [sent by client]
+```
 
 3. **Open another terminal window [myclient-other]** and tail the client-other log:
-    ```bash
-    kubectl logs -f --tail 1 -n otterize-tutorial-kafka-mtls deploy/myclient-other
-    ```
-    This other client should also be able to communicate with the server:
-    ```
-    Loading mTLS certificates
-    Connecting to Kafka
-    Creating a producer for - mytopic
-    Sending messages
-    Sent message - Message 1 [sent by client-other]
-    Sent message - Message 2 [sent by client-other]
-    Sent message - Message 3 [sent by client-other]
-    ```
+```bash
+kubectl logs -f --tail 1 -n otterize-tutorial-kafka-mtls deploy/myclient-other
+```
+This other client should also be able to communicate with the server:
+```
+Loading mTLS certificates
+Connecting to Kafka
+Creating a producer for - mytopic
+Sending messages
+Sent message - Message 1 [sent by client-other]
+Sent message - Message 2 [sent by client-other]
+Sent message - Message 3 [sent by client-other]
+```
 
 ## Apply intents
 1. The client declares its intent to call the server with this `intents.yaml` file:
@@ -246,36 +246,37 @@ Client intents are the cornerstone of [intent-based access control](https://otte
 :::
 
 2. Keep an eye on the logs being tailed in the **[client-other]** while you apply this `intents.yaml` file in your **main terminal window** using:
-   ```bash
-   kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/client-intents.yaml
-   ```
+```bash
+kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/client-intents.yaml
+```
 
-   You should quickly see in the **[client-other]** that the **other client cannot** access the topic:
-   ```
-   Sent message - Message 12 [sent by client-other]            # <- before applying the intents file
-   Sent message - Message 13 [sent by client-other]            # <- before applying the intents file
-   time="2022-10-06T09:44:53Z" level=info error="kafka server: # <- after applying the intents file
-     The client is not authorized to access this topic"
-   Loop exited
-   ```
-   Meanwhile, in the **[client]** terminal you can see that the **client can** access the topic:
-   ```
-   Sent message - Message 24 [sent by client]
-   Read message - Message 24 [sent by client]
-   Sent message - Message 25 [sent by client]
-   Read message - Message 25 [sent by client]
-   ```
+You should quickly see in the **[client-other]** that the **other client cannot** access the topic:
+```
+Sent message - Message 12 [sent by client-other]            # <- before applying the intents file
+Sent message - Message 13 [sent by client-other]            # <- before applying the intents file
+time="2022-10-06T09:44:53Z" level=info error="kafka server: # <- after applying the intents file
+ The client is not authorized to access this topic"
+Loop exited
+```
+Meanwhile, in the **[client]** terminal you can see that the **client can** access the topic:
+```
+Sent message - Message 24 [sent by client]
+Read message - Message 24 [sent by client]
+Sent message - Message 25 [sent by client]
+Read message - Message 25 [sent by client]
+```
 3. Verify that an ACL for this client was configured on the Kafka broker:
-   ```bash
-   kubectl logs -n kafka statefulset/kafka | grep "Processing Acl change" | grep mytopic | tail -n 1
-   ```
-   You should see:
-   ```
-   [2022-09-13 10:44:52,803] INFO Processing Acl change notification for
-   ResourcePattern(resourceType=TOPIC, name=mytopic, patternType=LITERAL), versionedAcls :
-   Set(User:CN=myclient.otterize-tutorial-kafka-mtls has ALLOW permission for operations: ALL from hosts: *),
-   zkVersion : 0 (kafka.security.authorizer.AclAuthorizer)
-   ```
+```bash
+kubectl logs -n kafka statefulset/kafka | grep "Processing Acl change" | grep mytopic | tail -n 1
+```
+You should see:
+```
+[2022-09-13 10:44:52,803] INFO Processing Acl change notification for
+ResourcePattern(resourceType=TOPIC, name=mytopic, patternType=LITERAL),
+versionedAcls : Set(User:ANONYMOUS has DENY permission for operations:
+ALL from hosts: *, User:CN=myclient.otterize-tutorial-kafka-mtls,O=SPIRE,C=US has ALLOW permission
+for operations: ALL from hosts: *), zkVersion : 6 (kafka.security.authorizer.AclAuthorizer)
+```
 
 ## What did we accomplish?
 
@@ -300,7 +301,7 @@ We configured the Helm chart for Kafka to:
 * Use mTLS to authenticate clients, using this Kubernetes secret.
 
 We configured Kafka itself to:
-* Add the TLS certificates of the Otterize SPIRE integration operator.
+* Add the TLS certificates of the Otterize Credentials operator.
 * Set the default ACL for all topics to allow anonymous access.
 
 ### Per-client setups:
@@ -323,7 +324,9 @@ Try to create an intents file yourself for **client-other**, and apply it to all
 :::
 
 ## What's next
-- Explore how to gradually rollout [secure access for Kafka](/guides/ibac-for-k8s-kafka/) on your existing infrastructure.
+Take a realistic ecommerce application with multiple services for a spin and learn how to manage it with
+* [Network policies](/realistic-example/shadow-mode-network-policies) - use shadow mode to boost confidence when rolling out secure access.
+* [Secure access to Kafka](/realistic-example/visualize-kafka-protection) - visualize kafka configuration and changes.
 
 ## Teardown
 

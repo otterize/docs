@@ -1,0 +1,17 @@
+---
+sidebar_position: 5
+title: Service identities and resolution
+---
+
+Otterize uses universal service identities to refer to services, regardless of which infrastructure they run on. Every service has a name, and possibly a namespace, which is specified in Otterize client intents to request access to other services.
+
+## Kubernetes service identity resolution
+How do Otterize operators decide what is the name of the service that runs within the pod? The algorithm is as follows:
+
+1. If the pod has an `otterize/service-name` label, its value is used as the service name. This allows developers and
+   automations to explicitly name services, if needed.
+2. If there is no `otterize/service-name` label, a recursive look up is performed for the Kubernetes resource owner of
+   the pod, until the root resource is reached, and its name is used as the service name. For example, if you have
+   a `Deployment` named `checkoutservice`, which then creates and owns a `ReplicaSet`, which then creates and owns
+   a `Pod`, then the service name for that pod is `checkoutservice` - same as the name of the `Deployment`. This is
+   intended to capture the likely-more-meaningful "human name" of the service.

@@ -25,9 +25,9 @@ data:
     const (
         kafkaAddr     = "kafka.kafka:9092"
         testTopicName = "mytopic"
-        certFile      = "/var/otterize/credentials/svid.pem"
+        certFile      = "/var/otterize/credentials/cert.pem"
         keyFile       = "/var/otterize/credentials/key.pem"
-        rootCAFile    = "/var/otterize/credentials/bundle.pem"
+        rootCAFile    = "/var/otterize/credentials/ca.pem"
     )
     
     func getTLSConfig() (*tls.Config, error) {
@@ -171,7 +171,7 @@ spec:
       labels:
         app: myclient
       annotations:
-        spire-integration.otterize.com/tls-secret-name: myclient-credentials-secret
+        credentials-operator.otterize.com/tls-secret-name: myclient-credentials-secret
     spec:
       containers:
         - name: myclient
@@ -218,9 +218,9 @@ data:
     const (
         kafkaAddr     = "kafka.kafka:9092"
         testTopicName = "mytopic"
-        certFile      = "/var/otterize/credentials/svid.pem"
+        certFile      = "/var/otterize/credentials/cert.pem"
         keyFile       = "/var/otterize/credentials/key.pem"
-        rootCAFile    = "/var/otterize/credentials/bundle.pem"
+        rootCAFile    = "/var/otterize/credentials/ca.pem"
     )
     
     func getTLSConfig() (*tls.Config, error) {
@@ -345,7 +345,7 @@ spec:
       labels:
         app: myclient-other
       annotations:
-        spire-integration.otterize.com/tls-secret-name: myclient-other-credentials-secret
+        credentials-operator.otterize.com/tls-secret-name: myclient-other-credentials-secret
     spec:
       containers:
         - name: myclient-other

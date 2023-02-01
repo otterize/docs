@@ -1,0 +1,15 @@
+## Namespaces and environments
+
+In a Kubernetes cluster, all services are contained within **namespaces**. Namespaces are used to group services that are similar in some way, and to separate them from other groups of services.
+
+When intents are reported to Otterize Cloud, they include information about which namespaces their services are in. If the client and server are in different namespaces, the intent is called a cross-namespace intent. In any case, Otterize Cloud contains representations of all the namespaces reported to it by their association with intents, as well as which services they contain.
+
+Because different namespaces may be mapped to different environments, intents may also be cross-environment.
+
+In Kubernetes, namespace names must be unique within a cluster.
+
+Otterize Cloud adds the concept of **environments**. These have the same meaning usually used in software development: dev, staging, production, etc.
+
+You can create and manage as many environments as you need in Otterize Cloud. Just make sure they are meaningful to you. To map them to your cluster, map each namespace to the appropriate environment. All services in a namespace in a cluster are in the same environment. In configuring the integration of the cluster with Otterize Cloud, you will define the **default environment** to which namespaces in that cluster are mapped. Namespaces will be assigned to that environment until you map them to a different environment. If in your situation a cluster is considered to all be within an environment, you won't have to do anything once you've defined the default environment for namespaces in that cluster.
+
+Environment names must be unique within an organization.

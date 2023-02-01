@@ -1,0 +1,9 @@
+apiVersion: k8s.otterize.com/v1alpha2
+kind: ClientIntents
+metadata:
+  name: checkoutservice
+spec:
+  service:
+    name: checkoutservice
+  calls:
+    - name: productcatalogservice

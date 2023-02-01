@@ -1,0 +1,61 @@
+---
+sidebar_position: 4
+title: Intents and intents files
+---
+
+Intent-based access control is, not surprisingly, centered around declaring intents &mdash; specifically, declaring **client** intents
+ to call servers.
+
+The mechanism to declare client intents is with **client intents files**, or just "intents files" for short.
+This is a natural approach for agile, cloud-native organizations and initiatives:
+
+- Intents files are **declarative**;
+- Specifically, intents files declare **what** needs to happen (service A needs to access service B to do operation C)
+without specifying, or needing to know, **how** to accomplish this;
+- Intents files align with **rapid, distributed development** because they only require the knowledge that
+client developers already have &mdash no need for the target server developers or admins to keep track of who needs to access them;
+- The declarative approach thrives in **cloud-native infrastructures** where there are existing APIs to configure access control automatically.
+
+## Intents within intents files
+
+An intent is a declaration by a specific client to call a specific server, optionally specifying more granular
+ information about the call (e.g. the resource path and method for HTTP, the topic name and operation for Kafka).
+ In other words, an intent is a tuple of client, server, and optional granular call information.
+ If any of those changes, that's logically a different intent, though the intents file format allows some
+ shorthand ways of aggregating intents that only differ by HTTP method or Kafka operation. See the example below.
+
+ An client's intents file specifies *all* the intents of that client, in one YAML file. Why is that important?
+ Because as the client's needs change, the intents file should change with it, and any intents no longer needed
+ should be removed from the file. When this updated file is applied, the corresponding access is also removed,
+ i.e. the network policies or the Kafka ACLs that were previously in place due to those intents are now gone.
+ In this way, access controls always reflect all of, and only, the latest intended access.
+
+## Intents file formats
+
+Client intents files are independent of the infrastructure on which IBAC is deployed &mdash; indeed, they abstract away
+any tie-ins with infrastructures and implementations of access control.
+
+Here is an example of the client intents file for the `checkoutservice`.
+It declares that it will call the `emailservice`, the `orderservice`, and the `ecomm-events` Kafka service.
+It also provides more granular information for some of the calls:
+```yaml
+{@include: ../../static/resources/example-intents.yaml}
+```
+
+This is a "plain" or "vanilla" intents file, which the Otterize CLI can parse and process.
+Within the context of a Kubernetes cluster, it is very natural to format intents files as
+Kubernetes custom resources, and these are processed by the Kubernetes API, which validates
+ them against a `ClientIntents` custom resource definition (CRD) and then hands them over to the Otterize intents
+ operator, as expected of a Kubernetes ecosystem extension.
+ The two formats are trivially related: the "plain" intents file contents are simply embedded in the `spec`
+ section of the custom resource format.
+
+Here is the same intents file, now formatted as a Kubernetes custom resource YAML,
+so it can be applied directly via `kubectl apply`:
+
+```yaml
+{@include: ../../static/resources/example-intents-resource-highlighted.yaml}
+```
+
+More formal specification of the format of client intents files, including a schema definition, will be published
+at a later time.

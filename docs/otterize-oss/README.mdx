@@ -1,5 +1,5 @@
 ---
-sidebar_position: 8
+sidebar_position: 6
 title: Otterize OSS
 ---
 
@@ -8,18 +8,18 @@ It is a fully standalone, free and open-source software implementation of IBAC b
 teams that use Kubernetes at the core of their infrastructure.
 
 It consists of several components:
-- The [Otterize intents operator](/components/intents-operator) that translates ClientIntents resources to
+- The [Otterize intents operator](reference/configuration/intents-operator) that translates ClientIntents resources to
 access controls using plugins, which currently include:
   - A network policies manager to control pod-to-pod access.
   - An ACL configurator for in-Kubernetes Kafka clusters to control client access.
-- The [Otterize SPIRE integration operator](/components/spire-integration-operator) that integrates with SPIFFE/SPIRE
+- The [Otterize credentials operator](reference/configuration/credentials-operator) that integrates with SPIFFE/SPIRE
 to handle pod identities and manage certificates.
-- The [Otterize network mapper](/components/network-mapper) that sniffs pod-to-pod traffic and builds a network map,
+- The [Otterize network mapper](reference/configuration/network-mapper) that sniffs pod-to-pod traffic and builds a network map,
 which is useful on its own and may also be exported as client intents files for bootstrapping IBAC.
 
 The Otterize OSS code base and issues are managed [on GitHub](https://github.com/otterize).
 
-To get started with Otterize OSS, see the [quick tutorials](/quick-tutorials) or the [more in-depth guides](/guides).
+To get started with Otterize OSS, see the tutorials for [network policies](/quick-tutorials/k8s-network-policies), [Kafka](/quick-tutorials/k8s-kafka-mtls), [network mapping](/quick-tutorials/k8s-network-mapper), and [mTLS](/quick-tutorials/k8s-mtls).
 
 The near-term roadmap for Otterize OSS currently includes:
 - **Otterize SDK**: an SDK for fine-grained inline ("middleware") access control.

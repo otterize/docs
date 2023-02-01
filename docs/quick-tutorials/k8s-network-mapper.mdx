@@ -1,37 +1,52 @@
 ---
-sidebar_position: 2
+sidebar_position: 3
 title: Map your cluster
 ---
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import styles from '/src/css/styles.module.css';
 
-The network mapper and the Otterize CLI work in tandem to allow you to map pod-to-pod traffic within your K8s cluster. This tutorial will guide you
-through installing Otterize, mapping traffic and tracking changes.
+The network mapper allows you to map pod-to-pod traffic within your K8s cluster.
 
 In this tutorial, we will:
 
-- Deploy a Kafka broker, and two clients calling it.
+- Deploy a server, and two clients calling it.
 - Map their communication using the network mapper.
-- Watch traffic change by deploying another client and another server and re-inspecting with the network mapper.
 
-## Make sure you have a Kubernetes cluster
+<details>
+<summary>Make sure you have a Kubernetes cluster</summary>
+
 Before you start, you need to have a Kubernetes cluster. Having a cluster with a [CNI](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/) that supports [NetworkPolicies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) isn't required for this tutorial, but is recommended so that your cluster works with other tutorials.
 
 {@include: ../_common/cluster-setup.md}
+</details>
 
-## Install the network mapper
+<details>
+<summary>Install Otterize on your cluster</summary>
 
-{@include: ../_common/install-otterize-network-mapper.md}
+:::note
+You can skip this section if Otterize is already installed in your cluster.
+:::
 
-## Install the Otterize CLI
+{@include: ../_common/install-otterize.md}
 
-{@include: ../_common/install-otterize-cli.md}
+</details>
+
+<details>
+<summary>Connect to Otterize Cloud (optional)</summary>
+Upgrade/install your Otterize OSS deployment using the *client id* and *client secret* generated for your integration.
+
+{@include: ../_common/install-otterize-cloud.md}
+
+For detailed instructions follow this [guide](/installation#connect-otterize-oss-to-otterize-cloud)
+</details>
 
 ## Map the cluster
 
 The network mapper starts to sniff traffic and build an in-memory network map as soon as it's installed.
 The Otterize CLI allows you to interact with the network mapper to grab a snapshot of current mapped traffic,
-reset its state and more. For a complete list of the CLI capabilities read the [CLI command reference](/cli/#network-mapper).
+reset its state and more. For a complete list of the CLI capabilities read the [CLI command reference](/reference/cli/#network-mapper).
+Otterize Cloud allows you to visualize that data in the [access graph-broken link](/broken/link).
 
 ### Deploy demo to simulate traffic
 
@@ -43,186 +58,19 @@ kubectl apply -n otterize-tutorial-mapper -f https://docs.otterize.com/code-exam
 
 ### Show mapped traffic
 
-You can view mapped traffic by calling the CLI `list` or `export` commands.
-The latter supports multiple output formats, namely `intents` (client intents files) and `json`.
-The following shows the CLI output filtered for the namespace (`otterize-tutorial-mapper`)
-of the example above.
+{@include: ../getting-started/_show_mapped_traffic_cli.mdx}
 
-<Tabs>
-  <TabItem value="list" label="List" default>
+### Visualize using the access graph (Cloud)
 
-1. List the pod-to-pod network map built up ("sniffed") so far:
+You can visualize mapped traffic with the [access graph](https://app.staging.otterize.com/access-graph) on Otterize Cloud.
 
-   ```shell
-   otterize mapper list -n otterize-tutorial-mapper
-   ```
-2. For the simple example above, you should see:
-   ```shell
-   client in namespace otterize-tutorial-mapper calls:
-     - server
-   client2 in namespace otterize-tutorial-mapper calls:
-     - server
-   ```
-
-</TabItem>
-  <TabItem value="intents" label="Export as intents" default>
-
-1. Export as YAML client intents (the default format) the pod-to-pod network map built up so far:
-
-   ```shell
-   otterize mapper export -n otterize-tutorial-mapper
-   ```
-2. For the simple example above, you should see (concatenated into one YAML file):
-   ```yaml
-   apiVersion: k8s.k8s.otterize.com/v1
-   kind: ClientIntents
-   metadata:
-     name: client
-     namespace: otterize-tutorial-mapper
-   spec:
-     service:
-       name: client
-     calls:
-       - name: server
-   ---
-   apiVersion: k8s.k8s.otterize.com/v1
-   kind: ClientIntents
-   metadata:
-     name: server
-     namespace: otterize-tutorial-mapper
-   spec:
-     service:
-       name: client2
-     calls:
-       - name: server
-   ```
-
-</TabItem>
-  <TabItem value="json" label="Export as JSON">
-
-1. Export as JSON the pod-to-pod network map built up so far:
-   ```shell
-   otterize mapper export -n otterize-tutorial-mapper --format json
-   ```
-2. For the simple example above, you should see:
-
-   ```json
-   [
-     {
-       "kind": "ClientIntents",
-       "apiVersion": "k8s.otterize.com/v1alpha2",
-       "metadata": {
-         "name": "client",
-         "namespace": "otterize-tutorial-mapper"
-       },
-       "spec": {
-         "service": {
-           "name": "client"
-         },
-         "calls": [
-           {
-             "name": "server"
-           }
-         ]
-       }
-     },
-     {
-       "kind": "ClientIntents",
-       "apiVersion": "k8s.otterize.com/v1alpha2",
-       "metadata": {
-         "name": "client",
-         "namespace": "otterize-tutorial-mapper"
-       },
-       "spec": {
-         "service": {
-           "name": "client"
-         },
-         "calls": [
-           {
-             "name": "server"
-           }
-         ]
-       }
-     }
-   ]
-   ```
-
-</TabItem>
-</Tabs>
+<img src="/img/quick-tutorials/network-mapper/map.png" alt="Discovered intents" width="600"/>
 
 :::info
-See the [CLI documentation](/cli) for more details about the CLI.
+Learn more about [Shadow mode](/realistic-example/shadow-mode-network-policies) to see how the access graph can be used for gradually rolling out intents.
 :::
 
-### Change traffic, then "Sniff&Diff"
 
-One of the benefits for using the network mapper is the ability to track changes over time for communication within your
-cluster. We call that "Sniff&Diff": continue to sniff traffic, then diff the network mapper output to see what changed.
-
-1. Let's save the current state of traffic from the cluster into a file we will compare against later:
-   ```shell
-   otterize mapper list -n otterize-tutorial-mapper > intents-original.txt
-   ```
-
-2. And now we can add more traffic to the cluster and see how the network mapper tracks it.
-   Let's deploy an extension to the example, consisting of two pods &mdash;
-   `other-client` and `other-server`, communicating over HTTP:
-
-   ```shell
-   kubectl apply -n otterize-tutorial-mapper -f https://docs.otterize.com/code-examples/network-mapper/all-other.yaml
-   ```
-
-<details>
-<summary>Check that the client and server pods were deployed</summary>
-
-```bash
-kubectl get pods -n otterize-tutorial-mapper
-```
-You should see
-```
-NAME                      READY   STATUS    RESTARTS   AGE
-client-756f7677f8-rdm8l         1/1     Running   0          15m
-client2-5c4479947b-cdkl2        1/1     Running   0          9m18s
-other-client-8666d97d9c-29xpg   1/1     Running   0          4m8s
-other-server-676dbc5f5-bqxs4    1/1     Running   0          4m3s
-server-6698c58cbc-tht9n         1/1     Running   0          15m
-```
-</details>
-
-3. Let's list the network map again:
-   ```shell
-   otterize mapper list -n otterize-tutorial-mapper
-   ```
-   You should see all the calls including the new ones:
-   ```shell
-   client in namespace otterize-tutorial-mapper calls:
-     - server
-   client2 in namespace otterize-tutorial-mapper calls:
-     - server
-   # highlight-start
-   other-client in namespace otterize-tutorial-mapper calls:
-     - other-server
-   # highlight-end
-      ```
-5. We can also compare both outputs to see the difference. Start by saving the updated list to a file:
-   ```bash
-   otterize mapper list -n otterize-tutorial-mapper > intents-updated.txt
-   ```
-6. Now compare the original file with the updated file using:
-   ```bash
-   diff -y intents-original.txt intents-updated.txt;echo
-   ```
-   Note the new calls identified on the lower right:
-   ```bash
-   client in namespace otterize-tutorial-mapper calls:             client in namespace otterize-tutorial-mapper calls:
-     - server                                                        - server
-   client2 in namespace otterize-tutorial-mapper calls:            client2 in namespace otterize-tutorial-mapper calls:
-     - server                                                        - server
-   # highlight-start
-                                                                  > other-client in namespace otterize-tutorial-mapper calls:
-                                                                  >   - other-server
-   # highlight-end
-      ```
 
 ## What's next
 
@@ -233,11 +81,12 @@ the intents files. We'll see more of that below.
 
 Where to go next?
 
-- If you haven't already, see the [automate network policies tutorial](/quick-tutorials/k8s-network-policies).
-- Or go to the next tutorial to [automate secure access for Kafka](/quick-tutorials/k8s-kafka-mtls).
-- You might also dive deeper into the guide for [IBAC with network policies](../guides/k8s-ibac-via-network-policies).
+- If you haven't already, see the [automate network policies tutorial](/k8s-network-policies).
+- Or go to the next tutorial to [automate secure access for Kafka](/k8s-kafka-mtls).
+- You might also dive deeper into the guide for [IBAC with network policies](../capabilities/network-policies).
   - It even contains a bootstrapping exercise at the end!
-- For a deeper dive into the network mapper, see the guide for [mapping pod-to-pod calls](../guides/k8s-mapping-pod-to-pod-calls).
+- For a deeper dive into the network mapper, see the guide for [mapping pod-to-pod calls](../capabilities/k8s-mapping-pod-to-pod-calls).
+- Explore how [Shadow Mode](/k8s-shadow-mode) can expand these capabilities.
 
 ### Teardown
 
@@ -245,5 +94,4 @@ To remove the deployed examples run:
 
 ```bash
 kubectl delete namespace otterize-tutorial-mapper
-helm uninstall network-mapper -n otterize-system
 ```

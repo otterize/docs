@@ -1,0 +1,981 @@
+---
+sidebar_position: 2
+title: CLI
+---
+
+The Otterize command line interface (CLI) offers the following capabilities:
+- [Interact with](#network-mapper) the [Otterize network mapper](/k8s-network-mapper) running in a Kubernetes cluster.
+- [Transform](#otterize-intents-convert--f-path) [intents files](/intents-and-intents-files/#intents-file-formats) from plain YAML format to Kubernetes custom resource YAML format.
+- Interact with the Otterize Cloud, through its REST API.
+
+This CLI is open-source software. To see its source or build it yourself,
+see [https://github.com/otterize/otterize-cli](https://github.com/otterize/otterize-cli).
+
+The CLI is available as an installable binary as documented in this [guide](/getting-started/oss-installation#install-the-otterize-cli).
+
+The following are the commands offered by the Otterize CLI.
+
+## Command structure
+
+Most CLI commands are of the form `otterize OBJECT ACTION`. Because there are multiple objects
+which each have multiple operations, this order makes the auto-completion and documentation built into the CLI
+easy to access on the fly.
+
+- `otterize -h` or `otterize --help` offers help on the various objects
+- `otterize OBJECT -h` or `otterize OBJECT --help` offers help on the specified object
+- `otterize OBJECT OPERATION -h` or `otterize OBJECT OPERATION --help` offers help on the specified operation
+
+`otterize completion` offers instruction for generating command completions in various shells.
+
+## Global options
+
+The following options apply to all CLI commands.
+
+| Name | Default | Description |
+| --- | --- | --- |
+| `-h` or `--help` |  | Get help on any command. |
+| `--api-address` | `https://app.otterize.com/api` | The URL for the Otterize API endpoint. |
+| `--client-id` |  | Set the client id, for use in authenticating API calls. |
+| `--client-secret` |  | Set the client secret, for use in authenticating API calls. |
+| `--config` | `~/.otterize/config` | Use the given path for the Otterize CLI config file. |
+| `--debug` |  | Show debug logs. |
+| `--interactive` | true | Ask for missing flags interactively. |
+| `--org-id` |  | Use the given organization id when calling the Otterize API. |
+| `--output` | text | Output the results of the command as text (`text`) or JSON (`json`). |
+| `-q` or `--quiet` |  | Suppress printing the results of the command. |
+| `--token` |  | The token to use in authenticating API calls. |
+
+## Network mapper
+
+All `otterize network-mapper` commands share a set of optional flags which will not be repeated in the documentation
+for each command.
+
+#### Common options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| `--mapper-namespace` | `otterize-system` | Specifies the namespace where the mapper service was installed. |
+| `--mapper-service-name` | `otterize-network-mapper` | Specifies the name of the mapper service as it was installed. |
+| `--mapper-service-name` | `otterize-service-port` | Specifies the port on which the mapper service is listening. |
+
+
+### `otterize network-mapper reset`
+
+Resets the network mapper by deleting all map information built up so far in memory.
+
+### `otterize network-mapper list [-n <namespace1>,<namespace2>,...]`
+
+Return the network map built by the network mapper since it started, or since it was reset,
+as a list of clients and the servers they call.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| `-n` or `--namespaces` |  | Export only clients in these namespaces (comma-separated) |
+
+#### Returns
+
+Here's a partial output from `otterize mapper list -n otterize-ecom-demo`:
+
+```shell
+cartservice in namespace otterize-ecom-demo calls:
+  - redis-cart
+checkoutservice in namespace otterize-ecom-demo calls:
+  - cartservice
+  - currencyservice
+  - emailservice
+  - paymentservice
+  - productcatalogservice
+  - shippingservice
+frontend in namespace otterize-ecom-demo calls:
+  - adservice
+  - cartservice
+  - checkoutservice
+  - currencyservice
+  - productcatalogservice
+  - recommendationservice
+  - shippingservice
+loadgenerator in namespace otterize-ecom-demo calls:
+  - frontend
+recommendationservice in namespace otterize-ecom-demo calls:
+  - productcatalogservice
+```
+
+### `otterize network-mapper export [--format] [-n <namespace1>,<namespace2>,...] [-o <path>] [--output-type <output-type>]`
+
+Return the network map built by the network mapper since it started, or since it was reset,
+as [client intents file(s)](/intents-and-intents-files/#intents-file-formats) in various formats.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| `--format` | `yaml` | Specifies the format for the export: 'yaml' or 'json'. |
+| `-n` or `--namespaces` |  | Export only clients in these namespaces (comma-separated) |
+| `-o` or `--output` | `STDOUT` | Filename or directory for redirecting the output |
+| `--output-type` | `single-file` | Whether the output should be written as a single file (`single-file`) or as multiple files in a directory (`dir`). Requires the `-o` or `--output` to point to a directory. |
+
+#### Returns
+
+Here's a partial output from `otterize network-mapper export -n otterize-ecom-demo`:
+
+```shell
+apiVersion: k8s.otterize.com/v1alpha2
+kind: ClientIntents
+metadata:
+  name: cartservice
+  namespace: otterize-ecom-demo
+spec:
+  service:
+    name: cartservice
+  calls:
+    - name: redis-cart
+      type: http
+---
+apiVersion: k8s.otterize.com/v1alpha2
+kind: ClientIntents
+metadata:
+  name: checkoutservice
+  namespace: otterize-ecom-demo
+spec:
+  service:
+    name: checkoutservice
+  calls:
+    - name: cartservice
+      type: http
+    - name: currencyservice
+      type: http
+```
+
+## Login
+
+### `otterize login [--switch-account] [--switch-org]`
+
+Login to Otterize Cloud using a web browser.
+
+If `--switch-account` is specified, re-authenticating is forced in the browser, so a new user can be chosen.
+
+If `--switch-org` is specified, and the current user belongs to multiple org, the new org can be chosen interactively.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| `--switch-account` |  | Login to a different user account than the one currently set. |
+| `--switch-org` |  | Switch to a different organization than the one currently set. |
+
+#### Returns
+
+Outputs login process progress messages, including registering a user if needed, creating an org if needed,
+and setting the user and org to use by default in other commands.
+
+```shell
+Please login to Otterize using your browser: https://...
+Login completed successfully! logged in as: my-username@example.com
+
+Querying user info from Otterize server
+Logged in as Otterize user usr_1234567 (my-username@example.com)
+Only 1 organization found - auto-selecting this organization for use.
+Selected organization org_1234567
+To change your organization selection, log-in again with --switch-org.
+
+```
+
+## API version
+
+### `otterize api-version`
+
+Queries the Otterize Cloud for the current API version (e.g. `v1`) and revision (hash of the current API definition).
+
+#### Returns
+
+Returns the current version and revision of the Otterize REST API, as well as the version and revision against which this CLI is built.
+
+Note that the Otterize CLI is mostly a thin but useful utility for invoking the Otterize Cloud REST API.
+API versions that differ by version number may break backwards compatibility, while those that only differ by revision are backwards compatible: revisions add functionality or documentation but preserve all previous functionality.
+
+If only the Cloud API has changed since the CLI was built (revisions don't match), the CLI might be missing some Cloud capabilities.
+
+If also the Cloud API version is later than the CLI version, some CLI commands might fail.
+
+Beta version of the Cloud API (e.g. `v1beta`) are volatile: they can change and break backwards compatibility until they are out of beta.
+
+```shell
+Current Cloud API:
+    version: v1
+    revision: 465ba4174008682f54f99e37d0b7791148aade14
+This CLI was built against:
+    version: v1
+    revision: 91efb6f8acb98985fc2b993baa8d279049c8b302
+
+Caution: this CLI was built with a different version/revision of the Otterize Cloud API.
+Some Cloud CLI commands may fail.
+Upgrade your CLI to the latest build to resolve this issue.
+```
+
+## Clusters
+
+### `otterize clusters list [-n <cluster-name>]`
+
+List all clusters, optionally filtered by name.
+
+Clusters in Otterize Cloud represent Kubernetes clusters that are integrated with Otterize Cloud. The list also includes clusters that were not integrated or are no longer integrated, as long as they were not deleted.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| `-n` or `--name` |  | Filter the list by cluster name. Since cluster names are unique, this will always return at most one cluster. |
+
+#### Returns
+
+Returns a table of information about the clusters.
+
+```shell
+id                 name        status       namespace count service count configuration.globalDefaultDeny
+────────────────── ─────────── ──────────── ─────────────── ───────────── ───────────────────────────────
+cluster_64fetu3i2t my-cluster1 CONNECTED    4               50            false
+cluster_7g4tre319g my-cluster2 DISCONNECTED 12              127           true
+
+```
+
+### `otterize clusters get <cluster-id>`
+
+Returns information about a single cluster, specified by its id.
+
+#### Returns
+
+Returns a table of information about the cluster.
+
+```shell
+id                 name        status       namespace count service count configuration.globalDefaultDeny
+────────────────── ─────────── ──────────── ─────────────── ───────────── ───────────────────────────────
+cluster_64fetu3i2t my-cluster1 CONNECTED    4               50            false
+```
+
+### `otterize clusters create -n <cluster-name>`
+
+Creates a cluster in Otterize Cloud with the given name.
+
+To connect it to a Kubernetes cluster, i.e. to the Otterize OSS operators in that cluster:
+- You'll need an environment to which all namespaces in the cluster are assigned by default. If needed, create an environment with `otterize environments create -n <env-name>`.
+- Create an integration with `otterize integrations create kubernetes --cluster-id <cluster-id> --env-id <env-id>`.
+- Follow [the guide to installing or upgrading Otterize OSS](https://docs.otterize.com/getting-started/oss-installation) and use the integration's credentials.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| `-n` or `--name` |  | The name to give the cluster, in Otterize Cloud. |
+
+#### Returns
+
+Returns a table of information about the newly-created cluster.
+
+```shell
+id                 name     default environment id integration id namespace count service count configuration                                                        intents operator                  credentials operator              network mapper
+────────────────── ──────── ────────────────────── ────────────── ─────────────── ───────────── ──────────────────────────────────────────────────────────────────── ───────────────────────────────── ───────────────────────────────── ─────────────────────────────────
+cluster_kbw9ex7dfa cluster1                                       8               0             {GlobalDefaultDeny:false UseNetworkPoliciesInAccessGraphStates:true} NOT_INTEGRATED (last seen: never) NOT_INTEGRATED (last seen: never) NOT_INTEGRATED (last seen: never)
+
+```
+
+### `otterize clusters update <cluster-id> --global-default-deny=[true|false]`
+
+Updates the user-settable properties of the cluster in Otterize Cloud.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| `--global-default-deny` | false | Whether a global default deny network policy is in effect. |
+| `use-network-policies-in-access-graph-states` | true | If false, the access graph will not take network policies into account when calculating service and intents states. |
+
+#### Returns
+
+Returns a confirmation and a table of information about the updated cluster.
+
+```shell
+Cluster updated
+id                 name     default environment id integration id namespace count service count configuration                                                         intents operator                  credentials operator              network mapper
+────────────────── ──────── ────────────────────── ────────────── ─────────────── ───────────── ───────────────────────────────────────────────────────────────────── ───────────────────────────────── ───────────────────────────────── ─────────────────────────────────
+cluster_kbw9ex7dfa cluster1                                       8               0             {GlobalDefaultDeny:false UseNetworkPoliciesInAccessGraphStates:false} NOT_INTEGRATED (last seen: never) NOT_INTEGRATED (last seen: never) NOT_INTEGRATED (last seen: never)
+
+```
+
+### `otterize clusters delete <cluster-id>`
+
+Deletes the given cluster, if it doesn't have an integration.
+
+To delete a cluster with an integration, first delete its integration.
+
+#### Returns
+
+Returns a confirmation of the deletion.
+
+```shell
+Deleted cluster cluster_kbw9ex7dfa
+```
+
+## Environments
+
+### `otterize environments list [-l label1,label2] [-n name]`
+
+List all environments, optionally filtered by labels or name.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| `-l` or `--labels` |  | Return only the environments that contain all the given labels. A label may be of the form `key` or `key=value`. |
+| `-n` or `--name` |  | Filter the list by environment name. Since environment names are unique, this will always return at most one cluster. |
+
+#### Returns
+
+Returns a table of information about the environments.
+
+```shell
+id             name                     labels            integrations_count applied_intents_count
+────────────── ──────────────────────── ───────────────── ────────────────── ─────────────────────
+env_yg64fe8ty2 staging                  region-EU                            15
+env_glohhjfowc phase 1                                                       1
+env_o6tdthl6qz phase 2                                                       2
+env_zfndrpvqgp phase 3                                                       3
+env_5mzzqxrr2f eks1_default_environment key1,key2=value2                     0
+env_lqrcfkam5g phase 0                  phase1                               0
+
+```
+
+### `otterize environments get <environment-id>`
+
+Returns information about a single environment, specified by its id.
+
+#### Returns
+
+Returns a table of information about the specified environment.
+
+```shell
+id             name    labels service count namespaces count applied intents count
+────────────── ─────── ────── ───────────── ──────────────── ─────────────────────
+env_o6tdthl6qz staging        12            1                2
+
+```
+
+### `otterize environments create -n <environment-name> [-l label1,label2]`
+
+Creates a new environment with the given name, and optionally with the given labels.
+
+Environment names must be unique in an organization.
+
+The keys of the labels on a given environment must be unique.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| `-n` or `--name` |  | The name to give the new environment. |
+| `-l` or `--labels` |  | Label the new environment with the given labels. A label may be of the form `key` or `key=value`. |
+
+#### Returns
+
+Returns a table of information about the newly-created environment.
+
+```shell
+id             name labels                    service count namespaces count applied intents count
+────────────── ──── ───────────────────────── ───────────── ──────────────── ─────────────────────
+env_bzzustqrek qa   anonymized=true,us-east-1 0             0                0
+```
+
+### `otterize environments update <environment-id> [-l label1,label2] [-n name]`
+
+Updates an environment, specified by its id, optionally changing its name and optionally changing its labels.
+
+Environment names must be unique in an organization.
+
+The keys of the labels on a given environment must be unique.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| `-l` or `--labels` |  | Relabel the environment with the specified labels. A label may be of the form `key` or `key=value`. |
+| `-n` or `--name` |  | Rename the environment with the specified name. |
+
+#### Returns
+
+Returns a confirmation of the update, and a table of information about the newly-updated environment.
+
+```shell
+Environment updated
+id             name labels                     service count namespaces count applied intents count
+────────────── ──── ────────────────────────── ───────────── ──────────────── ─────────────────────
+env_bzzustqrek qa1  anonymized=false,us-east-2 0             0                0
+```
+
+### `otterize environments update add-label <environment-id> --key=<key> [--value=<value>]`
+
+Updates an environment, specified by its id, by adding a label.
+
+If a label with the specified key already exists on this environment, with or without a value, it is replaced.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| `--key` |  | Specifies a key for the added label. |
+| `--value` |  | Specifies a value for the added label. |
+
+#### Returns
+
+Returns a table of information about the newly-updated environment.
+
+```shell
+Environment updated
+id             name labels                               service count namespaces count applied intents count
+────────────── ──── ──────────────────────────────────── ───────────── ──────────────── ─────────────────────
+env_uchr33prjg qa   size=small,anonymized=true,us-east-1 0             0                0
+```
+
+### `otterize environments update remove-label <environment-id> --key=<key>`
+
+Updates an environment, specified by its id, by removing a label.
+
+The label with the specified key is removed whether or not it has a value.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| `--key` |  | Specifies the key for the label to be removed. |
+
+#### Returns
+
+Returns a table of information about the newly-updated environment.
+
+```shell
+Environment updated
+id             name labels                    service count namespaces count applied intents count
+────────────── ──── ───────────────────────── ───────────── ──────────────── ─────────────────────
+env_uchr33prjg qa   anonymized=true,us-east-1 0             0                0
+```
+
+### `otterize environments delete <environment-id>>`
+
+Deletes the specified environment.
+
+If the environment is being used as the default environment for a Kubernetes integration, that integration must first be updated with a different environment, or deleted.
+
+#### Returns
+
+Returns confirmation of the deletion.
+
+```shell
+Deleted environment env_bzzustqrek
+```
+
+## Integrations
+
+### `otterize integrations list [--cluster-id=<cluster-id>] [--env-id=<env-id>] [--name=<name>] [--type=GENERIC | --type=KUBERNETES]`
+
+List all integrations, optionally filtered by cluster, environment, name, or type.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| `--cluster-id` |  | Show only the integration associated with the specified cluster.  |
+| `--env-id` |  | Show only the integrations with the specified environment as their default environment.  |
+| `-n` or `--name` |  | Show only the integration with the specified name.  |
+| `--type` |  | Show only integrations with the specified type: `GENERIC` or `KUBERNETES`.  |
+
+#### Returns
+
+Returns a table of information about the integrations.
+
+```shell
+id             type       name          cluster id         default environment id intents operator                                               credentials operator              network mapper
+────────────── ────────── ───────────── ────────────────── ────────────────────── ────────────────────────────────────────────────────────────── ───────────────────────────────── ──────────────────────────────────────────────────────────────
+int_7b7rc988i3 KUBERNETES eks1          cluster_dvlwk4q25r env_5mzzqxrr2f         DISCONNECTED (last seen: 2023-01-26 08:55:53.909965 +0000 UTC) NOT_INTEGRATED (last seen: never) DISCONNECTED (last seen: 2023-01-26 08:56:29.608348 +0000 UTC)
+int_ltdad8mcfc GENERIC    my-automation
+```
+
+### `otterize integrations get <integration-id>`
+
+Returns information about a single integration, specified by its id.
+
+#### Returns
+
+Returns a table of information about the specified integration.
+
+```shell
+id             type       name cluster id         default environment id intents operator                                               credentials operator              network mapper
+────────────── ────────── ──── ────────────────── ────────────────────── ────────────────────────────────────────────────────────────── ───────────────────────────────── ──────────────────────────────────────────────────────────────
+int_7b7rc988i3 KUBERNETES eks1 cluster_dvlwk4q25r env_5mzzqxrr2f         DISCONNECTED (last seen: 2023-01-26 08:55:53.909965 +0000 UTC) NOT_INTEGRATED (last seen: never) DISCONNECTED (last seen: 2023-01-26 08:56:29.608348 +0000 UTC)
+```
+
+### `otterize integrations create generic -n=<name>`
+
+Creates a new generic-type integration with the specified name.
+
+Generic-type integrations are used for any kind of automated access to the Otterize Cloud API.
+
+Integration names must be unique, per integration type, within an organization.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| `-n` or `--name` |  | Specify the name of the new integration.  |
+
+#### Returns
+
+Returns a table of information about the newly-created integration.
+
+```shell
+id             type    name   cluster id default environment id intents operator credentials operator network mapper client id      client secret
+────────────── ─────── ────── ────────── ────────────────────── ──────────────── ──────────────────── ────────────── ────────────── ────────────────────────────────────────────────────────────────
+int_nx2twtcqwt GENERIC my-bot                                                                                        cli_csn8mb55b3 7adba16e331bdf9fe9d2c1ec7d2d78a1c7e56df34sc2c5ff98e4dec4aa232c3c
+```
+
+### `otterize integrations create kubernetes --cluster-id=<cluster-id> --env-id=<env-id>`
+
+Creates a new Kubernetes-type integration for the specified cluster and with the specified default environment.
+
+The cluster must have already been created in Otterize Cloud before the new integration is created and used with it.
+
+The default environment must also have already been created. All namespaces in the cluster are associated with this environment by default; each namespace may then be associated with a different environment by updating it.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| `--cluster-id` |  | The id of the cluster to use with this integration. |
+| `--env-id` |  | The id of the environment to use as the default environment for this integration. |
+
+#### Returns
+
+Returns a table of information about the newly-created integration.
+
+```shell
+id             type       name                      cluster id         default environment id intents operator                  credentials operator              network mapper                    client id      client secret
+────────────── ────────── ───────────────────────── ────────────────── ────────────────────── ───────────────────────────────── ───────────────────────────────── ───────────────────────────────── ────────────── ────────────────────────────────────────────────────────────────
+int_hbspxl9te3 KUBERNETES Integration - dev-cluster cluster_c8uo5cc8fs env_h29ujjm8q8         NOT_INTEGRATED (last seen: never) NOT_INTEGRATED (last seen: never) NOT_INTEGRATED (last seen: never) cli_6l44xifr7l 8fc161f883d89d44bddc0279f41ff24c0697e482e2cd9c5edec4a525f0af06f7
+```
+
+### `otterize integrations update generic <integration-id> [-n <name>]`
+
+Updates the specified generic-type integration with a new name.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| `-n` or `--name` |  | The new name to use for the integration. |
+
+#### Returns
+
+Returns a table of information about the newly-updated integration.
+
+```shell
+id             type    name    cluster id default environment id intents operator credentials operator network mapper client id      client secret
+────────────── ─────── ─────── ────────── ────────────────────── ──────────────── ──────────────────── ────────────── ────────────── ────────────────────────────────────────────────────────────────
+int_nx2twtcqwt GENERIC my-bot2                                                                                        cli_csn8mb55b3 7adba16e331bdf9fe9d2c1ec7d2d78a1c7e56df34sc2c5ff98e4dec4aa232c3c
+```
+
+### `otterize integrations update kubernetes <integration-id> [--env-id <env-id>]`
+
+Updates the specified Kubernetes-type integration with a new environment to use as the default environment for new namespaces.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| `--env-id` |  | The id of the environment to use as the default for this integration. |
+
+#### Returns
+
+Returns a table of information about the newly-updated integration.
+
+```shell
+id             type       name                      cluster id         default environment id intents operator                  credentials operator              network mapper                    client id      client secret
+────────────── ────────── ───────────────────────── ────────────────── ────────────────────── ───────────────────────────────── ───────────────────────────────── ───────────────────────────────── ────────────── ────────────────────────────────────────────────────────────────
+int_hbspxl9te3 KUBERNETES Integration - dev-cluster cluster_c8uo5cc8fs env_iwh37hubdy         NOT_INTEGRATED (last seen: never) NOT_INTEGRATED (last seen: never) NOT_INTEGRATED (last seen: never) cli_6l44xifr7l 8fc161f883d89d44bddc0279f41ff24c0697e482e2cd9c5edec4a525f0af06f7
+```
+
+### `otterize integrations delete <integration-id>`
+
+Deletes the specified integration.
+
+#### Returns
+
+Returns confirmation of the deletion.
+
+```shell
+Deleted integration int_nx2twtcqwt
+```
+
+## Intents
+
+### `otterize intents convert -f <path>`
+
+Convert client intents files in plain YAML format to Kubernetes ClientIntents resource format.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| `-f` or `--filename` | `'.'` | The client intents filename, or a directory containing client intents files. |
+
+#### Returns
+
+Here's the result of converting a directory containing two client intents file in plain YAML format.
+The result is YAML describing two Kubernetes resources separated with the YAML `---` separator.
+
+```shell
+apiVersion: k8s.otterize.com/v1alpha2
+kind: ClientIntents
+metadata:
+  name: cartservice
+  namespace: otterize-ecom-demo
+spec:
+  service:
+    name: cartservice
+  calls:
+    - name: redis-cart
+      type: http
+---
+apiVersion: k8s.otterize.com/v1alpha2
+kind: ClientIntents
+metadata:
+  name: checkoutservice
+  namespace: otterize-ecom-demo
+spec:
+  service:
+    name: checkoutservice
+  calls:
+    - name: cartservice
+      type: http
+    - name: currencyservice
+      type: http
+```
+
+### `otterize intents list [--client-service-id <id>] [--server-service-id <id>] [--env-id <id>]`
+
+Returns the list of (applied) intents, optionally filtered by client, server, or environment.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| `--client-service-id` |  | Return only intents from the specified client service. |
+| `--server-service-id` |  | Return only intents to the specified server service. |
+| `--env-id` |  | Return only intents where either the client or the server belong to the specified environment. |
+
+#### Returns
+
+A table of information about the intents.
+
+- When `type` is `HTTP`, the `object` and `action` columns will show the resource paths and methods, respectively.
+- When `type` is `KAFKA`, the `object` and `action` columns will show the topic names and operations, respectively.
+
+```shell
+id                client service id server service id type object action
+───────────────── ───────────────── ───────────────── ──── ────── ──────
+intent_ah8dix4uxv svc_dt7k4ay3bd    svc_kqkallmwsq    HTTP
+intent_6rhxnyngnh svc_p7qh7hhtmu    svc_r8fm2oiyvs    HTTP
+intent_5uzyy3q7aj svc_gji52kfake    svc_p7qh7hhtmu    HTTP
+intent_4ekwmaf2n2 svc_o5bg2me9h5    svc_nqhgkxlbwe    HTTP
+intent_2lnzhzn49a svc_lkb2omplkk    svc_lkyww4s6ad    HTTP
+intent_tz9e5buzcn svc_nqhgkxlbwe    svc_lkyww4s6ad    HTTP
+```
+
+### `otterize intents get <intent-id>`
+
+Returns information about a single (applied) intent, specified by its id.
+
+#### Returns
+
+Returns a table of information about the intent.
+
+```shell
+id                client service id server service id type object action
+───────────────── ───────────────── ───────────────── ──── ────── ──────
+intent_ah8dix4uxv svc_dt7k4ay3bd    svc_kqkallmwsq    HTTP
+```
+
+## Invites
+
+### `otterize invites list`
+
+Lists invites for the current user.
+
+#### Returns
+Returns a table of information about the invites.
+
+```shell
+id               email               organization id inviter user id status  created at                              accepted at
+──────────────── ─────────────────── ─────────────── ─────────────── ─────── ─────────────────────────────────────── ───────────
+invite_u62tgd793 someone@example.com org_7iy3bg3e    user_ge52hdd8   PENDING 2023-01-31 20:49:17.199887853 +0000 UTC
+─────────
+```
+
+### `otterize invites create --email=<email>`
+
+Invites a user with the given email to the current organization.
+
+Note that currently the invitation isn't emailed by Otterize Cloud;
+it should be communicated to the invitee through whatever means make sense, e.g. email, text, or Slack.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| `--email` |  | The email of the user to be invited. |
+
+#### Returns
+
+Returns a table of information about the created invitation.
+
+```shell
+id             email                    organization id inviter user id status  created at                              accepted at
+────────────── ──────────────────────── ─────────────── ─────────────── ─────── ─────────────────────────────────────── ───────────
+inv_lexz7vxo9l someone-else@example.com org_fq6j2thfcx                  PENDING 2023-01-31 20:49:17.199887853 +0000 UTC
+```
+
+### `otterize invites accept <invite-id>`
+
+Accepts the specified invitation to join the corresponding organization.
+
+#### Returns
+
+Returns a confirmation that the organization was joined.
+
+```shell
+Joined organization org_462ia9x8ru
+```
+
+### `otterize invites delete <invite-id>`
+
+Deletes the specified invitation.
+
+#### Returns
+
+Returns a confirmation that the invitation was deleted.
+
+```shell
+Deleted invite inv_lexz7vxo9l
+```
+
+## Namespaces
+
+### `otterize namespaces list [--cluster-id <cluster-id>] [--env-id <env-id>]`
+
+List all Kubernetes namespaces, optionally filtered by cluster and environment.
+
+Namespaces become known to Otterize Cloud when they contain services that become known to Otterize Cloud.
+See [`otterize services list`](#services) for more information.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| `--cluster-id` |  | Show only namespaces in the specified cluster. |
+| `--env-id` |  | Show only namespaces mapped to the specified environment. |
+
+#### Returns
+
+A table of information about the namespaces.
+The environment column shows the id of the environment mapped to each namespace.
+
+```shell
+id            name            cluster cluster id         environment id service count
+───────────── ─────────────── ─────── ────────────────── ────────────── ─────────────
+ns_mje67b2epm otterize-system eks1    cluster_dvlwk4q25r env_5mzzqxrr2f 2
+ns_d4lcnf6eyr ecom-shopping   eks1    cluster_dvlwk4q25r env_o6tdthl6qz 12
+ns_rqk9cs7sec ecom-mktg       eks1    cluster_dvlwk4q25r env_zfndrpvqgp 98
+ns_njj7feo4ld playground      eks1    cluster_dvlwk4q25r env_lqrcfkam5g 15
+ns_vq4losjach test-kafka      eks1    cluster_dvlwk4q25r env_glohhjfowc 8
+```
+
+### `otterize namespaces get <namespace-id>`
+
+Returns information about a single namespace, specified by its id.
+
+#### Returns
+
+Returns a table of information about the namespace.
+The environment column shows the id of the environment mapped to each namespace.
+
+```shell
+id            name            cluster cluster id         environment id service count
+───────────── ─────────────── ─────── ────────────────── ────────────── ─────────────
+ns_d4lcnf6eyr ecom-shopping   eks1    cluster_dvlwk4q25r env_o6tdthl6qz 12
+```
+
+### `otterize namespaces update <namespace-id> [--env-id <env-id>]`
+
+Update the environment to which this namespace is mapped.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| `--env-id` |  | Map this namespace to the specified environment. |
+
+#### Returns
+
+Returns a confirmation that the namespace was updated, and a table of information about the newly-updated namespace.
+
+```shell
+Namespace updated
+id            name         cluster cluster id         environment id service count
+───────────── ──────────── ─────── ────────────────── ────────────── ─────────────
+ns_d4lcnf6eyr ecom-phase-2 eks1    cluster_dvlwk4q25r env_uyhd7h3bju 12
+```
+
+## Organizations
+
+### `otterize organizations list`
+
+Lists all organizations to which the current user belongs.
+
+#### Returns
+
+Returns a table of information about the organizations.
+
+```shell
+id             name               image URL
+────────────── ────────────────── ─────────────────────────────────────────────
+org_fq6jge6icx The Organic Urchin https://example.com/images/organic-urchin.png
+org_gyud6g3jp9 Org gyud6g3jp9
+```
+
+### `otterize organizations get <organization-id>`
+
+Returns information about a single organization, specified by its id.
+
+#### Returns
+
+Returns a table of information about the organization.
+
+```shell
+id             name               image URL
+────────────── ────────────────── ─────────────────────────────────────────────
+org_fq6jge6icx The Organic Urchin https://example.com/images/organic-urchin.png
+```
+
+### `otterize organizations create`
+
+Creates a new organization.
+
+The current user is automatically made a member of this organization (without losing membership in any previous organizations).
+The name of the new organization is set to "Org " followed by the suffix of the organization's id (the part after "org_").
+To change this name, or to assign an image to the new organization, use `otterize organizations update <organization-id>`.
+
+#### Returns
+
+Returns a table of information about the newly-created organization.
+
+```shell
+id             name           image URL
+────────────── ────────────── ─────────
+org_6g3k0dhrpz Org 6g3k0dhrpz
+```
+
+### `otterize organizations update <organization-id> [-n <name>] [--image-url <image-URL>]`
+
+Updates the specified organization with a new name and/or a new image.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| `-n` or `--name` |  | The new name to use for the organization. |
+| `--image-url` |  | The new image to use for the organization, specified through its URL. |
+#### Returns
+
+Returns a table of information about the newly-updated organization.
+
+```shell
+id             name              image URL
+────────────── ───────────────── ────────────────────────────────────────────
+org_fq6jge6icx The Feisty Urchin https://example.com/images/feisty-urchin.png
+```
+
+## Services
+
+### `otterize services list [--env-id=<env-id>] [--env-id=<env-id>] [-n=<name>] [--namespace-id=<namespace-id>]`
+
+Returns a list of all services known to Otterize Cloud, optionally filtered to those in the specified environment,
+to those with the specified name, or to those in the specified namespace.
+
+Services become known to Otterize Cloud when they are discovered and reported by the Otterize OSS components running in a Kubernetes cluster.
+They are discovered in one of two ways:
+- Via the network mapper, which collects pod-to-pod connections (attempted and successful) and builds a network map of "discovered intents".
+- Via the intents operator, which reports client intents applied via `kubectl`.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| `--env-id` |  | Filter by the environment of the services. |
+| `-n` or `--name` |  | Filter by the name of the services. |
+| `--namespace-id` |  | Filter by the namespace of the services. |
+
+#### Returns
+
+Returns a table of information about the services.
+
+```shell
+id             name                  namespace       namespace id  environment id kafka info certificate info
+────────────── ───────────────────── ─────────────── ───────────── ────────────── ────────── ────────────────
+svc_8eagna36iu checkoutservice       ecom-shopping   ns_d4lcnf6eyr env_o6tdthl6qz
+svc_r8fm2oiyvs productcatalogservice ecom-shopping   ns_d4lcnf6eyr env_o6tdthl6qz
+svc_ilzrj7bhg9 paymentservice        ecom-shopping   ns_d4lcnf6eyr env_o6tdthl6qz
+```
+
+### `otterize services get <service-id>`
+
+Returns information about a single service, specified by its id.
+
+#### Returns
+
+Returns a table of information about the service.
+
+```shell
+id             name                  namespace       namespace id  environment id kafka info certificate info
+────────────── ───────────────────── ─────────────── ───────────── ────────────── ────────── ────────────────
+svc_r8fm2oiyvs productcatalogservice ecom-shopping   ns_d4lcnf6eyr env_o6tdthl6qz
+```
+
+## Users
+
+### `otterize users list`
+
+Returns a list of users in the current user's organization.
+
+#### Returns
+
+Returns a table of information about the users.
+
+```shell
+id             email                    name                     image URL auth provider user id
+────────────── ──────────────────────── ──────────────────────── ───────── ──────────────────────────────
+usr_rd4y6wcqx4 someone@example.com      Ernest Bergman                     auth0|63c9t6g2b8dhjjw53a4961e5
+usr_r7iysdhkw9 someone-else@example.com someone-else@example.com           auth0|737cynqch3iuh4cnliluh3h9
+
+```
+
+### `otterize users get <user-id>`
+
+Returns information about a single user, specified by their id.
+
+#### Returns
+
+Returns a table of information about the user.
+
+```shell
+id             email               name                     image URL auth provider user id
+────────────── ─────────────────── ──────────────────────── ───────── ──────────────────────────────
+usr_rd4y6wcqx4 someone@example.com Ernest Bergman                     auth0|63c9t6g2b8dhjjw53a4961e5
+```
