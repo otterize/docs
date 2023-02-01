@@ -27,6 +27,24 @@ easy to access on the fly.
 
 `otterize completion` offers instruction for generating command completions in various shells.
 
+## Global options
+
+The following options apply to all CLI commands.
+
+| Name | Default | Description |
+| --- | --- | --- |
+| `-h` or `--help` |  | Get help on any command. |
+| `--api-address` | `https://app.otterize.com/api` | The URL for the Otterize API endpoint. |
+| `--client-id` |  | Set the client id, for use in authenticating API calls. |
+| `--client-secret` |  | Set the client secret, for use in authenticating API calls. |
+| `--config` | `~/.otterize/config` | Use the given path for the Otterize CLI config file. |
+| `--debug` |  | Show debug logs. |
+| `--interactive` | true | Ask for missing flags interactively. |
+| `--org-id` |  | Use the given organization id when calling the Otterize API. |
+| `--output` | text | Output the results of the command as text (`text`) or JSON (`json`). |
+| `-q` or `--quiet` |  | Suppress printing the results of the command. |
+| `--token` |  | The token to use in authenticating API calls. |
+
 ## Network mapper
 
 All `otterize network-mapper` commands share a set of optional flags which will not be repeated in the documentation
@@ -129,53 +147,6 @@ spec:
     - name: currencyservice
       type: http
 ```
-
-### `otterize network-mapper intents-convert -f <path>`
-
-Convert client intents files in plain YAML format to Kubernetes ClientIntents resource format.
-
-#### Options
-
-| Name | Default | Description |
-| --- | --- | --- |
-| `-f` or `--filename` | `'.'` | The client intents filename, or a directory containing client intents files. |
-
-#### Returns
-
-Here's the result of converting a directory containing two client intents file in plain YAML format.
-The result is YAML describing two Kubernetes resources separated with the YAML `---` separator.
-
-```shell
-apiVersion: k8s.otterize.com/v1alpha2
-kind: ClientIntents
-metadata:
-  name: cartservice
-  namespace: otterize-ecom-demo
-spec:
-  service:
-    name: cartservice
-  calls:
-    - name: redis-cart
-      type: http
----
-apiVersion: k8s.otterize.com/v1alpha2
-kind: ClientIntents
-metadata:
-  name: checkoutservice
-  namespace: otterize-ecom-demo
-spec:
-  service:
-    name: checkoutservice
-  calls:
-    - name: cartservice
-      type: http
-    - name: currencyservice
-      type: http
-```
-
-:::danger
-Document global options
-:::
 
 ## Login
 
@@ -317,10 +288,8 @@ Updates the user-settable properties of the cluster in Otterize Cloud.
 
 | Name | Default | Description |
 | --- | --- | --- |
-| `--global-default-deny` | true | Whether a global default deny network policy is in effect. |
-:::danger
-What about UseNetworkPoliciesInAccessGraphStates?
-:::
+| `--global-default-deny` | false | Whether a global default deny network policy is in effect. |
+| `use-network-policies-in-access-graph-states` | true | If false, the access graph will not take network policies into account when calculating service and intents states. |
 
 #### Returns
 
@@ -593,25 +562,44 @@ id             type       name                      cluster id         default e
 int_hbspxl9te3 KUBERNETES Integration - dev-cluster cluster_c8uo5cc8fs env_h29ujjm8q8         NOT_INTEGRATED (last seen: never) NOT_INTEGRATED (last seen: never) NOT_INTEGRATED (last seen: never) cli_6l44xifr7l 8fc161f883d89d44bddc0279f41ff24c0697e482e2cd9c5edec4a525f0af06f7
 ```
 
-:::danger
-Update this after the implementation is fixed.
-:::
-### `otterize integrations update [_OPTIONS_]`
+### `otterize integrations update generic <integration-id> [-n <name>]`
 
-ACTION DESCRIPTION.
+Updates the specified generic-type integration with a new name.
 
 #### Options
 
 | Name | Default | Description |
 | --- | --- | --- |
-| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+| `-n` or `--name` |  | The new name to use for the integration. |
 
 #### Returns
 
-RESULTS DESCRIPTION
+Returns a table of information about the newly-updated integration.
 
 ```shell
-EXAMPLE
+id             type    name    cluster id default environment id intents operator credentials operator network mapper client id      client secret
+────────────── ─────── ─────── ────────── ────────────────────── ──────────────── ──────────────────── ────────────── ────────────── ────────────────────────────────────────────────────────────────
+int_nx2twtcqwt GENERIC my-bot2                                                                                        cli_csn8mb55b3 7adba16e331bdf9fe9d2c1ec7d2d78a1c7e56df34sc2c5ff98e4dec4aa232c3c
+```
+
+### `otterize integrations update kubernetes <integration-id> [--env-id <env-id>]`
+
+Updates the specified Kubernetes-type integration with a new environment to use as the default environment for new namespaces.
+
+#### Options
+
+| Name | Default | Description |
+| --- | --- | --- |
+| `--env-id` |  | The id of the environment to use as the default for this integration. |
+
+#### Returns
+
+Returns a table of information about the newly-updated integration.
+
+```shell
+id             type       name                      cluster id         default environment id intents operator                  credentials operator              network mapper                    client id      client secret
+────────────── ────────── ───────────────────────── ────────────────── ────────────────────── ───────────────────────────────── ───────────────────────────────── ───────────────────────────────── ────────────── ────────────────────────────────────────────────────────────────
+int_hbspxl9te3 KUBERNETES Integration - dev-cluster cluster_c8uo5cc8fs env_iwh37hubdy         NOT_INTEGRATED (last seen: never) NOT_INTEGRATED (last seen: never) NOT_INTEGRATED (last seen: never) cli_6l44xifr7l 8fc161f883d89d44bddc0279f41ff24c0697e482e2cd9c5edec4a525f0af06f7
 ```
 
 ### `otterize integrations delete <integration-id>`
@@ -628,9 +616,6 @@ Deleted integration int_nx2twtcqwt
 
 ## Intents
 
-:::danger
-Update this after the implementation is restored to how it should be.
-:::
 ### `otterize intents convert -f <path>`
 
 Convert client intents files in plain YAML format to Kubernetes ClientIntents resource format.
@@ -757,20 +742,16 @@ id             email                    organization id inviter user id status  
 inv_lexz7vxo9l someone-else@example.com org_fq6j2thfcx                  PENDING 2023-01-31 20:49:17.199887853 +0000 UTC
 ```
 
-:::danger
-Document after getting this to work rather than returning a 404
-:::
-
 ### `otterize invites accept <invite-id>`
 
-Accepts the specified invitation.
+Accepts the specified invitation to join the corresponding organization.
 
 #### Returns
 
-RESULTS DESCRIPTION
+Returns a confirmation that the organization was joined.
 
 ```shell
-EXAMPLE
+Joined organization org_462ia9x8ru
 ```
 
 ### `otterize invites delete <invite-id>`
