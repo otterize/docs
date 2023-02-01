@@ -296,7 +296,7 @@ To connect it to a Kubernetes cluster, i.e. to the Otterize OSS operators in tha
 
 | Name | Default | Description |
 | --- | --- | --- |
-| `-n` or `--name`` |  | The name to give the cluster, in Otterize Cloud. |
+| `-n` or `--name` |  | The name to give the cluster, in Otterize Cloud. |
 
 #### Returns
 
@@ -317,7 +317,7 @@ Updates the user-settable properties of the cluster in Otterize Cloud.
 
 | Name | Default | Description |
 | --- | --- | --- |
-| --global-default-deny | true | Whether a global default deny network policy is in effect. |
+| `--global-default-deny` | true | Whether a global default deny network policy is in effect. |
 :::danger
 What about UseNetworkPoliciesInAccessGraphStates?
 :::
@@ -580,8 +580,8 @@ The default environment must also have already been created. All namespaces in t
 
 | Name | Default | Description |
 | --- | --- | --- |
-| `cluster-id` |  | The id of the cluster to use with this integration. |
-| `env-id` |  | The id of the environment to use as the default environment for this integration. |
+| `--cluster-id` |  | The id of the cluster to use with this integration. |
+| `--env-id` |  | The id of the environment to use as the default environment for this integration. |
 
 #### Returns
 
@@ -787,206 +787,214 @@ Deleted invite inv_lexz7vxo9l
 
 ## Namespaces
 
-### `otterize namespaces list [_OPTIONS_]`
+### `otterize namespaces list [--cluster-id <cluster-id>] [--env-id <env-id>]`
 
-ACTION DESCRIPTION.
+List all Kubernetes namespaces, optionally filtered by cluster and environment.
+
+Namespaces become known to Otterize Cloud when they contain services that become known to Otterize Cloud.
+See [`otterize services list`](#services) for more information.
 
 #### Options
 
 | Name | Default | Description |
 | --- | --- | --- |
-| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+| `--cluster-id` |  | Show only namespaces in the specified cluster. |
+| `--env-id` |  | Show only namespaces mapped to the specified environment. |
 
 #### Returns
 
-RESULTS DESCRIPTION
+A table of information about the namespaces.
+The environment column shows the id of the environment mapped to each namespace.
 
 ```shell
-EXAMPLE
+id            name            cluster cluster id         environment id service count
+───────────── ─────────────── ─────── ────────────────── ────────────── ─────────────
+ns_mje67b2epm otterize-system eks1    cluster_dvlwk4q25r env_5mzzqxrr2f 2
+ns_d4lcnf6eyr ecom-shopping   eks1    cluster_dvlwk4q25r env_o6tdthl6qz 12
+ns_rqk9cs7sec ecom-mktg       eks1    cluster_dvlwk4q25r env_zfndrpvqgp 98
+ns_njj7feo4ld playground      eks1    cluster_dvlwk4q25r env_lqrcfkam5g 15
+ns_vq4losjach test-kafka      eks1    cluster_dvlwk4q25r env_glohhjfowc 8
 ```
 
-### `otterize namespaces get [_OPTIONS_]`
+### `otterize namespaces get <namespace-id>`
 
-ACTION DESCRIPTION.
-
-#### Options
-
-| Name | Default | Description |
-| --- | --- | --- |
-| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+Returns information about a single namespace, specified by its id.
 
 #### Returns
 
-RESULTS DESCRIPTION
+Returns a table of information about the namespace.
+The environment column shows the id of the environment mapped to each namespace.
 
 ```shell
-EXAMPLE
+id            name            cluster cluster id         environment id service count
+───────────── ─────────────── ─────── ────────────────── ────────────── ─────────────
+ns_d4lcnf6eyr ecom-shopping   eks1    cluster_dvlwk4q25r env_o6tdthl6qz 12
 ```
 
-### `otterize integrations update [_OPTIONS_]`
+### `otterize namespaces update <namespace-id> [--env-id <env-id>]`
 
-ACTION DESCRIPTION.
+Update the environment to which this namespace is mapped.
 
 #### Options
 
 | Name | Default | Description |
 | --- | --- | --- |
-| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+| `--env-id` |  | Map this namespace to the specified environment. |
 
 #### Returns
 
-RESULTS DESCRIPTION
+Returns a confirmation that the namespace was updated, and a table of information about the newly-updated namespace.
 
 ```shell
-EXAMPLE
+Namespace updated
+id            name         cluster cluster id         environment id service count
+───────────── ──────────── ─────── ────────────────── ────────────── ─────────────
+ns_d4lcnf6eyr ecom-phase-2 eks1    cluster_dvlwk4q25r env_uyhd7h3bju 12
 ```
 
 ## Organizations
 
-### `otterize organizations list [_OPTIONS_]`
+### `otterize organizations list`
 
-ACTION DESCRIPTION.
-
-#### Options
-
-| Name | Default | Description |
-| --- | --- | --- |
-| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+Lists all organizations to which the current user belongs.
 
 #### Returns
 
-RESULTS DESCRIPTION
+Returns a table of information about the organizations.
 
 ```shell
-EXAMPLE
+id             name               image URL
+────────────── ────────────────── ─────────────────────────────────────────────
+org_fq6jge6icx The Organic Urchin https://example.com/images/organic-urchin.png
+org_gyud6g3jp9 Org gyud6g3jp9
 ```
 
-### `otterize organizations get [_OPTIONS_]`
+### `otterize organizations get <organization-id>`
 
-ACTION DESCRIPTION.
-
-#### Options
-
-| Name | Default | Description |
-| --- | --- | --- |
-| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+Returns information about a single organization, specified by its id.
 
 #### Returns
 
-RESULTS DESCRIPTION
+Returns a table of information about the organization.
 
 ```shell
-EXAMPLE
+id             name               image URL
+────────────── ────────────────── ─────────────────────────────────────────────
+org_fq6jge6icx The Organic Urchin https://example.com/images/organic-urchin.png
 ```
 
-### `otterize organizations create [_OPTIONS_]`
+### `otterize organizations create`
 
-ACTION DESCRIPTION.
+Creates a new organization.
 
-#### Options
-
-| Name | Default | Description |
-| --- | --- | --- |
-| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+The current user is automatically made a member of this organization (without losing membership in any previous organizations).
+The name of the new organization is set to "Org " followed by the suffix of the organization's id (the part after "org_").
+To change this name, or to assign an image to the new organization, use `otterize organizations update <organization-id>`.
 
 #### Returns
 
-RESULTS DESCRIPTION
+Returns a table of information about the newly-created organization.
 
 ```shell
-EXAMPLE
+id             name           image URL
+────────────── ────────────── ─────────
+org_6g3k0dhrpz Org 6g3k0dhrpz
 ```
 
-### `otterize organizations update [_OPTIONS_]`
+### `otterize organizations update <organization-id> [-n <name>] [--image-url <image-URL>]`
 
-ACTION DESCRIPTION.
+Updates the specified organization with a new name and/or a new image.
 
 #### Options
 
 | Name | Default | Description |
 | --- | --- | --- |
-| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
-
+| `-n` or `--name` |  | The new name to use for the organization. |
+| `--image-url` |  | The new image to use for the organization, specified through its URL. |
 #### Returns
 
-RESULTS DESCRIPTION
+Returns a table of information about the newly-updated organization.
 
 ```shell
-EXAMPLE
+id             name              image URL
+────────────── ───────────────── ────────────────────────────────────────────
+org_fq6jge6icx The Feisty Urchin https://example.com/images/feisty-urchin.png
 ```
 
 ## Services
 
-### `otterize services list [_OPTIONS_]`
+### `otterize services list [--env-id=<env-id>] [--env-id=<env-id>] [-n=<name>] [--namespace-id=<namespace-id>]`
 
-ACTION DESCRIPTION.
+Returns a list of all services known to Otterize Cloud, optionally filtered to those in the specified environment,
+to those with the specified name, or to those in the specified namespace.
+
+Services become known to Otterize Cloud when they are discovered and reported by the Otterize OSS components running in a Kubernetes cluster.
+They are discovered in one of two ways:
+- Via the network mapper, which collects pod-to-pod connections (attempted and successful) and builds a network map of "discovered intents".
+- Via the intents operator, which reports client intents applied via `kubectl`.
 
 #### Options
 
 | Name | Default | Description |
 | --- | --- | --- |
-| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+| `--env-id` |  | Filter by the environment of the services. |
+| `-n` or `--name` |  | Filter by the name of the services. |
+| `--namespace-id` |  | Filter by the namespace of the services. |
 
 #### Returns
 
-RESULTS DESCRIPTION
+Returns a table of information about the services.
 
 ```shell
-EXAMPLE
+id             name                  namespace       namespace id  environment id kafka info certificate info
+────────────── ───────────────────── ─────────────── ───────────── ────────────── ────────── ────────────────
+svc_8eagna36iu checkoutservice       ecom-shopping   ns_d4lcnf6eyr env_o6tdthl6qz
+svc_r8fm2oiyvs productcatalogservice ecom-shopping   ns_d4lcnf6eyr env_o6tdthl6qz
+svc_ilzrj7bhg9 paymentservice        ecom-shopping   ns_d4lcnf6eyr env_o6tdthl6qz
 ```
 
-### `otterize services get [_OPTIONS_]`
+### `otterize services get <service-id>`
 
-ACTION DESCRIPTION.
-
-#### Options
-
-| Name | Default | Description |
-| --- | --- | --- |
-| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+Returns information about a single service, specified by its id.
 
 #### Returns
 
-RESULTS DESCRIPTION
+Returns a table of information about the service.
 
 ```shell
-EXAMPLE
+id             name                  namespace       namespace id  environment id kafka info certificate info
+────────────── ───────────────────── ─────────────── ───────────── ────────────── ────────── ────────────────
+svc_r8fm2oiyvs productcatalogservice ecom-shopping   ns_d4lcnf6eyr env_o6tdthl6qz
 ```
 
 ## Users
 
-### `otterize services list [_OPTIONS_]`
+### `otterize users list`
 
-ACTION DESCRIPTION.
-
-#### Options
-
-| Name | Default | Description |
-| --- | --- | --- |
-| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+Returns a list of users in the current user's organization.
 
 #### Returns
 
-RESULTS DESCRIPTION
+Returns a table of information about the users.
 
 ```shell
-EXAMPLE
+id             email                    name                     image URL auth provider user id
+────────────── ──────────────────────── ──────────────────────── ───────── ──────────────────────────────
+usr_rd4y6wcqx4 someone@example.com      Ernest Bergman                     auth0|63c9t6g2b8dhjjw53a4961e5
+usr_r7iysdhkw9 someone-else@example.com someone-else@example.com           auth0|737cynqch3iuh4cnliluh3h9
+
 ```
 
-### `otterize services get [_OPTIONS_]`
+### `otterize users get <user-id>`
 
-ACTION DESCRIPTION.
-
-#### Options
-
-| Name | Default | Description |
-| --- | --- | --- |
-| OPTION_NAME | OPTION_DEFAULT | OPTION_DESCRIPTION |
+Returns information about a single user, specified by their id.
 
 #### Returns
 
-RESULTS DESCRIPTION
+Returns a table of information about the user.
 
 ```shell
-EXAMPLE
+id             email               name                     image URL auth provider user id
+────────────── ─────────────────── ──────────────────────── ───────── ──────────────────────────────
+usr_rd4y6wcqx4 someone@example.com Ernest Bergman                     auth0|63c9t6g2b8dhjjw53a4961e5
 ```
