@@ -36,7 +36,7 @@ Before you start, you need a Kubernetes cluster with a [CNI](https://kubernetes.
 
 ```bash
 kubectl create namespace otterize-ecom-kafka-demo
-kubectl apply -n otterize-ecom-kafka-demo -f code-examples/shadow-mode/ecom-demo-mtls.yaml
+kubectl apply -n otterize-ecom-kafka-demo -f https://docs.otterize.com/code-examples/shadow-mode/ecom-demo-mtls.yaml
 ```
 <details>
 <summary>Optional: check that the lab was deployed...</summary>
@@ -103,14 +103,14 @@ Go ahead and browse to the URL above to "shop" and get a feel for the reference 
 This demo picks up where the network policies demo left off, so we'll put in place the same intents that we had in that demo and then add the kafka intents
 :::
 ```bash
-kubectl apply -n otterize-ecom-kafka-demo -f code-examples/shadow-mode/all.yaml
+kubectl apply -n otterize-ecom-kafka-demo -f https://docs.otterize.com/code-examples/shadow-mode/all.yaml
 ```
 
 ## Manage Kafka access with Otterize
 
 Let's connect Kafka with Otterize by applying a `KafkaServerConfig`:
 ```bash
-kubectl apply -n otterize-ecom-kafka-demo -f code-examples/shadow-mode/kafkaserverconfig.yaml
+kubectl apply -n otterize-ecom-kafka-demo -f https://docs.otterize.com/code-examples/shadow-mode/kafkaserverconfig.yaml
 ```
 <details>
 <summary>Expand to see the KafkaServerConfig</summary>
@@ -166,7 +166,7 @@ Otterize can now configure Kafka ACLs so let's go ahead and create client intent
 And apply them with
 
 ```bash
-kubectl apply -n otterize-ecom-kafka-demo -f code-examples/shadow-mode/kafka-intents.yaml
+kubectl apply -n otterize-ecom-kafka-demo -f https://docs.otterize.com/code-examples/shadow-mode/kafka-intents.yaml
 ```
 
 We can immediatly see that the relevant edges are marked with the Kafka icon.
@@ -190,15 +190,15 @@ You can verify that the reference lab still functions as intended.
 
 To remove the deployed lab delete the client intents:
 ```bash
-kubectl delete -n otterize-ecom-kafka-demo -f code-examples/shadow-mode/all.yaml
+kubectl delete -n otterize-ecom-kafka-demo -f https://docs.otterize.com/code-examples/shadow-mode/all.yaml
 ```
 
 Then remove the Kafka Server Config:
 ```bash
-kubectl delete -n otterize-ecom-kafka-demo -f code-examples/shadow-mode/kafkaserverconfig.yaml
+kubectl delete -n otterize-ecom-kafka-demo -f https://docs.otterize.com/code-examples/shadow-mode/kafkaserverconfig.yaml
 ```
 And then remove the lab and the namespace:
 ```bash
-kubectl delete -n otterize-ecom-kafka-demo -f code-examples/shadow-mode/ecom-demo-mtls.yaml
+kubectl delete -n otterize-ecom-kafka-demo -f https://docs.otterize.com/code-examples/shadow-mode/ecom-demo-mtls.yaml
 kubectl delete namespace otterize-ecom-kafka-demo
 ```
