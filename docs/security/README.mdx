@@ -95,14 +95,14 @@ Cluster admins can use Kubernetes RBAC to control which Kubernetes users can app
 
 ### Service identity trust model
 
-Services in Otterize are identified through their [resolved or declared service name](/service-identities), coupled with the namespace they’re running in. A service in namespace A has a different identity to a service in namespace B — in network policies as well as cryptographically.
+Services in Otterize are identified through their [resolved or declared service name](/reference/service-identities), coupled with the namespace they’re running in. A service in namespace A has a different identity to a service in namespace B — in network policies as well as cryptographically.
 
 Services can then gain access to connect to other services through declared intents that create network policies or Kafka ACLs, as well as request credentials for the instance of the service running in this namespace.
 
-The service names in each namespace are set by the developers, or the platform team - whoever can set the name of the resource that deploys the pods, or set annotations on the pods. It is the cluster admin's responsibility to determine who can set those. In most cases, we expect that restricting access by namespace is sufficient, as service identities are scoped by namespace. [Learn more about how service identity resolution works](/service-identities).
+The service names in each namespace are set by the developers, or the platform team - whoever can set the name of the resource that deploys the pods, or set annotations on the pods. It is the cluster admin's responsibility to determine who can set those. In most cases, we expect that restricting access by namespace is sufficient, as service identities are scoped by namespace. [Learn more about how service identity resolution works](/reference/service-identities).
 
 ### Cryptographic credentials
 
-The cryptographic credentials created by the Otterize Credentials operator (mTLS certificate and key pairs) are provided by a SPIRE server that is deployed alongside the Credentials operator. The Credentials operator watches for pods starting up in a Kubernetes cluster, and if mTLS credentials are requested, it uses the [resolved or declared service name](/service-identities) plus the pod’s namespace and generates credentials for that service name, in that namespace. The operator is conceptually similar to a SPIRE agent in that it attests to the identity of pods.
+The cryptographic credentials created by the Otterize Credentials operator (mTLS certificate and key pairs) are provided by a SPIRE server that is deployed alongside the Credentials operator. The Credentials operator watches for pods starting up in a Kubernetes cluster, and if mTLS credentials are requested, it uses the [resolved or declared service name](/reference/service-identities) plus the pod’s namespace and generates credentials for that service name, in that namespace. The operator is conceptually similar to a SPIRE agent in that it attests to the identity of pods.
 
 [Learn more about how SPIRE works.](https://spiffe.io/docs/latest/spire-about/spire-concepts/)

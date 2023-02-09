@@ -28,7 +28,7 @@ You can override the service name the intents operator uses when it computes net
 
 | Annotation                          | Description                                                                                                                                          | Default                                       |
 |-------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------|
-| `intents.otterize.com/service-name` | Otterize-wide override for this service's name. Used by the operator when computing a pod's service name for use in network policies and Kafka ACLs. | See [Service identities](/service-identities) |
+| `intents.otterize.com/service-name` | Otterize-wide override for this service's name. Used by the operator when computing a pod's service name for use in network policies and Kafka ACLs. | See [Service identities](/reference/service-identities) |
 
 ## Supported enforcement types
 
@@ -37,7 +37,7 @@ The intents operator automatically creates, updates and deletes network policies
 
 In the example above, the `checkoutservice` intends to call the `shippingservice`. When the CRD is applied through `kubectl apply`, the intents operator labels the `checkoutservice` and `shippingservice` pods, and creates a network policy for the ingress of the `shippingservice` that references these labels and allows calls to the `shippingservice` from the `checkoutservice`.
 
-See [Service identities and resolution](/service-identities) to learn how service names are resolved for pods.
+See [Service identities and resolution](/reference/service-identities) to learn how service names are resolved for pods.
 
 The intents operator then uses the resolved identity as the service name, and combines it with the namespace of the pod and hashed to form the value of the label `intents.otterize.com/server`.
 This label is then used as a selector for network policies. Another
