@@ -116,7 +116,7 @@ Let’s declare that the `frontend` intends to call the `recommendationservice`.
 We expect this will provide secure access, allowing the intended access from the `fronted` while protecting the `recommendationservice` from unintended access.
 
 ```yaml
-{@include: ../..//static/code-examples/shadow-mode/phase-1.yaml}
+{@include: ../../static/code-examples/shadow-mode/phase-1.yaml}
 ```
 
 Apply this intents file with
@@ -134,7 +134,7 @@ We’re not enforcing access controls, but we can see the `frontend` will still 
 Let’s add another intent, this time from `recommendationservice` to `productcatalogservice`.
 
 ```yaml
-{@include: ../..//static/code-examples/shadow-mode/phase-2.yaml}
+{@include: ../../static/code-examples/shadow-mode/phase-2.yaml}
 ```
 
 Apply this intents file with
@@ -154,13 +154,13 @@ Let's add the required intents for the `checkoutservice` and `frontend`.
 <TabItem value="frontend" label="frontend" default>
 
 ```yaml
-{@include: ../..//static/code-examples/shadow-mode/phase-3-frontend.yaml}
+{@include: ../../static/code-examples/shadow-mode/phase-3-frontend.yaml}
 ```
 </TabItem>
 <TabItem value="checkout-service" label="checkout-service" default>
 
 ```yaml
-{@include: ../..//static/code-examples/shadow-mode/phase-3-checkout.yaml}
+{@include: ../../static/code-examples/shadow-mode/phase-3-checkout.yaml}
 ```
 </TabItem>
 </Tabs>
