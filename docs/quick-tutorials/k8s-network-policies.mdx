@@ -50,7 +50,7 @@ Our simple example consists of three pods: an HTTP server and two clients that c
 <TabItem value="namespace.yaml" label="namespace.yaml" default>
 
 ```yaml
-{@include: ../../static/code-examples/automate-network-policies/namespace.yaml}
+{@include: ../../../static/code-examples/automate-network-policies/namespace.yaml}
 ```
 
 </TabItem>
@@ -58,23 +58,23 @@ Our simple example consists of three pods: an HTTP server and two clients that c
 <TabItem value="server.yaml" label="server.yaml" default>
 
 ```yaml
-{@include: ../../static/code-examples/automate-network-policies/server-deployment.yaml}
+{@include: ../../../static/code-examples/automate-network-policies/server-deployment.yaml}
 ---
-{@include: ../../static/code-examples/automate-network-policies/server-service.yaml}
+{@include: ../../../static/code-examples/automate-network-policies/server-service.yaml}
 ```
 
 </TabItem>
 <TabItem value="client.yaml" label="client.yaml" default>
 
 ```yaml
-{@include: ../../static/code-examples/automate-network-policies/client-deployment.yaml}
+{@include: ../../../static/code-examples/automate-network-policies/client-deployment.yaml}
 ```
 
 </TabItem>
 <TabItem value="client-other.yaml" label="client-other.yaml" default>
 
 ```yaml
-{@include: ../../static/code-examples/automate-network-policies/client-other-deployment.yaml}
+{@include: ../../../static/code-examples/automate-network-policies/client-other-deployment.yaml}
 ```
 
 </TabItem>
@@ -156,7 +156,7 @@ Otterize will add a network policy to allow the intended calls
 
 1. Here is the `intents.yaml` declaration of the client, which we will apply below:
 ```yaml
-{@include: ../../static/code-examples/automate-network-policies/intents.yaml}
+{@include: ../../../static/code-examples/automate-network-policies/intents.yaml}
 ```
 
 ### Visualize using Otterize Cloud
@@ -257,7 +257,7 @@ Try to create an intents file yourself for **client-other**, and apply it to all
 
 ## What's next
 
-- Get started with the [Otterize network mapper](/k8s-network-mapper) to help you bootstrap intents files
+- Get started with the [Otterize network mapper](/quick-tutorials/k8s-network-mapper) to help you bootstrap intents files
   for use in IBAC.
 
 Or take a realistic ecommerce application with multiple services for a spin and learn how to manage it with

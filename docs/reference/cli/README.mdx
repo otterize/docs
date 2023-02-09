@@ -4,14 +4,14 @@ title: CLI
 ---
 
 The Otterize command line interface (CLI) offers the following capabilities:
-- [Interact with](#network-mapper) the [Otterize network mapper](/k8s-network-mapper) running in a Kubernetes cluster.
-- [Transform](#otterize-intents-convert--f-path) [intents files](/intents-and-intents-files/#intents-file-formats) from plain YAML format to Kubernetes custom resource YAML format.
+- [Interact with](#network-mapper) the [Otterize network mapper](/quick-tutorials/k8s-network-mapper) running in a Kubernetes cluster.
+- [Transform](#otterize-intents-convert--f-path) [intents files](/reference/intents-and-intents-files/#intents-file-formats) from plain YAML format to Kubernetes custom resource YAML format.
 - Interact with the Otterize Cloud, through its REST API.
 
 This CLI is open-source software. To see its source or build it yourself,
 see [https://github.com/otterize/otterize-cli](https://github.com/otterize/otterize-cli).
 
-The CLI is available as an installable binary as documented in this [guide](/getting-started/oss-installation#install-the-otterize-cli).
+The CLI is available as an installable binary as documented in this [guide](/installation#install-the-otterize-cli).
 
 The following are the commands offered by the Otterize CLI.
 
@@ -105,7 +105,7 @@ recommendationservice in namespace otterize-ecom-demo calls:
 ### `otterize network-mapper export [--format] [-n <namespace1>,<namespace2>,...] [-o <path>] [--output-type <output-type>]`
 
 Return the network map built by the network mapper since it started, or since it was reset,
-as [client intents file(s)](/intents-and-intents-files/#intents-file-formats) in various formats.
+as [client intents file(s)](/reference/intents-and-intents-files/#intents-file-formats) in various formats.
 
 #### Options
 
