@@ -5,7 +5,7 @@ title: Network mapper
 
 The Otterize network mapper creates a map of in-cluster traffic by (1) capturing DNS traffic and (2) inspecting active connections in the same manner `netstat` does, then resolving the IP addresses participating in connections to the Pods, and crawling up the ownership of the Pod until it reaches the root object. See [Service identities](/service-identities) to learn more on how service name resolving happens. The network mapper continues building the network map as long as it's deployed.
 
-You can then use the Otterize CLI to list the traffic by client, reset the traffic the mapper remembers, or export it as JSON or YAML, which serves as ClientIntents Kubernetes resources). ClientIntents can be consumed by the [Otterize intents operator](reference/configuration/intents-operator) to apply network policies
+You can then use the Otterize CLI to list the traffic by client, reset the traffic the mapper remembers, or export it as JSON or YAML, which serves as ClientIntents Kubernetes resources). ClientIntents can be consumed by the [Otterize intents operator](/reference/configuration/intents-operator) to apply network policies
 or Kafka ACLs to your cluster, implementing [intent-based access control](/intent-based-access-control).
 
 To get started, follow the [quick tutorial](/k8s-network-mapper)
@@ -48,7 +48,7 @@ DNS is a common network protocol used for service discovery. When a pod (`checko
 DNS responses will only appear when new connections are opened. To handle long-lived connections, the network mapper also queries open TCP connections in a manner similar to `netstat` or `ss`. The IP addresses are used for the [service identity resolving process](/service-identities), as above.
 
 ## Deploying the network mapper
-To deploy the network mapper, [use the Helm chart](reference/configuration/network-mapper/helm-chart).
+To deploy the network mapper, [use the Helm chart](/reference/configuration/network-mapper/helm-chart).
 
 ## Pod annotations
 You can override the service name the network mapper uses when it computes the service name using a pod annotation.

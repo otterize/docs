@@ -40,11 +40,11 @@ Or take a realistic ecommerce application with multiple services for a spin and 
 
 ### Otterize OSS
 The Otterize OSS components are standalone open-source projects that implement intent-based access control (IBAC) for a single Kubernetes cluster. This same set of components is used to integrate with Otterize Cloud.
-- [Otterize intents operator](reference/configuration/intents-operator) translates ClientIntents resources to access controls: currently, network policies for pod-to-pod access, and ACLs for in-cluster Kafka client access.
+- [Otterize intents operator](/reference/configuration/intents-operator) translates ClientIntents resources to access controls: currently, network policies for pod-to-pod access, and ACLs for in-cluster Kafka client access.
 <a href="https://github.com/otterize/intents-operator"><img style={{'vertical-align': 'middle', 'height': '1em'}} src='https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png' alt="GitHub repository"/></a>
-- [Otterize credential operator](reference/configuration/credentials-operator) integrates with SPIFFE/SPIRE to handle pod identities and manage certificates.
+- [Otterize credential operator](/reference/configuration/credentials-operator) integrates with SPIFFE/SPIRE to handle pod identities and manage certificates.
 <a href="https://github.com/otterize/credentials-operator"><img style={{'vertical-align': 'middle', 'height': '1em'}} src='https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png' alt="GitHub repository"/></a>
-- [Otterize network mapper](reference/configuration/network-mapper) sniffs pod-to-pod traffic and builds a network map, which is useful on its own and may also be exported as client intents files for bootstrapping IBAC.
+- [Otterize network mapper](/reference/configuration/network-mapper) sniffs pod-to-pod traffic and builds a network map, which is useful on its own and may also be exported as client intents files for bootstrapping IBAC.
 <a href="https://github.com/otterize/network-mapper"><img style={{'vertical-align': 'middle', 'height': '1em'}} src='https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png' alt="GitHub repository"/></a>
 
 
