@@ -443,9 +443,6 @@ spec:
           requests:
             cpu: 30m
             memory: 50Mi
-          limits:
-            cpu: 300m
-            memory: 300Mi
         readinessProbe:
           periodSeconds: 15
           exec:
@@ -501,9 +498,6 @@ spec:
           requests:
             cpu: 30m
             memory: 50Mi
-          limits:
-            cpu: 300m
-            memory: 128Mi
         readinessProbe:
           initialDelaySeconds: 15
           exec:
@@ -595,9 +589,6 @@ spec:
             requests:
               cpu: 30m
               memory: 50Mi
-            limits:
-              cpu: 200m
-              memory: 128Mi
 ---
 # Source: lab/templates/currencyservice.yaml
 # Copyright 2018 Google LLC
@@ -658,9 +649,6 @@ spec:
           requests:
             cpu: 30m
             memory: 50Mi
-          limits:
-            cpu: 200m
-            memory: 128Mi
 ---
 # Source: lab/templates/emailservice.yaml
 # Copyright 2018 Google LLC
@@ -722,9 +710,6 @@ spec:
           requests:
             cpu: 30m
             memory: 50Mi
-          limits:
-            cpu: 200m
-            memory: 128Mi
 ---
 # Source: lab/templates/frontend.yaml
 # Copyright 2018 Google LLC
@@ -819,9 +804,6 @@ spec:
             requests:
               cpu: 30m
               memory: 50Mi
-            limits:
-              cpu: 200m
-              memory: 128Mi
 ---
 # Source: lab/templates/loadgenerator.yaml
 # Copyright 2018 Google LLC
@@ -889,9 +871,6 @@ spec:
           requests:
             cpu: 30m
             memory: 50Mi
-          limits:
-            cpu: 500m
-            memory: 512Mi
 ---
 # Source: lab/templates/orderservice.yaml
 apiVersion: apps/v1
@@ -942,9 +921,6 @@ spec:
             requests:
               cpu: 30m
               memory: 50Mi
-            limits:
-              cpu: 200m
-              memory: 128Mi
 ---
 # Source: lab/templates/paymentservice.yaml
 # Copyright 2018 Google LLC
@@ -996,9 +972,6 @@ spec:
           requests:
             cpu: 30m
             memory: 50Mi
-          limits:
-            cpu: 200m
-            memory: 128Mi
 ---
 # Source: lab/templates/productcatalogservice.yaml
 # Copyright 2018 Google LLC
@@ -1060,9 +1033,6 @@ spec:
           requests:
             cpu: 30m
             memory: 50Mi
-          limits:
-            cpu: 200m
-            memory: 128Mi
 ---
 # Source: lab/templates/recommendationservice.yaml
 # Copyright 2018 Google LLC
@@ -1126,9 +1096,6 @@ spec:
           requests:
             cpu: 30m
             memory: 50Mi
-          limits:
-            cpu: 200m
-            memory: 450Mi
 ---
 # Source: lab/templates/redis.yaml
 # Copyright 2018 Google LLC
@@ -1182,9 +1149,6 @@ spec:
           requests:
             cpu: 30m
             memory: 50Mi
-          limits:
-            memory: 256Mi
-            cpu: 125m
       volumes:
       - name: redis-data
         emptyDir: {}
@@ -1253,9 +1217,6 @@ spec:
           requests:
             cpu: 30m
             memory: 50Mi
-          limits:
-            cpu: 200m
-            memory: 128Mi
 ---
 # Source: lab/charts/kafka/charts/zookeeper/templates/statefulset.yaml
 apiVersion: apps/v1
