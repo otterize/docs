@@ -1,4 +1,4 @@
-   Make sure you have [Helm](https://helm.sh/docs/intro/install/) installed on your machine before installing Otterize.
+   Make sure you have [Helm](https://helm.sh/docs/intro/install/) installed on your machine before attempting to install Otterize.
 
    ```shell
    helm repo add otterize https://helm.otterize.com
