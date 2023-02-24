@@ -13,13 +13,15 @@ Install Calico:
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/manifests/calico.yaml
 ```
+You need to install Calico because Minikube does not support network policy enforcement by default, Calico helps solve this issue.
+
 </TabItem>
 <TabItem value="gke" label="Google GKE">
 <a href="https://cloud.google.com/kubernetes-engine/docs/how-to/network-policy#gcloud">Visit the official documentation</a>, or follow the instructions below:
 <Tabs>
 <TabItem value="cli" label="gcloud CLI">
 
-To use the gcloud CLI for this tutorial, [install](https://cloud.google.com/sdk/docs/install) and then 
+To use the gcloud CLI for this tutorial, [install](https://cloud.google.com/sdk/docs/install) and then
 [initialize](https://cloud.google.com/sdk/docs/initializing) it.
 
 ***To enable network policy enforcement when creating a new cluster, run the following command:***
@@ -36,7 +38,7 @@ Run the following command to enable the add-on:
 `gcloud container clusters update CLUSTER_NAME --update-addons=NetworkPolicy=ENABLED`
 Replace CLUSTER_NAME with the name of the cluster.
 
-Run the following command to enable network policy enforcement on your cluster, which in turn re-creates your cluster's node pools with network policy enforcement enabled:
+Run the following command to enable network policy enforcement in your cluster, which in turn re-creates your cluster's node pools with network policy enforcement enabled:
 
 `gcloud container clusters update CLUSTER_NAME --enable-network-policy`
 </TabItem>
