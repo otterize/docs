@@ -142,24 +142,50 @@ Each service is shown as a node in the access graph, while the thick lines (edge
 
 ### The network map of the cluster
 
-If only the network mapper were connected to the Cloud, the services would be shown without the lock icons, and the thick connecting lines would be shown in blue, because we would have no more information about what access is or would be blocked once enforcement were turned on. The network mapper gives insights on which services are trying to, or actually are, calling other services, which already provides useful insights. We call these "discovered intents": the intent of the client service to call the server service is discovered by the attempt to call the server service, not by an explicit declaration.
+If only the network mapper were connected to the Cloud, the services would be shown without the lock icons, and the thick connecting lines would be shown in blue, because we would have no more information about what access is or would be blocked once enforcement were turned on.
+
+The network mapper gives insights on which services are trying to, or actually are, calling other services, which already provides useful insights. We call these "discovered intents": the intent of the client service to call the server service is discovered by the attempt to call the server service, not by an explicit declaration.
+
+:::danger
+Add an image showing only the network mapper connected. Ideally it would be much smaller than the one above.
+:::
 
 ### Understanding access and building confidence
 
-Now, because the intents operator is also connected, we get additional information, namely on access controls -- in this case, only pod-to-pod access, because we have not put in any Kafka-specific access configurations.
+The network mapper only shows information about discovered intents, not about access that is, or would be, allowed or blocked.
 
-The services all show "unlocked" icons because access to them is not restricted (via network policies): that makes sense, because the intents operator is in shadow mode, and because we didn't (so far) tell Otterize Cloud that there is a global default-deny network policy in place. Note that the locks are also green, meaning that the services would not block any of their clients even if you were to turn enforcement on. And similarly, all the thick connecting lines between the services are green: none of them would be blocked if enforcement were turned on. Why?
+Because the intents operator is also connected, we get additional information, namely on access controls &mdash; in this case, only pod-to-pod access, because we have not put in any Kafka-specific access configurations.
 
- The access graph tells you the answer. Note the red warning icons on the services. Click on a service and you'll see that it won't be protected at all even if you did turn on enforcement! Why? Without a global default-deny network policy, a service is protected once it has at least one network policy applied to it. That will happen as soon as at least one of its clients declares its intent to call the service. So the access graph explains that you need to declare and apply the intents from clients that should be calling this service. Once you do that, and turn on enforcement, those clients will be guaranteed access because Otterize will create network policies for them, and in so doing, any undeclared calls will be blocked: the service will be protected.
+#### Protection status
 
- And how do we know which intents are missing? Note that each thick connecting line has a hollow center: a missing intent that was not applied. You can click on that line and see that information in detail. Declaring and applying the intent corresponding to that line will ensure that client has access to that server, and it will also protect that server. If a second client of that server declares and applies its intent, the first client will be blocked if it didn't also declare its intent.
+The services all show "unlocked" icons , meaning they are not protected (via network policies): that makes sense, because the intents operator is in shadow mode, so it does not protect (via managing network policies).
+
+We also (as a default) told Otterize Cloud that there is a global default-deny network policy in place, so again, services show as unprotected.
+
+#### Blocking status
+
+Note that the locks themselves are green, indicating that you could now turn on enforcement without blocking any clients.
+
+Similarly, all the thick connecting lines between the services are green: none of these client calls would be blocked if enforcement were turned on. If one were red, that would tell you it would be blocked, as you might have guessed.
+
+But why would these clients not be blocked if enforcement were on &mdash; doesn't that mean the services they call would not be protected? Yes, and the access graph lets you know that too.
+
+Note the red notifications on the services. Click on a service:
+:::danger
+Add an image of a clicked-on service that's unprotected, would not block, but also has no incoming intents so would not be protected even with enforcement.
+:::
+- You can see the service isn't protected now, and it's ready to tun on enforcement without blocking any clients.
+- You can also see it won't be protected even after enabling enforcement &mdash; and what you need to do:
+  - If you explicitly create and apply intents from the clients, they will be guaranteed access, but also the server will be protected from any undeclared access.
+- So why do you need to declare intents to *protect* services as well as to *enable* clients?
+  - It's the way network policies work. A service must have at least one network policy applied to it in order to be protected. That can either be a global default-deny network policy, or an Otterize-managed network policy created once a client has declared and applied an intent.
+
+Which intents are missing? What happens when we apply them? All that will be covered in the next tutorial.
 
 In short, the access graph will provide insights about the current access to services, and will guide you to roll out IBAC responsibly and confidently, showing which intents need to be applied to both ensure access and protect servers.
 
-To see this in action, proceed to the next tutorial, below.
-
 ## What's next
-- Gradually [roll out IBAC](/quick-visual-tutorials/visual-ibac-network-policies) in this demo, controlling pod-to-pod access via network policies.
+- Gradually [roll out IBAC](/quick-visual-tutorials/visual-ibac-network-policies) in this demo, guided by the access graph, and controlling pod-to-pod access via network policies.
 - Learn how to [manage secure access for Kafka](/quick-visual-tutorials/visual-ibac-kafka-k8s) in this same demo.
 
 ## Teardown
