@@ -72,7 +72,7 @@ as a list of clients and the servers they call.
 
 | Name | Default | Description |
 | --- | --- | --- |
-| `-n` or `--namespaces` |  | Export only clients in these namespaces (comma-separated) |
+| `-n` or `--namespaces` |  | Include only clients in these namespaces (comma-separated) |
 
 #### Returns
 
@@ -102,22 +102,22 @@ recommendationservice in namespace otterize-ecom-demo calls:
   - productcatalogservice
 ```
 
-### `otterize network-mapper visualize [--format (png/jpg)] [-n <namespace1>,<namespace2>,...] [-o <path>]`
-Visualize an access graph for network mapper intents using go-graphviz.
+### `otterize network-mapper visualize [--format=png | --format=jpg] [-n <namespace1>,<namespace2>,...] [-o <path>]`
+Return the network map built by the network mapper since it started, or since it was reset,
+as an image. Uses GraphViz (specifically go-graphviz) to generate the image.
 
 #### Options
 
 | Name | Default | Description |
 | --- | --- | --- |
-| `--format` | `jpg` | Graph output format (png/jpg) (default "jpg"). |
-| `-n` or `--namespaces` |  | Visualize only clients in these namespaces (comma-separated) |
-| `-o` or `--output-path` |  | Output file path |
+| `--format` | `jpg` | Image output format. |
+| `-n` or `--namespaces` |  | Include only clients in these namespaces (comma-separated). |
+| `-o` or `--output-path` |  | Filename for the image. |
 
 #### Returns
 
 Here's the graph exported after running `otterize network-mapper visualize -n otterize-ecom-demo`:
 ![graph](https://user-images.githubusercontent.com/29180932/221423644-df8fbba2-dca1-4c56-baeb-f0d0afc55eb1.png)
-
 
 ### `otterize network-mapper export [--format] [-n <namespace1>,<namespace2>,...] [-o <path>] [--output-type <output-type>]`
 
@@ -129,8 +129,8 @@ as [client intents file(s)](/reference/intents-and-intents-files/#intents-file-f
 | Name | Default | Description |
 | --- | --- | --- |
 | `--format` | `yaml` | Specifies the format for the export: 'yaml' or 'json'. |
-| `-n` or `--namespaces` |  | Export only clients in these namespaces (comma-separated) |
-| `-o` or `--output` | `STDOUT` | Filename or directory for redirecting the output |
+| `-n` or `--namespaces` |  | Export only clients in these namespaces (comma-separated). |
+| `-o` or `--output` | `STDOUT` | Filename or directory for redirecting the output. |
 | `--output-type` | `single-file` | Whether the output should be written as a single file (`single-file`) or as multiple files in a directory (`dir`). Requires the `-o` or `--output` to point to a directory. |
 
 #### Returns
