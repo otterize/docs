@@ -72,7 +72,7 @@ as a list of clients and the servers they call.
 
 | Name | Default | Description |
 | --- | --- | --- |
-| `-n` or `--namespaces` |  | Include only clients in these namespaces (comma-separated) |
+| `-n` or `--namespaces` |  | Include only clients in these namespaces (comma-separated). |
 
 #### Returns
 
@@ -112,7 +112,7 @@ Uses GraphViz (specifically go-graphviz) to generate the image.
 
 | Name | Default | Description |
 | --- | --- | --- |
-| `--format` | `png` | Image output format. |
+| `--format` | `png` | Image output format: "png" or "jpg". |
 | `-n` or `--namespaces` |  | Include only clients in these namespaces (comma-separated). |
 | `-o` or `--output-path` |  | Filename for the image. |
 
@@ -130,7 +130,7 @@ as YAML [client intents file(s)](/reference/intents-and-intents-files/#intents-f
 
 | Name | Default | Description |
 | --- | --- | --- |
-| `--format` | `yaml` | Specifies the format for the export: 'yaml' or 'json'. |
+| `--format` | `yaml` | Specifies the format for the export: "yaml" or "json". |
 | `-n` or `--namespaces` |  | Export only clients in these namespaces (comma-separated). |
 | `-o` or `--output` | `STDOUT` | Filename or directory for redirecting the output. |
 | `--output-type` | `single-file` | Whether the output should be written as a single file (`single-file`) or as multiple files in a directory (`dir`). Requires the `-o` or `--output` to point to a directory. |
