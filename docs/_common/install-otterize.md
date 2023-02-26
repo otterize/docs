@@ -1,4 +1,4 @@
-   Make sure you have [Helm](https://helm.sh/docs/intro/install/) installed on your machine before attempting to install Otterize.
+   You'll need [Helm](https://helm.sh/docs/intro/install/) installed on your machine to install Otterize as follows:
 
    ```shell
    helm repo add otterize https://helm.otterize.com
@@ -10,7 +10,7 @@ This chart is a bundle of the Otterize intents operator, Otterize credentials op
 Initial deployment may take a couple of minutes.
 You can add the `--wait` flag for Helm to wait for deployment to complete and all pods to be Ready, or manually watch for all pods to be `Ready` using `kubectl get pods -n otterize-system -w`.
 
-After all the pods are ready you should see the something similar to the following displayed in your terminal when you manually get all the pods in the Otterize namespace using `kubectl get pods -n otterize-system`.
+After all the pods are ready you should see the following (or similar) in your terminal when you run `kubectl get pods -n otterize-system`:
 
 ``` bash
 NAME                                                       READY  STATUS  RESTARTS AGE
