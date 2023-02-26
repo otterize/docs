@@ -29,10 +29,14 @@ Before you start, you need a Kubernetes cluster with a [CNI](https://kubernetes.
 </details>
 
 <details>
-<summary>Install Otterize on your cluster</summary>
+<summary>Install Otterize in your cluster</summary>
 
 :::note
 You can skip this section if Otterize is already installed in your cluster.
+:::
+
+:::note Basic system memory requirements
+Otterize requires about 200 MBs and 200 mCPU for all components (including a SPIRE deployment) to install and run properly on Minikube and EKS clusters.
 :::
 
 {@include: ../_common/install-otterize.md}
