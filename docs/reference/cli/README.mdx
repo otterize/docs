@@ -102,21 +102,23 @@ recommendationservice in namespace otterize-ecom-demo calls:
   - productcatalogservice
 ```
 
-### `otterize network-mapper visualize [--format=png | --format=jpg] [-n <namespace1>,<namespace2>,...] [-o <path>]`
+### `otterize network-mapper visualize [--format=png | --format=jpg] [-n <namespace1>,<namespace2>,...] -o <path>`
 Return the network map built by the network mapper since it started, or since it was reset,
-as an image. Uses GraphViz (specifically go-graphviz) to generate the image.
+as an image. 
+
+Uses GraphViz (specifically go-graphviz) to generate the image.
 
 #### Options
 
 | Name | Default | Description |
 | --- | --- | --- |
-| `--format` | `jpg` | Image output format. |
+| `--format` | `png` | Image output format. |
 | `-n` or `--namespaces` |  | Include only clients in these namespaces (comma-separated). |
 | `-o` or `--output-path` |  | Filename for the image. |
 
 #### Returns
 
-Here's the graph exported after running `otterize network-mapper visualize -n otterize-ecom-demo`:
+Here's the graph exported after running `otterize network-mapper visualize -n otterize-ecom-demo -o otterize-ecom-demo.png`:
 ![graph](https://user-images.githubusercontent.com/29180932/221423644-df8fbba2-dca1-4c56-baeb-f0d0afc55eb1.png)
 
 ### `otterize network-mapper export [--format] [-n <namespace1>,<namespace2>,...] [-o <path>] [--output-type <output-type>]`
