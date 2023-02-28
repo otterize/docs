@@ -307,11 +307,11 @@ Let's look at the access graph again:
 
 Note that all (but two) of the lock icons are locked, indicating the services are protected. And all the locks and edges are green, indicating no call attempts (discovered by the network mapper) are being blocked.
 
-:::tip What would unintended access look like now?
-From now on, if a client attempts a server call that wasn't covered by one of the applied intents, a red line would appear from that client to that server, and the lock on that server would turn red: calls from that client are being blocked.
+:::tip How would blocked access attempts look now?
+From now on, if a client attempts a server call that wasn't covered by one of the applied intents, that would be discovered by the network mapper and show up as (new) discovered intents. Remember that the network mapper discovers attempted access, not just successful access. In this case, a red line would appear from that client to that server, and the lock on that server would turn red: calls from that client are being blocked.
 
 That may be because:
-- The calls didn't happen when the network mapper was building its map from which the intents were bootstrapped, in which case you ay choose to regenerate the intents or create and apply them manually.
+- The calls didn't happen when the network mapper was building its map from which the intents were bootstrapped, in which case you may choose to generate all the intents again, or or just create and apply the new ones manually.
 - Or... the client maliciously called this server, but is being blocked by the network policies. IBAC has saved the day!
 :::
 
