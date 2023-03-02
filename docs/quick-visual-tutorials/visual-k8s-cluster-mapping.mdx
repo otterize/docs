@@ -8,13 +8,15 @@ import CodeBlock from "@theme/CodeBlock";
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-Otterize Cloud extends the capabilities of Otterize OSS.
-We'll start by exploring a visual map of a Kubernetes cluster, based on the map information accumulated by the Otterize OSS network mapper running in the cluster.
+To support intent-based access control (IBAC), Otterize OSS starts by providing a network map of a Kubernetes cluster, using the Otterize network mapper running in the cluster.
+Otterize Cloud then optionally extends this capability with an enhanced visual access graph based on the same information.
+
+When the Otterize OSS intents operator is deployed in the cluster, and connected the Otterize Cloud, the access graph is enriched with access control information, and helps guide the rollout of IBAC in the cluster.
 
 In this tutorial, we will:
 
 - Deploy a demo set of services based on the [Google microservices demo](https://github.com/GoogleCloudPlatform/microservices-demo),
-a demo e-commerce application, into a Kubernetes cluster.
+(a simple e-commerce application) into a Kubernetes cluster.
 - Create an Otterize Cloud account, and install Otterize OSS (including its network mapper) in the cluster, connected to your Cloud account.
 - Visualize the cluster network map in Otterize Cloud.
 

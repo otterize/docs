@@ -8,108 +8,158 @@ import CodeBlock from "@theme/CodeBlock";
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-Otterize Cloud extends the capabilities of Otterize OSS for configuring mTLS between workloads and Kafka ACLs. You can visualize and explore each workload's credentials using Otterize Cloud credential provider. Visualize each workload's Kafka topic-level intents and inspect your Kafka broker's topic protection configuration.
+This tutorial focuses on intent-based access control (IBAC) for Kafka, specifically for a Kafka broker and its clients running within a Kubernetes cluster.
+
+Otterize OSS configures access controls automatically, based on declared and applied *client* intents, as we'll now see.
+- In the [previous tutorial](/quick-visual-tutorials/visual-ibac-network-policies), we rolled out IBAC by declaring intents for pods to call each other. Otterize OSS automatically configured Kubernetes network policies to enable access based on those intents and block any undeclared access.
+- In this tutorial, we add fine-grained, topic- and operation-level intents to the existing pod-to-pod intents. Otterize OSS automatically configures Kafka ACLs, and issues and distributes certificates to Kafka clients, so they can authenticate via mTLS and perform those operations on those topics, while everything undeclared is blocked.
+- Otterize Cloud again enriches these capabilities with a visual access graph, displaying a unified view of topic- and operation-level access and protection, and client identity certificate information.
+- Otterize Cloud also provides a pre-configured certificate credentials service you may use instead of running one (e.g. SPIRE) in your cluster.
+
+:::info
+While this tutorial build on the network policies IBAC tutorial, you need not use or even be concerned with network policies to achieve IBAC for Kafka with Otterize. Since all the network policies needed to run the demo below are already in place, we start this tutorial with all the access needed for the demo to run &mdash; much as it would if we weren't using network policies at all.
+:::
 
 In this tutorial, we will:
 
-- Deploy a demo reference lab,
-which is based on the [Google microservices demo](https://github.com/GoogleCloudPlatform/microservices-demo)
-simulating an e-commerce application.
-- Use the access graph to gain confidence in how Otterize can help in gradually rolling out secure access for Kafka.
+- Start where the previous tutorial left off: with a demo based on the [Google microservices demo](https://github.com/GoogleCloudPlatform/microservices-demo)
+(a simple e-commerce application) deployed to a Kubernetes cluster, with Otterize OSS installed and integrated with Otterize Cloud.
+- We will add fine-grained, topic-level intents and see how access to operations on Kafka topics is automatically managed.
 
 ## Prerequisites
-<details>
-<summary>Prepare a cluster that supports network policies</summary>
+The following steps are only needed if you haven't already run through the [Kubernetes cluster mapping tutorial](/quick-visual-tutorials/visual-k8s-cluster-mapping).
 
-Before you start, you need a Kubernetes cluster with a [CNI](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/) that supports [NetworkPolicies](https://kubernetes.io/docs/concepts/services-networking/network-policies/).
+<details>
+<summary>Prepare a cluster</summary>
+
+Before you start, you'll need a Kubernetes cluster.
+
+You won't need [network policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) in this tutorial,
+so you can follow the steps below while skipping the network policies (CNI) enablement bits, or keep them as is.
 
 {@include: ../_common/cluster-setup.md}
 </details>
 
 <details>
-<summary>Integrate Otterize Cloud with your cluster</summary>
+<summary>Deploy the demo set of services</summary>
 
-{@include: ../_common/install-otterize-cloud.md}
+To deploy these into your cluster:
+```bash
+kubectl create namespace otterize-ecom-demo
+kubectl apply -n otterize-ecom-demo -f https://docs.otterize.com/code-examples/shadow-mode/ecom-demo.yaml
+```
+
 </details>
 
-## Environment setup
-### Deploy the reference lab with mTLS for Kafka and its clients
-
-```bash
-kubectl create namespace otterize-ecom-kafka-demo
-kubectl apply -n otterize-ecom-kafka-demo -f https://docs.otterize.com/code-examples/shadow-mode/ecom-demo-mtls.yaml
-```
 <details>
-<summary>Optional: check that the lab was deployed...</summary>
-<div>
+<summary>Create an Otterize Cloud account</summary>
 
+If you don't already have an account, browse to [https://app.otterize.com](https://app.otterize.com) to set one up.
 
-To see all the pods in the lab:
+If someone in your team has already created an org in Otterize Cloud, and invited you (using your email address), you may see an invitation to accept.
+
+Otherwise, you'll create a new org, which you can later rename, and invite your team mates to join you there.
+</details>
+
+<details>
+<summary>Install Otterize OSS</summary>
+
+If no Kubernetes clusters are connected to your account, click the "connect your cluster" button to:
+1. Create a Cloud cluster object, specifying its name and the name of an environment to which all namespaces in that cluster will belong, by default.
+2. Connect it with your actual Kubernetes cluster, by clicking on the "Connection guide &rarr;" link and running the Helm commands shown there.
+   1. The Helm command shown in the Cloud UI also includes flags to turn off enforcement, but you'll want to omit those and run Otterize with enforcement turned on, for this tutorial.
+
+:::tip More details, if you're curious
+
+Connecting your cluster simply entails installing Otterize OSS via Helm, using credentials from your account so Otterize OSS can report information needed to visualize the cluster.
+
+The credentials will already be inlined into the Helm command shown in the Cloud UI, so you just need to copy that line and run it from your shell.
+If you don't give it the Cloud credentials, Otterize OSS will run fully standalone in your cluster &mdash; you just won't have the visualization in Otterize Cloud.
+:::
+</details>
+
+<details>
+<summary>Apply pod-to-pod-level intents</summary>
+
+This tutorial picks up where the network policies tutorial left off. We'll want to make sure all the pods have access to the pods they'll need to call,
+so we'll put in place the same intents that we had in that tutorial. There, we showed how you can bootstrap all those intents, by observing the calls the pods are making using the network mapper, and then exporting the network map as a set of intents files.
+
 ```bash
-kubectl get pods -n otterize-ecom-kafka-demo
+kubectl apply -n otterize-ecom-kafka-demo -f https://docs.otterize.com/code-examples/shadow-mode/all.yaml
+```
+
+</details>
+
+<details>
+<summary>Optional: check that the demo was deployed...</summary>
+
+To see all the pods in the demo:
+```bash
+kubectl get pods -n otterize-ecom-demo
 ```
 The pods should all be ready and running:
 ```bash
-NAME                                     READY   STATUS    RESTARTS   AGE
-adservice-694f4ff98-cz4nn                1/1     Running   0          23m
-cartservice-85f8bc44fd-45cbk             1/1     Running   0          23m
-checkoutservice-8fc47bbbd-9lhfv          1/1     Running   0          23m
-currencyservice-597bdf576b-8hftc         1/1     Running   0          23m
-emailservice-d5c6f74dd-qlwc4             1/1     Running   0          23m
-frontend-7ffbf49884-j9rhz                1/1     Running   0          23m
-loadgenerator-65779994db-tgdxk           1/1     Running   0          23m
-paymentservice-76b9c8b87d-ktfcd          1/1     Running   0          23m
-productcatalogservice-6969d4f5fd-xdw99   1/1     Running   0          23m
-recommendationservice-58798d5c8-2f4rz    1/1     Running   0          23m
-redis-cart-6f65887b5d-xwpz5              1/1     Running   0          23m
-shippingservice-ff5f4d7d-qcjw8           1/1     Running   0          23m
+NAME                                     READY   STATUS    RESTARTS      AGE
+adservice-65494cbb9d-5lrv6               1/1     Running   0             115s
+cartservice-6d84fc45bb-hdtwn             1/1     Running   0             115s
+checkoutservice-5599486df-dvj9n          1/1     Running   3 (79s ago)   115s
+currencyservice-6d64686d74-lxb7x         1/1     Running   0             115s
+emailservice-7c6cbfbbd7-xjxlt            1/1     Running   0             115s
+frontend-f9448d7d4-6dmnr                 1/1     Running   0             115s
+kafka-0                                  1/1     Running   2 (83s ago)   115s
+loadgenerator-7f6987f59-bchgm            1/1     Running   0             114s
+orderservice-7ffdbf6df-wzzfd             1/1     Running   0             115s
+otterize-ecom-demo-zookeeper-0           1/1     Running   0             115s
+paymentservice-86855d78db-zjjfn          1/1     Running   0             115s
+productcatalogservice-5944c7f666-2rjc6   1/1     Running   0             115s
+recommendationservice-6c8d848498-zm2rm   1/1     Running   0             114s
+redis-cart-6b79c5b497-xpms2              1/1     Running   0             115s
+shippingservice-85694cb9bd-v54xp         1/1     Running   0             114s
 ```
 
-
-  </div>
 </details>
+
 <details>
-<summary>Optional: Browse the lab</summary>
+<summary>Optional: Browse the demo</summary>
 <Tabs groupId="frontend-addr">
 <TabItem value="k8s" label="K8s">
 
 To get the externally-accessible URL where your demo front end is available, run:
 ```bash
-kubectl get service -n otterize-ecom-kafka-demo frontend-external | awk '{print $4}'
+kubectl get service -n otterize-ecom-demo frontend-external | awk '{print $4}'
 ```
 The result should be similar to (if running on AWS EKS):
 ```
 a11843075fd254f8099a986467098647-1889474685.us-east-1.elb.amazonaws.com
 ```
-Go ahead and browse to the URL above to "shop" and get a feel for the reference lab's behavior.
+Go ahead and browse to the URL above to "shop" and get a feel for the demo's behavior.
 (The URL might take some time to populate across DNS servers. Note that we are accessing an HTTP and not an HTTPS website.)
 </TabItem>
 <TabItem value="minikube" label="Minikube">
 
 To get the externally-accessible URL where your demo front end is available, run:
 ```
-kubectl port-forward -n otterize-ecom-kafka-demo service/frontend-external 8080:80 &
+kubectl port-forward -n otterize-ecom-demo service/frontend-external 8080:80 &
 ```
 The demo is now accessible at:
 ```
 http://localhost:8080
 ```
-Go ahead and browse to the URL above to "shop" and get a feel for the reference lab's behavior.
+Go ahead and browse to the URL above to "shop" and get a feel for the demo's behavior.
 </TabItem>
 </Tabs>
 </details>
 
-### Apply intents for workloads
-:::info
-This demo picks up where the network policies demo left off, so we'll put in place the same intents that we had in that demo and then add the kafka intents
-:::
-```bash
-kubectl apply -n otterize-ecom-kafka-demo -f https://docs.otterize.com/code-examples/shadow-mode/all.yaml
-```
+## Seeing the access graph.
+
+In the Otterize Cloud UI, the [access graph](https://app.otterize.com/access-graph) should show the following map for the demo running in your cluster:
+<img src="/img/quick-tutorials/shadow-mode/phase-5.png" alt="Discovered intents" width="600"/>
+
+Notice that Kafka is shown just like any other service that's called by (in this case, 4) other services acting as its clients. We'll let Otterize know this is a Kafka-type service in the next step.
 
 ## Manage Kafka access with Otterize
 
-Let's connect Kafka with Otterize by applying a `KafkaServerConfig`:
+Let's configure Otterize to recognize Kafka and communicate with it by applying a `KafkaServerConfig`:
 ```bash
 kubectl apply -n otterize-ecom-kafka-demo -f https://docs.otterize.com/code-examples/shadow-mode/kafkaserverconfig.yaml
 ```
