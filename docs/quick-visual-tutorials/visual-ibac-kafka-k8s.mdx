@@ -67,7 +67,7 @@ Otherwise, you'll create a new org, which you can later rename, and invite your 
 If no Kubernetes clusters are connected to your account, click the "connect your cluster" button to:
 1. Create a Cloud cluster object, specifying its name and the name of an environment to which all namespaces in that cluster will belong, by default.
 2. Connect it with your actual Kubernetes cluster, by clicking on the "Connection guide &rarr;" link and running the Helm commands shown there.
-   1. The Helm command shown in the Cloud UI also includes flags to turn off enforcement, but you'll want to omit those and run Otterize with enforcement turned on, for this tutorial.
+   1. The Helm command shown in the Cloud UI also includes flags to turn off enforcement, but **you'll want to omit those and run Otterize with enforcement turned on**, for this tutorial.
 
 :::tip More details, if you're curious
 
@@ -150,16 +150,20 @@ Go ahead and browse to the URL above to "shop" and get a feel for the demo's beh
 </Tabs>
 </details>
 
-## Seeing the access graph.
+## Starting point
 
 In the Otterize Cloud UI, the [access graph](https://app.otterize.com/access-graph) should show the following map for the demo running in your cluster:
 <img src="/img/quick-tutorials/shadow-mode/phase-5.png" alt="Discovered intents" width="600"/>
 
-Notice that Kafka is shown just like any other service that's called by (in this case, 4) other services acting as its clients. We'll let Otterize know this is a Kafka-type service in the next step.
+:::danger
+Update this picture with the latest UI
+:::
+
+Notice that the Kafka service (called `kafka` in this demo) is shown just like any other service that's called by (in this case, 4) other services acting as its clients. We'll let Otterize know this is a Kafka-type service in the next step.
 
 ## Manage Kafka access with Otterize
 
-Let's configure Otterize to recognize Kafka and communicate with it by applying a `KafkaServerConfig`:
+Let's configure Otterize to recognize Kafka and communicate with it by applying a `KafkaServerConfig` (KSC):
 ```bash
 kubectl apply -n otterize-ecom-kafka-demo -f https://docs.otterize.com/code-examples/shadow-mode/kafkaserverconfig.yaml
 ```
@@ -177,21 +181,35 @@ kubectl apply -n otterize-ecom-kafka-demo -f https://docs.otterize.com/code-exam
 </Tabs>
 </details>
 
-Upon applying the KafkaServerConfig, an ACL will configure Kafka to allow anonymous access all topics.
-This will be the base state, from which we will gradually roll out secure access to Kafka.
+Upon applying the KSC, an ACL will configure Kafka to allow anonymous access to all topics.
+This will be the base state, from which we will gradually roll out secure access to specific topics.
 
-We can see in the access graph that the node is marked with a `Kafka` and `KSC` icons.
+We can see in the access graph that the service is now marked with the "Kafka" logo and a "KSC" icon, since Otterize now recognizes it as a Kafka broker.
 
 ![Kafka Server Config](/img/quick-tutorials/shadow-mode/kafka-node.png)
 
-By clicking the Kafka node twice and switching to focus mode we'll be able to inspect its configuration and credentials.
+:::danger
+Update this picture with the latest UI
+:::
+
+By clicking the Kafka service twice, we can focus on this service to inspect its configuration and credentials.
 
 ![Kafka Server Config](/img/quick-tutorials/shadow-mode/kafka-focus.png)
 
+:::danger
+Update this picture with the latest UI
+:::
+
+We can see:
+- The `kafka` service is protected by network policies ("NetPols") and Kafka ACLs, because Otterize is in enforcement mode and managing network policies as well as ACLs.
+- The KSC shows us that the default level of protection for all topics (`*`) is not to require client identity and not to require intents. In this demo, we're going to be rolling out protection gradually, so we don't pre-protect topics. But it would be easy to modify the KSC to pre-protect certain topics or all topics by requiring client authentication as well as explicit intents.
+- The certificate information shows information about the certificate this `kafka` service will present to its clients as part of the mutual authentication (mTLS).
 
 ## Declare Kafka intents
 
-Otterize can now configure Kafka ACLs so let's go ahead and create client intents files for the services communicating with Kafka.
+In a gradual rollout scenario, where the default protection level is to allow any operation by any client, Kafka ACLs act a bit like network policies: once *any* ACL is defined on a topic, then *only* authenticated clients that have an ACL on that topic get access to it.
+
+To see how this works, let's declare what the `checkoutservice`, `orderservice`, and `paymentservice` intend to access:
 
 <Tabs>
 <TabItem value="checkoutservice" label="checkoutservice" default>
@@ -214,41 +232,101 @@ Otterize can now configure Kafka ACLs so let's go ahead and create client intent
 </TabItem>
 </Tabs>
 
-And apply them with
+Let's apply these intents:
 
 ```bash
 kubectl apply -n otterize-ecom-kafka-demo -f https://docs.otterize.com/code-examples/shadow-mode/kafka-intents.yaml
 ```
 
-We can immediatly see that the relevant edges are marked with the Kafka icon.
+Looking back at the access graph, we can see the results:
 
 ![Kafka Server Config](/img/quick-tutorials/shadow-mode/kafka-edges.png)
 
-And by clicking each of these edge we are able to see the specific topics declared by the client workload for access.
+:::danger
+Update this picture with the latest UI
+:::
+
+- Each of the lines from the declared Kafka clients is now marked with the Kafka icon, indicating it has specific Kafka access configured.
+- The `kafka` service shows the access granted:
+  - The `payments` topic allows the `paymentservice` service to perform `all` operations;
+  - The `orders` topic allows the `checkoutservice` to produce events and the `orderservice` to consume events.
+
+No other services can now perform any operations on these two topics.
+
+:::danger
+Verify that the picture, the explanation above, and the intents are all consistent.
+:::
+
+That's the Kafka server perspective &mdash; and remember, no server admin had to create or maintain these access controls, they are always kept in sync with the client intents.
+
+To get the Kafka client perspective, click on any of the lines from the clients to Kafka:
 
 ![Kafka Server Config](/img/quick-tutorials/shadow-mode/kafka-edge-modal.png)
 
-:::note
-You can verify that the reference lab still functions as intended.
+:::danger
+Update this picture with the latest UI
 :::
+
+You can see the exact access the client is configured to have, and trace it back to the specific intent that generated it. (You can also see that the client is actually calling Kafka, via the discovered intents, so you know the access is indeed needed.)
+
+<details>
+<summary>Optional: browse the demo to verify it still works</summary>
+
+You can play with the demo in your browser to see it still works as intended, while everything in it is protected against unintended and potentially malicious access.
+
+<Tabs groupId="frontend-addr">
+<TabItem value="k8s" label="K8s">
+
+To get the externally-accessible URL where your demo front end is available, run:
+```bash
+kubectl get service -n otterize-ecom-demo frontend-external | awk '{print $4}'
+```
+The result should be similar to (if running on AWS EKS):
+```
+a11843075fd254f8099a986467098647-1889474685.us-east-1.elb.amazonaws.com
+```
+Go ahead and browse to the URL above to "shop" and get a feel for the demo's behavior.
+(The URL might take some time to populate across DNS servers. Note that we are accessing an HTTP and not an HTTPS website.)
+</TabItem>
+<TabItem value="minikube" label="Minikube">
+
+To get the externally-accessible URL where your demo front end is available, run:
+```
+kubectl port-forward -n otterize-ecom-demo service/frontend-external 8080:80 &
+```
+The demo is now accessible at:
+```
+http://localhost:8080
+```
+Go ahead and browse to the URL above to "shop" and get a feel for the demo's behavior.
+</TabItem>
+</Tabs>
+
+</details>
+
+We've protected access to two topics: `payments` and `orders`.
+And we've granted to their clients access to these topics by configuring ACLs, issuing certificates, and distributing them to the clients.
+All this happened automatically just by declaring and applying the clients' intents to access those topics.
+
+To continue gradually rolling out IBAC, protecting more topics while granting access to their intended clients, simply continue to declare and apply more client intents. And to see which clients are accessing Kafka, and should declare their intents, just look to the access graph, which shows the data accumulated by the Otterize OSS network mapper.
 
 ## What's next
 
-* [Rollout mTLS](/quick-tutorials/k8s-mtls) between your workloads.
-* [Deploy a dedicated Kafka broker and take it for a spin using intents](/quick-tutorials/k8s-kafka-mtls).
+* Learn how to [roll out mTLS](/quick-tutorials/k8s-mtls) between your workloads.
+* Check out [a simpler, hands-on example of IBAC for Kafka](/quick-tutorials/k8s-kafka-mtls).
 
 ## Teardown
 
-To remove the deployed lab delete the client intents:
+To remove the deployed demo, first delete the client intents:
 ```bash
 kubectl delete -n otterize-ecom-kafka-demo -f https://docs.otterize.com/code-examples/shadow-mode/all.yaml
 ```
 
-Then remove the Kafka Server Config:
+Next, remove the Kafka server config:
 ```bash
 kubectl delete -n otterize-ecom-kafka-demo -f https://docs.otterize.com/code-examples/shadow-mode/kafkaserverconfig.yaml
 ```
-And then remove the lab and the namespace:
+Finally, remove the demo services and the namespace:
 ```bash
 kubectl delete -n otterize-ecom-kafka-demo -f https://docs.otterize.com/code-examples/shadow-mode/ecom-demo-mtls.yaml
 kubectl delete namespace otterize-ecom-kafka-demo
