@@ -128,7 +128,7 @@ If you don't give it the Cloud credentials, Otterize OSS will run fully standalo
 The Helm command shown in the Cloud UI also includes flags to turn off enforcement: Otterize OSS will be running in "shadow mode," meaning that it will not create network policies to restrict pod-to-pod traffic, or create Kafka ACLs to control access to Kafka topics. Instead, it will report to Otterize Cloud what **would** happen if enforcement were to be enabled, guiding you to implement IBAC without blocking intended access.
 </details>
 
-## Visualizing the cluster via the access graph
+## Visualize the cluster via the access graph
 
 In the Otterize Cloud UI, your [cluster](https://app.otterize.com/clusters) should now show all 3 Otterize OSS operators &mdash; the intents operator, network mapper, and credentials operator &mdash; as connected, with a green status.
 
