@@ -57,5 +57,25 @@ so it can be applied directly via `kubectl apply`:
 {@include: ../../../static/resources/example-intents-resource-highlighted.yaml}
 ```
 
-More formal specification of the format of client intents files, including a schema definition, will be published
-at a later time.
+
+## Intent file structure
+Each intent file is composed of two sections:
+1. A `service` section, which describes the service to whom the intents belong. Currently, the only attribute in this section is the service name, `name`.
+```yaml
+service:
+  name: checkoutservice
+```
+
+2. A `calls` section, which describes the intents. `calls` is a list, of which every item is an intent.
+Each intent has the following attributes:
+* `name`: Required. The service name.
+* `type`: Optional. When omitted, only network policies will be created. If specified, network policies will be created in addition to the policies for the type. Supported types are `kafka` and `http`. `kafka` means the intent will cause the creation of Kafka ACLs. `http` can be specified, but has no effect currently.
+* `topics`: Contains a list of Kafka topics. Only valid if `type` is `kafka`.
+<br/>Each Kafka topic has the fields `name` and `operations`.
+<br/>`name` is the Kafka topic name.
+<br/>`operations` is a required list of operations, such `all`, `consume`, `produce`, etc. See [the schema](https://github.com/otterize/helm-charts/blob/main/intents-operator/crds/clientintents-customresourcedefinition.yaml#L75) for the full list of operations.
+
+* `resources`: Contains a list of HTTP resources. Only valid if `type` is `http`.
+<br/>Each HTTP resource has the fields `path` and `methods`.
+<br/>`path` is the HTTP resource path.
+<br/>`methods` is a list of HTTP methods that are allowed, such as `GET` and `POST`. See [the schema](https://github.com/otterize/helm-charts/blob/main/intents-operator/crds/clientintents-customresourcedefinition.yaml#L49) for the full list of methods.
