@@ -54,28 +54,15 @@ kubectl apply -n otterize-ecom-demo -f https://docs.otterize.com/code-examples/s
 <details>
 <summary>Create an Otterize Cloud account</summary>
 
-If you don't already have an account, browse to [https://app.otterize.com](https://app.otterize.com) to set one up.
+{@include: ../_common/create-account.md}
 
-If someone in your team has already created an org in Otterize Cloud, and invited you (using your email address), you may see an invitation to accept.
-
-Otherwise, you'll create a new org, which you can later rename, and invite your team mates to join you there.
 </details>
 
 <details>
 <summary>Install Otterize OSS</summary>
 
-If no Kubernetes clusters are connected to your account, click the "connect your cluster" button to:
-1. Create a Cloud cluster object, specifying its name and the name of an environment to which all namespaces in that cluster will belong, by default.
-2. Connect it with your actual Kubernetes cluster, by clicking on the "Connection guide &rarr;" link and running the Helm commands shown there.
-   1. The Helm command shown in the Cloud UI also includes flags to turn off enforcement, but **you'll want to omit those and run Otterize with enforcement turned on**, for this tutorial.
+{@include: ../_common/install-otterize-from-cloud.md}
 
-:::tip More details, if you're curious
-
-Connecting your cluster simply entails installing Otterize OSS via Helm, using credentials from your account so Otterize OSS can report information needed to visualize the cluster.
-
-The credentials will already be inlined into the Helm command shown in the Cloud UI, so you just need to copy that line and run it from your shell.
-If you don't give it the Cloud credentials, Otterize OSS will run fully standalone in your cluster &mdash; you just won't have the visualization in Otterize Cloud.
-:::
 </details>
 
 <details>

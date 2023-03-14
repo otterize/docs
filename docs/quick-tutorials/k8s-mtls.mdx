@@ -6,7 +6,12 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
 Otterize can automatically provision mTLS credentials by using the service identities implied by Kubernetes.
-This tutorial will walk you through deploying mTLS certificates on a sample client-server deployment using the [Otterize Credentials operator](/reference/configuration/credentials-operator), which works with a [SPIRE server](https://spiffe.io/docs/latest/spire-about/) to achieve this.
+This tutorial will walk you through deploying mTLS certificates on a sample client-server deployment using the [Otterize credentials operator](/reference/configuration/credentials-operator).
+You can configure this operator to use a [local SPIRE server](https://spiffe.io/docs/latest/spire-about/) to issue and manage certificates, or to use the Otterize Cloud service to manage this for you.
+In this tutorial, we'll show you how to do it with a local SPIRE server.
+:::danger
+Link to a page describing the two options for credentials.
+:::
 
 In this tutorial, we will:
 
@@ -15,7 +20,7 @@ In this tutorial, we will:
 
 
 <details>
-<summary>Install Otterize on your cluster</summary>
+<summary>Install Otterize and SPIRE on your cluster</summary>
 
 :::note
 You can skip this section if Otterize is already installed in your cluster.
