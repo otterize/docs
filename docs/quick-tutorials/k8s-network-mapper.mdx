@@ -21,56 +21,69 @@ Before you start, you need to have a Kubernetes cluster. Having a cluster with a
 {@include: ../_common/cluster-setup.md}
 </details>
 
-<details>
-<summary>Install Otterize on your cluster</summary>
+You can now install Otterize in your cluster (if it's not already installed), and optionally connect to Otterize Cloud. Connecting to Cloud lets you:
+1. See what's happening visually in your browser, through the "access graph";
+2. Avoid using SPIRE (which can be installed with Otterize) for issuing certificates, as Otterize Cloud provides a certificate service.
 
-:::note
-You can skip this section if Otterize is already installed in your cluster.
-:::
+So either forego browser visualization and:
+
+<details>
+<summary>Install Otterize in your cluster, <b>without</b> Otterize Cloud</summary>
 
 {@include: ../_common/install-otterize.md}
 
 </details>
 
+Or choose to include browser visualization and:
+
 <details>
-<summary>Connect to Otterize Cloud (optional)</summary>
-Upgrade/install your Otterize OSS deployment using the *client id* and *client secret* generated for your integration.
+<summary>Install Otterize in your cluster, <b>with</b> Otterize Cloud</summary>
 
-{@include: ../_common/install-otterize-cloud.md}
+####  Create an Otterize Cloud account
 
-For detailed instructions follow this [guide](/installation#connect-otterize-oss-to-otterize-cloud)
+{@include: ../_common/create-account.md}
+
+#### Install Otterize OSS, connected to Otterize Cloud
+
+{@include: ../_common/install-otterize-from-cloud-with-enforcement.md}
+
 </details>
 
-## Map the cluster
+## Deploy demo to simulate traffic
 
-The network mapper starts to sniff traffic and build an in-memory network map as soon as it's installed.
-The Otterize CLI allows you to interact with the network mapper to grab a snapshot of current mapped traffic,
-reset its state and more. For a complete list of the CLI capabilities read the [CLI command reference](/reference/cli/#network-mapper).
-Otterize Cloud allows you to visualize that data in the [access graph](https://app.otterize.com).
-
-### Deploy demo to simulate traffic
-
-Let's add traffic to the cluster and see how the network mapper tracks it.
+Let's add services and traffic to the cluster and see how the network mapper builds the map.
 Deploy the following simple example &mdash; `client`, `client2` and `server`, communicating over HTTP:
 ```shell
 kubectl apply -n otterize-tutorial-mapper -f https://docs.otterize.com/code-examples/network-mapper/all.yaml
 ```
 
-### Show mapped traffic
+## Map the cluster
+
+The network mapper starts to sniff traffic and build an in-memory network map as soon as it's installed.
+The Otterize CLI allows you to interact with the network mapper to grab a snapshot of current mapped traffic,
+reset its state and more.
+
+For a complete list of the CLI capabilities read the [CLI command reference](/reference/cli/#network-mapper).
+
+### Extract and see the network map
 
 {@include: ../getting-started/_show_mapped_traffic_cli.mdx}
 
-### Visualize using the access graph (Cloud)
+### Show the access graph in Otterize Cloud
 
-You can visualize mapped traffic with the [access graph](https://app.otterize.com/access-graph) on Otterize Cloud.
+If you've attached Otterize OSS to Otterize Cloud, you can now also see the [access graph in your browser](https://app.otterize.com):
 
-<img src="/img/quick-tutorials/network-mapper/map.png" alt="Discovered intents" width="600"/>
+![Access graph](/img/quick-tutorials/network-mapper/otterize-tutorial-access-graph.png)
 
-:::info
-Learn more about [Shadow mode](/realistic-example/shadow-mode-network-policies) to see how the access graph can be used for gradually rolling out intents.
+:::danger
+Update the above with a full screenshot of the updated UI
 :::
 
-
+You can see some more information and insights here:
+1. **TODO**
+:::danger
+Update the above list after grabbing the screenshot
+:::
 
 ## What's next
 
@@ -81,9 +94,10 @@ the intents files. We'll see more of that below.
 
 Where to go next?
 
-- If you haven't already, see the [automate network policies tutorial]((/quick-tutorials/k8s-network-policies).
+- You can [see a larger network map](/quick-visual-tutorials/visual-k8s-cluster-mapping), based on a demo ecommerce application.
+- If you haven't already, see the [automate network policies tutorial](/quick-tutorials/k8s-network-policies).
 - Or go to the next tutorial to [automate secure access for Kafka](/quick-tutorials/k8s-kafka-mtls).
-- Explore how [Shadow Mode](/realistic-example/shadow-mode-network-policies) can expand these capabilities.
+- Explore how [shadow mode](/quick-visual-tutorials/visual-ibac-network-policies) can expand these capabilities.
 
 ### Teardown
 

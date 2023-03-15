@@ -1,10 +1,26 @@
-You can view mapped traffic by calling the CLI `list` or `export` commands.
-The latter supports multiple output formats, namely `intents` (client intents files) and `json`.
+You can get the network map by calling the CLI `visualize`, `list` or `export` commands.
+The `visualize` output format can be PNG or SVG. The `export` output format can be `yaml` (Kubernetes client intents files) and `json`.
 The following shows the CLI output filtered for the namespace (`otterize-tutorial-mapper`)
 of the example above.
 
 <Tabs>
-  <TabItem value="list" label="List" default>
+  <TabItem value="image" label="Image" default>
+
+1. Visualize the pod-to-pod network map built up ("sniffed") so far, as an image:
+
+   ```shell
+   otterize network-mapper visualize -n otterize-tutorial-mapper -o otterize-tutorial-map.png
+   ```
+:::danger
+Update the above with the correct `visualize` output for this example.
+:::
+
+2. For the simple example above, you should get an image file that looks like:
+
+   ![Otterize tutorial map](/img/quick-tutorials/network-mapper/otterize-tutorial-map.png)
+
+</TabItem>
+  <TabItem value="list" label="List">
 
 1. List the pod-to-pod network map built up ("sniffed") so far:
 
@@ -20,7 +36,7 @@ of the example above.
    ```
 
 </TabItem>
-  <TabItem value="intents" label="Export as intents" default>
+  <TabItem value="intents" label="Export as intents">
 
 1. Export as YAML client intents (the default format) the pod-to-pod network map built up so far:
 
@@ -104,7 +120,3 @@ of the example above.
 
 </TabItem>
 </Tabs>
-
-:::info
-See the [CLI documentation](/reference/cli) for more details about the CLI.
-:::
