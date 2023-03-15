@@ -28,7 +28,7 @@ Before you start, you need a Kubernetes cluster with a [CNI](https://kubernetes.
 {@include: ../_common/cluster-setup.md}
 </details>
 
-You can now install Otterize in your cluster (if it's not already installed), and either configure it to connect to Otterize Cloud or not. Connecting to Cloud lets you:
+You can now install Otterize in your cluster (if it's not already installed), and choose to connect to Otterize Cloud or not. Connecting to Cloud lets you:
 1. See what's happening visually in your browser, through the "access graph";
 2. Avoid using SPIRE (which can be installed with Otterize) for issuing certificates, as Otterize Cloud provides a certificate service.
 
@@ -159,7 +159,7 @@ Hi, I am the server, you called, may I help you?
 
 If you've attached Otterize OSS to Otterize Cloud, you can now browse to your account at [https://app.otterize.com](https://app.otterize.com) and see the access graph for your cluster:
 
-![Network policies](/img/quick-tutorials/network-policies/base.png)
+![Access graph](/img/quick-tutorials/network-policies/base.png)
 
 :::danger
 Update the above with a full screenshot of the updated UI
@@ -232,7 +232,7 @@ default-deny-ingress                           <none>                           
 
 If you've attached Otterize OSS to Otterize Cloud, go back to see the [access graph in your browser](https://app.otterize.com):
 
-![Network policies](/img/quick-tutorials/network-policies/protected.png)
+![Access graph](/img/quick-tutorials/network-policies/protected.png)
 
 :::danger
 Update the above with a full screenshot of the updated UI
