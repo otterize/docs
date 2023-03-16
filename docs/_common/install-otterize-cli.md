@@ -13,7 +13,7 @@ brew install otterize/otterize/otterize-cli
 <TabItem value="Apple Silicon" label="Apple Silicon">
 
 ```bash
-curl -LJO https://get.otterize.com/otterize-cli/v0.1.14/otterize_macOS_arm64_notarized.zip
+curl -LJO https://get.otterize.com/otterize-cli/v0.1.20/otterize_macOS_arm64_notarized.zip
 tar xf otterize_macOS_arm64_notarized.zip
 sudo cp otterize /usr/local/bin  # optionally move to PATH
 ```
@@ -21,7 +21,7 @@ sudo cp otterize /usr/local/bin  # optionally move to PATH
 <TabItem value="Intel 64-bit" label="Intel 64-bit">
 
 ```bash
-curl -LJO https://get.otterize.com/otterize-cli/v0.1.14/otterize_macOS_x86_64_notarized.zip
+curl -LJO https://get.otterize.com/otterize-cli/v0.1.20/otterize_macOS_x86_64_notarized.zip
 tar xf otterize_macOS_x86_64_notarized.zip
 sudo cp otterize /usr/local/bin  # optionally move to PATH
 ```
@@ -31,7 +31,7 @@ sudo cp otterize /usr/local/bin  # optionally move to PATH
 
 <TabItem value="windows" label="Windows">
 <Tabs>
-<TabItem value="scoop" label="scoop" default>
+<TabItem value="Scoop" label="Scoop" default>
 
 ```PowerShell
 scoop bucket add otterize-cli https://github.com/otterize/scoop-otterize-cli
@@ -42,16 +42,8 @@ scoop install otterize-cli
 <TabItem value="64-bit" label="64-bit">
 
 ```PowerShell
-Invoke-WebRequest -Uri https://get.otterize.com/otterize-cli/v0.1.14/otterize_Windows_x86_64.zip -OutFile otterize_Windows_x86_64.zip
+Invoke-WebRequest -Uri https://get.otterize.com/otterize-cli/v0.1.20/otterize_Windows_x86_64.zip -OutFile otterize_Windows_x86_64.zip
 Expand-Archive otterize_Windows_x86_64.zip -DestinationPath .
-# optionally move to PATH
-```
-</TabItem>
-<TabItem value="32-bit" label="32-bit">
-
-```PowerShell
-Invoke-WebRequest -Uri https://get.otterize.com/otterize-cli/v0.1.14/otterize_Windows_i386.zip -OutFile otterize_Windows_i386.zip
-Expand-Archive otterize_Windows_i386.zip -DestinationPath .
 # optionally move to PATH
 ```
 </TabItem>
@@ -62,30 +54,13 @@ Expand-Archive otterize_Windows_i386.zip -DestinationPath .
 <TabItem value="64-bit" label="64-bit">
 
 ```bash
-wget https://get.otterize.com/otterize-cli/v0.1.14/otterize_Linux_x86_64.tar.gz
+wget https://get.otterize.com/otterize-cli/v0.1.20/otterize_Linux_x86_64.tar.gz
 tar xf otterize_Linux_x86_64.tar.gz
-sudo cp otterize /usr/local/bin  # optionally move to PATH
-```
-</TabItem>
-<TabItem value="32-bit" label="32-bit">
-
-```bash
-wget https://get.otterize.com/otterize-cli/v0.1.14/otterize_Linux_i386.tar.gz
-tar xf otterize_Linux_i386.tar.gz
-sudo cp otterize /usr/local/bin  # optionally move to PATH
-```
-</TabItem>
-<TabItem value="arm-64-bit" label="Arm 64-bit">
-
-```bash
-wget https://get.otterize.com/otterize-cli/v0.1.14/otterize_Linux_arm64.tar.gz
-tar xf otterize_Linux_arm64.tar.gz
 sudo cp otterize /usr/local/bin  # optionally move to PATH
 ```
 </TabItem>
 </Tabs>
 </TabItem>
-
 </Tabs>
 
 More variants are available at the [GitHub Releases page](https://github.com/otterize/otterize-cli/releases).
