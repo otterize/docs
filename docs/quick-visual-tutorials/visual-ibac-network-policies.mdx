@@ -162,12 +162,16 @@ Update the image with an up to date one, and make sure there are arrows showing 
 The thick green line from `frontend` to `recommendationservice`, representing the discovered intent from the network mapper, no longer has an empty center, but rather a **solid black center, representing the explicitly applied intent**.
 
 Click on that `frontend` &rarr; `recommendationservice` line:
+<img src="/img/quick-tutorials/shadow-mode/frontend-recommendation-applied.png" alt="Discovered intents" width="600"/>
+
 :::danger
 Add an image of the opened `frontend` &rarr; `recommendationservice` edge in this state.
 :::
 - We can see the `frontend` can call the `recommendationservice`, and will be guaranteed access even once enforcement is turned on.
 
 Click on the `recommendationservice` itself:
+<img src="/img/quick-tutorials/shadow-mode/recommendation-access-state.png" alt="Discovered intents" width="600"/>
+
 :::danger
 Add an image of the opened recommendation service in this state.
 :::
@@ -195,6 +199,8 @@ As before, the line from `recommendationservice` &rarr; `productcatalogservice` 
 But two other lines, `frontend` &rarr; `productcatalogservice` and `checkoutservice` &rarr; `productcatalogservice`, have turned orange. And the `productcatalogservice` lock icon has turned red. Why?
 
 Click on one of those orange lines:
+<img src="/img/quick-tutorials/shadow-mode/frontend-productcatalog.png" alt="Discovered intents" width="600"/>
+
 :::danger
 Add an image of the opened `frontend` &rarr; `productcatalogservice` edge in this state.
 :::
@@ -202,6 +208,8 @@ Add an image of the opened `frontend` &rarr; `productcatalogservice` edge in thi
 - But access would be blocked once enforcement is turned on. To prevent that, we're told to declare and apply an intent for this call.
 
 Click on the `productcatalogservice`:
+<img src="/img/quick-tutorials/shadow-mode/productcatalog-woud-block.png" alt="Discovered intents" width="600"/>
+
 :::danger
 Add an image of the opened `productcatalogservice` in this state.
 :::
