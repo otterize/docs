@@ -16,6 +16,8 @@ Install Calico, in order to enforce network policies:
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/manifests/calico.yaml
 ```
+You need to install Calico because Minikube does not support network policy enforcement by default; Calico helps solve this issue.
+
 </TabItem>
 <TabItem value="gke" label="Google GKE">
 <a href="https://cloud.google.com/kubernetes-engine/docs/how-to/network-policy#gcloud">Visit the official documentation</a>, or follow the instructions below:

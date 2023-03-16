@@ -172,7 +172,7 @@ const config = {
           },
           {
             html: `<div class="footer_copyright">
-                            Built with DocuSaurus
+                            Built with Docusaurus
                             <p />
                             © ${new Date().getFullYear()} Otterize, Inc. All rights reserved.
                         </div>`,
