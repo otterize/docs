@@ -35,47 +35,53 @@ An intent is a declaration by a specific client to call a specific server, optio
 Client intents files are independent of the infrastructure on which IBAC is deployed &mdash; indeed, they abstract away
 any tie-ins with infrastructures and implementations of access control.
 
-Here is an example of the client intents file for the `checkoutservice`.
+As an example, let's look at the core of a client intents file for a service called `checkoutservice`.
 It declares that it will call the `emailservice`, the `orderservice`, and the `ecomm-events` Kafka service.
 It also provides more granular information for some of the calls:
 ```yaml
 {@include: ../../../static/resources/example-intents.yaml}
 ```
 
-This is a "plain" or "vanilla" intents file, which the Otterize CLI can parse and process.
-Within the context of a Kubernetes cluster, it is very natural to format intents files as
-Kubernetes custom resources, and these are processed by the Kubernetes API, which validates
+You can actually create and use such "plain" or "vanilla" intents files without any other metadata. Currently, Otterize only supports processing client intents via the Otterize OSS intents operator for Kubernetes, so you'll need to run the plain intents files through the Otterize CLI (`otterize intents convert`)  to convert them into Kubernetes custom resource YAML files.
+
+Within the context of a Kubernetes cluster, it's very natural to format intents files from the beginning as
+Kubernetes custom resources. These files are applied (`kubectl apply`) to the Kubernetes API, which validates
  them against a `ClientIntents` custom resource definition (CRD) and then hands them over to the Otterize intents
  operator, as expected of a Kubernetes ecosystem extension.
  The two formats are trivially related: the "plain" intents file contents are simply embedded in the `spec`
  section of the custom resource format.
 
-Here is the same intents file, now formatted as a Kubernetes custom resource YAML,
+Here is the same client intents file, now formatted as a Kubernetes custom resource YAML,
 so it can be applied directly via `kubectl apply`:
 
 ```yaml
 {@include: ../../../static/resources/example-intents-resource-highlighted.yaml}
 ```
 
+## Intents file specification
 
-## Intent file structure
-Each intent file is composed of two sections:
-1. A `service` section, which describes the service to whom the intents belong. Currently, the only attribute in this section is the service name, `name`.
-```yaml
-service:
-  name: checkoutservice
-```
+The core of a client intents file has 2 root-level fields (keys, in YAML):
+- `service` (required): describes the client service that intends to make the calls in this file.
+  - `name` (required): specifies the name of the client service.
 
-2. A `calls` section, which describes the intents. `calls` is a list, of which every item is an intent.
-Each intent has the following attributes:
-* `name`: Required. The service name.
-* `type`: Optional. When omitted, only network policies will be created. If specified, network policies will be created in addition to the policies for the type. Supported types are `kafka` and `http`. `kafka` means the intent will cause the creation of Kafka ACLs. `http` can be specified, but has no effect currently.
-* `topics`: Contains a list of Kafka topics. Only valid if `type` is `kafka`.
-<br/>Each Kafka topic has the fields `name` and `operations`.
-<br/>`name` is the Kafka topic name.
-<br/>`operations` is a required list of operations, such `all`, `consume`, `produce`, etc. See [the schema](https://github.com/otterize/helm-charts/blob/main/intents-operator/crds/clientintents-customresourcedefinition.yaml#L75) for the full list of operations.
+- `calls` (required): describes the (server) services which the client intends to call. <br />
+  Its value is a list of key-value pairs, each describing a server service to be called. (The combination of client service, server service, and optionally any more granular information about the call forms an intent.) <br />
+  Each item in the list has the following fields:
+  - `name` (required): specifies the name of the server service.  <br />
+    The name can include the namespace of the server service, if different from the client service, separated by a dot ("."): `server-name.server-namespace`.
+  - `type` (optional, case-insensitive): specifies the type of call to be made to the server. <br />
+    If present, the values can currently be `http` or `kafka`.  <br />
+    The Otterize intents operator will manage network policies for all intents, regardless of type (including if no type is specified); it will *also* manage Kafka ACLs if the `type` is `kafka`; and in the future it will *also* manage HTTP access controls if the `type` is `http`.
 
-* `resources`: Contains a list of HTTP resources. Only valid if `type` is `http`.
-<br/>Each HTTP resource has the fields `path` and `methods`.
-<br/>`path` is the HTTP resource path.
-<br/>`methods` is a list of HTTP methods that are allowed, such as `GET` and `POST`. See [the schema](https://github.com/otterize/helm-charts/blob/main/intents-operator/crds/clientintents-customresourcedefinition.yaml#L49) for the full list of methods.
+  - `topics` (optional; only allowed if `type` is `kafka`): Specifies the list of Kafka topics to be called. <br />
+    Each item in the list has the following fields:
+    - `name` (required): specifies the name of the topic.
+    - `operations` (required): specifies the list of intended operations on that topic. <br />
+      Allowed values are: `consume`, `produce`, `create`, `alter`, `delete`, `describe`, `cluster_action`, `describe_configs`, `alter_configs`, `idempotent_write`, and `all`.
+
+  - `resources` (optional; only allowed if `type` is `http`): Specifies the list of HTTP resources to be called. <br />
+    Each item in the list has the following fields:
+    - `path` (required): specifies the HTTP path of the resource.
+    - `methods` (required): specifies the list of intended operations on that topic. <br />
+      Allowed values are: `get`, `post`, `put`, `patch`, `delete`, `options`, `trace`, and `connect`.
+
