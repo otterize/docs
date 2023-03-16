@@ -28,7 +28,9 @@ In this tutorial, we will:
 
 ## Prerequisites
 The following steps are only needed if you haven't already run through the [Kubernetes cluster mapping tutorial](/quick-visual-tutorials/visual-k8s-cluster-mapping).
-
+:::danger
+The deployment of the lab is needed anyways. The previous lab doesn't use mTLS, while this one does. We use a different yaml for the kafka-mtls lab.
+:::
 <details>
 <summary>Prepare a cluster</summary>
 
@@ -45,11 +47,20 @@ so you can follow the steps below while skipping the network policies (CNI) enab
 
 To deploy these into your cluster:
 ```bash
-kubectl create namespace otterize-ecom-demo
-kubectl apply -n otterize-ecom-demo -f https://docs.otterize.com/code-examples/shadow-mode/ecom-demo.yaml
+kubectl create namespace otterize-ecom-kafka-demo
+kubectl apply -n otterize-ecom-kafka-demo -f https://docs.otterize.com/code-examples/shadow-mode/ecom-demo-mtls.yaml
 ```
 
 </details>
+
+:::danger
+The deployment of the lab is needed anyways. The previous lab doesn't use mTLS, while this one does. We use a different yaml for the kafka-mtls lab.
+:::
+
+:::danger
+I updated the instructions to reference the correct yaml.
+:::
+
 
 <details>
 <summary>Create an Otterize Cloud account</summary>
@@ -82,7 +93,7 @@ kubectl apply -n otterize-ecom-kafka-demo -f https://docs.otterize.com/code-exam
 
 To see all the pods in the demo:
 ```bash
-kubectl get pods -n otterize-ecom-demo
+kubectl get pods -n otterize-ecom-kafka-demo
 ```
 The pods should all be ready and running:
 ```bash
@@ -96,7 +107,7 @@ frontend-f9448d7d4-6dmnr                 1/1     Running   0             115s
 kafka-0                                  1/1     Running   2 (83s ago)   115s
 loadgenerator-7f6987f59-bchgm            1/1     Running   0             114s
 orderservice-7ffdbf6df-wzzfd             1/1     Running   0             115s
-otterize-ecom-demo-zookeeper-0           1/1     Running   0             115s
+otterize-ecom-kafka-demo-zookeeper-0           1/1     Running   0             115s
 paymentservice-86855d78db-zjjfn          1/1     Running   0             115s
 productcatalogservice-5944c7f666-2rjc6   1/1     Running   0             115s
 recommendationservice-6c8d848498-zm2rm   1/1     Running   0             114s
@@ -113,7 +124,7 @@ shippingservice-85694cb9bd-v54xp         1/1     Running   0             114s
 
 To get the externally-accessible URL where your demo front end is available, run:
 ```bash
-kubectl get service -n otterize-ecom-demo frontend-external | awk '{print $4}'
+kubectl get service -n otterize-ecom-kafka-demo frontend-external | awk '{print $4}'
 ```
 The result should be similar to (if running on AWS EKS):
 ```
@@ -126,7 +137,7 @@ Go ahead and browse to the URL above to "shop" and get a feel for the demo's beh
 
 To get the externally-accessible URL where your demo front end is available, run:
 ```
-kubectl port-forward -n otterize-ecom-demo service/frontend-external 8080:80 &
+kubectl port-forward -n otterize-ecom-kafka-demo service/frontend-external 8080:80 &
 ```
 The demo is now accessible at:
 ```
@@ -266,7 +277,7 @@ You can play with the demo in your browser to see it still works as intended, wh
 
 To get the externally-accessible URL where your demo front end is available, run:
 ```bash
-kubectl get service -n otterize-ecom-demo frontend-external | awk '{print $4}'
+kubectl get service -n otterize-ecom-kafka-demo frontend-external | awk '{print $4}'
 ```
 The result should be similar to (if running on AWS EKS):
 ```
@@ -279,7 +290,7 @@ Go ahead and browse to the URL above to "shop" and get a feel for the demo's beh
 
 To get the externally-accessible URL where your demo front end is available, run:
 ```
-kubectl port-forward -n otterize-ecom-demo service/frontend-external 8080:80 &
+kubectl port-forward -n otterize-ecom-kafka-demo service/frontend-external 8080:80 &
 ```
 The demo is now accessible at:
 ```
