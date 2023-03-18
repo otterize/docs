@@ -103,9 +103,13 @@ The service names in each namespace are set by the developers, or the platform t
 
 ### Cryptographic credentials
 
-The cryptographic credentials created by the Otterize Credentials operator (mTLS certificate and key pairs) are provided by a SPIRE server that is deployed alongside the Credentials operator, or if integrated with Otterize Cloud and with cloud credentials enabled (by default, SPIRE is used, even when connected to the cloud), by a Hashicorp Vault instance with a CA created for you. Using Otterize Cloud for credentials means you do not need to deploy SPIRE on your cluster, which makes for a simpler and lightweight deployment.
+The cryptographic credentials created by the Otterize credentials operator (mTLS certificate and key pairs) are provided in one of two ways, depending on how the operator is configured:
+1. By a SPIRE server that is deployed alongside the credentials operator.
+2. By the Otterize Cloud managed credentials service. That service is built on a Hashicorp Vault instance with a CA automatically created for you. Using Otterize Cloud for credentials means you do not need to deploy SPIRE on your cluster, which makes for a simpler and lightweight deployment.
 
-The Credentials operator watches for pods starting up in a Kubernetes cluster, and if mTLS credentials are requested, it uses the [resolved or declared service name](/reference/service-identities) plus the pod’s namespace and generates credentials for that service name, in that namespace. The operator is conceptually similar to a SPIRE agent in that it attests to the identity of pods.
+Note that, by default, the first option (in-cluster SPIRE) is used, even when the credentials operator is connected to Otterize Cloud). The `useCloudToGenerateTLSCredentials` must be set to `true` to use Cloud-managed credentials; see the [Helm chart configuration for the credentials operator](/reference/configuration/credentials-operator/helm-chart#cloud-parameters) for more details.
+
+The credentials operator watches for pods starting up in a Kubernetes cluster, and if mTLS credentials are requested, it uses the [resolved or declared service name](/reference/service-identities) plus the pod’s namespace to generate credentials for that service name, in that namespace. The operator is conceptually similar to a SPIRE agent in that it attests to the identity of pods.
 
 
 

@@ -124,11 +124,7 @@ In the Otterize Cloud UI, your [cluster](https://app.otterize.com/clusters) shou
 
 And when you go back to the [access graph](https://app.otterize.com/access-graph) (and select your cluster from the dropdown, if needed), you should see the following map for the demo running in your cluster:
 
-<img src="/img/quick-tutorials/shadow-mode/phase-0.png" alt="Discovered intents" width="600"/>
-
-:::danger
-Update the image with an up to date one, and make sure there are arrows showing the direction of access.
-:::
+![Access graph](/img/quick-tutorials/shadow-mode/phase-0.png)
 
 Each service is shown as a node in the access graph, while the thick lines (edges) connecting the services show access between them, as detected by the network mapper.
 
@@ -153,28 +149,18 @@ kubectl apply -n otterize-ecom-demo -f https://docs.otterize.com/code-examples/s
 
 Look at the access graph again:
 
-<img src="/img/quick-tutorials/shadow-mode/phase-1.png" alt="Discovered intents" width="600"/>
-
-:::danger
-Update the image with an up to date one, and make sure there are arrows showing the direction of access.
-:::
+![Access graph](/img/quick-tutorials/shadow-mode/phase-1.png)
 
 The thick green line from `frontend` to `recommendationservice`, representing the discovered intent from the network mapper, no longer has an empty center, but rather a **solid black center, representing the explicitly applied intent**.
 
 Click on that `frontend` &rarr; `recommendationservice` line:
 <img src="/img/quick-tutorials/shadow-mode/frontend-recommendation-applied.png" alt="Discovered intents" width="600"/>
 
-:::danger
-Add an image of the opened `frontend` &rarr; `recommendationservice` edge in this state.
-:::
 - We can see the `frontend` can call the `recommendationservice`, and will be guaranteed access even once enforcement is turned on.
 
 Click on the `recommendationservice` itself:
 <img src="/img/quick-tutorials/shadow-mode/recommendation-access-state.png" alt="Discovered intents" width="600"/>
 
-:::danger
-Add an image of the opened recommendation service in this state.
-:::
 - We can see it's not protected now (we're in shadow mode, and there are no default-deny network policies in place).
 - We can also see it would not block any clients once protection is enabled.
 - And there is no warning about it remaining unprotected once enforcement is turned on. All is ready for turning on enforcement and protecting this service from any unintended calls.
@@ -192,7 +178,7 @@ kubectl apply -n otterize-ecom-demo -f https://docs.otterize.com/code-examples/s
 ```
 Look at the access graph again:
 
-<img src="/img/quick-tutorials/shadow-mode/phase-2.png" alt="Discovered intents" width="600"/>
+![Access graph](/img/quick-tutorials/shadow-mode/phase-2.png)
 
 As before, the line from `recommendationservice` &rarr; `productcatalogservice` now has a solid black center, and no warnings. That's what we expected.
 
@@ -201,18 +187,12 @@ But two other lines, `frontend` &rarr; `productcatalogservice` and `checkoutserv
 Click on one of those orange lines:
 <img src="/img/quick-tutorials/shadow-mode/frontend-productcatalog.png" alt="Discovered intents" width="600"/>
 
-:::danger
-Add an image of the opened `frontend` &rarr; `productcatalogservice` edge in this state.
-:::
-- This access is not blocked now &mdash; because we're still in shadow mode (otherwise the line would have been red).
-- But access would be blocked once enforcement is turned on. To prevent that, we're told to declare and apply an intent for this call.
+- This access is not blocked *now* &mdash; because we're still in shadow mode (otherwise the line would have been red).
+- But access *would be blocked* once enforcement is turned on. To prevent that, we're told to declare and apply an intent for this call.
 
 Click on the `productcatalogservice`:
 <img src="/img/quick-tutorials/shadow-mode/productcatalog-woud-block.png" alt="Discovered intents" width="600"/>
 
-:::danger
-Add an image of the opened `productcatalogservice` in this state.
-:::
 - We can see it's not protected now, as before.
 - But we can also see it *would* block any clients once protection is enabled, which is why the lock is red.
 - And there is an explicit warning to apply the missing intents from all its clients before turning on enforcement.
@@ -240,7 +220,8 @@ kubectl apply -n otterize-ecom-demo -f https://docs.otterize.com/code-examples/s
 ```
 
 Let's go back to the access graph:
-<img src="/img/quick-tutorials/shadow-mode/phase-3.png" alt="Discovered intents" width="600"/>
+
+![Access graph](/img/quick-tutorials/shadow-mode/phase-3.png)
 
 All is well again: the `productcatalogservice` will be protected, and its 3 clients will still have access, after enforcement is turned on.
 
@@ -274,7 +255,7 @@ kubectl apply -n otterize-ecom-demo -f https://docs.otterize.com/code-examples/s
 
 Look at the access graph again:
 
-<img src="/img/quick-tutorials/shadow-mode/phase-4.png" alt="Discovered intents" width="600"/>
+![Access graph](/img/quick-tutorials/shadow-mode/phase-4.png)
 
 The graph confirms that all (but two) services would be protected, and no intended calls would be blocked, once we apply protection.
 
@@ -290,13 +271,15 @@ They may not even be callable. But if they are callable but are not being called
 ## Enable enforcement
 With the confidence we gained, let's enable enforcement (via network policies) by upgrading your Otterize installation to remove the `intentsOperator.operator.enableEnforcement=false` flag.
 
-:::danger
-Figure out the easiest way to do this &mdash; do they have to go to the UI, find the integration for this cluster, and substitute it in the Helm chart below? Can they just click on the Connection guide on the cluster itself and alter the Helm command shown there?
-:::
-{@include: ../_common/install-otterize-cloud.md}
+At the top of the access graph, click the **Configure cluster** button; or in the clusters page, clicking on the **Connection guide &rarr;** link for your cluster.
+
+Then run the Helm commands shown there, and specifically follow the instructions to install Otterize <b>with enforcement on</b> (not in shadow mode). Namely, <b>omit</b> the following flag in the Helm command:
+
+`--set intentsOperator.operator.enableEnforcement=false`
 
 Let's look at the access graph again:
-<img src="/img/quick-tutorials/shadow-mode/phase-5.png" alt="Discovered intents" width="600"/>
+
+![Access graph](/img/quick-tutorials/shadow-mode/phase-5.png)
 
 Note that all (but two) of the lock icons are locked, indicating the services are protected. And all the locks and edges are green, indicating no call attempts (discovered by the network mapper) are being blocked.
 

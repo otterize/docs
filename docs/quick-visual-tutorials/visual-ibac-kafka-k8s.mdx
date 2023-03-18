@@ -151,13 +151,9 @@ Go ahead and browse to the URL above to "shop" and get a feel for the demo's beh
 ## Starting point
 
 In the Otterize Cloud UI, the [access graph](https://app.otterize.com/access-graph) should show the following map for the demo running in your cluster:
-<img src="/img/quick-tutorials/shadow-mode/phase-5.png" alt="Discovered intents" width="600"/>
+![Access graph](/img/quick-tutorials/shadow-mode/phase-5.png)
 
-:::danger
-Update this picture with the latest UI
-:::
-
-Notice that the Kafka service (called `kafka` in this demo) is shown just like any other service that's called by (in this case, 4) other services acting as its clients. We'll let Otterize know this is a Kafka-type service in the next step.
+Notice that the Kafka service (called `kafka` in this demo) is shown just like any other service that's called by other services (four, in our case) acting as its clients. We'll let Otterize know this is specifically a Kafka-type service in the next step.
 
 ## Manage Kafka access with Otterize
 
@@ -186,16 +182,12 @@ We can see in the access graph that the service is now marked with the "Kafka" l
 
 ![Kafka Server Config](/img/quick-tutorials/shadow-mode/kafka-node.png)
 
-:::danger
-Update this picture with the latest UI
-:::
-
 By clicking the Kafka service twice, we can focus on this service to inspect its configuration and credentials.
 
 ![Kafka Server Config](/img/quick-tutorials/shadow-mode/kafka-focus.png)
 
 :::danger
-Update this picture with the latest UI
+Please redo the above image with the KSC and Certificate information sections expanded, so the reader can see what is discussed in the following points.
 :::
 
 We can see:
@@ -240,30 +232,18 @@ Looking back at the access graph, we can see the results:
 
 ![Kafka Server Config](/img/quick-tutorials/shadow-mode/kafka-edges.png)
 
-:::danger
-Update this picture with the latest UI
-:::
-
 - Each of the lines from the declared Kafka clients is now marked with the Kafka icon, indicating it has specific Kafka access configured.
 - The `kafka` service shows the access granted:
   - The `payments` topic allows the `paymentservice` service to perform `all` operations;
-  - The `orders` topic allows the `checkoutservice` to produce events and the `orderservice` to consume events.
+  - The `orders` topic allows the `checkoutservice` to `produce` events and the `orderservice` to `consume` events.
 
 No other services can now perform any operations on these two topics.
-
-:::danger
-Verify that the picture, the explanation above, and the intents are all consistent.
-:::
 
 That's the Kafka server perspective &mdash; and remember, no server admin had to create or maintain these access controls, they are always kept in sync with the client intents.
 
 To get the Kafka client perspective, click on any of the lines from the clients to Kafka:
 
-![Kafka Server Config](/img/quick-tutorials/shadow-mode/kafka-edge-modal.png)
-
-:::danger
-Update this picture with the latest UI
-:::
+<img src="/img/quick-tutorials/shadow-mode/kafka-edge-modal.png" alt="Kafka client perspective" width="600"/>
 
 You can see the exact access the client is configured to have, and trace it back to the specific intent that generated it. (You can also see that the client is actually calling Kafka, via the discovered intents, so you know the access is indeed needed.)
 

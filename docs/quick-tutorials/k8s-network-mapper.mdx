@@ -49,6 +49,15 @@ Or choose to include browser visualization and:
 
 </details>
 
+Finally, you'll need to install the Otterize CLI (if you haven't already) to interact with the network mapper:
+
+<details>
+<summary>Install the Otterize CLI</summary>
+
+{@include: ../_common/install-otterize-cli.md}
+
+</details>
+
 ## Deploy demo to simulate traffic
 
 Let's add services and traffic to the cluster and see how the network mapper builds the map.
@@ -75,17 +84,14 @@ If you've attached Otterize OSS to Otterize Cloud, you can now also see the [acc
 
 ![Access graph](/img/quick-tutorials/network-mapper/otterize-tutorial-access-graph.png)
 
-:::danger
-Update the above with a full screenshot of the updated UI
-:::
-
-You can see some more information and insights here:
-1. **TODO**
-:::danger
-Update the above list after grabbing the screenshot
-:::
+Note, for example, that the `client` &rightarrow; `server` arrow has a yellow notification icon indicating a single notification. Clicking on it shows:
 
 ![Access graph insights](/img/quick-tutorials/network-mapper/otterize-tutorial-access-graph-insights.png)
+
+The access graph reveals several types of information and insights, such as:
+1. Seeing the network map for different clusters, seeing the subset of the map for a given namespace, or even &mdash; according to how you've mapped namespaces to environments &mdash; seeing the subset of the map for a specific environment.
+2. Filtering the map to include recently-seen traffic, since some date in the past. That way you can eliminate calls that are no longer relevant, without having to reset the network mapper and start building a new map.
+3. If the intents operator is also connected, the access graph now reveals more specifics about access: understand which services are protected or would be protected, and which client calls are being blocked or would be blocked. We'll see more of that in the next couple of tutorials
 
 ## What's next
 

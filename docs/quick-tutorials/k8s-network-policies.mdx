@@ -165,10 +165,6 @@ If you've attached Otterize OSS to Otterize Cloud, you can now browse to your ac
 
 ![Access graph](/img/quick-tutorials/network-policies/base.png)
 
-:::danger
-Update the above with a full screenshot of the updated UI
-:::
-
 ## Apply intents
 We will now declare that the **client** intends to call the **server**.
 
@@ -207,7 +203,7 @@ curl timed out
 # highlight-end
 ```
 <details>
-<summary><b>[Client-other]</b> didn't time out for you?</summary>
+<summary>Not seeing the time out?</summary>
 
 If client-other isn't timing out, then the installed CNI plugin likely does not support network policies.
 Consult the docs for your Kubernetes distribution or head back to the [Calico installation section](#prerequisites) to install one.
@@ -227,7 +223,7 @@ Hi, I am the server, you called, may I help you?
 ```bash
 kubectl get NetworkPolicies -n otterize-tutorial-npol
 ```
-will output:
+This should return:
 ```
 NAME                                           POD-SELECTOR                                         AGE
 access-to-server-from-otterize-tutorial-npol   otterize/server=server-otterize-tutorial-np-7e16db   6s
@@ -238,18 +234,14 @@ If you've attached Otterize OSS to Otterize Cloud, go back to see the [access gr
 
 ![Access graph](/img/quick-tutorials/network-policies/protected.png)
 
-:::danger
-Update the above with a full screenshot of the updated UI
-:::
-
-It's very clear what happened:
+It's now clear what happened:
 1. The server is now protected, and is also blocking some of its clients. Click on it to see what to do about it.
 2. Calls from **[client]** are declared (solid black inner line) and therefore allowed (thick green line).
 3. Calls from **[client-other]** are not declared (missing "white" inner line) and therefore blocked (thick red line). Click on the line to see what to do about it.
 4. By the way, the two clients themselves are unprotected -- though we don't detect any traffic to them, we cannot be certain they don't expose addressable endpoints.
 
 :::tip Done!
-Otterize did its job of both protecting servers *and* allowing intended access.
+Otterize did its job of both protecting the server *and* allowing intended access.
 :::
 
 ## What did we accomplish?
