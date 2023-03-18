@@ -9,7 +9,7 @@ By default, the intents operator enforces access controls by creating, updating 
 
 ## Active enforcement
 
-When enforcement is active &mdash; when it is not disabled &mdash; the intents operator processes applied client intents files and turns each into access authorizations from the client to its called servers: if network policies are active (and supported by the CNI in the Kubernetes cluster), that ensuring there are network policies from that client to all its called servers, and removing any other previous network policies from that client; and similarly for Kafka ACLs to Kafka servers.
+When enforcement is active &mdash; when it is not disabled &mdash; the intents operator processes applied client intents and turns each into access authorizations from the client to its called servers: if network policies are active (and supported by the CNI in the Kubernetes cluster), the operator labels pods and creates/updates network policies to allow access from that client to all its called servers, as well as removing previously-granted access based on out of date intents; and similarly for Kafka ACLs to Kafka servers.
 
 In general, of course, this will immediately block access from services that have not declared their intents to call the now-protected servers. That is, after all, why you use intent-based access control (IBAC).
 
