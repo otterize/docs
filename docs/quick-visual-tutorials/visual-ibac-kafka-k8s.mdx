@@ -186,10 +186,6 @@ By clicking the Kafka service twice, we can focus on this service to inspect its
 
 ![Kafka Server Config](/img/quick-tutorials/shadow-mode/kafka-focus.png)
 
-:::danger
-Please redo the above image with the KSC and Certificate information sections expanded, so the reader can see what is discussed in the following points.
-:::
-
 We can see:
 - The `kafka` service is protected by network policies ("NetPols") and Kafka ACLs, because Otterize is in enforcement mode and managing network policies as well as ACLs.
 - The KSC shows us that the default level of protection for all topics (`*`) is not to require client identity and not to require intents. In this demo, we're going to be rolling out protection gradually, so we don't pre-protect topics. But it would be easy to modify the KSC to pre-protect certain topics or all topics by requiring client authentication as well as explicit intents.
