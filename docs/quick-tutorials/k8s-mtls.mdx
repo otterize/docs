@@ -233,15 +233,13 @@ the mounted credentials are constantly refreshed and up to date.
 
 ### Using Otterize Cloud
 
-Otterize Cloud can be used for visualizing your network and overlay certificate information.
+Otterize Cloud can be used for visualizing your network and overlay certificate information. If you click on the **server** service to see its details, you can expand and see the certificate details:
 
-<img src="/img/quick-tutorials/mtls/creds-no-ntepol.png" alt="Service details" width="600"/>
+<img src="/img/quick-tutorials/mtls/creds.png" alt="Service details" width="600"/>
 
-:::danger
-Decide if we want to whos that image, saying that the server is unprotected. We can also disable the netpol view. See image in folder, next to this image.
-:::
+You can see the common name (CN) used as the service's identity. And you can also see the DNS names, which together with the CN encompass all the possible names attested for by this certificate.
 
-### Using CLI
+### Using the command line
 
 We can use `openssl` to inspect the generated credentials. The credentials are stored as a Kubernetes secret
 and are then mounted as a file into the container.
