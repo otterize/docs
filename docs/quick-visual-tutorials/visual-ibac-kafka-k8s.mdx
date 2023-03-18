@@ -30,6 +30,8 @@ In this tutorial, we will:
 The following steps are only needed if you haven't already run through the [Kubernetes cluster mapping tutorial](/quick-visual-tutorials/visual-k8s-cluster-mapping).
 :::danger
 The deployment of the lab is needed anyways. The previous lab doesn't use mTLS, while this one does. We use a different yaml for the kafka-mtls lab.
+
+The user will also need to apply intents to that newly created lab.
 :::
 <details>
 <summary>Prepare a cluster</summary>
@@ -53,15 +55,6 @@ kubectl apply -n otterize-ecom-kafka-demo -f https://docs.otterize.com/code-exam
 
 </details>
 
-:::danger
-The deployment of the lab is needed anyways. The previous lab doesn't use mTLS, while this one does. We use a different yaml for the kafka-mtls lab.
-:::
-
-:::danger
-I updated the instructions to reference the correct yaml.
-:::
-
-
 <details>
 <summary>Create an Otterize Cloud account</summary>
 
@@ -72,7 +65,7 @@ I updated the instructions to reference the correct yaml.
 <details>
 <summary>Install Otterize OSS</summary>
 
-{@include: ../_common/install-otterize-from-cloud.md}
+{@include: ../_common/install-otterize-from-cloud-with-enforcement.md}
 
 </details>
 
