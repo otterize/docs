@@ -28,11 +28,7 @@ In this tutorial, we will:
 
 ## Prerequisites
 The following steps are only needed if you haven't already run through the [Kubernetes cluster mapping tutorial](/quick-visual-tutorials/visual-k8s-cluster-mapping).
-:::danger
-The deployment of the lab is needed anyways. The previous lab doesn't use mTLS, while this one does. We use a different yaml for the kafka-mtls lab.
 
-The user will also need to apply intents to that newly created lab.
-:::
 <details>
 <summary>Prepare a cluster</summary>
 
@@ -42,17 +38,6 @@ You won't need [network policies](https://kubernetes.io/docs/concepts/services-n
 so you can follow the steps below while skipping the network policies (CNI) enablement bits, or keep them as is.
 
 {@include: ../_common/cluster-setup.md}
-</details>
-
-<details>
-<summary>Deploy the demo set of services</summary>
-
-To deploy these into your cluster:
-```bash
-kubectl create namespace otterize-ecom-kafka-demo
-kubectl apply -n otterize-ecom-kafka-demo -f https://docs.otterize.com/code-examples/shadow-mode/ecom-demo-mtls.yaml
-```
-
 </details>
 
 <details>
@@ -69,17 +54,38 @@ kubectl apply -n otterize-ecom-kafka-demo -f https://docs.otterize.com/code-exam
 
 </details>
 
+
+
+
+
+## Create demo environment
+
+### Deploy the demo set of services
+
+To start this tutorial we will deploy a demo set of services based on the
+[Google microservices demo](https://github.com/GoogleCloudPlatform/microservices-demo), (a simple e-commerce application) into a Kubernetes cluster.
+
+This modified version introduces mTLS communication between some of the workloads as well as a
+Kafka cluster (using Bitnami's [Helm chart](https://github.com/bitnami/charts/tree/master/bitnami/kafka)) configured to:
+- Recognize the Otterize intents operator as a super user so it can configure ACLs;
+- Use TLS (Kafka calls it SSL) for its listeners;
+- Tell the Otterize credentials operator, via pod annotations, how credentials should be created; and
+- Authenticate clients using mTLS credentials provided as a Kubernetes secret
+
 <details>
-<summary>Apply pod-to-pod-level intents</summary>
+<summary>Expand to see the Helm values.yaml used with the Bitnami chart</summary>
 
-This tutorial picks up where the network policies tutorial left off. We'll want to make sure all the pods have access to the pods they'll need to call,
-so we'll put in place the same intents that we had in that tutorial. There, we showed how you can bootstrap all those intents, by observing the calls the pods are making using the network mapper, and then exporting the network map as a set of intents files.
-
-```bash
-kubectl apply -n otterize-ecom-kafka-demo -f https://docs.otterize.com/code-examples/shadow-mode/all.yaml
+```yaml
+{@include: ../../static/code-examples/kafka-mtls/helm/values.yaml}
 ```
-
 </details>
+
+
+To deploy these into your cluster:
+```bash
+kubectl create namespace otterize-ecom-kafka-demo
+kubectl apply -n otterize-ecom-kafka-demo -f https://docs.otterize.com/code-examples/shadow-mode/ecom-demo-mtls.yaml
+```
 
 <details>
 <summary>Optional: check that the demo was deployed...</summary>
@@ -141,7 +147,17 @@ Go ahead and browse to the URL above to "shop" and get a feel for the demo's beh
 </Tabs>
 </details>
 
-## Starting point
+### Apply pod-to-pod-level intents
+
+
+This tutorial picks up where the network policies tutorial left off. We'll want to make sure all the pods have access to the pods they'll need to call,
+so we'll put in place the same intents that we had in that tutorial. There, we showed how you can bootstrap all those intents, by observing the calls the pods are making using the network mapper, and then exporting the network map as a set of intents files.
+
+```bash
+kubectl apply -n otterize-ecom-kafka-demo -f https://docs.otterize.com/code-examples/shadow-mode/all.yaml
+```
+
+### Starting point
 
 In the Otterize Cloud UI, the [access graph](https://app.otterize.com/access-graph) should show the following map for the demo running in your cluster:
 ![Access graph](/img/quick-tutorials/shadow-mode/phase-5.png)
