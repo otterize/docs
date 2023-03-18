@@ -263,12 +263,12 @@ and are then mounted as a file into the container.
            Serial Number:
                0b:eb:eb:4d:0e:02:7e:28:93:30:1c:55:26:22:8b:c7
            Signature Algorithm: sha256WithRSAEncryption
-           Issuer: C = US, O = SPIRE
+           Issuer: C = ..., O = ...
            Validity
                Not Before: Aug 24 12:19:57 2022 GMT
                Not After : Sep 23 12:20:07 2022 GMT
    # highlight-next-line
-           Subject: C = US, O = SPIRE, CN = client.otterize-tutorial-mtls       # the client's name
+           Subject: C = ..., O = ..., CN = client.otterize-tutorial-mtls       # the client's name
            Subject Public Key Info:
                Public Key Algorithm: id-ecPublicKey
                    Public-Key: (256 bit)
@@ -277,16 +277,14 @@ and are then mounted as a file into the container.
 
 3. You can see that Otterize generated an X.509 keypair using the pod's name ("client")
    and namespace ("otterize-tutorial-mtls"): `client.otterize-tutorial-mtls`.
-   The certificate belongs to a chain of trust rooted at the SPIRE server.
 
 <details>
 <summary>Expand to see what happened behind the scenes</summary>
 
 1. We annotated the pods to let Otterize know it should generate mTLS credentials.
 2. The Otterize credentials operator:
-    1. Created entries in the SPIRE server for the annotated pods.
-    2. Generated matching mTLS credentials using the SPIRE server.
-    3. Stored the mTLS credentials into Kubernetes secrets.
+    1. Generated matching mTLS credentials.
+    2. Stored the mTLS credentials into Kubernetes secrets.
 3. The secrets were mounted (separately) into each pod's container.
 4. The pods communicated with each other using mutual TLS-authenticated HTTPS.
 
