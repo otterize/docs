@@ -44,7 +44,7 @@ To install the CLI:
 ### Before uninstalling
 Before uninstalling Otterize, you should make sure to delete any resources created by users: `ClientIntents` and `KafkaServerConfig`s.
 
-When you remove these resources, the Intents Operator will clean up network policies and Kafka ACLs it created. If you remove the operator before doing so, it will not be able to clean up.
+When you remove these resources, the intents operator will clean up network policies and Kafka ACLs it created. If you remove the operator before doing so, it will not be able to clean up.
 
 If, however, you want the network policies and ACLs to stay in place (because you're redeploying with different configuration, for example), don't remove them.
 

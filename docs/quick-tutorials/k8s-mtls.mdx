@@ -36,7 +36,7 @@ You can skip this section if Otterize is already installed in your cluster.
 Our example consists of two pods, "client" and "server", communicating over HTTP with mTLS.
 Otterize makes mTLS easy, requiring just 3 simple changes to a client pod spec:
 1. **Generate credentials**: add the `credentials-operator.otterize.com/tls-secret-name` annotation, which tells the Otterize
-   Credentials operator to generate mTLS credentials, and to store them in a Kubernetes secret
+   credentials operator to generate mTLS credentials, and to store them in a Kubernetes secret
    whose name is the value of this annotation.
 2. **Expose credentials in a volume**: add a volume containing this secret to the pod.
 3. **Mount the volume**: mount the volume in every container in the pod.
@@ -272,7 +272,7 @@ and are then mounted as a file into the container.
 <summary>Expand to see what happened behind the scenes</summary>
 
 1. We annotated the pods to let Otterize know it should generate mTLS credentials.
-2. The Otterize Credentials operator:
+2. The Otterize credentials operator:
     1. Created entries in the SPIRE server for the annotated pods.
     2. Generated matching mTLS credentials using the SPIRE server.
     3. Stored the mTLS credentials into Kubernetes secrets.
@@ -286,14 +286,14 @@ Otterize defaults to generating credentials with an expiry time of 1 day. The ce
 automatically refreshed before expiring, and therefore you must always read the credentials from file rather than caching them.
 
 To set a longer expiration time, set the `credentials-operator.otterize.com/cert-ttl` annotation for your pods.
-For more information, see [the documentation for the Credentials operator](/reference/configuration/credentials-operator)
+For more information, see [the documentation for the credentials operator](/reference/configuration/credentials-operator)
 :::
 
 ## What's next
 
 - Learn how to manage and [automatically provision mTLS](/quick-tutorials/k8s-mtls) credentials within a Kubernetes cluster.
 - Enforce [secure Kafka access](/quick-tutorials/k8s-kafka-mtls) with mTLS.
-- Learn more about how the [Otterize Credentials operator](/reference/configuration/credentials-operator) works.
+- Learn more about how the [Otterize credentials operator](/reference/configuration/credentials-operator) works.
 
 ## Teardown
 

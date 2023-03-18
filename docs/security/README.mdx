@@ -87,7 +87,7 @@ Depending on the access control mechanisms, it may not be possible to completely
 
 ## Otterize OSS security
 
-Otterize OSS components — the intents operator, Credentials operator, and network mapper — can only be deployed by cluster admins. Cluster admins can also set the scope in which these components operate, such as the namespaces they watch for intents, or the Kafka topics they will affect (which also requires Kafka admin privileges).
+Otterize OSS components — the intents operator, credentials operator, and network mapper — can only be deployed by cluster admins. Cluster admins can also set the scope in which these components operate, such as the namespaces they watch for intents, or the Kafka topics they will affect (which also requires Kafka admin privileges).
 
 Users of the cluster, i.e. developers, then use pod annotations and custom resources (the Otterize client intents) to instruct the operators to grant them access or credentials. Cluster admins can use Kubernetes RBAC to control who can create and update client intents.
 
