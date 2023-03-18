@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: myclient-other-go
+  name: client-other-go
   namespace: otterize-tutorial-kafka-mtls
 data:
-  myclient-other.go: |
+  client-other.go: |
     package main
     
     import (

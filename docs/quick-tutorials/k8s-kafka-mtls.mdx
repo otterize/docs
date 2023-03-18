@@ -219,17 +219,17 @@ kubectl get pods -n otterize-tutorial-kafka-mtls
 You should see:
 ```
 NAME                              READY   STATUS    RESTARTS   AGE
-myclient-5d9646fc46-tw5hs         1/1     Running   0          21s
-myclient-other-59647b448c-w4cpq   1/1     Running   0          21s
+client-5d9646fc46-tw5hs         1/1     Running   0          21s
+client-other-59647b448c-w4cpq   1/1     Running   0          21s
 ```
 </details>
 
 Let's monitor, in separate terminal windows, both clients' attempts to call Kafka,
 so we can see the effects of our changes in real time.
 
-2. **Open a new terminal window [myclient]** and tail the client log:
+2. **Open a new terminal window [client]** and tail the client log:
 ```bash
-kubectl logs -f --tail 1 -n otterize-tutorial-kafka-mtls deploy/myclient
+kubectl logs -f --tail 1 -n otterize-tutorial-kafka-mtls deploy/client
 ```
 This client should be able to communicate with the server:
 ```
@@ -248,9 +248,9 @@ Sent message - Message 3 [sent by client]
 Read message - Message 3 [sent by client]
 ```
 
-3. **Open another terminal window [myclient-other]** and tail the client-other log:
+3. **Open another terminal window [client-other]** and tail the client-other log:
 ```bash
-kubectl logs -f --tail 1 -n otterize-tutorial-kafka-mtls deploy/myclient-other
+kubectl logs -f --tail 1 -n otterize-tutorial-kafka-mtls deploy/client-other
 ```
 This other client should also be able to communicate with the server:
 ```
@@ -315,19 +315,13 @@ You should see:
 [2022-09-13 10:44:52,803] INFO Processing Acl change notification for
 ResourcePattern(resourceType=TOPIC, name=mytopic, patternType=LITERAL),
 versionedAcls : Set(User:ANONYMOUS has DENY permission for operations:
-ALL from hosts: *, User:CN=myclient.otterize-tutorial-kafka-mtls,O=SPIRE,C=US has ALLOW permission
+ALL from hosts: *, User:CN=client.otterize-tutorial-kafka-mtls,O=SPIRE,C=US has ALLOW permission
 for operations: ALL from hosts: *), zkVersion : 6 (kafka.security.authorizer.AclAuthorizer)
 ```
 
 If you've attached Otterize OSS to Otterize Cloud, go back to see the [access graph in your browser](https://app.otterize.com). Click on the Kafka service, and click at the bottom of it to focus on it and show its details:
 
 ![Access graph](/img/quick-tutorials/k8s-kafka-mtls/protected.png)
-
-:::danger
-Let's use a screenshot showing the access graph focused on the Kafka service, so we can also see the ACLs.
-
-Also, the tutorial shows `client` and `client-other` in some places while `myclient` and `myclient-other` are used in other places. That needs to be fixed.
-:::
 
 We can see what happened:
 1. Kafka topic-specific intents from **[client]** are declared (solid black inner line and Kafka icon).
