@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: myclient-other
+  name: client-other
   namespace: otterize-tutorial-kafka-mtls
 spec:
   selector:
     matchLabels:
-      app: myclient-other
+      app: client-other
   template:
     metadata:
       labels:
-        app: myclient-other
+        app: client-other
       annotations:
-        credentials-operator.otterize.com/tls-secret-name: myclient-other-credentials-secret
+        credentials-operator.otterize.com/tls-secret-name: client-other-credentials-secret
     spec:
       containers:
-        - name: myclient-other
+        - name: client-other
           image: golang
           command: [ "/bin/sh", "-c", "--" ]
           args: [ "while true; do cd /app; cp src/* .; go get main; go run .; sleep infinity; done" ]
@@ -23,16 +23,16 @@ spec:
             - name: ephemeral
               mountPath: /app
             - mountPath: /app/src
-              name: myclient-other-go
+              name: client-other-go
             - name: otterize-credentials
               mountPath: /var/otterize/credentials
               readOnly: true
       volumes:
-        - name: myclient-other-go
+        - name: client-other-go
           configMap:
-            name: myclient-other-go
+            name: client-other-go
         - name: otterize-credentials
           secret:
-            secretName: myclient-other-credentials-secret
+            secretName: client-other-credentials-secret
         - name: ephemeral
           emptyDir: { }

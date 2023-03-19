@@ -3,12 +3,8 @@ sidebar_position: 1
 title: Otterize OSS Helm chart
 ---
 
-The [Otterize OSS helm chart](https://github.com/otterize/helm-charts/tree/main/otterize-kubernetes) is a chart that installs all Otterize components and supporting components together, and configures them to work with each other.
-For example, it configures the Credentials operator to work with the deployed SPIRE server, and the Intents Operator to get mTLS credentials from the Credentials operator.
-
-:::note
-The [network mapper](/reference/configuration/network-mapper) is not deployed by this chart. You can deploy it with [its own chart](/reference/configuration/network-mapper/helm-chart).
-:::end
+The [Otterize OSS Helm chart](https://github.com/otterize/helm-charts/tree/main/otterize-kubernetes) is a chart that installs all Otterize components and supporting components together, and configures them to work with each other.
+For example, it configures the credentials operator to work with the deployed SPIRE server, and the intents operator to get mTLS credentials from the credentials operator.
 
 
 # Parameters
@@ -44,7 +40,7 @@ These parameters are used by multiple charts, and must be kept the same for the 
 
 ## Intents operator parameters
 All configurable parameters of intents-operator can be configured under the alias `intentsOperator`.
-Further information about intents-operator parameters can be found [in the Intents Operator's helm chart](https://github.com/otterize/helm-charts/tree/main/intents-operator).
+Further information about intents-operator parameters can be found [in the intents operator's Helm chart](https://github.com/otterize/helm-charts/tree/main/intents-operator).
 
 | Key                                                                    | Description                                                                                                                                                                                                  | Default |
 |------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
@@ -56,7 +52,7 @@ Further information about intents-operator parameters can be found [in the Inten
 
 ## SPIRE parameters
 All configurable parameters of SPIRE can be configured under the alias `spire`.
-Further information about `SPIRE` parameters can be found [in SPIRE's helm chart](https://github.com/otterize/helm-charts/tree/main/spire).
+Further information about `SPIRE` parameters can be found [in SPIRE's Helm chart](https://github.com/otterize/helm-charts/tree/main/spire).
 
 ## Network mapper parameters
 All configurable parameters of the network mapper can be configured under the alias `networkMapper`.
@@ -65,8 +61,8 @@ Further information about network mapper parameters can be found [in the network
 ## Resource configuration
 | Component                  | Key                                  | Default  |
 |----------------------------|--------------------------------------|----------|
-| Intents Operator           | `intentsOperator.operator.resources` | `(none)` |
-| Intents Operator - Watcher | `intentsOperator.watcher.resources`  | `(none)` |
+| Intents operator           | `intentsOperator.operator.resources` | `(none)` |
+| Intents operator - watcher | `intentsOperator.watcher.resources`  | `(none)` |
 | SPIRE Server               | `spire.server.resources`             | `(none)` |
 | SPIRE Agent                | `spire.agent.resources`              | `(none)` |
-| Credentials Operator       | `credentialsOperator.resources`      | `(none)` |
+| credentials operator       | `credentialsOperator.resources`      | `(none)` |

@@ -20,6 +20,7 @@ spec:
   service:
     name: ecomm-events # the name of the Otterize service, as it would appear in ClientIntents as the destination.
   addr: ecommevents.namespace:9092 # the address the intents operator will connect to in order to apply ACLs to this broker
+  noAutoCreateIntentsForOperator: false # By default, the operator automatically creates a ClientIntent for itself to this server, so that it's able to connect. To disable, set to "true".
   tls: # this section informs the operator where to find the credentials to authenticate with the broker via mTLS. The values here are the defaults set by the otterize-kubernetes chart.
     certFile: /etc/otterize-spire/svid.pem
     keyFile: /etc/otterize-spire/key.pem
@@ -48,6 +49,9 @@ spec:
 ### Address (`addr`)
 The address the intents operator will connect to in order to apply and remove ACLs resulting from `ClientIntents` and the KafkaServerConfig's `topics` section.
 
+### Disable auto create intents for operator (`noAutoCreateIntentsForOperator`)
+By default, the operator automatically creates a ClientIntent for itself to this server, so that it's able to connect. The default value for this configuration is `false`. To disable, set to `true`.
+
 ### TLS
 Where the intents operator will find credentials mounted to its pod to authenticate with the Kafka broker.
 If using the `otterize-kubernetes` chart, the values in the example above are correct.
@@ -56,17 +60,17 @@ If using the `otterize-kubernetes` chart, the values in the example above are co
 
 Using topic scope, you can gradually roll out Otterize to your Kafka cluster. Select a subset of topics to apply mTLS and/or intents to and start with those, without affecting the rest.
 
-- Unauthenticated - client identity not required
+- Unauthenticated - client identity not required:
  ```bash
  clientIdentityRequired: false
  intentsRequired: false
    ```
-- Authenticated - client identity required
+- Authenticated - client identity required:
  ```bash
  clientIdentityRequired: true
  intentsRequired: false
    ```
-- Authorized - client identity and an intent are required
+- Authorized - client identity and an intent are required:
  ```bash
  clientIdentityRequired: true
  intentsRequired: true
@@ -100,21 +104,27 @@ Set(User:ANONYMOUS has DENY permission for operations: ALL from hosts: *,
 ```
 
 #### Allow intended access to `mytopic-intended` with a `topic scope` and an `intent`
-Otterize generates two ACLs for this access pattern
-- The topic scope will block all access to the topic at first
-- The intent will set a specific ACL to allow the caller to access the topic
+Otterize generates two ACLs for this access pattern:
+1. The topic scope will generate an ACL to block all access to the topic at first.
+2. The intent will set a specific ACL to allow the caller to access the topic.
+
+If you set the topic scope in the KSC as follows:
 ```yaml title="Topic scope"
 - topic: "mytopic-intended"
   pattern: literal
   clientIdentityRequired: true
   intentsRequired: true
 ```
-Translates into
+
+Otterize will generate this ACL:
+
 ```yaml title="Kafka ACL"
 ResourcePattern(resourceType=TOPIC, name=mytopic-intended, patternType=LITERAL), versionedAcls :
 Set(User:ANONYMOUS has DENY permission for operations: ALL from hosts: *)
 ```
-And
+
+And when you declare and apply this intent:
+
 ```yaml title="Intent"
 service:
     name: interactive
@@ -125,12 +135,13 @@ service:
         - name: mytopic-intended
           operations: [ all ]
 ```
-Translates into
+
+Otterize will add this ACL:
+
 ```yaml title="Kafka ACL"
 ResourcePattern(resourceType=TOPIC, name=mytopic-intended, patternType=LITERAL), versionedAcls :
 Set(User:ANONYMOUS has DENY permission for operations: ALL from hosts: *,
     User:CN=interactive.ibac-for-kafka,O=SPIRE,C=US has ALLOW permission for operations: ALL from hosts: *)
 ```
 
-Both of these ACLs will enforce intended access where as - only clients that have applied intents will be able to access
-the specific topc.
+Together, these ACLs will ensure that only clients that have applied intents will be able to access the specific topic.

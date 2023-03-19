@@ -1,6 +1,6 @@
 ---
-sidebar_position: 2
-title: Automate network policies
+sidebar_position: 1
+title: Simple network policy automation
 ---
 import CodeBlock from "@theme/CodeBlock";
 import Tabs from '@theme/Tabs';
@@ -28,12 +28,14 @@ Before you start, you need a Kubernetes cluster with a [CNI](https://kubernetes.
 {@include: ../_common/cluster-setup.md}
 </details>
 
-<details>
-<summary>Install Otterize in your cluster</summary>
+You can now install (or reinstall) Otterize in your cluster, and optionally connect to Otterize Cloud. Connecting to Cloud lets you:
+1. See what's happening visually in your browser, through the "access graph";
+2. Avoid using SPIRE (which can be installed with Otterize) for issuing certificates, as Otterize Cloud provides a certificate service.
 
-:::note
-You can skip this section if Otterize is already installed in your cluster.
-:::
+So either forego browser visualization and:
+
+<details>
+<summary>Install Otterize in your cluster, <b>without</b> Otterize Cloud</summary>
 
 :::note Basic system memory requirements
 Otterize requires about 200 MBs and 200 mCPU for all components (including a SPIRE deployment) to install and run properly on Minikube and EKS clusters.
@@ -43,7 +45,22 @@ Otterize requires about 200 MBs and 200 mCPU for all components (including a SPI
 
 </details>
 
-## Deploy the server, client, client-other
+Or choose to include browser visualization and:
+
+<details>
+<summary>Install Otterize in your cluster, <b>with</b> Otterize Cloud</summary>
+
+####  Create an Otterize Cloud account
+
+{@include: ../_common/create-account.md}
+
+#### Install Otterize OSS, connected to Otterize Cloud
+
+{@include: ../_common/install-otterize-from-cloud-with-enforcement.md}
+
+</details>
+
+## Deploy the server and the two clients
 
 Our simple example consists of three pods: an HTTP server and two clients that call it.
 
@@ -108,13 +125,6 @@ server-6bb4784ccc-wtz7f        1/1     Running   0          8s
 ```
 </details>
 
-The network layout for the deployed workloads looks as follows:
-![Network policies](/img/quick-tutorials/network-policies/base.png)
-
-:::tip
-Check out this [tutorial](/quick-tutorials/k8s-network-mapper) to learn how you can use [Otterize Cloud](/otterize-cloud) to get these kind of visualizations.
-:::
-
 Let's monitor both client attempts to call the server with additional terminal windows,
 so we can see the effects of our changes in real time.
 
@@ -151,8 +161,13 @@ Hi, I am the server, you called, may I help you?
 ```
 </details>
 
+If you've attached Otterize OSS to Otterize Cloud, you can now browse to your account at [https://app.otterize.com](https://app.otterize.com) and see the access graph for your cluster:
+
+![Access graph](/img/quick-tutorials/network-policies/base.png)
+
 ## Apply intents
 We will now declare that the **client** intends to call the **server**.
+
 When the intents YAML is applied, creating a custom resource of type `ClientIntents`,
 Otterize will add a network policy to allow the intended calls
 (**client** &rarr; **server**) and fail all unintended calls (e.g., **client-other** &rarr; **server**).
@@ -162,14 +177,6 @@ Otterize will add a network policy to allow the intended calls
 ```yaml
 {@include: ../../static/code-examples/automate-network-policies/intents.yaml}
 ```
-
-### Visualize using Otterize Cloud
-Otterize Cloud allows you to visualize and understand how your intents shape network policies and what their effects are. In this case after applying the client intents file the access graph would show us that **client** can make secure calls to **server** and that **client-other** is blocked.
-![Network policies](/img/quick-tutorials/network-policies/protected.png)
-
-:::tip
-Otterize Cloud can help you gain confidence when deploying network policies using intents. With its [shadow mode](/realistic-example/shadow-mode-network-policies) you can see how workload communication is about to be affected by network policies (and more) before actually rolling out enforcement.
-:::
 
 ### See it in action
 
@@ -195,12 +202,15 @@ Calling server...
 curl timed out
 # highlight-end
 ```
-:::info
-If the client isn't timing out, then the installed CNI plugin likely does not support network policies.
+<details>
+<summary>Not seeing the time out?</summary>
+
+If client-other isn't timing out, then the installed CNI plugin likely does not support network policies.
 Consult the docs for your Kubernetes distribution or head back to the [Calico installation section](#prerequisites) to install one.
 For example, Minikube does not start by default with a CNI that supports network policies
 but you can ask it to start with one that does, such as Calico.
-:::
+
+</details>
 
 3. And in the **[client]** terminal you should see that calls go through, as expected since they were declared:
 ```bash
@@ -213,17 +223,26 @@ Hi, I am the server, you called, may I help you?
 ```bash
 kubectl get NetworkPolicies -n otterize-tutorial-npol
 ```
-will output:
+This should return:
 ```
 NAME                                           POD-SELECTOR                                         AGE
 access-to-server-from-otterize-tutorial-npol   otterize/server=server-otterize-tutorial-np-7e16db   6s
 default-deny-ingress                           <none>                                               28s
 ```
+
+If you've attached Otterize OSS to Otterize Cloud, go back to see the [access graph in your browser](https://app.otterize.com):
+
+![Access graph](/img/quick-tutorials/network-policies/protected.png)
+
+It's now clear what happened:
+1. The server is now protected, and is also blocking some of its clients. Click on it to see what to do about it.
+2. Calls from **[client]** are declared (solid black inner line) and therefore allowed (thick green line).
+3. Calls from **[client-other]** are not declared (missing "white" inner line) and therefore blocked (thick red line). Click on the line to see what to do about it.
+4. By the way, the two clients themselves are unprotected -- though we don't detect any traffic to them, we cannot be certain they don't expose addressable endpoints.
+
 :::tip Done!
-Otterize did its job of both protecting *and* allowing intended access.
+Otterize did its job of both protecting the server *and* allowing intended access.
 :::
-
-
 
 ## What did we accomplish?
 
@@ -262,11 +281,10 @@ Try to create an intents file yourself for **client-other**, and apply it to all
 ## What's next
 
 - Get started with the [Otterize network mapper](/quick-tutorials/k8s-network-mapper) to help you bootstrap intents files
-  for use in IBAC.
+  for use in [intent-based access control (IBAC)](https://otterize.com/ibac).
+- See in advance what calls will be allowed or blocked, by running Otterize in **shadow mode** &mdash; just follow the [quick visual tutorial for IBAC with network policies](/quick-visual-tutorials/visual-ibac-network-policies).
+- Learn how to easily secure Kafka with IBAC, in [a hands-on tutorial](/quick-tutorials/k8s-kafka-mtls) or [a more visual tutorial](/quick-visual-tutorials/visual-ibac-kafka-k8s).
 
-Or take a realistic ecommerce application with multiple services for a spin and learn how to manage it with
-* [Network policies](/realistic-example/shadow-mode-network-policies) - use shadow mode to boost confidence when rolling out secure access.
-* [Secure access to Kafka](/realistic-example/visualize-kafka-protection) - visualize kafka configuration and changes.
 
 ## Teardown
 

@@ -1,15 +1,18 @@
-Below are instructions for setting up a cluster with network policies.
+Below are instructions for setting up a Kubernetes cluster with network policies.
 If you don't have a cluster already, we recommend starting out with a Minikube cluster.
 
 <Tabs groupId="cni">
 <TabItem value="minikube" label="Minikube">
-    Start your Minikube cluster. <a href="https://minikube.sigs.k8s.io/docs/start/">Don't have the Minikube CLI? Read the installation instructions</a>
+
+If you don't have the Minikube CLI, first [install it](https://minikube.sigs.k8s.io/docs/start/). 
+
+Then start your Minikube cluster:
 
 ```bash
 minikube start --network-plugin=cni
 ```
 
-Install Calico:
+Install Calico, in order to enforce network policies:
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/manifests/calico.yaml
 ```
@@ -21,26 +24,31 @@ You need to install Calico because Minikube does not support network policy enfo
 <Tabs>
 <TabItem value="cli" label="gcloud CLI">
 
-To use the gcloud CLI for this tutorial, [install](https://cloud.google.com/sdk/docs/install) and then
+To use the gcloud CLI for this tutorial, first [install](https://cloud.google.com/sdk/docs/install) and then 
 [initialize](https://cloud.google.com/sdk/docs/initializing) it.
 
-***To enable network policy enforcement when creating a new cluster, run the following command:***
+***To enable network policy enforcement when creating a new cluster:***
 
-
-`gcloud container clusters create CLUSTER_NAME --enable-network-policy --zone=ZONE`
-Replace CLUSTER_NAME with the name of the new cluster.
+Run the following command:
+```bash
+gcloud container clusters create CLUSTER_NAME --enable-network-policy --zone=ZONE
+```
+(Replace `CLUSTER_NAME` with the name of the new cluster and `ZONE` with your zone.)
 
 ***To enable network policy enforcement for an existing cluster, perform the following tasks:***
 
 Run the following command to enable the add-on:
+```bash
+gcloud container clusters update CLUSTER_NAME --update-addons=NetworkPolicy=ENABLED
+```
+(Replace `CLUSTER_NAME` with the name of the cluster.)
 
+Then enable network policy enforcement on your cluster, re-creating your cluster's node pools with network policy enforcement enabled:
+```bash
+gcloud container clusters update CLUSTER_NAME --enable-network-policy
+```
+(Replace `CLUSTER_NAME` with the name of the cluster.)
 
-`gcloud container clusters update CLUSTER_NAME --update-addons=NetworkPolicy=ENABLED`
-Replace CLUSTER_NAME with the name of the cluster.
-
-Run the following command to enable network policy enforcement in your cluster, which in turn re-creates your cluster's node pools with network policy enforcement enabled:
-
-`gcloud container clusters update CLUSTER_NAME --enable-network-policy`
 </TabItem>
 <TabItem value="console" label="Console">
 
@@ -74,7 +82,7 @@ Run the following command to enable network policy enforcement in your cluster, 
 <a href="https://docs.aws.amazon.com/eks/latest/userguide/calico.html">Visit the official documentation</a>, or follow the instructions below:
 
 1. Spin up an [EKS cluster](https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html) using the console, AWS CLI or `eksctl`.
-2. Install Calico for NetworkPolicy enforcement, without replacing the CNI:
+2. Install Calico for network policy enforcement, without replacing the CNI:
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/aws/amazon-vpc-cni-k8s/master/config/master/calico-operator.yaml
 kubectl apply -f https://raw.githubusercontent.com/aws/amazon-vpc-cni-k8s/master/config/master/calico-crs.yaml
@@ -84,7 +92,7 @@ kubectl apply -f https://raw.githubusercontent.com/aws/amazon-vpc-cni-k8s/master
 
 You can set up an AKS cluster using this [guide](https://learn.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-cli).
 
-For network policy support, no setup is required: Azure AKS comes with a built-in network policy implementation called Azure Network Policy Manager. You choose whether you'd like to use this option or Calico when you create a cluster.
+For network policy support, no setup is required: Azure AKS comes with a built-in network policy implementation called Azure Network Policy Manager. You can choose whether you'd like to use this option or Calico when you create a cluster.
 
 
 <a href="https://learn.microsoft.com/en-us/azure/aks/use-network-policies"> Read more at the official documentation site</a>.

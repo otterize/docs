@@ -1,0 +1,41 @@
+---
+sidebar_position: 6
+title: 'Shadow vs active enforcement'
+---
+
+When installing Otterize, the intents operator can be [configured](/reference/configuration/intents-operator/helm-chart) to enforce access controls or not.
+
+By default, the intents operator enforces access controls by creating, updating and deleting network policies and Kafka ACLs, for example, but all enforcement can be disabled by setting `enableEnforcement` to be `false`, or more granularly setting `enableNetworkPolicyCreation` and/or `enableNetworkPolicyCreation` to be `false`.
+
+## Active enforcement
+
+When enforcement is active &mdash; when it is not disabled &mdash; the intents operator processes applied client intents and turns each into access authorizations from the client to its called servers: if network policies are active (and supported by the CNI in the Kubernetes cluster), the operator labels pods and creates/updates network policies to allow access from that client to all its called servers, as well as removing previously-granted access based on out of date intents; and similarly for Kafka ACLs to Kafka servers.
+
+In general, of course, this will immediately block access from services that have not declared their intents to call the now-protected servers. That is, after all, why you use intent-based access control (IBAC).
+
+Whether this is a good thing or a problem depends on your situation. There are multiple ways of rolling out IBAC across the many services that may be running in some environment or Kubernetes cluster.
+- For example, you can insist that all services are protected by default, with a global default-deny network policy. In the case of Kafka, you can achieve the same with an appropriate restrictive access policy (see the [Otterize KafkaServiceConfig documentation](/reference/configuration/intents-operator/configuration)). All clients must then declare and apply intents in order to reach their intended servers.
+- You can bootstrap these intents by generating the client intents files using the Otterize network mapper (see [this quick visual tutorial](/quick-visual-tutorials/visual-ibac-network-policies#protect-everything-easily)), and then hand them over to the client developer teams to own and update as their code evolves.
+- Or you can gradually roll out IBAC, starting with just a few services and expanding to more (see [this network policies tutorial](/quick-visual-tutorials/visual-ibac-network-policies) or [this Kafka ACLs tutorial](/quick-visual-tutorials/visual-ibac-kafka-k8s)).
+
+To help you manage the rollout of IBAC, consider starting with shadow enforcement.
+
+## Shadow enforcement
+
+When enforcement is not active, the intents operator still processes client intents files, but it does not then turn them into access authorizations: no network policies are created or deleted or changed in any way, and similarly no Kafka ACLs are created, deleted, or modified.
+
+How does this help?
+
+The intents operator still reflects what access controls *would be in place* should enforcement be enabled. For example, you can query Kubernetes to see the ClientIntents resources that are in place, so you know which clients have declared (and applied) their intents to call which servers.
+
+And the Otterize network mapper, if installed in the Kubernetes cluster, still reflects which clients have *in fact* been calling which servers, whether successfully or not. Those are *discovered* intents: presumably, the clients intended to call those servers, whether they have declared (and applied) them or not.
+
+So by operating in this "shadow mode", and comparing the discovered intents with the applied intents, you can predict what *would* happen if enforcement were to be active: which clients calls that are in fact happening now would be blocked or allowed, which servers are ready to have enforcement for them activated because none of their clients would get blocked, and so on.
+
+To unlock these insights, the Otterize OSS components (the intents operator, the network mapper, and the credentials operator) can be configured to connect to Otterize Cloud in order to report their configurations, the discovered intents, and the applied intents in the cluster. Within Otterize Cloud, the results are processed and displayed as an access graph:
+
+![Otterize Cloud - access graph](/img/shadow-vs-active-enforcement/access-graph-screenshot.png)
+
+You can read more about the access graph in the [Otterize Cloud](/otterize-cloud) documentation.
+
+And for a quick tutorial that shows how to use shadow enforcement to roll out IBAC gradually and controllably, start with the [Kubernetes cluster mapping tutorial](/quick-visual-tutorials/visual-k8s-cluster-mapping) and proceed to [IBAC with network policies](/quick-visual-tutorials/visual-ibac-network-policies) and [IBAC for Kafka in Kubernetes](/quick-visual-tutorials/visual-ibac-kafka-k8s).

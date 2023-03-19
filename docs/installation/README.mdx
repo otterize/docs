@@ -5,82 +5,37 @@ title: Installation
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
+## Install Otterize without Otterize Cloud (OSS only)
+{@include: ../_common/install-otterize.md}
+
+
 <details>
-<summary>Make sure you have a cluster that supports network policies</summary>
+<summary>
+    If you are installing Otterize for network policies, make sure your cluster supports network policies.
+    <br/>Expand to see how.
+</summary>
 
 Before you start, you need to have a Kubernetes cluster with a [CNI](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/) that supports [NetworkPolicies](https://kubernetes.io/docs/concepts/services-networking/network-policies/).
 
 {@include: ../_common/cluster-setup.md}
 </details>
 
-## Install Otterize
-{@include: ../_common/install-otterize.md}
-
 ### Upgrade Otterize
 {@include: ../_common/upgrade-otterize.md}
 
-## Connect Otterize OSS to Otterize Cloud
+## Connect Otterize OSS to Otterize Cloud, or install Otterize with Otterize Cloud
 To connect Otterize OSS to Otterize Cloud you will need to [login](https://app.otterize.com), create a cluster, and follow the instructions.
 
-The Otterize Cloud will provide you with a *client id* and a *client secret* which you will need to run the following command:
-<Tabs>
-<TabItem value="cloud-credentials" label="Cloud managed credentials" default>
+In a nutshell, you need to `helm upgrade` the same Helm chart, but provide Otterize Cloud credentials. Upon creating a cluster, a guide will appear that walks you through doing this with the new credentials jut created.
 
-:::note
-Using cloud managed credentials will change any locally managed credentials to be managed and provisioned by Otterize Cloud.
-:::
-<Tabs>
-<TabItem value="enforcement-disabled" label="Enforcement disabled" default>
-
-```shell
-helm upgrade --install otterize otterize/otterize-kubernetes \
--n otterize-system --create-namespace \
---set global.otterizeCloud.credentials.clientId=client_id \
---set global.otterizeCloud.credentials.clientSecret=client_secret \
---set intentsOperator.operator.enableEnforcement=false \
---set credentialsOperator.useOtterizeCloud=true
-```
-</TabItem>
-<TabItem value="enforcement-enabled" label="Enforcement enabled" default>
-
-```shell
-helm upgrade --install otterize otterize/otterize-kubernetes \
--n otterize-system --create-namespace \
---set global.otterizeCloud.credentials.clientId=client_id \
---set global.otterizeCloud.credentials.clientSecret=client_secret \
---set credentialsOperator.useOtterizeCloud=true
-```
-</TabItem>
-</Tabs>
-</TabItem>
-<TabItem value="local-credentials" label="Locally managed credentials" default>
-<Tabs>
-<TabItem value="enforcement-disabled" label="Enforcement disabled" default>
-
-```shell
-helm upgrade --install otterize otterize/otterize-kubernetes \
--n otterize-system --create-namespace \
---set global.otterizeCloud.credentials.clientId=client_id \
---set global.otterizeCloud.credentials.clientSecret=client_secret \
---set intentsOperator.operator.enableEnforcement=false
-```
-</TabItem>
-<TabItem value="enforcement-enabled" label="Enforcement enabled" default>
-
-```shell
-helm upgrade --install otterize otterize/otterize-kubernetes \
--n otterize-system --create-namespace \
---set global.otterizeCloud.credentials.clientId=client_id \
---set global.otterizeCloud.credentials.clientSecret=client_secret
-```
-</TabItem>
-</Tabs>
-</TabItem>
-</Tabs>
+## Install just the Otterize network mapper
+{@include: ../_common/install-otterize-network-mapper.md}
 
 ## Install the Otterize CLI
 
-To install (or upgrade) the Otterize CLI run
+The [Otterize CLI](/reference/cli) is a command-line utility used to control and interact with the Otterize network mapper, manipulate local intents files, and interact with Otterize Cloud.
+
+To install the CLI:
 
 {@include: ../_common/install-otterize-cli.md}
 
@@ -89,7 +44,7 @@ To install (or upgrade) the Otterize CLI run
 ### Before uninstalling
 Before uninstalling Otterize, you should make sure to delete any resources created by users: `ClientIntents` and `KafkaServerConfig`s.
 
-When you remove these resources, the Intents Operator will clean up network policies and Kafka ACLs it created. If you remove the operator before doing so, it will not be able to clean up.
+When you remove these resources, the intents operator will clean up network policies and Kafka ACLs it created. If you remove the operator before doing so, it will not be able to clean up.
 
 If, however, you want the network policies and ACLs to stay in place (because you're redeploying with different configuration, for example), don't remove them.
 

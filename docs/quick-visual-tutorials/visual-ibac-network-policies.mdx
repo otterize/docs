@@ -1,0 +1,378 @@
+---
+sidebar_position: 2
+title: "Visual tutorial: IBAC with network policies"
+sidebar_label: "IBAC with network policies"
+---
+
+import CodeBlock from "@theme/CodeBlock";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+Otterize enables intent-based access control (IBAC).
+Building on the previous [Kubernetes cluster mapping tutorial](/quick-visual-tutorials/visual-k8s-cluster-mapping), we'll actually roll out intent-based access control (IBAC) in the cluster using Kubernetes network policies to control access,
+first in shadow mode without enforcement, and then with enforcement on.
+
+All the capabilities of IBAC are within Otterize OSS, while the access graph in Otterize Cloud will guide us visually in these steps.
+
+In this tutorial, we will:
+
+- Start where the previous tutorial left off: with a demo based on the [Google microservices demo](https://github.com/GoogleCloudPlatform/microservices-demo)
+(a simple e-commerce application) deployed to a Kubernetes cluster, with Otterize OSS installed in the cluster and integrated with Otterize Cloud.
+- Use the access graph and shadow mode along with intents to see what would happen once enforcement is turned on.
+- Turn on enforcement and verify that what happened is what was expected.
+
+## Prerequisites
+
+The following steps are only needed if you haven't already run through the [Kubernetes cluster mapping tutorial](/quick-visual-tutorials/visual-k8s-cluster-mapping).
+
+<details>
+<summary>Prepare a cluster</summary>
+
+Before you start, you'll need a Kubernetes cluster.
+
+{@include: ../_common/cluster-setup.md}
+</details>
+
+<details>
+<summary>Deploy the demo set of services</summary>
+
+To deploy these into your cluster:
+```bash
+kubectl create namespace otterize-ecom-demo
+kubectl apply -n otterize-ecom-demo -f https://docs.otterize.com/code-examples/shadow-mode/ecom-demo.yaml
+```
+
+</details>
+
+<details>
+<summary>Create an Otterize Cloud account</summary>
+
+{@include: ../_common/create-account.md}
+
+</details>
+
+<details>
+<summary>Install Otterize OSS</summary>
+
+{@include: ../_common/install-otterize-from-cloud.md}
+
+</details>
+
+<details>
+<summary>Optional: check that the demo was deployed...</summary>
+
+To see all the pods in the demo:
+```bash
+kubectl get pods -n otterize-ecom-demo
+```
+The pods should all be ready and running:
+```bash
+NAME                                     READY   STATUS    RESTARTS      AGE
+adservice-65494cbb9d-5lrv6               1/1     Running   0             115s
+cartservice-6d84fc45bb-hdtwn             1/1     Running   0             115s
+checkoutservice-5599486df-dvj9n          1/1     Running   3 (79s ago)   115s
+currencyservice-6d64686d74-lxb7x         1/1     Running   0             115s
+emailservice-7c6cbfbbd7-xjxlt            1/1     Running   0             115s
+frontend-f9448d7d4-6dmnr                 1/1     Running   0             115s
+kafka-0                                  1/1     Running   2 (83s ago)   115s
+loadgenerator-7f6987f59-bchgm            1/1     Running   0             114s
+orderservice-7ffdbf6df-wzzfd             1/1     Running   0             115s
+otterize-ecom-demo-zookeeper-0           1/1     Running   0             115s
+paymentservice-86855d78db-zjjfn          1/1     Running   0             115s
+productcatalogservice-5944c7f666-2rjc6   1/1     Running   0             115s
+recommendationservice-6c8d848498-zm2rm   1/1     Running   0             114s
+redis-cart-6b79c5b497-xpms2              1/1     Running   0             115s
+shippingservice-85694cb9bd-v54xp         1/1     Running   0             114s
+```
+
+</details>
+
+<details>
+<summary>Optional: Browse the demo</summary>
+<Tabs groupId="frontend-addr">
+<TabItem value="k8s" label="K8s">
+
+To get the externally-accessible URL where your demo front end is available, run:
+```bash
+kubectl get service -n otterize-ecom-demo frontend-external | awk '{print $4}'
+```
+The result should be similar to (if running on AWS EKS):
+```
+a11843075fd254f8099a986467098647-1889474685.us-east-1.elb.amazonaws.com
+```
+Go ahead and browse to the URL above to "shop" and get a feel for the demo's behavior.
+(The URL might take some time to populate across DNS servers. Note that we are accessing an HTTP and not an HTTPS website.)
+</TabItem>
+<TabItem value="minikube" label="Minikube">
+
+To get the externally-accessible URL where your demo front end is available, run:
+```
+kubectl port-forward -n otterize-ecom-demo service/frontend-external 8080:80 &
+```
+The demo is now accessible at:
+```
+http://localhost:8080
+```
+Go ahead and browse to the URL above to "shop" and get a feel for the demo's behavior.
+</TabItem>
+</Tabs>
+</details>
+
+## Seeing the access graph
+
+In the Otterize Cloud UI, your [cluster](https://app.otterize.com/clusters) should now show all 3 Otterize OSS operators &mdash; the intents operator, network mapper, and credentials operator &mdash; as connected, with a green status.
+
+And when you go back to the [access graph](https://app.otterize.com/access-graph) (and select your cluster from the dropdown, if needed), you should see the following map for the demo running in your cluster:
+
+![Access graph](/img/quick-tutorials/shadow-mode/phase-0.png)
+
+Each service is shown as a node in the access graph, while the thick lines (edges) connecting the services show access between them, as detected by the network mapper.
+
+If you haven't already run through the [Kubernetes cluster mapping tutorial](/quick-visual-tutorials/visual-k8s-cluster-mapping), you might  browse just [the section about visualizing the cluster via the access graph as you see it now](/quick-visual-tutorials/visual-k8s-cluster-mapping#visualizing-the-cluster-via-the-access-graph), before returning here.
+
+## Try out IBAC with shadow mode
+
+Now let's start to roll out access controls, but remain in shadow mode: no actual enforcement of controls, yet.
+
+We'll declare that the `frontend` intends to call the `recommendationservice`.
+
+```yaml
+{@include: ../../static/code-examples/shadow-mode/phase-1.yaml}
+```
+
+We expect this will provide secure access, allowing the intended access from the `frontend` while protecting the `recommendationservice` from unintended access.
+
+Apply this intents file with:
+```bash
+kubectl apply -n otterize-ecom-demo -f https://docs.otterize.com/code-examples/shadow-mode/phase-1.yaml
+```
+
+Look at the access graph again:
+
+![Access graph](/img/quick-tutorials/shadow-mode/phase-1.png)
+
+The thick green line from `frontend` to `recommendationservice`, representing the discovered intent from the network mapper, no longer has an empty center, but rather a **solid black center, representing the explicitly applied intent**.
+
+Click on that `frontend` &rarr; `recommendationservice` line:
+<img src="/img/quick-tutorials/shadow-mode/frontend-recommendation-applied.png" alt="Discovered intents" width="600"/>
+
+- We can see the `frontend` can call the `recommendationservice`, and will be guaranteed access even once enforcement is turned on.
+
+Click on the `recommendationservice` itself:
+<img src="/img/quick-tutorials/shadow-mode/recommendation-access-state.png" alt="Discovered intents" width="600"/>
+
+- We can see it's not protected now (we're in shadow mode, and there are no default-deny network policies in place).
+- We can also see it would not block any clients once protection is enabled.
+- And there is no warning about it remaining unprotected once enforcement is turned on. All is ready for turning on enforcement and protecting this service from any unintended calls.
+
+### Declare more intents
+Let’s add another intent, this time from `recommendationservice` to `productcatalogservice`.
+
+```yaml
+{@include: ../../static/code-examples/shadow-mode/phase-2.yaml}
+```
+
+Apply this intents file with:
+```bash
+kubectl apply -n otterize-ecom-demo -f https://docs.otterize.com/code-examples/shadow-mode/phase-2.yaml
+```
+Look at the access graph again:
+
+![Access graph](/img/quick-tutorials/shadow-mode/phase-2.png)
+
+As before, the line from `recommendationservice` &rarr; `productcatalogservice` now has a solid black center, and no warnings. That's what we expected.
+
+But two other lines, `frontend` &rarr; `productcatalogservice` and `checkoutservice` &rarr; `productcatalogservice`, have turned orange. And the `productcatalogservice` lock icon has turned red. Why?
+
+Click on one of those orange lines:
+<img src="/img/quick-tutorials/shadow-mode/frontend-productcatalog.png" alt="Discovered intents" width="600"/>
+
+- This access is not blocked *now* &mdash; because we're still in shadow mode (otherwise the line would have been red).
+- But access *would be blocked* once enforcement is turned on. To prevent that, we're told to declare and apply an intent for this call.
+
+Click on the `productcatalogservice`:
+<img src="/img/quick-tutorials/shadow-mode/productcatalog-woud-block.png" alt="Discovered intents" width="600"/>
+
+- We can see it's not protected now, as before.
+- But we can also see it *would* block any clients once protection is enabled, which is why the lock is red.
+- And there is an explicit warning to apply the missing intents from all its clients before turning on enforcement.
+
+Let's add those intents for the `frontend` and `checkoutservice`.
+
+<Tabs>
+<TabItem value="frontend" label="frontend" default>
+
+```yaml
+{@include: ../../static/code-examples/shadow-mode/phase-3-frontend.yaml}
+```
+</TabItem>
+<TabItem value="checkout-service" label="checkoutservice" default>
+
+```yaml
+{@include: ../../static/code-examples/shadow-mode/phase-3-checkout.yaml}
+```
+</TabItem>
+</Tabs>
+
+Apply these intents files with:
+```bash
+kubectl apply -n otterize-ecom-demo -f https://docs.otterize.com/code-examples/shadow-mode/phase-3.yaml
+```
+
+Let's go back to the access graph:
+
+![Access graph](/img/quick-tutorials/shadow-mode/phase-3.png)
+
+All is well again: the `productcatalogservice` will be protected, and its 3 clients will still have access, after enforcement is turned on.
+
+:::tip We can see how to roll out IBAC gradually:
+1. Pick a service to protect.
+2. Make sure all its clients declare and intents to call it.
+3. When you're ready, turn on enforcement.
+
+The access graph and shadow mode allow us to gain confidence by showing what would happen and highlighting any problems.
+:::
+
+### Protect everything easily
+Could we somehow automatically bootstrap this for the whole cluster and protect all services, without breaking any intended calls? Yes!
+
+The network mapper keeps track of all attempted calls, after all: those are the discovered intents. If you are confident that all of those calls are intended and appropriate, you can use that information to automatically generate intent declarations and apply them.
+
+Let's use the Otterize CLI ([installation](/installation#install-the-otterize-cli) and [reference](/reference/cli) to export all discovered intents as YAML declarations:
+```bash
+otterize network-mapper export -n otterize-ecom-demo --output-type dir --output intents
+```
+
+You can apply them using:
+```bash
+kubectl apply -f intents
+```
+
+Or, equivalently, just use the already-generated intents files included in this docs location:
+```bash
+kubectl apply -n otterize-ecom-demo -f https://docs.otterize.com/code-examples/shadow-mode/all.yaml
+```
+
+Look at the access graph again:
+
+![Access graph](/img/quick-tutorials/shadow-mode/phase-4.png)
+
+The graph confirms that all (but two) services would be protected, and no intended calls would be blocked, once we apply protection.
+
+<details>
+<summary>What about those last two?</summary>
+
+Note that the two leftmost services would not be protected. That's because they have no discovered clients, and hence did not get intents generated and applied for them.
+
+They may not even be callable. But if they are callable but are not being called now, you may want to protect them (and all others) with a global default-deny network policy. Check the "Global default deny" checkbox at the top of the access graph to see what would happen in that case. Note this only informs Otterize that such a policy is in place; it does not put it in place, so you'll need to do it yourself.)
+
+</details>
+
+## Enable enforcement
+With the confidence we gained, let's enable enforcement (via network policies) by upgrading your Otterize installation to remove the `intentsOperator.operator.enableEnforcement=false` flag.
+
+At the top of the access graph, click the **Configure cluster** button; or in the clusters page, clicking on the **Connection guide &rarr;** link for your cluster.
+
+Then run the Helm commands shown there, and specifically follow the instructions to install Otterize <b>with enforcement on</b> (not in shadow mode). Namely, <b>omit</b> the following flag in the Helm command:
+
+`--set intentsOperator.operator.enableEnforcement=false`
+
+Let's look at the access graph again:
+
+![Access graph](/img/quick-tutorials/shadow-mode/phase-5.png)
+
+Note that all (but two) of the lock icons are locked, indicating the services are protected. And all the locks and edges are green, indicating no call attempts (discovered by the network mapper) are being blocked.
+
+:::tip How would blocked access attempts look now?
+From now on, if a client attempts a server call that wasn't covered by one of the applied intents, that would be discovered by the network mapper and show up as (new) discovered intents. Remember that the network mapper discovers attempted access, not just successful access. In this case, a red line would appear from that client to that server, and the lock on that server would turn red: calls from that client are being blocked.
+
+That may be because:
+- The calls didn't happen when the network mapper was building its map from which the intents were bootstrapped, in which case you may choose to generate all the intents again, or or just create and apply the new ones manually.
+- Or... the client maliciously called this server, but is being blocked by the network policies. IBAC has saved the day!
+:::
+
+<details>
+<summary>Optional: see the generated network policies</summary>
+Otterize automatically generated network policies according to your declared and applied intents.
+
+To list all generated network policies run:
+```bash
+get netpol -n otterize-ecom-demo
+```
+
+Let's inspect one of these network policies with:
+```bash
+kubectl get netpol -n otterize-ecom-demo access-to-recommendationservice-from-otterize-ecom-demo -o yaml
+```
+The result should be:
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: access-to-recommendationservice-from-otterize-ecom-demo
+  namespace: otterize-ecom-demo
+  ...
+spec:
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          intents.otterize.com/namespace-name: otterize-ecom-demo
+      podSelector:
+        matchLabels:
+          intents.otterize.com/access-recommendationservic-otterize-ecom-demo-850ad9: "true"
+  podSelector:
+    matchLabels:
+      intents.otterize.com/server: recommendationservic-otterize-ecom-demo-850ad9
+  policyTypes:
+  - Ingress
+```
+</details>
+
+<details>
+<summary>Optional: browse the demo to verify it still works</summary>
+
+You can play with the demo in your browser to see it still works as intended, while everything in it is protected against unintended and potentially malicious access.
+
+<Tabs groupId="frontend-addr">
+<TabItem value="k8s" label="K8s">
+
+To get the externally-accessible URL where your demo front end is available, run:
+```bash
+kubectl get service -n otterize-ecom-demo frontend-external | awk '{print $4}'
+```
+The result should be similar to (if running on AWS EKS):
+```
+a11843075fd254f8099a986467098647-1889474685.us-east-1.elb.amazonaws.com
+```
+Go ahead and browse to the URL above to "shop" and get a feel for the demo's behavior.
+(The URL might take some time to populate across DNS servers. Note that we are accessing an HTTP and not an HTTPS website.)
+</TabItem>
+<TabItem value="minikube" label="Minikube">
+
+To get the externally-accessible URL where your demo front end is available, run:
+```
+kubectl port-forward -n otterize-ecom-demo service/frontend-external 8080:80 &
+```
+The demo is now accessible at:
+```
+http://localhost:8080
+```
+Go ahead and browse to the URL above to "shop" and get a feel for the demo's behavior.
+</TabItem>
+</Tabs>
+
+</details>
+
+## What's next
+- Learn how to [manage secure access for Kafka](/quick-visual-tutorials/visual-ibac-kafka-k8s) using the demo lab tutorial.
+
+## Teardown
+
+To remove the deployed demo run:
+
+```bash
+kubectl delete -n otterize-ecom-demo -f https://docs.otterize.com/code-examples/shadow-mode/all.yaml
+kubectl delete -n otterize-ecom-demo -f https://docs.otterize.com/code-examples/shadow-mode/ecom-demo.yaml
+kubectl delete namespace otterize-ecom-demo
+```
