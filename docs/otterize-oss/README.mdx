@@ -12,7 +12,7 @@ It consists of several components:
 access controls using plugins, which currently include:
   - A network policies manager to control pod-to-pod access.
   - An ACL configurator for in-Kubernetes Kafka clusters to control client access.
-- The [Otterize credentials operator](/reference/configuration/credentials-operator) that integrates with SPIFFE/SPIRE
+- The [Otterize credentials operator](/reference/configuration/credentials-operator) that integrates with SPIFFE/SPIRE or the Otterize Cloud-managed credentials service
 to handle pod identities and manage certificates.
 - The [Otterize network mapper](/reference/configuration/network-mapper) that sniffs pod-to-pod traffic and builds a network map,
 which is useful on its own and may also be exported as client intents files for bootstrapping IBAC.

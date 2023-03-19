@@ -35,7 +35,7 @@ but google.com does not authenticate you, as the client, with a certificate, so 
 An open-source implementation of the [SPIFFE](https://github.com/spiffe/spire) specification. It's used for workload attestation and credential management. [Read more about SPIRE in the official documentation](https://spiffe.io/docs/latest/spire-about/).
 
 ### credentials operator
-The Otterize [credentials operator](/reference/configuration/credentials-operator) automatically resolves pods to dev-friendly service names, registers them with a SPIRE server, and provisions credentials as a Kubernetes Secrets.
+The Otterize [credentials operator](/reference/configuration/credentials-operator) automatically resolves pods to dev-friendly service names, registers them with a SPIRE server or with the Otterize Cloud-managed credentials service, and provisions credentials as Kubernetes Secrets.
 
 ## Enforcement
 
