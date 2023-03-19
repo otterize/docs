@@ -61,7 +61,7 @@ We'll deploy the same demo set of services, based on the
 
 But in this tutorial, we'll deploy them a bit differently, as we'll want to add certificates to each, for use in mTLS authentication to Kafka.
 
-For the Kafka service, we'll use Bitnami's [Helm chart](https://github.com/bitnami/charts/tree/master/bitnami/kafka)) configured to:
+For the Kafka service, we'll use Bitnami's [Helm chart](https://github.com/bitnami/charts/tree/master/bitnami/kafka) configured to:
 - Recognize the Otterize intents operator as a super user so it can configure ACLs;
 - Use TLS (Kafka calls it SSL) for its listeners;
 - Tell the Otterize credentials operator, via pod annotations, how credentials should be created; and
@@ -74,6 +74,47 @@ For the Kafka service, we'll use Bitnami's [Helm chart](https://github.com/bitna
 {@include: ../../static/code-examples/kafka-mtls/helm/values.yaml}
 ```
 </details>
+
+
+Clients will authenticate to Kafka using mTLS. Otterize makes this easy, requiring just 3 simple changes to the client pod spec:
+1. **Generate credentials**: add the `credentials-operator.otterize.com/tls-secret-name` annotation, which tells Otterize to generate mTLS credentials and store them in a Kubernetes secret whose name is the value of this annotation.
+2. **Expose credentials in a volume**: add a volume containing this secret to the pod.
+3. **Mount the volume**: mount the volume in every container in the pod.
+
+<details>
+<summary>Expand to see this structure</summary>
+
+```yaml
+spec:
+  template:
+    metadata:
+      annotations:
+        # highlight-next-line
+        # 1. Generate credentials as a secret called "client-credentials-secret":
+        credentials-operator.otterize.com/tls-secret-name: client-credentials-secret
+        ...
+    spec:
+      volumes:
+        # highlight-start
+        # 2. Create a volume containing this secret:
+        - name: otterize-credentials
+          secret:
+            secretName: client-credentials-secret
+        # highlight-end
+        ...
+      containers:
+        - name: client
+          ...
+          volumeMounts:
+            # highlight-start
+            # 3. Mount volume into container
+            - name: otterize-credentials
+              mountPath: /var/otterize/credentials
+              readOnly: true
+            # highlight-end
+```
+</details>
+
 
 To deploy the demo services into your cluster:
 ```bash
