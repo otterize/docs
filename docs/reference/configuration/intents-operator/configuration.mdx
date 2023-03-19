@@ -20,6 +20,7 @@ spec:
   service:
     name: ecomm-events # the name of the Otterize service, as it would appear in ClientIntents as the destination.
   addr: ecommevents.namespace:9092 # the address the intents operator will connect to in order to apply ACLs to this broker
+  noAutoCreateIntentsForOperator: false # By default, the operator automatically creates a ClientIntent for itself to this server, so that it's able to connect. To disable, set to "true".
   tls: # this section informs the operator where to find the credentials to authenticate with the broker via mTLS. The values here are the defaults set by the otterize-kubernetes chart.
     certFile: /etc/otterize-spire/svid.pem
     keyFile: /etc/otterize-spire/key.pem
@@ -47,6 +48,9 @@ spec:
 
 ### Address (`addr`)
 The address the intents operator will connect to in order to apply and remove ACLs resulting from `ClientIntents` and the KafkaServerConfig's `topics` section.
+
+### Disable auto create intents for operator (`noAutoCreateIntentsForOperator`)
+By default, the operator automatically creates a ClientIntent for itself to this server, so that it's able to connect. Default value for this configuration is `false`. To disable, set to `true`.
 
 ### TLS
 Where the intents operator will find credentials mounted to its pod to authenticate with the Kafka broker.
