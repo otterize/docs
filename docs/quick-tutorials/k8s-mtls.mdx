@@ -239,7 +239,7 @@ If you click on the **server** service to see its details, you can expand and se
 
 <img src="/img/quick-tutorials/mtls/creds.png" alt="Service details" width="600"/>
 
-You can see the common name (CN) used as the service's identity. And you can also see the DNS names, which together with the CN encompass all the possible names attested for by this certificate.
+You can see the common name (CN) used as the service's identity. And you can also see the DNS names (when available), which together with the CN encompass all the possible names attested for by this certificate.
 
 ### Using the command line
 
@@ -249,13 +249,13 @@ and are then mounted as a file into the container.
 1. Retrieve the credentials from the Kubernetes secret:
 
    ```shell
-   kubectl get secret -n otterize-tutorial-mtls client-credentials-secret -o jsonpath='{.data.svid\.pem}' | base64 -d > svid.pem
+   kubectl get secret -n otterize-tutorial-mtls client-credentials-secret -o jsonpath='{.data.cert\.pem}' | base64 -d > cert.pem
    ```
 
 2. Inspect the credentials with `openssl`:
 
    ```shell
-   openssl x509 -in svid.pem -text | head -n 15
+   openssl x509 -in cert.pem -text | head -n 15
    ```
    You should see output similar to:
    ```x509
