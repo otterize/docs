@@ -16,29 +16,23 @@ Otterize OSS configures access controls automatically, based on declared and app
 - Otterize Cloud again enriches these capabilities with a visual access graph, displaying a unified view of topic- and operation-level access and protection, and client identity certificate information.
 - Otterize Cloud also provides a pre-configured certificate credentials service you may use instead of running one (e.g. SPIRE) in your cluster.
 
-:::info
-While this tutorial build on the network policies IBAC tutorial, you need not use or even be concerned with network policies to achieve IBAC for Kafka with Otterize. Since all the network policies needed to run the demo below are already in place, we start this tutorial with all the access needed for the demo to run &mdash; much as it would if we weren't using network policies at all.
-:::
-
 In this tutorial, we will:
-
-:::danger
-Change wording as we need to redploy the lab, but mention that it's based on the same one from the previous tutorial.
-:::
 
 - Start where the previous tutorial left off: with a demo based on the [Google microservices demo](https://github.com/GoogleCloudPlatform/microservices-demo)
 (a simple e-commerce application) deployed to a Kubernetes cluster, with Otterize OSS installed and integrated with Otterize Cloud.
-- We will add fine-grained, topic-level intents and see how access to operations on Kafka topics is automatically managed.
+- Add fine-grained, topic-level intents and see how access to operations on Kafka topics is automatically managed.
 
 ## Prerequisites
-The following steps are only needed if you haven't already run through the [Kubernetes cluster mapping tutorial](/quick-visual-tutorials/visual-k8s-cluster-mapping).
+You'll need a Kubernetes cluster, an Otterize Cloud account, and of course to install Otterize OSS in your cluster.
+
+If you've gone through other tutorials, you may already have an Otterize Cloud account, and have Otterize OSS installed in your cluster. But if it's installed without enforcement active ("shadow mode"), you'll want to follow the instructions below to reinstall it with active enforcement.
 
 <details>
 <summary>Prepare a cluster</summary>
 
 Before you start, you'll need a Kubernetes cluster.
 
-You won't need [network policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) in this tutorial,
+You won't actually need [network policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) in this tutorial,
 so you can follow the steps below while skipping the network policies (CNI) enablement bits, or keep them as is.
 
 {@include: ../_common/cluster-setup.md}
@@ -52,25 +46,22 @@ so you can follow the steps below while skipping the network policies (CNI) enab
 </details>
 
 <details>
-<summary>Install Otterize OSS</summary>
+<summary>Install Otterize OSS <b>with enforcement active</b></summary>
 
 {@include: ../_common/install-otterize-from-cloud-with-enforcement.md}
 
 </details>
 
-
-
-
-
-## Create demo environment
+## Setup the demo
 
 ### Deploy the demo set of services
 
-To start this tutorial we will deploy a demo set of services based on the
-[Google microservices demo](https://github.com/GoogleCloudPlatform/microservices-demo), (a simple e-commerce application) into a Kubernetes cluster.
+We'll deploy the same demo set of services, based on the
+[Google microservices demo](https://github.com/GoogleCloudPlatform/microservices-demo) e-commerce application, into a Kubernetes cluster.
 
-This modified version introduces mTLS communication between some of the workloads as well as a
-Kafka cluster (using Bitnami's [Helm chart](https://github.com/bitnami/charts/tree/master/bitnami/kafka)) configured to:
+But in this tutorial, we'll deploy them a bit differently, as we'll want to add certificates to each, for use in mTLS authentication to Kafka.
+
+For the Kafka service, we'll use Bitnami's [Helm chart](https://github.com/bitnami/charts/tree/master/bitnami/kafka)) configured to:
 - Recognize the Otterize intents operator as a super user so it can configure ACLs;
 - Use TLS (Kafka calls it SSL) for its listeners;
 - Tell the Otterize credentials operator, via pod annotations, how credentials should be created; and
@@ -84,15 +75,14 @@ Kafka cluster (using Bitnami's [Helm chart](https://github.com/bitnami/charts/tr
 ```
 </details>
 
-
-To deploy these into your cluster:
+To deploy the demo services into your cluster:
 ```bash
 kubectl create namespace otterize-ecom-kafka-demo
 kubectl apply -n otterize-ecom-kafka-demo -f https://docs.otterize.com/code-examples/shadow-mode/ecom-demo-mtls.yaml
 ```
 
 <details>
-<summary>Optional: check that the demo was deployed...</summary>
+<summary>Optional: check that the demo was deployed</summary>
 
 To see all the pods in the demo:
 ```bash
@@ -121,7 +111,7 @@ shippingservice-85694cb9bd-v54xp         1/1     Running   0             114s
 </details>
 
 <details>
-<summary>Optional: Browse the demo</summary>
+<summary>Optional: browse the demo</summary>
 <Tabs groupId="frontend-addr">
 <TabItem value="k8s" label="K8s">
 
@@ -153,17 +143,19 @@ Go ahead and browse to the URL above to "shop" and get a feel for the demo's beh
 
 ### Apply pod-to-pod-level intents
 
-
 This tutorial picks up where the network policies tutorial left off. We'll want to make sure all the pods have access to the pods they'll need to call,
-so we'll put in place the same intents that we had in that tutorial. There, we showed how you can bootstrap all those intents, by observing the calls the pods are making using the network mapper, and then exporting the network map as a set of intents files.
+so we'll put in place the same intents that we had in that tutorial, just in case you're using network policies. In that tutorial, we showed how you can bootstrap all those intents, by observing the calls the pods are making using the network mapper, and then exporting the network map as a set of intents files.
+
+So let's get back to that state by applying that same set of initial intents:
 
 ```bash
 kubectl apply -n otterize-ecom-kafka-demo -f https://docs.otterize.com/code-examples/shadow-mode/all.yaml
 ```
 
-### Starting point
+### Seeing the deployed demo
 
-In the Otterize Cloud UI, the [access graph](https://app.otterize.com/access-graph) should show the following map for the demo running in your cluster:
+In the Otterize Cloud UI, the [access graph](https://app.otterize.com/access-graph) should now show the following map for the demo running in your cluster:
+
 ![Access graph](/img/quick-tutorials/shadow-mode/phase-5.png)
 
 Notice that the Kafka service (called `kafka` in this demo) is shown just like any other service that's called by other services (four, in our case) acting as its clients. We'll let Otterize know this is specifically a Kafka-type service in the next step.
