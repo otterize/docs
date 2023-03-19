@@ -56,17 +56,17 @@ If using the `otterize-kubernetes` chart, the values in the example above are co
 
 Using topic scope, you can gradually roll out Otterize to your Kafka cluster. Select a subset of topics to apply mTLS and/or intents to and start with those, without affecting the rest.
 
-- Unauthenticated - client identity not required
+- Unauthenticated - client identity not required:
  ```bash
  clientIdentityRequired: false
  intentsRequired: false
    ```
-- Authenticated - client identity required
+- Authenticated - client identity required:
  ```bash
  clientIdentityRequired: true
  intentsRequired: false
    ```
-- Authorized - client identity and an intent are required
+- Authorized - client identity and an intent are required:
  ```bash
  clientIdentityRequired: true
  intentsRequired: true
@@ -100,21 +100,27 @@ Set(User:ANONYMOUS has DENY permission for operations: ALL from hosts: *,
 ```
 
 #### Allow intended access to `mytopic-intended` with a `topic scope` and an `intent`
-Otterize generates two ACLs for this access pattern
-- The topic scope will block all access to the topic at first
-- The intent will set a specific ACL to allow the caller to access the topic
+Otterize generates two ACLs for this access pattern:
+1. The topic scope will generate an ACL to block all access to the topic at first.
+2. The intent will set a specific ACL to allow the caller to access the topic.
+
+If you set the topic scope in the KSC as follows:
 ```yaml title="Topic scope"
 - topic: "mytopic-intended"
   pattern: literal
   clientIdentityRequired: true
   intentsRequired: true
 ```
-Translates into
+
+Otterize will generate this ACL:
+
 ```yaml title="Kafka ACL"
 ResourcePattern(resourceType=TOPIC, name=mytopic-intended, patternType=LITERAL), versionedAcls :
 Set(User:ANONYMOUS has DENY permission for operations: ALL from hosts: *)
 ```
-And
+
+And when you declare and apply this intent:
+
 ```yaml title="Intent"
 service:
     name: interactive
@@ -125,12 +131,13 @@ service:
         - name: mytopic-intended
           operations: [ all ]
 ```
-Translates into
+
+Otterize will add this ACL:
+
 ```yaml title="Kafka ACL"
 ResourcePattern(resourceType=TOPIC, name=mytopic-intended, patternType=LITERAL), versionedAcls :
 Set(User:ANONYMOUS has DENY permission for operations: ALL from hosts: *,
     User:CN=interactive.ibac-for-kafka,O=SPIRE,C=US has ALLOW permission for operations: ALL from hosts: *)
 ```
 
-Both of these ACLs will enforce intended access where as - only clients that have applied intents will be able to access
-the specific topc.
+Together, these ACLs will ensure that only clients that have applied intents will be able to access the specific topic.
