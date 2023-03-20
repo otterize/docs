@@ -13,6 +13,6 @@ spec:
     rootCAFile: /etc/otterize-spire/ca.pem
   topics:
     - topic: "*"
-      pattern: prefix
+      pattern: literal
       clientIdentityRequired: false
       intentsRequired: false
