@@ -108,7 +108,7 @@ kubectl logs -n kafka statefulset/kafka | grep "Processing Acl change" | grep AN
 You should see the following output:
 ```
 [2022-09-13 10:58:32,052] INFO Processing Acl change notification for
-ResourcePattern(resourceType=TOPIC, name=*, patternType=PREFIXED), versionedAcls :
+ResourcePattern(resourceType=TOPIC, name=*, patternType=LITERAL), versionedAcls :
 Set(User:ANONYMOUS has ALLOW permission for operations: ALL from hosts: *,
 User:* has ALLOW permission for operations: ALL from hosts: *), zkVersion : 0
 (kafka.security.authorizer.AclAuthorizer)

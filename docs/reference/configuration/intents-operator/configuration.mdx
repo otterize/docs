@@ -27,7 +27,7 @@ spec:
     rootCAFile: /etc/otterize-spire/bundle.pem
   topics: # configuration for topic scope - how ACLs should be applied to each topic or set of topics.
     - topic: "*" # A specific topic or a prefix. Can be "*" for all.
-      pattern: prefix # Prefix or literal. Use prefix for "*".
+      pattern: literal # Prefix or literal. Use literal for "*".
       clientIdentityRequired: false # Whether client identity is required. If set to true to, access by anonymous users will be denied.
       intentsRequired: false # Whether intents are required - if set to true, all access will be denied unless intents are declared
 ```
@@ -82,7 +82,7 @@ Here are example configurations for topic scope and the resulting ACLs.
 #### Allow unauthenticated access to all topics
 ```yaml title="Topic scope"
 - topic: "*"
-  pattern: prefix
+  pattern: literal
   clientIdentityRequired: false
   intentsRequired: false
 ```
