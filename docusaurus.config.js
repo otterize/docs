@@ -140,7 +140,7 @@ const config = {
             href: "https://app.otterize.com",
             html: "Launch App",
             position: "right",
-            class: "navbar_external_launch_app",
+            class: "launch_app",
           },
         ],
       },
