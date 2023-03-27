@@ -136,6 +136,12 @@ const config = {
             position: "right",
             class: "navbar_external_logo",
           },
+          {
+            href: "https://app.otterize.com",
+            html: "Launch App",
+            position: "right",
+            class: "navbar_external_launch_app",
+          },
         ],
       },
       footer: {
@@ -143,7 +149,7 @@ const config = {
           {
             html: `
                 <div class="footer_left">
-                    
+
                     <div id="mailchimp_title" class="footer_signup">
                         Sign up for updates
                     </div>
