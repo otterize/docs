@@ -138,9 +138,8 @@ const config = {
           },
           {
             href: "https://app.otterize.com",
-            html: "Launch App",
+            html: "<span class='launch_app'>Launch App</span>",
             position: "right",
-            class: "launch_app",
           },
         ],
       },
