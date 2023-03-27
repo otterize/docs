@@ -131,6 +131,11 @@ pre.prism-code {
   font-weight: 600;
   font-size: 16px;
 }
+@media screen and (max-width: 720px) {
+  .navbar_external_launch_app {
+    display: none;
+  }
+}
 .navbar_external_launch_app:hover {
   text-decoration: none;
 }
