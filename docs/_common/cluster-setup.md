@@ -6,11 +6,13 @@ If you don't have a cluster already, we recommend starting out with a Minikube c
 
 If you don't have the Minikube CLI, first [install it](https://minikube.sigs.k8s.io/docs/start/). 
 
-Then start your Minikube cluster with Calico, in order to enforce network policies.
+Then start your Minikube cluster with Calico, in order to enforce network policies:
 
 ```bash
 minikube start --network-plugin=cni --cni=calico
 ```
+
+You need to install Calico because Minikube does not support network policy enforcement by default; Calico helps solve this issue.
 
 </TabItem>
 <TabItem value="gke" label="Google GKE">
