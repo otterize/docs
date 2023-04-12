@@ -6,17 +6,11 @@ If you don't have a cluster already, we recommend starting out with a Minikube c
 
 If you don't have the Minikube CLI, first [install it](https://minikube.sigs.k8s.io/docs/start/). 
 
-Then start your Minikube cluster:
+Then start your Minikube cluster with a CNI network plugin (e.g. Calico):
 
 ```bash
-minikube start --network-plugin=cni
+minikube start --network-plugin=cni --cni=calico
 ```
-
-Install Calico, in order to enforce network policies:
-```bash
-kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/manifests/calico.yaml
-```
-You need to install Calico because Minikube does not support network policy enforcement by default; Calico helps solve this issue.
 
 </TabItem>
 <TabItem value="gke" label="Google GKE">
@@ -84,8 +78,8 @@ gcloud container clusters update CLUSTER_NAME --enable-network-policy
 1. Spin up an [EKS cluster](https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html) using the console, AWS CLI or `eksctl`.
 2. Install Calico for network policy enforcement, without replacing the CNI:
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/aws/amazon-vpc-cni-k8s/master/config/master/calico-operator.yaml
-kubectl apply -f https://raw.githubusercontent.com/aws/amazon-vpc-cni-k8s/master/config/master/calico-crs.yaml
+kubectl apply -f https://raw.githubusercontent.com/aws/amazon-vpc-cni-k8s/v1.12.6/config/master/calico-operator.yaml
+kubectl apply -f https://raw.githubusercontent.com/aws/amazon-vpc-cni-k8s/v1.12.6/config/master/calico-crs.yaml
 ```
 </TabItem>
 <TabItem value="aks" label="Azure AKS">
