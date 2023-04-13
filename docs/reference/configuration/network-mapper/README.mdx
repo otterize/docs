@@ -37,8 +37,10 @@ recommendationservice in namespace otterize-ecom-demo calls:
 ## How does the network mapper work?
 
 ### Components
+- Mapper - the mapper is deployed once, and resolves service names using the Kubernetes API with traffic information reported by the sniffers and watchers.
 - Sniffer - the sniffer is deployed to each node using a DaemonSet, and is responsible for capturing node-local DNS traffic and inspecting open connections.
-- Mapper - the mapper is deployed once, and resolves service names using the Kubernetes API with traffic information reported by the sniffers.
+- Kafka watcher - the Kafka watcher periodically examines logs of kafka servers provided by the user, parses them and deduces topic-level access to Kafka from pods in the cluster.
+- Istio watcher - the Istio watcher queries for all pods with the `security.istio.io/tlsMode` label, queries each pod's Istio sidecar for metrics about connections, and deduces connections with HTTP paths between pods covered by the Istio service mesh.
 
 ### DNS responses
 DNS is a common network protocol used for service discovery. When a pod (`checkoutservice`) tries to connect to a Kubernetes service
@@ -46,6 +48,12 @@ DNS is a common network protocol used for service discovery. When a pod (`checko
 
 ### Active TCP connections
 DNS responses will only appear when new connections are opened. To handle long-lived connections, the network mapper also queries open TCP connections in a manner similar to `netstat` or `ss`. The IP addresses are used for the [service identity resolving process](/reference/service-identities), as above.
+
+### Kafka logs
+TBD
+
+### Istio sidecar metrics
+TBD
 
 ## Deploying the network mapper
 To deploy the network mapper, [use the Helm chart](/reference/configuration/network-mapper/helm-chart).
