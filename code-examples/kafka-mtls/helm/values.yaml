@@ -8,6 +8,8 @@ advertisedListeners:
   - "CLIENT://:9092"
   - "INTERNAL://:9093"
 listenerSecurityProtocolMap: "INTERNAL:SSL,CLIENT:SSL"
+# For a gradual rollout scenario we will want to keep the default permission for topics as allowed, unless an ACL was set
+allowEveryoneIfNoAclFound: true
 # Annotations for Otterize to generate credentials
 podAnnotations:
   credentials-operator.otterize.com/cert-type: jks
