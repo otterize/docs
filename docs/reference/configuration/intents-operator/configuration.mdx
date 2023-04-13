@@ -126,7 +126,11 @@ Set(User:ANONYMOUS has DENY permission for operations: ALL from hosts: *)
 And when you declare and apply this intent:
 
 ```yaml title="Intent"
-service:
+apiVersion: k8s.otterize.com/v1alpha2
+kind: ClientIntents
+[...]
+spec:
+  service:
     name: interactive
   calls:
     - name: kafka.kafka
