@@ -39,7 +39,7 @@ recommendationservice in namespace otterize-ecom-demo calls:
 ### Components
 - Mapper - the mapper is deployed once, and resolves service names using the Kubernetes API with traffic information reported by the sniffers and watchers.
 - Sniffer - the sniffer is deployed to each node using a DaemonSet, and is responsible for capturing node-local DNS traffic and inspecting open connections.
-- Kafka watcher (**experimental**) - the Kafka watcher is deployed once (when enabled) and is responsible for capturing Kafka topic level access connections.
+- Kafka watcher (**experimental**) - the Kafka watcher is deployed once per cluster and is responsible for detecting accesses to Kafka topics, which services perform those accesses and which operations they use.
 - Istio watcher (**experimental**) - the Istio watcher is deployed once (when enabled) and is responsible for capturing HTTP specific connections that are happening within the Istio service mesh.
 
 ### DNS responses
