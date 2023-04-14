@@ -50,7 +50,7 @@ DNS is a common network protocol used for service discovery. When a pod (`checko
 DNS responses will only appear when new connections are opened. To handle long-lived connections, the network mapper also queries open TCP connections in a manner similar to `netstat` or `ss`. The IP addresses are used for the [service identity resolving process](/reference/service-identities), as above.
 
 ### Kafka logs
-the Kafka watcher periodically examines logs of kafka servers provided by the user, parses them and deduces topic-level access to Kafka from pods in the cluster.
+The Kafka watcher periodically examines logs of Kafka servers provided by the user through configuration, parses them and deduces topic-level access to Kafka from pods in the cluster.
 The watcher is only able to parse Kafka logs when Kafka servers' Authorizer logger is configured to output logs to `stdout` with `DEBUG` level.
 
 ### Istio sidecar metrics
