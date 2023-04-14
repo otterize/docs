@@ -37,7 +37,7 @@ recommendationservice in namespace otterize-ecom-demo calls:
 ## How does the network mapper work?
 
 ### Components
-- Mapper - the mapper is deployed once, and resolves service names using the Kubernetes API with traffic information reported by the sniffers and watchers.
+- Mapper - the mapper is deployed once per cluster, and receives traffic information from the sniffer and watchers, and resolves the information to communications between (service identities)[/service-identities].
 - Sniffer - the sniffer is deployed to each node using a DaemonSet, and is responsible for capturing node-local DNS traffic and inspecting open connections.
 - Kafka watcher (**experimental**) - the Kafka watcher is deployed once per cluster and is responsible for detecting accesses to Kafka topics, which services perform those accesses and which operations they use.
 - Istio watcher (**experimental**) - the Istio watcher is deployed once per cluster and queries Istio Envoy sidecars for HTTP traffic statistics, which are used to detect HTTP traffic with paths.
