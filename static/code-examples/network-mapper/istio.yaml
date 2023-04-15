@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client
+  namespace: otterize-tutorial-istio
+spec:
+  selector:
+    matchLabels:
+      app: client
+  template:
+    metadata:
+      labels:
+        app: client
+    spec:
+      serviceAccountName: client-service-account
+      containers:
+        - name: client
+          image: alpine/curl
+          command: [ "/bin/sh", "-c", "--" ]
+          args: [ "while true; do curl -si nginx-service:8080/client-path; sleep 2; done" ]
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: client-service-account
+  namespace: otterize-tutorial-istio
+  labels:
+    app: client
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: other-client
+  namespace: otterize-tutorial-istio
+spec:
+  selector:
+    matchLabels:
+      app: other-client
+  template:
+    metadata:
+      labels:
+        app: other-client
+    spec:
+      serviceAccountName: other-client-service-account
+      containers:
+        - name: other-client
+          image: alpine/curl
+          command: [ "/bin/sh", "-c", "--" ]
+          args: [ "while true; do curl -si nginx-service:8080/other-client-path; sleep 2; done" ]
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: other-client-service-account
+  namespace: otterize-tutorial-istio
+  labels:
+    app: other-client
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  namespace: otterize-tutorial-istio
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  replicas: 1 # tells deployment to run 2 pods matching the template
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.14.2
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  namespace: otterize-tutorial-istio
+spec:
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 80
+---
