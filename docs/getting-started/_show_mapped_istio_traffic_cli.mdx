@@ -1,30 +1,29 @@
-# @formatter:off
-
 You can get the network map by calling the CLI `list` or `export` commands. `visualize` is currently not supported for Istio
 discovered traffic.
 
 The export output format can be yaml (Kubernetes client intents files) and json.
 The following shows the CLI output filtered for the namespace (otterize-tutorial-istio) of the example above.
 
-
 <Tabs>
   <TabItem value="list" label="List">
 
-1. List the pod-to-pod network map built up so far:
+    1. List the pod-to-pod network map built up so far:
 
-   ```shell
-   otterize network-mapper list -n otterize-tutorial-mapper
-   ```
-2. For the simple example above, you should see:
-   ```shell
-   client in namespace otterize-tutorial-istio calls:
-      - nginx in namespace otterize-tutorial-istio
-        - path /client-path, methods: []
-   other-client in namespace otterize-tutorial-istio calls:
-      - nginx in namespace otterize-tutorial-istio
-        - path /other-client-path, methods: []
-   ```
+       ```shell
+       otterize network-mapper list -n otterize-tutorial-mapper
+       ```
+    2. For the simple example above, you should see:
+       ```shell
+        client in namespace otterize-tutorial-istio calls:
+          - nginx in namespace otterize-tutorial-istio
+            - path /client-path, methods: []
+        other-client in namespace otterize-tutorial-istio calls:
+          - nginx in namespace otterize-tutorial-istio
+            - path /other-client-path, methods: []
+       ```
     Repeating calls to services like `prometheus` or `jaeger` are omitted for simplicity's sake.
+
+
 </TabItem>
   <TabItem value="intents" label="Export as intents">
 
@@ -33,6 +32,7 @@ The following shows the CLI output filtered for the namespace (otterize-tutorial
    ```shell
    otterize network-mapper export -n otterize-tutorial-istio
    ```
+
 2. For the simple example above, you should see (concatenated into one YAML file):
    ```yaml
    apiVersion: k8s.otterize.com/v1alpha2
@@ -80,7 +80,7 @@ The following shows the CLI output filtered for the namespace (otterize-tutorial
     "apiVersion": "k8s.otterize.com/v1alpha2",
     "metadata": {
       "name": "client",
-      "namespace": "otterize-tutorial-istio",
+      "namespace": "otterize-tutorial-istio"
     },
     "spec": {
       "service": {
@@ -94,7 +94,7 @@ The following shows the CLI output filtered for the namespace (otterize-tutorial
             {
               "path": "/client-path",
               "methods": []
-            },
+            }
           ]
         }
       ]
@@ -105,7 +105,7 @@ The following shows the CLI output filtered for the namespace (otterize-tutorial
     "apiVersion": "k8s.otterize.com/v1alpha2",
     "metadata": {
       "name": "other-client",
-      "namespace": "otterize-tutorial-istio",
+      "namespace": "otterize-tutorial-istio"
     },
     "spec": {
       "service": {
