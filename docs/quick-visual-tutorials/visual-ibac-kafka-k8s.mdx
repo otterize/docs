@@ -10,7 +10,7 @@ import TabItem from '@theme/TabItem';
 
 This tutorial focuses on intent-based access control (IBAC) for Kafka, specifically for a Kafka broker and its clients running within a Kubernetes cluster.
 
-Otterize OSS configures access controls automatically, based on declared and applied *client* intents, as we'll now see.
+Otterize OSS configures access controls automatically, based on declared *client* intents, as we'll now see.
 - In the [previous tutorial](/quick-visual-tutorials/visual-ibac-network-policies), we rolled out IBAC by declaring intents for pods to call each other. Otterize OSS automatically configured Kubernetes network policies to enable access based on those intents and block any undeclared access.
 - In this tutorial, we add fine-grained, topic- and operation-level intents to the existing pod-to-pod intents. Otterize OSS automatically configures Kafka ACLs, and issues and distributes certificates to Kafka clients, so they can authenticate via mTLS and perform those operations on those topics, while everything undeclared is blocked.
 - Otterize Cloud again enriches these capabilities with a visual access graph, displaying a unified view of topic- and operation-level access and protection, and client identity certificate information.
