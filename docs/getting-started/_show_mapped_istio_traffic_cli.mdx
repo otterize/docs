@@ -10,7 +10,7 @@ The following shows the CLI output filtered for the namespace (otterize-tutorial
     1. List the pod-to-pod network map built up so far:
 
        ```shell
-       otterize network-mapper list -n otterize-tutorial-mapper
+      otterize network-mapper list -n otterize-tutorial-istio
        ```
     2. For the simple example above, you should see:
        ```shell
@@ -21,7 +21,7 @@ The following shows the CLI output filtered for the namespace (otterize-tutorial
           - nginx in namespace otterize-tutorial-istio
             - path /other-client-path, methods: []
        ```
-    Repeating calls to services like `prometheus` or `jaeger` are omitted for simplicity's sake.
+    Repeating calls to services like `prometheus` or `jaeger` were omitted for simplicity's sake.
 
 
 </TabItem>

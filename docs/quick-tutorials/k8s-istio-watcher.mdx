@@ -9,7 +9,7 @@ import styles from '/src/css/styles.module.css';
 In this tutorial, we will:
 
 - Install the Istio service mesh in our cluster
-- Deploy 2 clients calling an nginx reverse-proxy with in different paths.
+- Deploy 2 clients calling an nginx reverse-proxy with different paths.
 - Map their communication using the network mapper and the Istio watcher component.
 
 <details>
@@ -57,7 +57,7 @@ Finally, you'll need to install the Otterize CLI (if you haven't already) to int
 
 </details>
 
-## Installing Istio
+## Installing and configuring Istio
 <details>
 <summary>Install Istio in the cluster via helm</summary>
 
@@ -75,6 +75,36 @@ kubectl label namespace otterize-tutorial-istio istio-injection=enabled
 ```
 
 </details>
+<details>
+<summary>Adding HTTP request path to Istio exported metrics</summary>
+Apply this configuration in the `istio-system` namespace, propagating it to all namespaces covered by the mesh.
+
+```shell
+apiVersion: telemetry.istio.io/v1alpha1
+kind: Telemetry
+metadata:
+  name: mesh-default
+  namespace: istio-system
+spec:
+  accessLogging:
+    - providers:
+      - name: envoy
+  metrics:
+  - providers:
+    - name: prometheus
+    overrides:
+    - tagOverrides:
+        request_path:
+          value: request.path
+```
+
+</details>
+
+:::info
+HTTP request paths aren't exported in Envoy's connection metrics by default, but Istio authorization policies do support
+enforcement of specific paths. That's why we add the above configuration - so the Istio watcher could observe connections
+with paths included, making it easier to bootstrap intents.
+:::
 
 ## Deploy demo to simulate traffic
 
