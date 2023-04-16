@@ -87,10 +87,12 @@
   --doc-sidebar-width: 350px !important;
 }
 
-/* Auto-wrap text in code blocks */
+/* Auto-wrap text in code blocks
+   NOT using this: code blocks, esp. in the CLI docs, are hard to parse visually when wrapped.
 pre.prism-code {
   white-space: pre-wrap;
 }
+*/
 
 /* Remove icon for external link */
 .navbar__item svg {
