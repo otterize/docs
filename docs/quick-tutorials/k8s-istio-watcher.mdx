@@ -76,7 +76,7 @@ kubectl label namespace otterize-tutorial-istio istio-injection=enabled
 
 </details>
 <details>
-<summary>Add HTTP request path to Istio exported metrics</summary>
+<summary>Add HTTP methods and request paths to Istio exported metrics</summary>
 
 Apply this configuration in the `istio-system` namespace, propagating it to all namespaces covered by the mesh.
 
@@ -95,6 +95,8 @@ spec:
     - name: prometheus
     overrides:
     - tagOverrides:
+        request_method:
+          value: request.method
         request_path:
           value: request.path
 ```
@@ -102,13 +104,16 @@ spec:
 </details>
 
 :::tip
-HTTP request paths aren't exported in Envoy's connection metrics by default, but we do want to capture those details when creating the network map. That way we not only have better visibility of the calling patterns, e.g. in the access graph, but we can also use that information to automatically generate fine-grained intents and enforce them with Istio authorization policies.
+HTTP request paths and methods aren't exported in Envoy's connection metrics by default, but we do want to capture those
+details when creating the network map. That way we not only have better visibility of the calling patterns,
+e.g. in the access graph, but we can also use that information to automatically generate fine-grained intents and
+enforce them with Istio authorization policies.
 :::
 
 ## Deploy demo to simulate traffic
 
 Let's add services and traffic to the cluster and see how the network mapper builds the map.
-Deploy the following simple example &mdash; `client`, `other-client` and `nginx`, communicating over HTTP:
+Deploy the following simple example &mdash; `client`, `client2` and `nginx`, communicating over HTTP:
 ```shell
 kubectl apply -n otterize-tutorial-istio -f https://docs.otterize.com/code-examples/network-mapper/istio.yaml
 ```

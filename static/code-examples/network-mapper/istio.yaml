@@ -30,18 +30,18 @@ metadata:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: other-client
+  name: client2
   namespace: otterize-tutorial-istio
 spec:
   selector:
     matchLabels:
-      app: other-client
+      app: client2
   template:
     metadata:
       labels:
-        app: other-client
+        app: client2
     spec:
-      serviceAccountName: other-client-service-account
+      serviceAccountName: client2-service-account
       containers:
         - name: other-client
           image: alpine/curl
@@ -51,10 +51,10 @@ spec:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: other-client-service-account
+  name: client2
   namespace: otterize-tutorial-istio
   labels:
-    app: other-client
+    app: client2
 ---
 apiVersion: apps/v1
 kind: Deployment
