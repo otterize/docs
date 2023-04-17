@@ -6,11 +6,13 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import styles from '/src/css/styles.module.css';
 
+With its Istio watcher enabled, the network mapper allows you to map pod-to-pod Istio traffic within your K8s cluster.
+
 In this tutorial, we will:
 
-- Install the Istio service mesh in our cluster
-- Deploy 2 clients calling an nginx reverse-proxy with different paths.
-- Map their communication using the network mapper and the Istio watcher component.
+- Install the Istio service mesh in our cluster.
+- Deploy 2 clients calling an nginx reverse-proxy over HTTP using different paths.
+- Map their calls using the network mapper and the Istio watcher component.
 
 <details>
 <summary>Make sure you have a Kubernetes cluster</summary>
@@ -20,7 +22,7 @@ Before you start, you need to have a Kubernetes cluster. Having a cluster with a
 {@include: ../_common/cluster-setup.md}
 </details>
 
-You can now install Otterize in your cluster (if it's not already installed), and optionally connect to Otterize Cloud. Connecting to Cloud lets you:
+You can now install Otterize in your cluster, and optionally connect to Otterize Cloud. Connecting to Cloud lets you:
 1. See what's happening visually in your browser, through the "access graph";
 2. Avoid using SPIRE (which can be installed with Otterize) for issuing certificates, as Otterize Cloud provides a certificate service.
 
@@ -44,7 +46,7 @@ Or choose to include browser visualization and:
 
 #### Install Otterize OSS, connected to Otterize Cloud
 
-{@include: ../_common/install-otterize-from-cloud-with-enforcement.md}
+{@include: ../_common/install-otterize-from-cloud-with-enforcement-with-istiowatcher.md}
 
 </details>
 
@@ -59,7 +61,7 @@ Finally, you'll need to install the Otterize CLI (if you haven't already) to int
 
 ## Installing and configuring Istio
 <details>
-<summary>Install Istio in the cluster via helm</summary>
+<summary>Install Istio in the cluster via Helm</summary>
 
 {@include: ../_common/install-istio.md}
 
@@ -69,14 +71,13 @@ Finally, you'll need to install the Otterize CLI (if you haven't already) to int
 
 ```shell
 kubectl create namespace otterize-tutorial-istio
-```
-```shell
 kubectl label namespace otterize-tutorial-istio istio-injection=enabled
 ```
 
 </details>
 <details>
-<summary>Adding HTTP request path to Istio exported metrics</summary>
+<summary>Add HTTP request path to Istio exported metrics</summary>
+
 Apply this configuration in the `istio-system` namespace, propagating it to all namespaces covered by the mesh.
 
 ```shell
@@ -100,10 +101,8 @@ spec:
 
 </details>
 
-:::info
-HTTP request paths aren't exported in Envoy's connection metrics by default, but Istio authorization policies do support
-enforcement of specific paths. That's why we add the above configuration - so the Istio watcher could observe connections
-with paths included, making it easier to bootstrap intents.
+:::tip
+HTTP request paths aren't exported in Envoy's connection metrics by default, but we do want to capture those details when creating the network map. That way we not only have better visibility of the calling patterns, e.g. in the access graph, but we can also use that information to automatically generate fine-grained intents and enforce them with Istio authorization policies.
 :::
 
 ## Deploy demo to simulate traffic
@@ -132,7 +131,7 @@ If you've attached Otterize OSS to Otterize Cloud, you can now also see the [acc
 
 ![Access graph](/img/quick-tutorials/network-mapper/otterize-tutorial-access-graph.png)
 
-Note, for example, that the `client` &rightarrow; `server` arrow has a yellow notification icon indicating a single notification. Clicking on it shows:
+Note, for example, that the `client` &rightarrow; `server` arrow is dashed. Clicking on it shows:
 
 <img src="/img/quick-tutorials/network-mapper/otterize-tutorial-access-graph-insights.png" alt="Access graph insights" width="600"/>
 
