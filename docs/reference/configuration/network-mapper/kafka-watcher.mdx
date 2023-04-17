@@ -28,10 +28,13 @@ Servers should be formatted as `name.namespace`.
 ## Enabling debug logs in Kafka servers
 In order for the Kafka watcher to correctly examine topic-level access, the Kafka's ACL authorizer logger should be configured
 to log at debug level, and to stdout.
-For the `bitnami` Kafka helm chart used in other Kafka tutorials, we can add the following configuration to the chart's values:
+
+### Install Kafka via helm with debug logs preconfigured
+For the `bitnami` Kafka helm chart used in other Kafka tutorials, we can add the following configuration to the chart's
+`values.yaml` to make the Kafka starts with its ACL authorizer logger in debug:
 
 <details>
-<summary>Kafka with debug logs values.yaml</summary>
+<summary>Kafka debug logs values.yaml</summary>
 
 ```yaml
 log4j: |
@@ -123,3 +126,32 @@ log4j: |
 
 Notice the `log4j.logger.kafka.authorizer.logger=DEBUG` line that sets the ACL authorizer logger to debug mode.
 </details>
+
+### Configure an already running Kafka server
+Alternatively, we can also configure an already running Kafka server and set its ACL authorizer logger level to debug.
+
+Firstly, deploy an interactive Kafka client:
+
+```shell
+kubectl apply -f https://docs.otterize.com/code-examples/ibac-for-kafka/client-deployment-no-creds.yaml
+```
+Connect to the interactive Kafka client using shell (replace the pod name with the name from your cluster):
+```shell
+kubectl exec -it -n ibac-for-kafka interactive-869fc7b89b-rgmfm -- /bin/bash
+```
+Once connected, use the interactive shell to configure ACL authorizer logging level:
+```shell
+$ cd opt/bitnami/kafka/
+# query existing logging settings. Replace "kafka.kafka:9092" with the relevant service name, namespace and port.
+$ bin/kafka-configs.sh --bootstrap-server kafka.kafka:9092 --describe --all --entity-type broker-loggers --entity-name 0  | grep authorizer
+  kafka.security.authorizer.AclAuthorizer=INFO sensitive=false synonyms={}
+  kafka.authorizer.logger=INFO sensitive=false synonyms={}
+# enable authorizer debug logging
+$ bin/kafka-configs.sh --bootstrap-server kafka.kafka:9092 --alter --add-config "kafka.authorizer.logger=DEBUG" --entity-type broker-loggers --entity-name 0
+Completed updating config for broker-logger 0.
+```
+Check out your Kafka server logs. You should now see log records indicating allow/denied connections
+from the ACL authorizer (assuming you have clients producing/consuming data from topics):
+```shell
+[2023-03-22 16:06:22,746] DEBUG operation = READ on resource = ResourcePattern(resourceType=TOPIC, name=mytopic, patternType=LITERAL) from host = 10.244.0.12 is ALLOW based on acl = User:* has ALLOW permission for operations: ALL from hosts: * (kafka.authorizer.logger)
+```
