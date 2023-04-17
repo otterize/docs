@@ -43,10 +43,10 @@ spec:
     spec:
       serviceAccountName: client2-service-account
       containers:
-        - name: other-client
+        - name: client2
           image: alpine/curl
           command: [ "/bin/sh", "-c", "--" ]
-          args: [ "while true; do curl -si nginx-service:8080/other-client-path; sleep 2; done" ]
+          args: [ "while true; do curl -X POST -si nginx-service:8080/client2-path; sleep 2; done" ]
 ---
 apiVersion: v1
 kind: ServiceAccount

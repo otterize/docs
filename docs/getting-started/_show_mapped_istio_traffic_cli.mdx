@@ -15,10 +15,10 @@ The following shows the CLI output filtered for the namespace (`otterize-tutoria
        ```shell
         client in namespace otterize-tutorial-istio calls:
           - nginx in namespace otterize-tutorial-istio
-            - path /client-path, methods: []
+            - path /client-path, methods: [GET]
         client2 in namespace otterize-tutorial-istio calls:
           - nginx in namespace otterize-tutorial-istio
-            - path /other-client-path, methods: []
+            - path /client2-path, methods: [POST]
        ```
     Repeating lines showing calls to common services like `prometheus` or `jaeger` were omitted for simplicity.
 
@@ -47,6 +47,8 @@ The following shows the CLI output filtered for the namespace (`otterize-tutoria
          type: http
          resources:
             - path: /client-path
+         methods:
+           - GET
    ---
    apiVersion: k8s.k8s.otterize.com/v1
    kind: ClientIntents
@@ -60,7 +62,9 @@ The following shows the CLI output filtered for the namespace (`otterize-tutoria
        - name: nginx
          type: http
          resources:
-           - path: /other-client-path
+           - path: /client2-path
+         methods:
+           - POST
    ```
 
 </TabItem>
@@ -93,7 +97,7 @@ The following shows the CLI output filtered for the namespace (`otterize-tutoria
               "resources": [
                 {
                   "path": "/client-path",
-                  "methods": []
+                  "methods": [GET]
                 }
               ]
             }
@@ -104,12 +108,12 @@ The following shows the CLI output filtered for the namespace (`otterize-tutoria
         "kind": "ClientIntents",
         "apiVersion": "k8s.otterize.com/v1alpha2",
         "metadata": {
-          "name": "other-client",
+          "name": "client2",
           "namespace": "otterize-tutorial-istio"
         },
         "spec": {
           "service": {
-            "name": "other-client"
+            "name": "client2"
           },
           "calls": [
             {
@@ -117,8 +121,8 @@ The following shows the CLI output filtered for the namespace (`otterize-tutoria
               "type": "http",
               "resources": [
                 {
-                  "path": "/other-client-path",
-                  "methods": []
+                  "path": "/client2-path",
+                  "methods": [POST]
                 }
               ]
             }
