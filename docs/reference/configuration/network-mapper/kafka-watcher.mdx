@@ -129,9 +129,9 @@ Notice the `log4j.logger.kafka.authorizer.logger=DEBUG` line that sets the ACL a
 
 ### Configure an already running Kafka server
 Alternatively, we can also configure an already running Kafka server and set its ACL authorizer logger level to debug.
+The Kafka server must be configured to log to sdout so the Kafka watcher could examine its logs.
 
 Firstly, deploy an interactive Kafka client:
-
 ```shell
 kubectl apply -f https://docs.otterize.com/code-examples/ibac-for-kafka/client-deployment-no-creds.yaml
 ```
@@ -139,7 +139,7 @@ Connect to the interactive Kafka client using shell (replace the pod name with t
 ```shell
 kubectl exec -it -n ibac-for-kafka interactive-869fc7b89b-rgmfm -- /bin/bash
 ```
-Once connected, use the interactive shell to configure ACL authorizer logging level:
+Once connected, use the interactive shell to configure the ACL authorizer's logging level:
 ```shell
 $ cd opt/bitnami/kafka/
 # query existing logging settings. Replace "kafka.kafka:9092" with the relevant service name, namespace and port.
