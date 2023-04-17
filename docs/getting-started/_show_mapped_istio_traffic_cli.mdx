@@ -4,6 +4,18 @@ The `export` output format can be `yaml` (Kubernetes client intents files) and `
 The following shows the CLI output filtered for the namespace (`otterize-tutorial-istio`) of the example above.
 
 <Tabs>
+  <TabItem value="image" label="Image" default>
+
+1. Visualize the overall pod-to-pod network map built up so far, as an image. Note that this image is actually based on information from the network mapper's sniffer, based on DNS requests and open TCP connections, and does not require the Istio watcher, which supplies fine-grained, HTTP-level information. To include HTTP-level information, use the `list` or `export` commands.
+
+   ```shell
+   otterize network-mapper visualize -n otterize-tutorial-istio -o otterize-tutorial-istio-map.png
+   ```
+2. For the simple example above, you should get an image file that looks like:
+
+   ![Otterize tutorial map](/img/quick-tutorials/network-mapper/otterize-tutorial-istio-map.png)
+
+</TabItem>
   <TabItem value="list" label="List">
 
 1. List the pod-to-pod network map built up so far:
