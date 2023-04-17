@@ -26,6 +26,8 @@ Servers should be formatted as `name.namespace`.
 | `kafkawatcher.kafkaServers`     | Kafka servers to watch, specified as `pod.namespace` items. | `(none)`                       |
 
 ## Enabling debug logs in Kafka servers
+The Kafka watcher periodically examines logs of Kafka servers provided by the user through configuration,
+parses them and deduces topic-level access to Kafka from pods in the cluster.
 In order for the Kafka watcher to correctly examine topic-level access, the Kafka's ACL authorizer logger should be configured
 to log at debug level, and to stdout.
 
