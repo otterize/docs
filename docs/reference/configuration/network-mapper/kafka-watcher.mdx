@@ -1,0 +1,31 @@
+---
+sidebar_position: 2
+title: Kafka Watcher
+---
+
+To deploy the network mapper with the Kafka watcher component, do the following:
+```bash
+helm repo add otterize https://helm.otterize.com
+helm repo update
+helm install network-mapper otterize/network-mapper -n otterize-system --create-namespace --set kafkawatcher.enable=true
+```
+Make sure to include `--set kafkaServers={}` with a list of Kafka servers the Kafka watcher
+should examine logs for.
+Servers should be formatted as `name.namespace`.
+
+## Kafka watcher parameters
+| Key                             | Description                                                 | Default                        |
+|---------------------------------|-------------------------------------------------------------|--------------------------------|
+| `kafkawatcher.enable`           | Enable Kafka watcher deployment (experimental).             | `false`                        |
+| `kafkawatcher.image.repository` | Kafka watcher image repository.                             | `otterize`                     |
+| `kafkawatcher.image.image`      | Kafka watcher image.                                        | `network-mapper-kafka-watcher` |
+| `kafkawatcher.image.tag`        | Kafka watcher image tag.                                    | `latest`                       |
+| `kafkawatcher.pullPolicy`       | Kafka watcher pull policy.                                  | `(none)`                       |
+| `kafkawatcher.pullSecrets`      | Kafka watcher pull secrets.                                 | `(none)`                       |
+| `kafkawatcher.resources`        | Resources override.                                         | `(none)`                       |
+| `kafkawatcher.kafkaServers`     | Kafka servers to watch, specified as `pod.namespace` items. | `(none)`                       |
+
+## Enabling debug logs in Kafka servers
+In order for the Kafka watcher to correctly examine topic-level access, the Kafka's ACL authorizer logger should be configured
+to DEBUG mode, and to log to stdout.
+For the `bitnami` Kafka helm chart used in other Kafka tutorials, we can add the following
