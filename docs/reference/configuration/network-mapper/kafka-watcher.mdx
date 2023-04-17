@@ -31,8 +31,8 @@ parses them and deduces topic-level access to Kafka from pods in the cluster.
 In order for the Kafka watcher to correctly examine topic-level access, the Kafka's ACL authorizer logger should be configured
 to log at debug level, and to stdout.
 
-### Install Kafka via helm with debug logs preconfigured
-For the `bitnami` Kafka helm chart used in other Kafka tutorials, we can add the following configuration to the chart's
+### Install Kafka via Helm with debug logs preconfigured
+For the `bitnami` Kafka Helm chart used in other Kafka tutorials, we can add the following configuration to the chart's
 `values.yaml` to make the Kafka starts with its ACL authorizer logger in debug:
 
 <details>
