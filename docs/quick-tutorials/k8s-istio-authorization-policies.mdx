@@ -22,9 +22,11 @@ In this tutorial, we will:
 ## Prerequisites
 
 <details>
-<summary> Install Istio in your cluster with demo application </summary>
+    <summary>Make sure you have a Kubernetes cluster</summary>
 
-In this tutorial we will follow Istio book-info demo application based on <b>[official getting started guide](https://istio.io/latest/docs/setup/getting-started/). </b>
+    Before you start, you need to have a Kubernetes cluster. Having a cluster with a [CNI](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/) that supports [NetworkPolicies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) isn't required for this tutorial, but is recommended so that your cluster works with other tutorials.
+
+    {@include: ../_common/cluster-setup.md}
 </details>
 
 You can now install (or reinstall) Otterize in your cluster, and optionally connect to Otterize Cloud. Connecting to Cloud lets you:
@@ -58,116 +60,19 @@ Or choose to include browser visualization and:
 
 </details>
 
-## Deploy the server and the two clients
+## Deploy demo to simulate traffic
 
-Our simple example consists of three pods: an HTTP server and two clients that call it.
-
-<details>
-<summary>Expand to see the example YAML files</summary>
-<Tabs>
-
-<TabItem value="namespace.yaml" label="namespace.yaml" default>
-
-```yaml
-{@include: ../../static/code-examples/ibac-for-istio/namespace.yaml}
-```
-
-</TabItem>
-
-<TabItem value="server.yaml" label="server.yaml" default>
-
-```yaml
-{@include: ../../static/code-examples/ibac-for-istio/server-deployment.yaml}
----
-{@include: ../../static/code-examples/ibac-for-istio/server-service.yaml}
-```
-
-</TabItem>
-<TabItem value="client.yaml" label="client.yaml" default>
-
-```yaml
-{@include: ../../static/code-examples/ibac-for-istio/client-deployment.yaml}
-```
-
-</TabItem>
-<TabItem value="client-other.yaml" label="client-other.yaml" default>
-
-```yaml
-{@include: ../../static/code-examples/ibac-for-istio/client-other-deployment.yaml}
-```
-
-</TabItem>
-
-</Tabs>
-</details>
-
-1. Deploy the two clients and the server in their namespace using `kubectl`:
-
+Let's add services and traffic to the cluster and see how the network mapper builds the map.
+Deploy the following simple example &mdash; `client`, `other-client` and `nginx`, communicating over HTTP:
 ```shell
-kubectl apply -f https://docs.otterize.com/code-examples/ibac-for-istio/all.yaml
+kubectl apply -n otterize-tutorial-istio -f https://docs.otterize.com/code-examples/ibac-for-istio/all.yaml
 ```
-
-<details>
-<summary>Optional: check deployment status</summary>
-Check that the client and server pods were deployed
-
-```bash
-kubectl get pods -n otterize-tutorial-npol
-```
-You should see
-```
-NAME                           READY   STATUS    RESTARTS   AGE
-client-596bcb48d5-pnjxc        1/1     Running   0          8s
-client-other-f56d65d7f-z2wg2   1/1     Running   0          8s
-server-6bb4784ccc-wtz7f        1/1     Running   0          8s
-```
-</details>
-
-Let's monitor both client attempts to call the server with additional terminal windows,
-so we can see the effects of our changes in real time.
-
-2. **Open a new terminal window [client]** and tail the client log:
-```bash
-kubectl logs -f --tail 1 -n otterize-tutorial-npol deploy/client
-```
-<details>
-<summary>Expected output</summary>
-
-At this point the client should be able to communicate with the server:
-```
-Calling server...
-HTTP/1.1 200 OK
-...
-Hi, I am the server, you called, may I help you?
-```
-</details>
-
-3. **Open another terminal window [client-other]** and tail the client-other log:
-```bash
-kubectl logs -f --tail 1 -n otterize-tutorial-npol deploy/client-other
-```
-
-<details>
-<summary>Expected output</summary>
-
-At this point the client should be able to communicate with the server:
-```
-Calling server...
-HTTP/1.1 200 OK
-...
-Hi, I am the server, you called, may I help you?
-```
-</details>
-
-If you've attached Otterize OSS to Otterize Cloud, you can now browse to your account at [https://app.otterize.com](https://app.otterize.com) and see the access graph for your cluster:
-
-![Access graph](/img/quick-tutorials/network-policies/base.png)
 
 ## Apply intents
 We will now declare that the **client** intends to call the **server**.
 
 When the intents YAML is applied, creating a custom resource of type `ClientIntents`,
-Otterize will add a network policy to allow the intended calls
+Otterize will add an Istio authorization policy to allow the intended calls
 (**client** &rarr; **server**) and fail all unintended calls (e.g., **client-other** &rarr; **server**).
 
 
@@ -192,39 +97,30 @@ Client intents are the cornerstone of [intent-based access control (IBAC)](https
 Calling server...
 HTTP/1.1 200 OK
 ...
-Hi, I am the server, you called, may I help you?  # <- before applying the intents file
+hello from /other-client-path  # <- before applying the intents file
 # highlight-start
-Calling server...                                 # <- after applying the intents file
-curl timed out
+Calling server...              # <- after applying the intents file
+RBAC: access denied
 Calling server...
-curl timed out
+RBAC: access denied
 # highlight-end
 ```
-<details>
-<summary>Not seeing the time out?</summary>
-
-If client-other isn't timing out, then the installed CNI plugin likely does not support network policies.
-Consult the docs for your Kubernetes distribution or head back to the [Calico installation section](#prerequisites) to install one.
-For example, Minikube does not start by default with a CNI that supports network policies
-but you can ask it to start with one that does, such as Calico.
-
-</details>
 
 3. And in the **[client]** terminal you should see that calls go through, as expected since they were declared:
 ```bash
 Calling server...
 HTTP/1.1 200 OK
 ...
-Hi, I am the server, you called, may I help you?
+hello from /client-path
 ```
 4. You should also see that a new network policy was created:
 ```bash
-kubectl get NetworkPolicies -n otterize-tutorial-npol
+kubectl get authorizationpolicies.security.istio.io -n otterize-tutorial-istio
 ```
 This should return:
 ```
-NAME                                           POD-SELECTOR                                         AGE
-access-to-server-from-otterize-tutorial-npol   otterize/server=server-otterize-tutorial-np-7e16db   6s
+NAME                                                                AGE
+authorization-policy-to-nginx-from-client.otterize-tutorial-istio   6s
 ```
 
 If you've attached Otterize OSS to Otterize Cloud, go back to see the [access graph in your browser](https://app.otterize.com):
@@ -243,7 +139,9 @@ Otterize did its job of both protecting the server *and* allowing intended acces
 
 ## What did we accomplish?
 
-- Controlling access through network policies no longer means touching network policies at all.
+- Controlling access through Istio authorization policies no longer means touching authorization policies at all.
+
+- The server is now protected and can be access only by mTLS connection with specific certificates.
 
 - Clients simply declare what they need to access with their intents files.
 

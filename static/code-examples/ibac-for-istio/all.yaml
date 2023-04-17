@@ -9,7 +9,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: client
-  namespace:  otterize-tutorial-istio
+  namespace: otterize-tutorial-istio
 spec:
   selector:
     matchLabels:
@@ -19,61 +19,95 @@ spec:
       labels:
         app: client
     spec:
+      serviceAccountName: client-service-account
       containers:
         - name: client
           image: alpine/curl
           command: [ "/bin/sh", "-c", "--" ]
-          args: [ "while true; do echo \"Calling server...\"; if ! timeout 2 curl -si server 2>/dev/null; then echo \"curl timed out\"; fi; sleep 2; done" ]
+          args: [ "while true; do echo \"Calling server...\"; if ! timeout 2 curl -si nginx-service:8080/client-path; then echo \"curl timed out\"; fi; sleep 2; done" ]
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: client-service-account
+  namespace: otterize-tutorial-istio
+  labels:
+    app: client
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: client-other
-  namespace:  otterize-tutorial-istio
+  name: other-client
+  namespace: otterize-tutorial-istio
 spec:
   selector:
     matchLabels:
-      app: client-other
+      app: other-client
   template:
     metadata:
       labels:
-        app: client-other
+        app: other-client
     spec:
+      serviceAccountName: other-client-service-account
       containers:
-        - name: client-other
+        - name: other-client
           image: alpine/curl
           command: [ "/bin/sh", "-c", "--" ]
-          args: [ "while true; do echo \"Calling server...\"; if ! timeout 2 curl -si server 2>/dev/null; then echo \"curl timed out\"; fi; sleep 2; done" ]
+          args: [ "while true; do echo \"Calling server...\"; if ! timeout 2 curl -si nginx-service:8080/other-client-path; then echo \"curl timed out\"; fi; sleep 2; done" ]
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: other-client-service-account
+  namespace: otterize-tutorial-istio
+  labels:
+    app: other-client
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: server
-  namespace:  otterize-tutorial-istio
+  name: nginx
+  namespace: otterize-tutorial-istio
 spec:
   selector:
     matchLabels:
-      app: server
+      app: nginx
+  replicas: 1
   template:
     metadata:
       labels:
-        app: server
+        app: nginx
     spec:
       containers:
-        - name: server
-          image: node
-          command: [ "/bin/sh","-c" ]
-          args: [ "echo \"Hi, I am the server, you called, may I help you?\" > index.html; npx --yes http-server -p 80 " ]
+        - name: nginx
+          image: nginx:1.14.2
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo 'events {}' > /etc/nginx/nginx.conf;
+              echo 'http {' >> /etc/nginx/nginx.conf;
+              echo '    include /etc/nginx/mime.types;' >> /etc/nginx/nginx.conf;
+              echo '    server {' >> /etc/nginx/nginx.conf;
+              echo '        listen 80;' >> /etc/nginx/nginx.conf;
+              echo '        server_name localhost;' >> /etc/nginx/nginx.conf;
+              echo '        location /client-path { return 200 "hello from /client-path\n"; }' >> /etc/nginx/nginx.conf;
+              echo '        location /other-client-path { return 200 "hello from /other-client-path\n"; }' >> /etc/nginx/nginx.conf;
+              echo '    }' >> /etc/nginx/nginx.conf;
+              echo '}' >> /etc/nginx/nginx.conf;
+              nginx -g "daemon off;"
+          ports:
+            - containerPort: 80
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: server
-  namespace:  otterize-tutorial-istio
+  name: nginx-service
+  namespace: otterize-tutorial-istio
 spec:
   selector:
-    app: server
+    app: nginx
   ports:
     - protocol: TCP
-      port: 80
+      port: 8080
       targetPort: 80
+---
