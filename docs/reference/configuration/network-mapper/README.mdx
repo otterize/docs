@@ -54,7 +54,7 @@ The Kafka watcher periodically examines logs of Kafka servers provided by the us
 The watcher is only able to parse Kafka logs when Kafka servers' Authorizer logger is configured to output logs to `stdout` with `DEBUG` level.
 
 ### Istio sidecar metrics
-the Istio watcher periodically queries for all pods with the `security.istio.io/tlsMode` label, queries each pod's Istio sidecar for metrics about connections, and deduces connections with HTTP paths between pods covered by the Istio service mesh.
+The Istio watcher periodically queries for all pods with the `security.istio.io/tlsMode` label, queries each pod's Istio sidecar for metrics about connections, and deduces connections with HTTP paths between pods covered by the Istio service mesh.
 
 ## Deploying the network mapper
 To deploy the network mapper, [use the Helm chart](/reference/configuration/network-mapper/helm-chart).
