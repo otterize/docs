@@ -53,20 +53,89 @@ You can apply both approaches (allow/block all) within your cluster (e.g. by app
 namespaces).
 
 ## Default deny network policy
-To block all traffic within a namespace (e.g. _production_) you can apply a default deny network policy like the
-following example:
+To block all traffic within a namespace you can apply a default deny network policy. After applying this policy, only traffic allowed by ClientIntents and other network policies will be allowed.
+This policy only blocks ingress traffic, so it does not prevent pods from connecting to the Internet. Enforcement is performed at the ingress to pods. This is appropriate for achieving in-cluster zero-trust and network segmentation.
 
 ```yaml
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: default-deny-ingress
-  namespace: production
 spec:
   podSelector: { }
   policyTypes:
     - Ingress
 ```
+
+## Global ingress default deny policy with Calico
+If using Calico for network policies, you can deploy a global, cluster-wide ingress default deny network policy. It is important to exempt Otterize and Calico from this policy so that they are able to function correctly by receiving calls from the Kubernetes API server.
+This policy only blocks ingress traffic, so it does not prevent pods from connecting to the Internet. Enforcement is performed at the ingress to pods. This is appropriate for achieving in-cluster zero-trust and network segmentation.
+
+```yaml
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: global-deny-ingress
+spec:
+  # highlight-next-line
+  # Exclude kube-system, calico-system, calico-apiserver and otterize-system
+  namespaceSelector: has(projectcalico.org/name) && projectcalico.org/name not in {"kube-system", "calico-system", "calico-apiserver", "otterize-system"}
+  types:
+  # highlight-next-line
+  - Ingress # Ingress-only
+```
+
+## Global egress default deny policy with Calico
+If using Calico for network policies, you can deploy a global, cluster-wide default deny network policy. It is important to exempt Otterize and Calico from this policy so that they are able to function correctly.
+While Otterize only manages intra-cluster traffic, you may also wish to restrict egress traffic outside of the cluster.
+
+To work well with an ingress default deny policy, an egress policy should not prevent intra-cluster traffic - the ingress policy will already block all in-cluster traffic, and ClientIntents will allow intended traffic.
+
+This example, written by a user on our community Slack, demonstrates how you can achieve this by allowlisting pod IPs.
+
+You will need to adjust the example to allow the IPs for your pods. This is usually part of your CNI or cluster configuration.
+
+```yaml
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: default-deny-egress
+spec:
+  namespaceSelector: has(projectcalico.org/name) && projectcalico.org/name not in {"kube-system", "calico-system", "calico-apiserver"}
+  types:
+  - Egress
+  egress:
+   # allow all namespaces to communicate to DNS pods
+  - action: Allow
+    protocol: UDP
+    destination:
+      selector: 'k8s-app == "kube-dns"'
+      ports: ["53"]
+    # Allow all namespaces to talk to Internet on port 443
+  - action: Allow
+    protocol: TCP
+    destination:
+      nets: ["0.0.0.0/0"]
+      ports: ["443"]
+    # Allow all namespaces to talk on egress to any port inside the cluster or in the VPC.
+    # Effectively, ingress default deny would block any intra-cluster traffic
+    # not explicitly allowed by a dedicated network policy.
+  - action: Allow
+    protocol: TCP
+    destination:
+    # highlight-start
+    # update these IP addresses to match your pods
+      nets: ["10.0.0.0/16","172.20.0.0/16"]
+    # highlight-end
+```
+
+## Working with third party Helm charts and a default deny policy
+After applying a default deny policy, you will need network policies for traffic to go through.
+The Otterize network mapper generates ClientIntents for your cluster, but generally speaking you should only use ClientIntents for services that are clients, rather than infrastructure (e.g. checkoutservice is a client, Prometheus is infrastructure).
+
+Many third party Helm charts come with a ready-made network policy to use when deploying with a default deny policy - simply enable them using the values found in the chart.
+
+We recommend using these network policies, as it relieves the infrastructure/platform team in your organization from maintaining ClientIntents for infrastructure services - the Helm chart will always have the most accurate network policies.
 
 ## Auto-generating network policies for external traffic
 The intents operator defaults to automatically generate network policies for Kubernetes **Services** (type **LoadBalancer** and **NodePort**), and Ingress traffic
@@ -102,7 +171,7 @@ would block existing traffic like **loadgenerator** -> **frontend**.
 
 
 
-## How intents translate to network policies.
+## How intents translate to network policies
 Let's follow an example scenario and track how Otterize configures network policies when we apply intents.
 ### Deploy example
 Our example consists of two pods: an HTTP server and a client that calls it.
