@@ -8,8 +8,9 @@ import TabItem from '@theme/TabItem';
 
 Otterize automates mTLS-based, HTTP-level pod-to-pod access control with Istio authorization (authZ) policies, within your Kubernetes cluster.
 
-Instead of managing pod identities, labeling clients, servers and namespaces,
-and manually authoring individual network policies, Otterize implements **intent-based access control** (IBAC).
+Implementing this kind of access control with Istio is complicated: authorization policies select servers by label, and clients by service account.
+
+Instead of managing complicated authorization policies per server, Otterize implements **intent-based access control** (IBAC).
 You just declare what calls the client pods intend to make,
 and everything is automatically wired together so only intended calls are allowed.
 
