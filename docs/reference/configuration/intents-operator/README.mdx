@@ -19,7 +19,7 @@ to connect to Kafka using mTLS &mdash; the Otterize intents operator works with 
 To deploy the operator, [use the Helm chart](/reference/configuration/intents-operator/helm-chart).
 
 ## Controlling access using the intents operator
-To learn how to use the intents operator to control access, consult the guides for [managing network policies using intents](/quick-tutorials/k8s-network-policies) and [Kafka ACLs using intents](/quick-tutorials/k8s-istio-authorization-policies).
+To learn how to use the intents operator to control access, consult the guides for [managing network policies using intents](/quick-tutorials/k8s-network-policies), [Kafka ACLs using intents](/quick-tutorials/k8s-kafka-mtls) and [Istio AuthorizationPolicy using intents](/quick-tutorials/).
 
 ## Pod annotations
 
@@ -41,8 +41,8 @@ In the example above, the `checkoutservice` intends to call the `shippingservice
 
 See [service identities and resolution](/reference/service-identities) to learn how service names are resolved for pods.
 
-The intents operator then uses the resolved identity as the service name, and combines it with the namespace of the pod and hashed to form the value of the label `intents.otterize.com/server`.
-This label is then used as a selector for network policies. Another
+The intents operator uses the resolved identity as the service name, and combines it with the namespace of the pod and hashed to form the value of the label `intents.otterize.com/server`.
+This label is used as a selector for network policies. Another
 label, `intents.otterize.com/access-server-<servicename>-<servicehash>`, is applied to client pods which have declared their intent
 to access the server. This label is used as the selector to determine which client pods are allowed to access the server
 pod.
@@ -70,3 +70,25 @@ A Kafka client may specify a consumer group ID when consuming a topic. When it d
 To enable this, the intents operator creates an ACL enabling all consumers to read and describe all consumer groups.
 The permission check performed by the AclAuthorizer for a consumer group also takes into account whether the consumer has the appropriate access to the topic
 it is attempting to read, so the end result is that the topic ACLs determine actual access.
+
+
+### Istio AuthorizationPolicy
+The intents operator automatically creates, updates and deletes Istio authorization policies, automatically looks up service accounts for client pods and labels server pods, to reflect precisely the client-to-server calls declared in client intents files.
+
+The intents operator can also be configured to process client intents *without* creating and managing network policies, to provide visibility on what would happen once enforcement via Istio authorization policy is activated. More information can be found in the [shadow vs active enforcement documentation](/shadow-vs-active-enforcement).
+
+In the example above, the `checkoutservice` intends to call the `shippingservice`. When the CRD is applied through `kubectl apply`, the intents operator labels the `shippingservice` pod, looks up `checkoutservice`'s service account, and creates an authorization policy for the ingress of the `shippingservice` that references the service account and allows calls to the `shippingservice` from the `checkoutservice`.
+
+See [service identities and resolution](/reference/service-identities) to learn how service names are resolved for pods.
+
+The intents operator uses the resolved identity as the service name, and combines it with the namespace of the pod and hashed to form the value of the label `intents.otterize.com/server`.
+This label is used as a selector for servers in Istio authorization policies. The same algorithm is used to look up the client from the service name in the client intents, for whom the service account is looked up.
+
+Finally, an Istio authorization policy is created that allows communication between the client's service account and the server. If the service account covers clients other than the one requested, an event is generated on the ClientIntents to warn about this, and this appears as a warning on Otterize Cloud.
+
+#### Handling external traffic
+Coming soon: automated handling of external traffic based on the presence of an `Ingress`, `Service` of type `LoadBalancer`, `IstioGateway` or `Gateway` API, like [in network policies](#handling-external-traffic).
+
+When an Istio authorization policy is created for a server, it will only allow incoming traffic that matches the policy.
+
+To allow external traffic from outside the cluster to a server, create an `AuthorizationPolicy` that allows all traffic, traffic that does not come from within the cluster by IP range, or traffic from ingress pods. Create this AuthorizationPolicy alongside the `Ingress`, `Service` or `Gateway` resource, such as in the same Helm chart.
