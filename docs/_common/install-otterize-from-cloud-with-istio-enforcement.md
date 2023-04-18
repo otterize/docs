@@ -11,5 +11,5 @@ Connecting your cluster simply entails installing Otterize OSS via Helm, using c
 The credentials will already be inlined into the Helm command shown in the Cloud UI, so you just need to copy that line and run it from your shell.
 If you don't give it the Cloud credentials, Otterize OSS will run fully standalone in your cluster &mdash; you just won't have the visualization in Otterize Cloud.
 
-The Helm command shown in the Cloud UI also includes flags to turn off enforcement: Otterize OSS will be running in "shadow mode," meaning that it will show you what **would** happen if it were to create/update your access controls (Kubernetes network policies, Kafka ACLs, Istio authorization policies, etc.). While that's useful for gradually rolling out IBAC, for this tutorial we go straight to active enforcement.
+The Helm command shown in the Cloud UI also includes flags to turn off enforcement: Otterize OSS will be running in "shadow mode," meaning that it will show you what **would** happen if it created network policies to restrict pod-to-pod traffic, and created Kafka ACLs to control access to Kafka topics. While that's useful for gradually rolling out IBAC, for this tutorial we go straight to active enforcement.
 </details>

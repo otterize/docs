@@ -1,17 +1,18 @@
 ---
-sidebar_position: 3
-title: Kubernetes cluster mapping
+sidebar_position: 5
+title: Istio traffic mapping
 ---
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import styles from '/src/css/styles.module.css';
 
-The network mapper allows you to map pod-to-pod traffic within your K8s cluster.
+With its Istio watcher enabled, the network mapper allows you to map pod-to-pod Istio traffic within your K8s cluster.
 
 In this tutorial, we will:
 
-- Deploy a server, and two clients calling it.
-- Map their communication using the network mapper.
+- Install the Istio service mesh in our cluster.
+- Deploy 2 clients calling an nginx reverse-proxy over HTTP using different paths.
+- Map their calls using the network mapper and the Istio watcher component.
 
 <details>
 <summary>Make sure you have a Kubernetes cluster</summary>
@@ -21,16 +22,16 @@ Before you start, you need to have a Kubernetes cluster. Having a cluster with a
 {@include: ../_common/cluster-setup.md}
 </details>
 
-You can now install Otterize in your cluster (if it's not already installed), and optionally connect to Otterize Cloud. Connecting to Cloud lets you:
+You can now install Otterize in your cluster, and optionally connect to Otterize Cloud. Connecting to Cloud lets you:
 1. See what's happening visually in your browser, through the "access graph";
 2. Avoid using SPIRE (which can be installed with Otterize) for issuing certificates, as Otterize Cloud provides a certificate service.
 
 So either forego browser visualization and:
 
 <details>
-<summary>Install Otterize in your cluster, <b>without</b> Otterize Cloud</summary>
+<summary>Install the Otterize network mapper in your cluster with the Istio watcher component enabled, and <b>without</b> Otterize Cloud</summary>
 
-{@include: ../_common/install-otterize.md}
+{@include: ../_common/install-otterize-istio-watcher.md}
 
 </details>
 
@@ -45,7 +46,7 @@ Or choose to include browser visualization and:
 
 #### Install Otterize OSS, connected to Otterize Cloud
 
-{@include: ../_common/install-otterize-from-cloud-with-enforcement.md}
+{@include: ../_common/install-otterize-from-cloud-with-enforcement-with-istiowatcher.md}
 
 </details>
 
@@ -58,25 +59,76 @@ Finally, you'll need to install the Otterize CLI (if you haven't already) to int
 
 </details>
 
+## Installing and configuring Istio
+<details>
+<summary>Install Istio in the cluster via Helm</summary>
+
+{@include: ../_common/install-istio.md}
+
+</details>
+<details>
+<summary>Create a namespace for our demo application and label it for Istio injection</summary>
+
+```shell
+kubectl create namespace otterize-tutorial-istio
+kubectl label namespace otterize-tutorial-istio istio-injection=enabled
+```
+
+</details>
+<details>
+<summary>Add HTTP methods and request paths to Istio exported metrics</summary>
+
+Apply this configuration in the `istio-system` namespace, propagating it to all namespaces covered by the mesh.
+
+```shell
+apiVersion: telemetry.istio.io/v1alpha1
+kind: Telemetry
+metadata:
+  name: mesh-default
+  namespace: istio-system
+spec:
+  accessLogging:
+    - providers:
+      - name: envoy
+  metrics:
+  - providers:
+    - name: prometheus
+    overrides:
+    - tagOverrides:
+        request_method:
+          value: request.method
+        request_path:
+          value: request.path
+```
+
+</details>
+
+:::tip
+HTTP request paths and methods aren't exported in Envoy's connection metrics by default, but we do want to capture those
+details when creating the network map. That way we not only have better visibility of the calling patterns,
+e.g. in the access graph, but we can also use that information to automatically generate fine-grained intents and
+enforce them with Istio authorization policies.
+:::
+
 ## Deploy demo to simulate traffic
 
 Let's add services and traffic to the cluster and see how the network mapper builds the map.
-Deploy the following simple example &mdash; `client`, `client2` and `server`, communicating over HTTP:
+Deploy the following simple example &mdash; `client`, `client2` and `nginx`, communicating over HTTP:
 ```shell
-kubectl apply -n otterize-tutorial-mapper -f https://docs.otterize.com/code-examples/network-mapper/all.yaml
+kubectl apply -n otterize-tutorial-istio -f https://docs.otterize.com/code-examples/network-mapper/istio.yaml
 ```
 
 ## Map the cluster
 
-The network mapper starts to sniff traffic and build an in-memory network map as soon as it's installed.
-The Otterize CLI allows you to interact with the network mapper to grab a snapshot of current mapped traffic,
-reset its state and more.
+The Istio watcher component of the network mapper starts querying Envoy sidecars for HTTP connections and builds an
+in-memory network map as soon as it's installed. The Otterize CLI allows you to interact with the network mapper to
+grab a snapshot of current mapped traffic, reset its state and more.
 
 For a complete list of the CLI capabilities read the [CLI command reference](/reference/cli/#network-mapper).
 
 ### Extract and see the network map
 
-{@include: ../getting-started/_show_mapped_traffic_cli.mdx}
+{@include: ../getting-started/_show_mapped_istio_traffic_cli.mdx}
 
 ### Show the access graph in Otterize Cloud
 
@@ -84,7 +136,7 @@ If you've attached Otterize OSS to Otterize Cloud, you can now also see the [acc
 
 ![Access graph](/img/quick-tutorials/network-mapper/otterize-tutorial-access-graph.png)
 
-Note, for example, that the `client` &rightarrow; `server` arrow has a yellow notification icon indicating a single notification. Clicking on it shows:
+Note, for example, that the `client` &rightarrow; `server` arrow is dashed. Clicking on it shows:
 
 <img src="/img/quick-tutorials/network-mapper/otterize-tutorial-access-graph-insights.png" alt="Access graph insights" width="600"/>
 
@@ -103,6 +155,7 @@ the intents files. We'll see more of that below.
 Where to go next?
 
 - You can [see a larger network map](/quick-visual-tutorials/visual-k8s-cluster-mapping), based on a demo ecommerce application.
+- Learn how to roll out [Istio authorization-policy based enforcement](/quick-tutorials/k8s-istio-authorization-policies) using intents.
 - If you haven't already, see the [automate network policies tutorial](/quick-tutorials/k8s-network-policies).
 - Or go to the next tutorial to [automate secure access for Kafka](/quick-tutorials/k8s-kafka-mtls).
 - Explore how [shadow mode](/quick-visual-tutorials/visual-ibac-network-policies) can expand these capabilities.
@@ -112,5 +165,6 @@ Where to go next?
 To remove the deployed examples run:
 
 ```bash
-kubectl delete namespace otterize-tutorial-mapper
+helm uninstall istio-base -n istio-system # Remove Istio
+kubectl delete namespace otterize-tutorial-istio
 ```

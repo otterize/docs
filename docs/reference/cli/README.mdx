@@ -374,7 +374,7 @@ Returns information about a single environment, specified by its id.
 Returns a table of information about the specified environment.
 
 ```shell
-id             name    labels service count namespaces count applied intents count
+id             name    labels service count namespaces count declared intents count
 ────────────── ─────── ────── ───────────── ──────────────── ─────────────────────
 env_o6tdthl6qz staging        12            1                2
 
@@ -400,8 +400,8 @@ The keys of the labels on a given environment must be unique.
 Returns a table of information about the newly-created environment.
 
 ```shell
-id             name labels                    service count namespaces count applied intents count
-────────────── ──── ───────────────────────── ───────────── ──────────────── ─────────────────────
+id             name labels                    service count namespaces count declared intents count
+────────────── ──── ───────────────────────── ───────────── ──────────────── ──────────────────────
 env_bzzustqrek qa   anonymized=true,us-east-1 0             0                0
 ```
 
@@ -426,7 +426,7 @@ Returns a confirmation of the update, and a table of information about the newly
 
 ```shell
 Environment updated
-id             name labels                     service count namespaces count applied intents count
+id             name labels                     service count namespaces count declared intents count
 ────────────── ──── ────────────────────────── ───────────── ──────────────── ─────────────────────
 env_bzzustqrek qa1  anonymized=false,us-east-2 0             0                0
 ```
@@ -450,8 +450,8 @@ Returns a table of information about the newly-updated environment.
 
 ```shell
 Environment updated
-id             name labels                               service count namespaces count applied intents count
-────────────── ──── ──────────────────────────────────── ───────────── ──────────────── ─────────────────────
+id             name labels                               service count namespaces count declared intents count
+────────────── ──── ──────────────────────────────────── ───────────── ──────────────── ──────────────────────
 env_uchr33prjg qa   size=small,anonymized=true,us-east-1 0             0                0
 ```
 
@@ -473,8 +473,8 @@ Returns a table of information about the newly-updated environment.
 
 ```shell
 Environment updated
-id             name labels                    service count namespaces count applied intents count
-────────────── ──── ───────────────────────── ───────────── ──────────────── ─────────────────────
+id             name labels                    service count namespaces count declared intents count
+────────────── ──── ───────────────────────── ───────────── ──────────────── ──────────────────────
 env_uchr33prjg qa   anonymized=true,us-east-1 0             0                0
 ```
 
@@ -680,7 +680,7 @@ spec:
 
 ### `otterize intents list [--client-service-id <id>] [--server-service-id <id>] [--env-id <id>]`
 
-Returns the list of (applied) intents, optionally filtered by client, server, or environment.
+Returns the list of (declared) intents, optionally filtered by client, server, or environment.
 
 #### Options
 
@@ -710,7 +710,7 @@ intent_tz9e5buzcn svc_nqhgkxlbwe    svc_lkyww4s6ad    HTTP
 
 ### `otterize intents get <intent-id>`
 
-Returns information about a single (applied) intent, specified by its id.
+Returns information about a single (declared) intent, specified by its id.
 
 #### Returns
 
