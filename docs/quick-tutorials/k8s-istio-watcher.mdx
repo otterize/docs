@@ -70,8 +70,8 @@ Finally, you'll need to install the Otterize CLI (if you haven't already) to int
 <summary>Create a namespace for our demo application and label it for Istio injection</summary>
 
 ```shell
-kubectl create namespace otterize-tutorial-istio
-kubectl label namespace otterize-tutorial-istio istio-injection=enabled
+kubectl create namespace otterize-tutorial-istio-mapping
+kubectl label namespace otterize-tutorial-istio-mapping istio-injection=enabled
 ```
 
 </details>
@@ -115,7 +115,7 @@ enforce them with Istio authorization policies.
 Let's add services and traffic to the cluster and see how the network mapper builds the map.
 Deploy the following simple example &mdash; `client`, `client2` and `nginx`, communicating over HTTP:
 ```shell
-kubectl apply -n otterize-tutorial-istio -f https://docs.otterize.com/code-examples/network-mapper/istio.yaml
+kubectl apply -n otterize-tutorial-istio-mapping -f https://docs.otterize.com/code-examples/network-mapper/istio.yaml
 ```
 
 ## Map the cluster
@@ -134,11 +134,11 @@ For a complete list of the CLI capabilities read the [CLI command reference](/re
 
 If you've attached Otterize OSS to Otterize Cloud, you can now also see the [access graph in your browser](https://app.otterize.com):
 
-![Access graph](/img/quick-tutorials/network-mapper/otterize-tutorial-access-graph.png)
+![Access graph](/img/quick-tutorials/network-mapper/otterize-tutorial-access-graph-istio.png)
 
-Note, for example, that the `client` &rightarrow; `server` arrow is dashed. Clicking on it shows:
+Note, for example, that the `client` &rightarrow; `nginx` arrow is dashed. Clicking on it shows:
 
-<img src="/img/quick-tutorials/network-mapper/otterize-tutorial-access-graph-insights.png" alt="Access graph insights" width="600"/>
+<img src="/img/quick-tutorials/network-mapper/otterize-tutorial-access-graph-istio-insights.png" alt="Access graph insights" width="600"/>
 
 The access graph reveals several types of information and insights, such as:
 1. Seeing the network map for different clusters, seeing the subset of the map for a given namespace, or even &mdash; according to how you've mapped namespaces to environments &mdash; seeing the subset of the map for a specific environment.
@@ -166,5 +166,5 @@ To remove the deployed examples run:
 
 ```bash
 helm uninstall istio-base -n istio-system # Remove Istio
-kubectl delete namespace otterize-tutorial-istio
+kubectl delete namespace otterize-tutorial-istio-mapping
 ```

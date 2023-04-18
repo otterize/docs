@@ -23,11 +23,19 @@ In this tutorial, we will:
 ## Prerequisites
 
 <details>
-    <summary>Make sure you have a Kubernetes cluster</summary>
+<summary>Prepare a Kubernetes cluster with Istio</summary>
 
-    Before you start, you need to have a Kubernetes cluster. Having a cluster with a [CNI](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/) that supports [NetworkPolicies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) isn't required for this tutorial, but is recommended so that your cluster works with other tutorials.
+Before you start, you need to have a Kubernetes cluster. Having a cluster with a [CNI](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/) that supports [NetworkPolicies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) isn't required for this tutorial, but is recommended so that your cluster works with other tutorials.
 
-    {@include: ../_common/cluster-setup.md}
+
+{@include: ../_common/cluster-setup.md}
+</details>
+## Installing and configuring Istio
+<details>
+<summary>Install Istio in the cluster via Helm</summary>
+
+{@include: ../_common/install-istio.md}
+
 </details>
 
 You can now install (or reinstall) Otterize in your cluster, and optionally connect to Otterize Cloud. Connecting to Cloud lets you:
@@ -126,7 +134,10 @@ authorization-policy-to-nginx-from-client.otterize-tutorial-istio   6s
 
 If you've attached Otterize OSS to Otterize Cloud, go back to see the [access graph in your browser](https://app.otterize.com):
 
-![Access graph](/img/quick-tutorials/network-policies/protected.png)
+![Access graph](/img/quick-tutorials/k8s-istio-authorization-policies/protected.png)
+
+And upon clicking the green connection:
+![Access graph](/img/quick-tutorials/k8s-istio-authorization-policies/protected-edge.png)
 
 It's now clear what happened:
 1. The server is now protected, and is also blocking some of its clients. Click on it to see what to do about it.
@@ -173,7 +184,7 @@ Try to create an intents file yourself for **client-other**, and apply it to all
 
 ## What's next
 
-- Get started with the [Otterize network mapper](/quick-tutorials/k8s-network-mapper) to help you bootstrap intents files
+- Get started with the [Otterize network mapper for Istio](/quick-tutorials/k8s-istio-watcher) to help you bootstrap intents files with HTTP resources
   for use in [intent-based access control (IBAC)](https://otterize.com/ibac).
 - See in advance what calls will be allowed or blocked, by running Otterize in **shadow mode** &mdash; just follow the [quick visual tutorial for IBAC with network policies](/quick-visual-tutorials/visual-ibac-network-policies).
 - Learn how to easily secure Kafka with IBAC, in [a hands-on tutorial](/quick-tutorials/k8s-kafka-mtls) or [a more visual tutorial](/quick-visual-tutorials/visual-ibac-kafka-k8s).
@@ -184,5 +195,5 @@ Try to create an intents file yourself for **client-other**, and apply it to all
 To remove the deployed examples run:
 
 ```bash
-kubectl delete namespace otterize-tutorial-npol
+kubectl delete namespace otterize-tutorial-istio
 ```
