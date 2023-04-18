@@ -4,6 +4,7 @@ metadata:
   name: client
   namespace: otterize-tutorial-istio-mapping
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: client
@@ -33,6 +34,7 @@ metadata:
   name: client2
   namespace: otterize-tutorial-istio-mapping
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: client2
@@ -51,7 +53,7 @@ spec:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: client2
+  name: client2-service-account
   namespace: otterize-tutorial-istio-mapping
   labels:
     app: client2
