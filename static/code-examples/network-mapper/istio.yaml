@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: client
-  namespace: otterize-tutorial-istio
+  namespace: otterize-tutorial-istio-mapping
 spec:
   selector:
     matchLabels:
@@ -23,7 +23,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: client-service-account
-  namespace: otterize-tutorial-istio
+  namespace: otterize-tutorial-istio-mapping
   labels:
     app: client
 ---
@@ -31,7 +31,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: client2
-  namespace: otterize-tutorial-istio
+  namespace: otterize-tutorial-istio-mapping
 spec:
   selector:
     matchLabels:
@@ -52,7 +52,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: client2
-  namespace: otterize-tutorial-istio
+  namespace: otterize-tutorial-istio-mapping
   labels:
     app: client2
 ---
@@ -60,7 +60,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nginx
-  namespace: otterize-tutorial-istio
+  namespace: otterize-tutorial-istio-mapping
 spec:
   selector:
     matchLabels:
@@ -81,7 +81,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: nginx-service
-  namespace: otterize-tutorial-istio
+  namespace: otterize-tutorial-istio-mapping
 spec:
   selector:
     app: nginx
