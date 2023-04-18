@@ -9,7 +9,7 @@ By default, the intents operator enforces access controls by creating, updating 
 
 ## Active enforcement
 
-When enforcement is active &mdash; when it is not disabled &mdash; the intents operator processes applied client intents and turns each into access authorizations from the client to its called servers: if network policies are active (and supported by the CNI in the Kubernetes cluster), the operator labels pods and creates/updates network policies to allow access from that client to all its called servers, as well as removing previously-granted access based on out of date intents; and similarly for Kafka ACLs to Kafka servers.
+When enforcement is active &mdash; when it is not disabled &mdash; the intents operator processes client intents and turns each into access authorizations from the client to its called servers: if network policies are active (and supported by the CNI in the Kubernetes cluster), the operator labels pods and creates/updates network policies to allow access from that client to all its called servers, as well as removing previously-granted access based on out of date intents; and similarly for Kafka ACLs to Kafka servers.
 
 In general, of course, this will immediately block access from services that have not declared their intents to call the now-protected servers. That is, after all, why you use intent-based access control (IBAC).
 
@@ -30,9 +30,9 @@ The intents operator still reflects what access controls *would be in place* sho
 
 And the Otterize network mapper, if installed in the Kubernetes cluster, still reflects which clients have *in fact* been calling which servers, whether successfully or not. Those are *discovered* intents: presumably, the clients intended to call those servers, whether they have declared (and applied) them or not.
 
-So by operating in this "shadow mode", and comparing the discovered intents with the applied intents, you can predict what *would* happen if enforcement were to be active: which clients calls that are in fact happening now would be blocked or allowed, which servers are ready to have enforcement for them activated because none of their clients would get blocked, and so on.
+So by operating in this "shadow mode", and comparing the discovered intents with the declared intents, you can predict what *would* happen if enforcement were to be active: which clients calls that are in fact happening now would be blocked or allowed, which servers are ready to have enforcement for them activated because none of their clients would get blocked, and so on.
 
-To unlock these insights, the Otterize OSS components (the intents operator, the network mapper, and the credentials operator) can be configured to connect to Otterize Cloud in order to report their configurations, the discovered intents, and the applied intents in the cluster. Within Otterize Cloud, the results are processed and displayed as an access graph:
+To unlock these insights, the Otterize OSS components (the intents operator, the network mapper, and the credentials operator) can be configured to connect to Otterize Cloud in order to report their configurations, the discovered intents, and the declared intents in the cluster. Within Otterize Cloud, the results are processed and displayed as an access graph:
 
 ![Otterize Cloud - access graph](/img/shadow-vs-active-enforcement/access-graph-screenshot.png)
 

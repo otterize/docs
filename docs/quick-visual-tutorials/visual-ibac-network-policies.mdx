@@ -151,7 +151,7 @@ Look at the access graph again:
 
 ![Access graph](/img/quick-tutorials/shadow-mode/phase-1.png)
 
-The thick green line from `frontend` to `recommendationservice`, representing the discovered intent from the network mapper, no longer has an empty center, but rather a **solid black center, representing the explicitly applied intent**.
+The thick green line from `frontend` to `recommendationservice`, representing the discovered intent from the network mapper, no longer has an empty center, but rather a **solid black center, representing the explicitly declared intent**.
 
 Click on that `frontend` &rarr; `recommendationservice` line:
 <img src="/img/quick-tutorials/shadow-mode/frontend-recommendation-applied.png" alt="Discovered intents" width="600"/>
@@ -284,7 +284,7 @@ Let's look at the access graph again:
 Note that all (but two) of the lock icons are locked, indicating the services are protected. And all the locks and edges are green, indicating no call attempts (discovered by the network mapper) are being blocked.
 
 :::tip How would blocked access attempts look now?
-From now on, if a client attempts a server call that wasn't covered by one of the applied intents, that would be discovered by the network mapper and show up as (new) discovered intents. Remember that the network mapper discovers attempted access, not just successful access. In this case, a red line would appear from that client to that server, and the lock on that server would turn red: calls from that client are being blocked.
+From now on, if a client attempts a server call that wasn't covered by one of the declared intents, that would be discovered by the network mapper and show up as (new) discovered intents. Remember that the network mapper discovers attempted access, not just successful access. In this case, a red line would appear from that client to that server, and the lock on that server would turn red: calls from that client are being blocked.
 
 That may be because:
 - The calls didn't happen when the network mapper was building its map from which the intents were bootstrapped, in which case you may choose to generate all the intents again, or or just create and apply the new ones manually.
@@ -293,7 +293,7 @@ That may be because:
 
 <details>
 <summary>Optional: see the generated network policies</summary>
-Otterize automatically generated network policies according to your declared and applied intents.
+Otterize automatically generated network policies according to your declared intents.
 
 To list all generated network policies run:
 ```bash

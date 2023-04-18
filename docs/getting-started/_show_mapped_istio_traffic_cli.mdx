@@ -1,0 +1,148 @@
+You can get the network map by calling the CLI `list` or `export` commands.
+
+The `export` output format can be `yaml` (Kubernetes client intents files) and `json`.
+The following shows the CLI output filtered for the namespace (`otterize-tutorial-istio`) of the example above.
+
+<Tabs>
+  <TabItem value="image" label="Image" default>
+
+1. Visualize the overall pod-to-pod network map built up so far, as an image. Note that this image is actually based on information from the network mapper's sniffer, based on DNS requests and open TCP connections, and does not require the Istio watcher, which supplies fine-grained, HTTP-level information. To include HTTP-level information, use the `list` or `export` commands.
+
+   ```shell
+   otterize network-mapper visualize -n otterize-tutorial-istio -o otterize-tutorial-istio-map.png
+   ```
+2. For the simple example above, you should get an image file that looks like:
+
+   ![Otterize tutorial map](/img/quick-tutorials/network-mapper/otterize-tutorial-istio-map.png)
+
+</TabItem>
+  <TabItem value="list" label="List">
+
+1. List the pod-to-pod network map built up so far:
+
+       ```shell
+      otterize network-mapper list -n otterize-tutorial-istio
+       ```
+2. For the simple example above, you should see:
+       ```shell
+        client in namespace otterize-tutorial-istio calls:
+          - nginx in namespace otterize-tutorial-istio
+            - path /client-path, methods: [GET]
+        client2 in namespace otterize-tutorial-istio calls:
+          - nginx in namespace otterize-tutorial-istio
+            - path /client2-path, methods: [POST]
+       ```
+    Repeating lines showing calls to common services like `prometheus` or `jaeger` were omitted for simplicity.
+
+
+</TabItem>
+  <TabItem value="intents" label="Export as intents">
+
+1. Export as YAML client intents (the default format) the pod-to-pod network map built up so far:
+
+   ```shell
+   otterize network-mapper export -n otterize-tutorial-istio
+   ```
+
+2. For the simple example above, you should see (concatenated into one YAML file):
+   ```yaml
+   apiVersion: k8s.otterize.com/v1alpha2
+      kind: ClientIntents
+   metadata:
+     name: client
+     namespace: otterize-tutorial-istio
+   spec:
+     service:
+       name: client
+     calls:
+       - name: nginx
+         type: http
+         resources:
+            - path: /client-path
+         methods:
+           - GET
+   ---
+   apiVersion: k8s.k8s.otterize.com/v1
+   kind: ClientIntents
+   metadata:
+     name: client2
+     namespace: otterize-tutorial-istio
+   spec:
+     service:
+       name: client2
+     calls:
+       - name: nginx
+         type: http
+         resources:
+           - path: /client2-path
+         methods:
+           - POST
+   ```
+
+</TabItem>
+  <TabItem value="json" label="Export as JSON">
+
+1. Export as JSON the pod-to-pod network map built up so far:
+   ```shell
+   otterize network-mapper export -n otterize-tutorial-istio --output json
+   ```
+
+2. For the simple example above, you should see:
+
+    ```json
+    [
+      {
+        "kind": "ClientIntents",
+        "apiVersion": "k8s.otterize.com/v1alpha2",
+        "metadata": {
+          "name": "client",
+          "namespace": "otterize-tutorial-istio"
+        },
+        "spec": {
+          "service": {
+            "name": "client"
+          },
+          "calls": [
+            {
+              "name": "nginx",
+              "type": "http",
+              "resources": [
+                {
+                  "path": "/client-path",
+                  "methods": [GET]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "kind": "ClientIntents",
+        "apiVersion": "k8s.otterize.com/v1alpha2",
+        "metadata": {
+          "name": "client2",
+          "namespace": "otterize-tutorial-istio"
+        },
+        "spec": {
+          "service": {
+            "name": "client2"
+          },
+          "calls": [
+            {
+              "name": "nginx",
+              "type": "http",
+              "resources": [
+                {
+                  "path": "/client2-path",
+                  "methods": [POST]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+    ```
+
+</TabItem>
+</Tabs>
