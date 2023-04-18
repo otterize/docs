@@ -41,7 +41,7 @@ of the example above.
    ```
 2. For the simple example above, you should see (concatenated into one YAML file):
    ```yaml
-   apiVersion: k8s.k8s.otterize.com/v1
+   apiVersion: k8s.otterize.com/v1alpha2
    kind: ClientIntents
    metadata:
      name: client
@@ -52,7 +52,7 @@ of the example above.
      calls:
        - name: server
    ---
-   apiVersion: k8s.k8s.otterize.com/v1
+   apiVersion: k8s.otterize.com/v1alpha2
    kind: ClientIntents
    metadata:
      name: server
@@ -69,7 +69,7 @@ of the example above.
 
 1. Export as JSON the pod-to-pod network map built up so far:
    ```shell
-   otterize network-mapper export -n otterize-tutorial-mapper --format json
+   otterize network-mapper export -n otterize-tutorial-mapper --output json
    ```
 2. For the simple example above, you should see:
 
