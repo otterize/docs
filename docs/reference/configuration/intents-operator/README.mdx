@@ -75,7 +75,7 @@ it is attempting to read, so the end result is that the topic ACLs determine act
 ### Istio AuthorizationPolicy
 The intents operator automatically creates, updates and deletes Istio authorization policies, automatically looks up service accounts for client pods and labels server pods, to reflect precisely the client-to-server calls declared in client intents files.
 
-The intents operator can also be configured to process client intents *without* creating and managing network policies, to provide visibility on what would happen once enforcement via Istio authorization policy is activated. More information can be found in the [shadow vs active enforcement documentation](/shadow-vs-active-enforcement).
+The intents operator can also be configured to process client intents *without* creating and managing Istio authorization policies, to provide visibility on what would happen once enforcement via Istio authorization policy is activated. More information can be found in the [shadow vs active enforcement documentation](/shadow-vs-active-enforcement).
 
 In the example above, the `checkoutservice` intends to call the `shippingservice`. When the CRD is applied through `kubectl apply`, the intents operator labels the `shippingservice` pod, looks up `checkoutservice`'s service account, and creates an authorization policy for the ingress of the `shippingservice` that references the service account and allows calls to the `shippingservice` from the `checkoutservice`.
 
