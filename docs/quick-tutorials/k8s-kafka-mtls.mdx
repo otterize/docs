@@ -24,6 +24,15 @@ For this tutorial, we'll configure Otterize to not manage network policies, so w
 Of course you can also choose to combine them &mdash; after all, Kafka is just another service running in the cluster. To do that, reinstall Otterize without the `--set intentsOperator.operator.enableNetworkPolicyCreation=false` flag.
 :::
 
+
+<details>
+<summary>Prepare a Kubernetes cluster</summary>
+
+Before you start, you'll need a Kubernetes cluster.
+
+{@include: ../_common/cluster-setup.md}
+</details>
+
 You can now install (or reinstall) Otterize in your cluster, and optionally connect to Otterize Cloud. Connecting to Cloud lets you:
 1. See what's happening visually in your browser, through the "access graph";
 2. Avoid using SPIRE (which can be installed with Otterize) for issuing certificates, as Otterize Cloud provides a certificate service.

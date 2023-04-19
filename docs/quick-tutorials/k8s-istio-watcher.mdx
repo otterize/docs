@@ -11,13 +11,15 @@ With its Istio watcher enabled, the network mapper allows you to map pod-to-pod 
 In this tutorial, we will:
 
 - Install the Istio service mesh in our cluster.
-- Deploy 2 clients calling an nginx reverse-proxy over HTTP using different paths.
-- Map their calls using the network mapper and the Istio watcher component.
+- Deploy 2 clients calling a server (in this case, an nginx reverse-proxy) over HTTP using different paths.
+- Map their calls using the network mapper and its Istio watcher component.
+
+## Prerequisites
 
 <details>
-<summary>Make sure you have a Kubernetes cluster</summary>
+<summary>Prepare a Kubernetes cluster</summary>
 
-Before you start, you need to have a Kubernetes cluster. Having a cluster with a [CNI](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/) that supports [NetworkPolicies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) isn't required for this tutorial, but is recommended so that your cluster works with other tutorials.
+Before you start, you'll need a Kubernetes cluster. Having a cluster with a [CNI](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/) that supports [NetworkPolicies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) isn't required for this tutorial, but is recommended so that your cluster works with other tutorials.
 
 {@include: ../_common/cluster-setup.md}
 </details>
@@ -59,7 +61,7 @@ Finally, you'll need to install the Otterize CLI (if you haven't already) to int
 
 </details>
 
-## Installing and configuring Istio
+## Install and configure Istio
 <details>
 <summary>Install Istio in the cluster via Helm</summary>
 
@@ -122,7 +124,7 @@ kubectl apply -n otterize-tutorial-istio-mapping -f https://docs.otterize.com/co
 
 The Istio watcher component of the network mapper starts querying Envoy sidecars for HTTP connections and builds an
 in-memory network map as soon as it's installed. The Otterize CLI allows you to interact with the network mapper to
-grab a snapshot of current mapped traffic, reset its state and more.
+grab a snapshot of current mapped traffic, reset its state, and more.
 
 For a complete list of the CLI capabilities read the [CLI command reference](/reference/cli/#network-mapper).
 
@@ -138,12 +140,15 @@ If you've attached Otterize OSS to Otterize Cloud, you can now also see the [acc
 
 Note, for example, that the `client` &rightarrow; `nginx` arrow is dashed. Clicking on it shows:
 
-<img src="/img/quick-tutorials/network-mapper/otterize-tutorial-access-graph-istio-insights.png" alt="Access graph insights" width="600"/>
+<div style={{textAlign: 'center'}}>
+    <img src="/img/quick-tutorials/network-mapper/otterize-tutorial-access-graph-istio-insights.png" alt="Access graph insights" width="600"/>
+</div>
 
 The access graph reveals several types of information and insights, such as:
 1. Seeing the network map for different clusters, seeing the subset of the map for a given namespace, or even &mdash; according to how you've mapped namespaces to environments &mdash; seeing the subset of the map for a specific environment.
-2. Filtering the map to include recently-seen traffic, since some date in the past. That way you can eliminate calls that are no longer relevant, without having to reset the network mapper and start building a new map.
-3. If the intents operator is also connected, the access graph now reveals more specifics about access: understand which services are protected or would be protected, and which client calls are being blocked or would be blocked. We'll see more of that in the next couple of tutorials
+2. Revealing detailed HTTP-level information about the calls being made (e.g. `GET` to `/client-path`), as reported by the Istio watcher.
+3. Filtering the map to include recently-seen traffic, since some date in the past. That way you can eliminate calls that are no longer relevant, without having to reset the network mapper and start building a new map.
+3. Showing more specifics about access, if the intents operator is also connected: understand which services are protected or would be protected, and which client calls are being blocked or would be blocked. We'll see more of that in the Istio AuthorizationPolicy tutorial.
 
 ## What's next
 
@@ -155,16 +160,16 @@ the intents files. We'll see more of that below.
 Where to go next?
 
 - You can [see a larger network map](/quick-visual-tutorials/visual-k8s-cluster-mapping), based on a demo ecommerce application.
-- Learn how to roll out [Istio authorization-policy based enforcement](/quick-tutorials/k8s-istio-authorization-policies) using intents.
+- Learn how to roll out [Istio authorization-policy-based access control](/quick-tutorials/k8s-istio-authorization-policies) using intents.
+- Explore a larger example visually, and [use shadow mode to roll out IBAC](/quick-visual-tutorials/visual-ibac-istio-authorization-policies).
 - If you haven't already, see the [automate network policies tutorial](/quick-tutorials/k8s-network-policies).
 - Or go to the next tutorial to [automate secure access for Kafka](/quick-tutorials/k8s-kafka-mtls).
-- Explore how [shadow mode](/quick-visual-tutorials/visual-ibac-network-policies) can expand these capabilities.
 
 ### Teardown
 
-To remove the deployed examples run:
+To remove Istio and the deployed examples run:
 
 ```bash
-helm uninstall istio-base -n istio-system # Remove Istio
+helm uninstall istio-base -n istio-system
 kubectl delete namespace otterize-tutorial-istio-mapping
 ```

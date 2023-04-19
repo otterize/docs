@@ -3,10 +3,12 @@ You can get the network map by calling the CLI `list` or `export` commands.
 The `export` output format can be `yaml` (Kubernetes client intents files) and `json`.
 The following shows the CLI output filtered for the namespace (`otterize-tutorial-istio-mapping`) of the example above.
 
+Note the HTTP-level details in the `list` and `export` results. For example, the exported client intents YAML files contain specific path and method information for each intended call.
+
 <Tabs>
   <TabItem value="image" label="Image" default>
 
-1. Visualize the overall pod-to-pod network map built up so far, as an image. Note that this image is actually based on information from the network mapper's sniffer, based on DNS requests and open TCP connections, and does not require the Istio watcher, which supplies fine-grained, HTTP-level information. To include HTTP-level information, use the `list` or `export` commands.
+1. Visualize the overall pod-to-pod network map built up so far, as an image. Note that this image is actually built from information from the network mapper's sniffer (based on DNS requests and open TCP connections), and does not require the Istio watcher (which only supplies fine-grained, HTTP-level information). To retrieve HTTP-level information, use the `list` or `export` commands.
 
    ```shell
    otterize network-mapper visualize -n otterize-tutorial-istio-mapping -o otterize-tutorial-istio-map.png
@@ -59,8 +61,7 @@ The following shows the CLI output filtered for the namespace (`otterize-tutoria
          type: http
          resources:
             - path: /client-path
-         methods:
-           - GET
+              methods: [GET]
    ---
    apiVersion: k8s.k8s.otterize.com/v1
    kind: ClientIntents
@@ -75,8 +76,7 @@ The following shows the CLI output filtered for the namespace (`otterize-tutoria
          type: http
          resources:
            - path: /client2-path
-         methods:
-           - POST
+             methods: [POST]
    ```
 
 </TabItem>
@@ -109,7 +109,7 @@ The following shows the CLI output filtered for the namespace (`otterize-tutoria
               "resources": [
                 {
                   "path": "/client-path",
-                  "methods": [GET]
+                  "methods": ["GET"]
                 }
               ]
             }
@@ -134,7 +134,7 @@ The following shows the CLI output filtered for the namespace (`otterize-tutoria
               "resources": [
                 {
                   "path": "/client2-path",
-                  "methods": [POST]
+                  "methods": ["POST"]
                 }
               ]
             }
