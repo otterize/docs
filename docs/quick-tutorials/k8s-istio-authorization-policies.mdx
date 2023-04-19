@@ -23,19 +23,11 @@ In this tutorial, we will:
 ## Prerequisites
 
 <details>
-<summary>Prepare a Kubernetes cluster with Istio</summary>
+<summary>Prepare a Kubernetes cluster</summary>
 
-Before you start, you need to have a Kubernetes cluster. Having a cluster with a [CNI](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/) that supports [NetworkPolicies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) isn't required for this tutorial, but is recommended so that your cluster works with other tutorials.
-
+Before you start, you'll need a Kubernetes cluster. Having a cluster with a [CNI](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/) that supports [NetworkPolicies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) isn't required for this tutorial, but is recommended so that your cluster works with other tutorials.
 
 {@include: ../_common/cluster-setup.md}
-</details>
-## Installing and configuring Istio
-<details>
-<summary>Install Istio in the cluster via Helm</summary>
-
-{@include: ../_common/install-istio.md}
-
 </details>
 
 You can now install (or reinstall) Otterize in your cluster, and optionally connect to Otterize Cloud. Connecting to Cloud lets you:
@@ -66,6 +58,15 @@ Or choose to include browser visualization and:
 #### Install Otterize OSS, connected to Otterize Cloud
 
 {@include: ../_common/install-otterize-from-cloud-with-istio-enforcement.md}
+
+</details>
+
+## Install and configure Istio
+
+<details>
+<summary>Install Istio in the cluster via Helm</summary>
+
+{@include: ../_common/install-istio.md}
 
 </details>
 
