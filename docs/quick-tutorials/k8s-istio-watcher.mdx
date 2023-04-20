@@ -82,7 +82,7 @@ kubectl label namespace otterize-tutorial-istio-mapping istio-injection=enabled
 
 Apply this configuration in the `istio-system` namespace, propagating it to all namespaces covered by the mesh.
 
-```shell
+```yaml
 apiVersion: telemetry.istio.io/v1alpha1
 kind: Telemetry
 metadata:
