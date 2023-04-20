@@ -26,7 +26,7 @@ The near-term roadmap for Otterize OSS currently includes:
 
 - [[Done](https://github.com/otterize/network-mapper/releases/tag/v0.1.16)] Adding a **Kafka watcher** to supply more detailed information to the network mapper about calls to any Kafka server: which clients are performing which operations against which topics. This complements the current map built up in the network mapper, which only records which clients called which servers, without any more granular information about those calls. With this new capability, users can bootstrap client intents that contain granular Kafka access intent information, and Otterize Cloud can display topic-level shadow mode information and insights also for Kafka servers and their clients.
 
-- [[Done](https://github.com/otterize/intents-operator/releases/tag/v0.1.20)] Adding support for Istio service mesh access controls. This includes:
+- [[Done](https://github.com/otterize/intents-operator/releases/tag/v0.1.22)] Adding support for Istio service mesh access controls. This includes:
   - Pod-to-pod access controls (akin to the current network policies support).
   - Granular HTTP-level (path and method) access controls (akin to the current Kafka topic-level access control support).
   - [Adding HTTP-level (path and method) intent information to the network mapper](https://github.com/otterize/network-mapper/releases/tag/v0.1.16), and to the information optionally sent to Otterize Cloud to support [shadow mode](/shadow-vs-active-enforcement) in the access graph.
