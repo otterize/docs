@@ -3,7 +3,7 @@
    ```shell
    helm repo add otterize https://helm.otterize.com
    helm repo update
-   helm install otterize otterize/otterize-kubernetes -n otterize-system --create-namespace \ 
+   helm install otterize otterize/otterize-kubernetes -n otterize-system --create-namespace \
    --set networkMapper.istiowatcher.enable=true \
    --set intentsOperator.operator.enableNetworkPolicyCreation=false
    ```
