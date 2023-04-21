@@ -1,5 +1,5 @@
 ---
-sidebar_position: 7
+sidebar_position: 1
 title: Network policies deep dive
 ---
 import Tabs from '@theme/Tabs';
@@ -53,20 +53,95 @@ You can apply both approaches (allow/block all) within your cluster (e.g. by app
 namespaces).
 
 ## Default deny network policy
-To block all traffic within a namespace (e.g. _production_) you can apply a default deny network policy like the
-following example:
+To block all traffic within a namespace, you can apply a default deny network policy to that namespace. After applying this policy, only traffic allowed by network policies, such as those generated automatically from ClientIntents, will be allowed within that namespace.
+
+Such a policy only blocks ingress traffic, so it does not prevent pods from connecting to the Internet. Enforcement is performed at the ingress to pods. This is appropriate for achieving in-cluster service-to-service zero trust and network segmentation within a namespace.
+
+Here is such a policy that you can apply to any namespace:
 
 ```yaml
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: default-deny-ingress
-  namespace: production
 spec:
   podSelector: { }
   policyTypes:
     - Ingress
 ```
+
+## Global ingress default deny policy with Calico
+If using Calico as your CNI for network policies, you can deploy a global (cluster-wide, across multiple namespaces), ingress-type default deny network policy. After applying this policy, only traffic allowed by network policies, such as those generated automatically from ClientIntents, will be allowed throughout the cluster.
+
+It's important to exempt Otterize and Calico and the Kubernetes infrastructure itself from this policy, so they can function correctly by receiving calls from the Kubernetes API server.
+
+Such a policy only blocks ingress traffic, so it does not prevent pods from connecting to the Internet. Enforcement is performed at the ingress to pods. This is appropriate for achieving in-cluster service-to-service zero trust and network segmentation across an entire cluster.
+
+```yaml
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: global-deny-ingress
+spec:
+  # highlight-next-line
+  # Exclude kube-system, calico-system, calico-apiserver and otterize-system
+  namespaceSelector: has(projectcalico.org/name) && projectcalico.org/name not in {"kube-system", "calico-system", "calico-apiserver", "otterize-system"}
+  types:
+  # highlight-next-line
+  - Ingress # Ingress-only
+```
+
+## Tip: Using a global *egress* default deny policy with Calico
+If using Calico for network policies, you might choose to deploy a global(cluster-wide, across multiple namespaces) default **egress** deny network policy, in order to restrict egress traffic going out of the cluster. If so, it is important to exempt Otterize and Calico from this policy so that they are able to function correctly.
+Also, note that Otterize-managed network policies only apply to traffic within the cluster.
+
+To work well with an ingress default deny policy, an egress policy should not prevent traffic within the cluster &mdash; the global default deny ingress policy will already block all in-cluster traffic by default, and ClientIntents will then allow intended traffic.
+
+Here is an example of how you can achieve this by explicitly allowlisting certain pod IPs. You will need to substitute the appropriate IPs for your pods. This is usually part of your CNI or cluster configuration.
+
+```yaml
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: default-deny-egress
+spec:
+  namespaceSelector: has(projectcalico.org/name) && projectcalico.org/name not in {"kube-system", "calico-system", "calico-apiserver"}
+  types:
+  - Egress
+  egress:
+   # Allow all namespaces to communicate to DNS pods
+  - action: Allow
+    protocol: UDP
+    destination:
+      selector: 'k8s-app == "kube-dns"'
+      ports: ["53"]
+    # Allow all namespaces to talk to the internet on port 443
+  - action: Allow
+    protocol: TCP
+    destination:
+      nets: ["0.0.0.0/0"]
+      ports: ["443"]
+    # Allow all namespaces to talk on egress to any port inside the cluster or in the VPC.
+    # Effectively, ingress default deny would still block any intra-cluster traffic
+    # not explicitly allowed by a dedicated network policy.
+  - action: Allow
+    protocol: TCP
+    destination:
+    # highlight-start
+    # update these IP addresses to match your pods
+      nets: ["10.0.0.0/16","172.20.0.0/16"]
+    # highlight-end
+```
+
+## Working with third-party Helm charts and a default deny policy
+After applying a default deny policy, you will need network policies for intended traffic to go through.
+The Otterize network mapper generates ClientIntents for your cluster, but we recommend you use ClientIntents for services that are functional clients, rather than purely operational infrastructure (e.g. `checkoutservice` is a client, while Prometheus is purely operational infrastructure). So you will need to enable traffic to/from such infrastructure outside of Otterize.
+
+Many third-party Helm charts come with a ready-made network policy to use when deployed into a cluster that uses a default deny policy. Simply enable them using the values found in the chart.
+
+:::tip
+We recommend using these explicit network policies rather than ClientIntents, as this relieves the infrastructure or platform team in your organization from maintaining ClientIntents for infrastructure services: instead, the Helm chart will always have the most accurate infrastructural network policies.
+:::
 
 ## Auto-generating network policies for external traffic
 The intents operator defaults to automatically generate network policies for Kubernetes **Services** (type **LoadBalancer** and **NodePort**), and Ingress traffic
@@ -102,7 +177,7 @@ would block existing traffic like **loadgenerator** -> **frontend**.
 
 
 
-## How intents translate to network policies.
+## How intents translate to network policies
 Let's follow an example scenario and track how Otterize configures network policies when we apply intents.
 ### Deploy example
 Our example consists of two pods: an HTTP server and a client that calls it.
