@@ -92,7 +92,7 @@ spec:
 ```
 
 ## Tip: Using a global *egress* default deny policy with Calico
-If using Calico for network policies, you might choose to deploy a global(cluster-wide, across multiple namespaces) default **egress** deny network policy, in order to restrict egress traffic going out of the cluster. If so, it is important to exempt Otterize and Calico from this policy so that they are able to function correctly.
+If using Calico for network policies, you might choose to deploy a global (cluster-wide, across multiple namespaces) default **egress** deny network policy, in order to restrict egress traffic going out of the cluster. If so, it is important to exempt Otterize and Calico from this policy so that they are able to function correctly.
 Also, note that Otterize-managed network policies only apply to traffic within the cluster.
 
 To work well with an ingress default deny policy, an egress policy should not prevent traffic within the cluster &mdash; the global default deny ingress policy will already block all in-cluster traffic by default, and ClientIntents will then allow intended traffic.
