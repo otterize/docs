@@ -5,7 +5,8 @@
    helm repo update
    helm install otterize otterize/otterize-kubernetes -n otterize-system --create-namespace \
    --set networkMapper.istiowatcher.enable=true \
-   --set intentsOperator.operator.enableNetworkPolicyCreation=false
+   --set intentsOperator.operator.enableNetworkPolicyCreation=false \
+   --set intentsOperator.operator.experimentalEnableIstioPolicyCreation=true
    ```
 
 :::note This example disable network policy enforcement. 
