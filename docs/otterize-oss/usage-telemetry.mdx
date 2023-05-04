@@ -1,0 +1,54 @@
+---
+title: Usage telemetry
+---
+
+Operators in Otterize OSS report anonymous usage information back to the Otterize team, to help the team understand how the software is used in the community and what aspects users find useful. No personal or organizational identifying information is transmitted in these metrics: they only reflect patterns of usage. You may opt out at any time through a single configuration flag.
+
+## What information is collected?
+
+The information reported by Otterize OSS is defined in the [GraphQL schema of the telemetry source code](https://github.com/otterize/intents-operator/blob/main/src/shared/telemetries/telemetriesgql/schema.graphql); this is the GraphQL schema shared with the Otterize incoming-telemetry GraphQL endpoint. Usage information is sent as events, each containing the event type, sometimes also a count, and some identifiers to allow correlating multiple events in order to understand usage.
+
+### Identifiers
+
+| Identifier            | Value                                                                                                                                |
+|:----------------------|:-------------------------------------------------------------------------------------------------------------------------------------|
+| `componentType`       | Which Otterize OSS component sent the event: one of `INTENTS_OPERATOR`, `CREDENTIALS_OPERATOR`, `NETWORK_MAPPER` or `CLI`.           |
+| `componentInstanceId` | A randomly-generated UUID identifying the installed instance of the component, to allow correlating its events.                      |
+| `contextId`           | A hash (for anonymity) of an identifier of the context in which the component is installed. For example, for components running in a Kubernetes cluster, this is a hash of the UUID of the `kube-system` namespace in the cluster. |
+| `version`             | The version of the Otterize OSS component.                                                                                           |
+| `cloudClientId`       | If connected to Otterize Cloud: the client id used to connect with Otterize Cloud, to allow correlating events with Cloud usage info. |
+
+### Events
+
+| Event type                        | Meaning                                                                                              |
+|:----------------------------------|:-----------------------------------------------------------------------------------------------------|
+| `INTENTS_DELETED`                 | How many intents were deleted.                                                                       |
+| `INTENTS_APPLIED`                 | How many declared intents were applied.                                                              |
+| `INTENTS_DISCOVERED`              | How many intents were discovered by the network mapper.                                              |
+| `INTENTS_DISCOVERED_SOCKET_SCAN`  | How many intents were discovered by the network watcher ("sniffer") via scanning for open sockets.   |
+| `INTENTS_DISCOVERED_DNS`          | How many intents were discovered by the network watcher ("sniffer") via reading DNS query responses. |
+| `INTENTS_DISCOVERED_KAFKA`        | How many intents were discovered by the Kafka watcher.                                               |
+| `INTENTS_DISCOVERED_ISTIO`        | How many intents were discovered by the Istio watcher.                                               |
+| `MAPPER_EXPORT `                  | How many intents from the network mapper were exported by the CLI: `otterize mapper export...`.      |
+| `MAPPER_VISUALIZE`                | How many intents from the network mapper were visualized by the CLI: `otterize mapper visualize...`. |
+| `KAFKA_SERVER_CONFIG_APPLIED`     | A Kafka Server Config was applied (i.e. the intents operator will recognize it as a Kafka broker).   |
+| `KAFKA_SERVER_CONFIG_DELETED`     | A Kafka Server Config was deleted.                                                                   |
+| `NETWORK_POLICIES_CREATED`          | How many network policies were created by the intents operator.                                      |
+| `NETWORK_POLICIES_DELETED`          | How many network policies were deleted by the intents operator.                                      |
+| `KAFKA_ACLS_CREATED`               | How many Kafka ACLs were created by the intents operator.                                            |
+| `KAFKA_ACLS_DELETED`               | How many Kafka ACLs were deleted by the intents operator.                                            |
+| `ISTIO_POLICIES_CREATED`            | How many Istio authorization policies were created by the intents operator.                          |
+| `ISTIO_POLICIES_DELETED`            | How many Istio authorization policies were deleted by the intents operator.                          |
+| `STARTED`                         | The operator was started.                                                                            |
+
+## Configuring whether to report usage information
+
+To configure whether to report usage information to the Otterize team, use the `telemetry` flag in the installation/configuration of Otterize OSS. By default, telemetry is enabled.
+
+To **disable** sending usage information:
+  - Via the Otterize OSS Helm chart: `--set global.telemetry.enabled=false`.
+  - Via an environment variable: `OTTERIZE_TELEMETRY_ENABLED=false`.
+  - If running an operator directly: `telemetry-enabled=false`.
+
+If the `telemetry` flag is omitted or set to `true`, telemetry will be enabled: usage information will be reported.
+
