@@ -82,25 +82,12 @@ kubectl label namespace otterize-tutorial-istio-mapping istio-injection=enabled
 
 Apply this configuration in the `istio-system` namespace, propagating it to all namespaces covered by the mesh.
 
+```
+kubectl apply -f https://docs.otterize.com/code-examples/network-mapper/istio-telemetry-enablement.yaml
+```
+
 ```yaml
-apiVersion: telemetry.istio.io/v1alpha1
-kind: Telemetry
-metadata:
-  name: mesh-default
-  namespace: istio-system
-spec:
-  accessLogging:
-    - providers:
-      - name: envoy
-  metrics:
-  - providers:
-    - name: prometheus
-    overrides:
-    - tagOverrides:
-        request_method:
-          value: request.method
-        request_path:
-          value: request.path
+{@include: ../../static/code-examples/network-mapper/istio-telemetry-enablement.yaml}
 ```
 
 </details>
