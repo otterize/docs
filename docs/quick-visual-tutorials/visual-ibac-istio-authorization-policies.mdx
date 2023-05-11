@@ -8,15 +8,325 @@ import CodeBlock from "@theme/CodeBlock";
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-:::info Coming soon
+Istio authorization policies are a powerful and flexible tool, but using them to achieve a zero-trust architecture with fine-grained pod-to-pod access control can be difficult to implement and maintain.
+In this tutorial, we will show you how to roll out Istio authorization policies with intent-based access control (IBAC).
+With IBAC, you won't need to manually keep track of pod labels or service accounts, and we'll even show you how to generate policies for all traffic in the cluster with just one command.
+In the end of this tutorial each service in the cluster will be able to communicate only with the servers declared in its client intents file, blocking any unintentional communication.
 
-This visual tutorial for IBAC with Istio authorization policies is not yet ready.
+All the capabilities of IBAC are within Otterize OSS, while the access graph in Otterize Cloud will guide us visually in these steps.
+We will:
+1. Install Otterize on your cluster
+2. View the traffic in your cluster in the cloud
+3. Declare one intent just to see how its generated policies effect the cluster
+4. Generate intents for all traffic in the cluster to achieve zero-trust in one command
 
-In the meantime, you might want to check out some similar tutorials:
-* [IBAC with network policies](/quick-visual-tutorials/visual-ibac-network-policies)
-* [IBAC with Kafka in Kubernetes](/quick-visual-tutorials/visual-ibac-kafka-k8s).
+## Prerequisites
 
-And for a simple, less visual tutorial, see:
-* [Istio AuthorizationPolicy automation with intents](/quick-tutorials/k8s-istio-authorization-policies)
+<details>
+<summary>Prepare a Kubernetes cluster</summary>
 
+Before you start, you'll need a Kubernetes cluster. Having a cluster with a [CNI](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/) that supports [NetworkPolicies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) isn't required for this tutorial, but is recommended so that your cluster works with other tutorials.
+
+{@include: ../_common/cluster-setup.md}
+</details>
+
+<details>
+<summary>Create an Otterize Cloud account</summary>
+
+{@include: ../_common/create-account.md}
+
+</details>
+
+<details>
+<summary>Install Otterize OSS <b>with Istio watcher active</b></summary>
+
+{@include: ../_common/install-otterize-from-cloud-with-istiowatcher.md}
+
+</details>
+
+<details>
+<summary>Install the Otterize CLI</summary>
+
+{@include: ../_common/install-otterize-cli.md}
+
+</details>
+
+## Install and configure Istio
+<details>
+<summary>Install Istio in the cluster via Helm</summary>
+
+{@include: ../_common/install-istio.md}
+
+</details>
+
+<details>
+<summary>Add HTTP methods and request paths to Istio exported metrics</summary>
+
+Apply this configuration in the `istio-system` namespace, propagating it to all namespaces covered by the mesh.
+
+```
+kubectl apply -f https://docs.otterize.com/code-examples/network-mapper/istio-telemetry-enablement.yaml
+```
+
+```yaml
+{@include: ../../static/code-examples/network-mapper/istio-telemetry-enablement.yaml}
+```
+
+</details>
+
+:::tip
+HTTP request paths and methods aren't exported in Envoy's connection metrics by default, but we do want to capture those
+details when creating the network map. That way we not only have better visibility of the calling patterns,
+e.g. in the access graph, but we can also use that information to automatically generate fine-grained intents and
+enforce them with Istio authorization policies.
 :::
+
+## Deploy demo to simulate traffic
+<details>
+<summary>Create a namespace for our demo application and label it for Istio injection</summary>
+
+```bash
+kubectl create namespace otterize-visual-tutorial-istio
+kubectl label namespace otterize-visual-tutorial-istio istio-injection=enabled
+```
+</details>
+
+<details>
+<summary>Deploy the demo set of services</summary>
+
+```
+kubectl apply -n otterize-visual-tutorial-istio -f https://docs.otterize.com/code-examples/ibac-for-istio/demo-app.yaml
+```
+</details>
+
+## Seeing the access graph
+
+In the Otterize Cloud UI, your [cluster](https://app.otterize.com/clusters) should now show all 3 Otterize OSS operators &mdash; the intents operator, network mapper, and credentials operator &mdash; as connected, with a green status.
+
+And when you go back to the [access graph](https://app.otterize.com/access-graph) (and select your cluster from the dropdown, if needed), you should see the following map for the demo running in your cluster:
+
+![Access graph](/img/quick-tutorials/istio-visual-tutorial/phase-0.png)
+
+Each service is shown as a node in the access graph, while the dashed lines (edges) connecting the services show access between them, as detected by the network mapper.
+We need to adjust the view to Istio authorization policies, so enable the Istio "Use in access graph" button and disable the NetworkPolicies and Kafka toggle buttons.
+
+![Access graph](/img/quick-tutorials/istio-visual-tutorial/access-graph-panel.png)
+
+## Try out IBAC with shadow mode
+
+Now let's start to roll out access controls, but remain in shadow mode: no actual enforcement of controls, yet.
+
+We'll declare that the `frontend` intends to perform `GET` request to the `recommendationservice`.
+
+```yaml
+{@include: ../../static/code-examples/ibac-for-istio/phase-1.yaml}
+```
+
+We expect this will provide secure access, allowing the intended access from the `frontend` while protecting the `recommendationservice` from unintended access.
+
+Apply this intents file with:
+```bash
+kubectl apply -n otterize-visual-tutorial-istio -f https://docs.otterize.com/code-examples/ibac-for-istio/phase-1.yaml
+```
+
+Look at the access graph again:
+
+![Access graph](/img/quick-tutorials/istio-visual-tutorial/phase-1.png)
+
+The green line from `frontend` to `recommendationservice`, representing the discovered intent from the network mapper, no longer dashed, but rather **solid**.
+
+Click on that `frontend` &rarr; `recommendationservice` line:
+<img src="/img/quick-tutorials/istio-visual-tutorial/frontend-recommendation-applied.png" alt="Discovered intents" width="600"/>
+
+- We can see the `frontend` can call the `recommendationservice`, and will be guaranteed access even once enforcement is turned on.
+
+Click on the `recommendationservice` itself:
+<img src="/img/quick-tutorials/istio-visual-tutorial/recommendation-access-state.png" alt="Discovered intents" width="600"/>
+
+- We can see it's not protected now (we're in shadow mode, and there are no authorization policies who block access).
+- We can also see it would not block any clients once protection is enabled.
+- And there is no warning about it remaining unprotected once enforcement is turned on. All is ready for turning on enforcement and protecting this service from any unintended calls.
+
+
+### Declare more intents
+Let’s add another intent, this time from `recommendationservice` to `productcatalogservice`.
+
+```yaml
+{@include: ../../static/code-examples/ibac-for-istio/phase-2.yaml}
+```
+
+Apply this intents file with:
+```bash
+kubectl apply -n otterize-visual-tutorial-istio -f https://docs.otterize.com/code-examples/istio-visual-tutorial/phase-2.yaml
+```
+Look at the access graph again:
+
+![Access graph](/img/quick-tutorials/istio-visual-tutorial/phase-2.png)
+
+As before, the line from `recommendationservice` &rarr; `productcatalogservice` is now solid green line, and no warnings. That's what we expected.
+
+But two other lines, `frontend` &rarr; `productcatalogservice` and `checkoutservice` &rarr; `productcatalogservice`, have turned orange. And the `productcatalogservice` lock icon has turned red. Why?
+
+Click on one of those orange lines:
+<img src="/img/quick-tutorials/istio-visual-tutorial/frontend-productactalogservice-missing-intent.png" alt="Discovered intents" width="600"/>
+
+- This access is not blocked *now* &mdash; because we're still in shadow mode (otherwise the line would have been red).
+- But access *would be blocked* once enforcement is turned on. To prevent that, we're told to declare and apply an intent for this call.
+
+Click on the `productcatalogservice`:
+<img src="/img/quick-tutorials/istio-visual-tutorial/productcatalog-would-block.png" alt="Discovered intents" width="600"/>
+
+- We can see it's not protected now, as before.
+- But we can also see it *would* block any clients once protection is enabled, which is why the lock is red.
+- And there is an explicit warning to apply the missing intents from all its clients before turning on enforcement.
+
+
+Let's add those intents for the `frontend` and `checkoutservice`.
+
+<Tabs>
+<TabItem value="frontend" label="frontend" default>
+
+```yaml
+{@include: ../../static/code-examples/ibac-for-istio/phase-3-frontend.yaml}
+```
+</TabItem>
+<TabItem value="checkout-service" label="checkoutservice" default>
+
+```yaml
+{@include: ../../static/code-examples/ibac-for-istio/phase-3-checkout.yaml}
+```
+</TabItem>
+</Tabs>
+
+Apply these intents files with:
+```bash
+kubectl apply -n otterize-visual-tutorial-istio -f https://docs.otterize.com/code-examples/ibac-for-istio/phase-3.yaml
+```
+
+Let's go back to the access graph:
+
+![Access graph](/img/quick-tutorials/istio-visual-tutorial/phase-3.png)
+
+Click on the `productcatalogservice`:
+
+![Access graph](/img/quick-tutorials/istio-visual-tutorial/productcatalog-service-all-green.png)
+
+All is well again: the `productcatalogservice` will be protected, and its 3 clients will have access after enforcement is turned on.
+Each client access is limited to the HTTP resource and method declared in the intent.
+
+:::tip We can see how to roll out IBAC gradually:
+1. Pick a service to protect.
+2. Make sure all its clients declare and intents to call it.
+3. When you're ready, turn on enforcement.
+
+The access graph and shadow mode allow us to gain confidence by showing what would happen and highlighting any problems.
+:::
+
+
+### Protect everything easily
+Could we somehow automatically bootstrap this for the whole cluster and protect all services, without breaking any intended calls? Yes!
+
+The network mapper keeps track of all attempted calls, after all: those are the discovered intents. If you are confident that all of those calls are intended and appropriate, you can use that information to automatically generate intent declarations and apply them.
+
+Let's use the Otterize CLI ([installation](/installation#install-the-otterize-cli) and [reference](/reference/cli) to export all discovered intents as YAML declarations:
+```bash
+otterize network-mapper export -n otterize-visual-tutorial-istio --output-type dir --output intents
+```
+
+You can apply them using:
+```bash
+kubectl apply -f intents
+```
+
+Or, equivalently, just use the already-generated intents files included in this docs location:
+```bash
+kubectl apply -n otterize-ecom-demo -f https://docs.otterize.com/code-examples/ibac-for-istio/all.yaml
+```
+
+Look at the access graph again:
+
+![Access graph](/img/quick-tutorials/istio-visual-tutorial/phase-4.png)
+
+The graph confirms that all services would be protected, and no intended calls would be blocked, once we apply protection.
+
+
+## Enable enforcement
+With the confidence we gained, let's enable enforcement (via authorization policies) by upgrading your Otterize installation to remove the `intentsOperator.operator.enableEnforcement=false` flag.
+
+At the top of the access graph, click the **Configure cluster** button; or in the clusters page, clicking on the **Connection guide &rarr;** link for your cluster.
+
+Then run the Helm commands shown there, and specifically follow the instructions to install Otterize <b>with enforcement on</b> (not in shadow mode). Namely, <b>omit</b> the following flag in the Helm command:
+
+`--set intentsOperator.operator.enableEnforcement=false`
+
+Let's look at the access graph again:
+
+![Access graph](/img/quick-tutorials/shadow-mode/phase-5.png)
+
+Note that all (but two) of the lock icons are locked, indicating the services are protected. And all the locks and edges are green, indicating no call attempts (discovered by the network mapper) are being blocked.
+
+:::tip How would blocked access attempts look now?
+From now on, if a client attempts a server call that wasn't covered by one of the declared intents, that would be discovered by the network mapper and show up as (new) discovered intents. Remember that the network mapper discovers attempted access, not just successful access. In this case, a red line would appear from that client to that server, and the lock on that server would turn red: calls from that client are being blocked.
+
+That may be because:
+- The calls didn't happen when the network mapper was building its map from which the intents were bootstrapped, in which case you may choose to generate all the intents again, or or just create and apply the new ones manually.
+- Or... the client maliciously called this server, but is being blocked by the authorization policies. IBAC has saved the day!
+:::
+
+<details>
+<summary>Optional: see the generated authorization policies</summary>
+Otterize automatically generated authorization policies according to your declared intents.
+
+To list all generated authorization policies run:
+
+```bash
+kubectl get authorizationpolicies.security.istio.io -n otterize-visual-tutorial-istio
+```
+
+Let's inspect one of these authorization policies with:
+```bash
+kubectl get authorizationpolicies.security.istio.io -n otterize-visual-tutorial-istio authorization-policy-to-productcatalogservice-from-checkoutservice.otterize-visual-tutorial-istio -o yaml
+```
+
+The result should be:
+
+```yaml
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: authorization-policy-to-productcatalogservice-from-checkoutservice.otterize-visual-tutorial-istio
+  namespace: otterize-visual-tutorial-istio
+...
+spec:
+  rules:
+  - from:
+    - source:
+      principals:
+      - cluster.local/ns/otterize-visual-tutorial-istio/sa/checkoutservice-service-account
+  to:
+    - operation:
+      methods:
+      - POST
+      paths:
+      - /products
+  selector:
+    matchLabels:
+      intents.otterize.com/server: productcatalogservic-otterize-visual-tuto-99a036
+```
+</details>
+
+## What's next
+
+:::warning
+TODO: What should be our next step? Netpol, Kafka? I feel like it should be our "best practices" or "Pushing IBAC to your production CI/CD" page.
+:::
+- Learn how to [manage secure access for Kafka](/quick-visual-tutorials/visual-ibac-kafka-k8s) using the demo lab tutorial.
+
+## Teardown
+
+To remove the deployed demo run:
+
+```bash
+kubectl delete -n otterize-vizual-tutorial-istio -f https://docs.otterize.com/code-examples/ibac-for-istio/all.yaml
+kubectl delete -n otterize-vizual-tutorial-istio -f https://docs.otterize.com/code-examples/ibac-for-istio/demo-app.yaml
+```

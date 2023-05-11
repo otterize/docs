@@ -1,0 +1,593 @@
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: adservice-service-account
+  namespace: otterize-visual-tutorial-istio
+  labels:
+    app: adservice
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: adservice
+  namespace: otterize-visual-tutorial-istio
+spec:
+  selector:
+    matchLabels:
+      app: adservice
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: adservice
+    spec:
+      serviceAccountName: adservice-service-account
+      containers:
+        - name: nginx
+          image: nginx:1.14.2
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo 'events {}' > /etc/nginx/nginx.conf;
+              echo 'http {' >> /etc/nginx/nginx.conf;
+              echo '    include /etc/nginx/mime.types;' >> /etc/nginx/nginx.conf;
+              echo '    server {' >> /etc/nginx/nginx.conf;
+              echo '        listen 80;' >> /etc/nginx/nginx.conf;
+              echo '        server_name localhost;' >> /etc/nginx/nginx.conf;
+              echo '        location /ads { return 200 "adservice answer for path /ads\n"; }' >> /etc/nginx/nginx.conf;
+              echo '    }' >> /etc/nginx/nginx.conf;
+              echo '}' >> /etc/nginx/nginx.conf;
+              nginx -g "daemon off;"
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: adservice-service
+  namespace: otterize-visual-tutorial-istio
+spec:
+  selector:
+    app: adservice
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 80
+---
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cartservice-service-account
+  namespace: otterize-visual-tutorial-istio
+  labels:
+    app: cartservice
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cartservice
+  namespace: otterize-visual-tutorial-istio
+spec:
+  selector:
+    matchLabels:
+      app: cartservice
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: cartservice
+    spec:
+      serviceAccountName: cartservice-service-account
+      containers:
+        - name: nginx
+          image: nginx:1.14.2
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo 'events {}' > /etc/nginx/nginx.conf;
+              echo 'http {' >> /etc/nginx/nginx.conf;
+              echo '    include /etc/nginx/mime.types;' >> /etc/nginx/nginx.conf;
+              echo '    server {' >> /etc/nginx/nginx.conf;
+              echo '        listen 80;' >> /etc/nginx/nginx.conf;
+              echo '        server_name localhost;' >> /etc/nginx/nginx.conf;
+              echo '        location /items { return 200 "cartservice answer for path /items\n"; }' >> /etc/nginx/nginx.conf;
+              echo '    }' >> /etc/nginx/nginx.conf;
+              echo '}' >> /etc/nginx/nginx.conf;
+              nginx -g "daemon off;"
+          ports:
+            - containerPort: 80
+        - name: cartservice-post-redis-cart
+          image: alpine/curl
+          command: [ "/bin/sh", "-c", "--" ]
+          args: [ "while true; do echo \"Calling redis-cart...\"; if ! timeout 2 curl -X POST -si redis-cart-service:8080/items; then echo \"curl timed out\"; fi; sleep 2; done" ]
+        - name: cartservice-call-redis-cart
+          image: alpine/curl
+          command: [ "/bin/sh", "-c", "--" ]
+          args: [ "while true; do echo \"Calling redis-cart...\"; if ! timeout 2 curl -si redis-cart-service:8080/items; then echo \"curl timed out\"; fi; sleep 2; done" ]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cartservice-service
+  namespace: otterize-visual-tutorial-istio
+spec:
+  selector:
+    app: cartservice
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 80
+---
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: checkoutservice-service-account
+  namespace: otterize-visual-tutorial-istio
+  labels:
+    app: checkoutservice
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: checkoutservice
+  namespace: otterize-visual-tutorial-istio
+spec:
+  selector:
+    matchLabels:
+      app: checkoutservice
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: checkoutservice
+    spec:
+      serviceAccountName: checkoutservice-service-account
+      containers:
+        - name: nginx
+          image: nginx:1.14.2
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo 'events {}' > /etc/nginx/nginx.conf;
+              echo 'http {' >> /etc/nginx/nginx.conf;
+              echo '    include /etc/nginx/mime.types;' >> /etc/nginx/nginx.conf;
+              echo '    server {' >> /etc/nginx/nginx.conf;
+              echo '        listen 80;' >> /etc/nginx/nginx.conf;
+              echo '        server_name localhost;' >> /etc/nginx/nginx.conf;
+              echo '        location /checkout { return 200 "checkoutservice answer for path /checkout\n"; }' >> /etc/nginx/nginx.conf;
+              echo '    }' >> /etc/nginx/nginx.conf;
+              echo '}' >> /etc/nginx/nginx.conf;
+              nginx -g "daemon off;"
+          ports:
+            - containerPort: 80
+        - name: checkoutservice-post-productcatalogservice
+          image: alpine/curl
+          command: [ "/bin/sh", "-c", "--" ]
+          args: [ "while true; do echo \"Calling productcatalogservice...\"; if ! timeout 2 curl -X POST -si productcatalogservice-service:8080/products; then echo \"curl timed out\"; fi; sleep 2; done" ]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: checkoutservice-service
+  namespace: otterize-visual-tutorial-istio
+spec:
+  selector:
+    app: checkoutservice
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 80
+---
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: currencyservice-service-account
+  namespace: otterize-visual-tutorial-istio
+  labels:
+    app: currencyservice
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: currencyservice
+  namespace: otterize-visual-tutorial-istio
+spec:
+  selector:
+    matchLabels:
+      app: currencyservice
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: currencyservice
+    spec:
+      serviceAccountName: currencyservice-service-account
+      containers:
+        - name: nginx
+          image: nginx:1.14.2
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo 'events {}' > /etc/nginx/nginx.conf;
+              echo 'http {' >> /etc/nginx/nginx.conf;
+              echo '    include /etc/nginx/mime.types;' >> /etc/nginx/nginx.conf;
+              echo '    server {' >> /etc/nginx/nginx.conf;
+              echo '        listen 80;' >> /etc/nginx/nginx.conf;
+              echo '        server_name localhost;' >> /etc/nginx/nginx.conf;
+              echo '        location /currency { return 200 "currencyservice answer for path /currency\n"; }' >> /etc/nginx/nginx.conf;
+              echo '    }' >> /etc/nginx/nginx.conf;
+              echo '}' >> /etc/nginx/nginx.conf;
+              nginx -g "daemon off;"
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: currencyservice-service
+  namespace: otterize-visual-tutorial-istio
+spec:
+  selector:
+    app: currencyservice
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 80
+---
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: frontend-service-account
+  namespace: otterize-visual-tutorial-istio
+  labels:
+    app: frontend
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: otterize-visual-tutorial-istio
+spec:
+  selector:
+    matchLabels:
+      app: frontend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      serviceAccountName: frontend-service-account
+      containers:
+        - name: nginx
+          image: nginx:1.14.2
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo 'events {}' > /etc/nginx/nginx.conf;
+              echo 'http {' >> /etc/nginx/nginx.conf;
+              echo '    include /etc/nginx/mime.types;' >> /etc/nginx/nginx.conf;
+              echo '    server {' >> /etc/nginx/nginx.conf;
+              echo '        listen 80;' >> /etc/nginx/nginx.conf;
+              echo '        server_name localhost;' >> /etc/nginx/nginx.conf;
+              echo '        location / { return 200 "frontend answer for path /\n"; }' >> /etc/nginx/nginx.conf;
+              echo '    }' >> /etc/nginx/nginx.conf;
+              echo '}' >> /etc/nginx/nginx.conf;
+              nginx -g "daemon off;"
+          ports:
+            - containerPort: 80
+        - name: frontend-call-adservice
+          image: alpine/curl
+          command: [ "/bin/sh", "-c", "--" ]
+          args: [ "while true; do echo \"Calling adservice...\"; if ! timeout 2 curl -si adservice-service:8080/ads; then echo \"curl timed out\"; fi; sleep 2; done" ]
+        - name: frontend-call-cartservice
+          image: alpine/curl
+          command: [ "/bin/sh", "-c", "--" ]
+          args: [ "while true; do echo \"Calling cartservice...\"; if ! timeout 2 curl -si cartservice-service:8080/items; then echo \"curl timed out\"; fi; sleep 2; done" ]
+        - name: frontend-post-cartservice
+          image: alpine/curl
+          command: [ "/bin/sh", "-c", "--" ]
+          args: [ "while true; do echo \"Calling cartservice...\"; if ! timeout 2 curl -X POST -si cartservice-service:8080/items; then echo \"curl timed out\"; fi; sleep 2; done" ]
+        - name: frontend-call-currencyservice
+          image: alpine/curl
+          command: [ "/bin/sh", "-c", "--" ]
+          args: [ "while true; do echo \"Calling currencyservice...\"; if ! timeout 2 curl -si currencyservice-service:8080/currency; then echo \"curl timed out\"; fi; sleep 2; done" ]
+        - name: frontend-call-productcatalogservice
+          image: alpine/curl
+          command: [ "/bin/sh", "-c", "--" ]
+          args: [ "while true; do echo \"Calling productcatalogservice...\"; if ! timeout 2 curl -si productcatalogservice-service:8080/products; then echo \"curl timed out\"; fi; sleep 2; done" ]
+        - name: frontend-call-recommendationservice
+          image: alpine/curl
+          command: [ "/bin/sh", "-c", "--" ]
+          args: [ "while true; do echo \"Calling recommendationservice...\"; if ! timeout 2 curl -si recommendationservice-service:8080/recommendations; then echo \"curl timed out\"; fi; sleep 2; done" ]
+        - name: frontend-post-shippingservice
+          image: alpine/curl
+          command: [ "/bin/sh", "-c", "--" ]
+          args: [ "while true; do echo \"Calling shippingservice...\"; if ! timeout 2 curl -X POST -si shippingservice-service:8080/shipping; then echo \"curl timed out\"; fi; sleep 2; done" ]
+        - name: frontend-post-checkoutservice
+          image: alpine/curl
+          command: [ "/bin/sh", "-c", "--" ]
+          args: [ "while true; do echo \"Calling checkoutservice...\"; if ! timeout 2 curl -X POST -si checkoutservice-service:8080/checkout; then echo \"curl timed out\"; fi; sleep 2; done" ]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+  namespace: otterize-visual-tutorial-istio
+spec:
+  selector:
+    app: frontend
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 80
+---
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: loadgenerator-service-account
+  namespace: otterize-visual-tutorial-istio
+  labels:
+    app: loadgenerator
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loadgenerator
+  namespace: otterize-visual-tutorial-istio
+spec:
+  selector:
+    matchLabels:
+      app: loadgenerator
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: loadgenerator
+    spec:
+      serviceAccountName: loadgenerator-service-account
+      containers:
+        - name: loadgenerator-call-frontend
+          image: alpine/curl
+          command: [ "/bin/sh", "-c", "--" ]
+          args: [ "while true; do echo \"Calling frontend...\"; if ! timeout 2 curl -si frontend-service:8080/; then echo \"curl timed out\"; fi; sleep 2; done" ]
+---
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: productcatalogservice-service-account
+  namespace: otterize-visual-tutorial-istio
+  labels:
+    app: productcatalogservice
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: productcatalogservice
+  namespace: otterize-visual-tutorial-istio
+spec:
+  selector:
+    matchLabels:
+      app: productcatalogservice
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: productcatalogservice
+    spec:
+      serviceAccountName: productcatalogservice-service-account
+      containers:
+        - name: nginx
+          image: nginx:1.14.2
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo 'events {}' > /etc/nginx/nginx.conf;
+              echo 'http {' >> /etc/nginx/nginx.conf;
+              echo '    include /etc/nginx/mime.types;' >> /etc/nginx/nginx.conf;
+              echo '    server {' >> /etc/nginx/nginx.conf;
+              echo '        listen 80;' >> /etc/nginx/nginx.conf;
+              echo '        server_name localhost;' >> /etc/nginx/nginx.conf;
+              echo '        location /products { return 200 "productcatalogservice answer for path /products\n"; }' >> /etc/nginx/nginx.conf;
+              echo '        location /similar-products { return 200 "productcatalogservice answer for path /similar-products\n"; }' >> /etc/nginx/nginx.conf;
+              echo '    }' >> /etc/nginx/nginx.conf;
+              echo '}' >> /etc/nginx/nginx.conf;
+              nginx -g "daemon off;"
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: productcatalogservice-service
+  namespace: otterize-visual-tutorial-istio
+spec:
+  selector:
+    app: productcatalogservice
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 80
+---
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: recommendationservice-service-account
+  namespace: otterize-visual-tutorial-istio
+  labels:
+    app: recommendationservice
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: recommendationservice
+  namespace: otterize-visual-tutorial-istio
+spec:
+  selector:
+    matchLabels:
+      app: recommendationservice
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: recommendationservice
+    spec:
+      serviceAccountName: recommendationservice-service-account
+      containers:
+        - name: nginx
+          image: nginx:1.14.2
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo 'events {}' > /etc/nginx/nginx.conf;
+              echo 'http {' >> /etc/nginx/nginx.conf;
+              echo '    include /etc/nginx/mime.types;' >> /etc/nginx/nginx.conf;
+              echo '    server {' >> /etc/nginx/nginx.conf;
+              echo '        listen 80;' >> /etc/nginx/nginx.conf;
+              echo '        server_name localhost;' >> /etc/nginx/nginx.conf;
+              echo '        location /recommendations { return 200 "recommendationservice answer for path /recommendations\n"; }' >> /etc/nginx/nginx.conf;
+              echo '    }' >> /etc/nginx/nginx.conf;
+              echo '}' >> /etc/nginx/nginx.conf;
+              nginx -g "daemon off;"
+          ports:
+            - containerPort: 80
+        - name: recommendationservice-call-productcatalogservice
+          image: alpine/curl
+          command: [ "/bin/sh", "-c", "--" ]
+          args: [ "while true; do echo \"Calling productcatalogservice...\"; if ! timeout 2 curl -si productcatalogservice-service:8080/similar-products; then echo \"curl timed out\"; fi; sleep 2; done" ]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: recommendationservice-service
+  namespace: otterize-visual-tutorial-istio
+spec:
+  selector:
+    app: recommendationservice
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 80
+---
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: redis-cart-service-account
+  namespace: otterize-visual-tutorial-istio
+  labels:
+    app: redis-cart
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-cart
+  namespace: otterize-visual-tutorial-istio
+spec:
+  selector:
+    matchLabels:
+      app: redis-cart
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: redis-cart
+    spec:
+      serviceAccountName: redis-cart-service-account
+      containers:
+        - name: nginx
+          image: nginx:1.14.2
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo 'events {}' > /etc/nginx/nginx.conf;
+              echo 'http {' >> /etc/nginx/nginx.conf;
+              echo '    include /etc/nginx/mime.types;' >> /etc/nginx/nginx.conf;
+              echo '    server {' >> /etc/nginx/nginx.conf;
+              echo '        listen 80;' >> /etc/nginx/nginx.conf;
+              echo '        server_name localhost;' >> /etc/nginx/nginx.conf;
+              echo '        location /items { return 200 "redis-cart answer for path /items\n"; }' >> /etc/nginx/nginx.conf;
+              echo '    }' >> /etc/nginx/nginx.conf;
+              echo '}' >> /etc/nginx/nginx.conf;
+              nginx -g "daemon off;"
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-cart-service
+  namespace: otterize-visual-tutorial-istio
+spec:
+  selector:
+    app: redis-cart
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 80
+---
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: shippingservice-service-account
+  namespace: otterize-visual-tutorial-istio
+  labels:
+    app: shippingservice
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shippingservice
+  namespace: otterize-visual-tutorial-istio
+spec:
+  selector:
+    matchLabels:
+      app: shippingservice
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: shippingservice
+    spec:
+      serviceAccountName: shippingservice-service-account
+      containers:
+        - name: nginx
+          image: nginx:1.14.2
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo 'events {}' > /etc/nginx/nginx.conf;
+              echo 'http {' >> /etc/nginx/nginx.conf;
+              echo '    include /etc/nginx/mime.types;' >> /etc/nginx/nginx.conf;
+              echo '    server {' >> /etc/nginx/nginx.conf;
+              echo '        listen 80;' >> /etc/nginx/nginx.conf;
+              echo '        server_name localhost;' >> /etc/nginx/nginx.conf;
+              echo '        location /shipping { return 200 "shippingservice answer for path /shipping\n"; }' >> /etc/nginx/nginx.conf;
+              echo '    }' >> /etc/nginx/nginx.conf;
+              echo '}' >> /etc/nginx/nginx.conf;
+              nginx -g "daemon off;"
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shippingservice-service
+  namespace: otterize-visual-tutorial-istio
+spec:
+  selector:
+    app: shippingservice
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 80
+---
