@@ -30,7 +30,7 @@ The following steps are only needed if you haven't already run through the [Kube
 
 Before you start, you'll need a Kubernetes cluster.
 
-{@include: ../_common/cluster-setup.md}
+{@include: ../_common/cluster-setup-for-visual-tutorials.md}
 </details>
 
 <details>
@@ -297,7 +297,7 @@ Otterize automatically generated network policies according to your declared int
 
 To list all generated network policies run:
 ```bash
-get netpol -n otterize-ecom-demo
+kubectl get netpol -n otterize-ecom-demo
 ```
 
 Let's inspect one of these network policies with:

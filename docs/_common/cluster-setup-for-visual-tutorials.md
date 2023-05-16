@@ -9,8 +9,9 @@ If you don't have the Minikube CLI, first [install it](https://minikube.sigs.k8s
 Then start your Minikube cluster with Calico, in order to enforce network policies.
 
 ```bash
-minikube start --cni=calico
+minikube start --cpus=4 --memory 8192 --disk-size 32g --cni=calico
 ```
+The minikube system requirements are for the demo application we deploy in the visual tutorials.
 
 </TabItem>
 <TabItem value="gke" label="Google GKE">
