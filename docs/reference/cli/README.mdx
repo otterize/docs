@@ -201,15 +201,15 @@ To change your organization selection, log-in again with --switch-org.
 
 ```
 
-## API version
+## Version
 
-### `otterize api-version`
+### `otterize version`
 
-Queries the Otterize Cloud for the current API version (e.g. `v1`) and revision (hash of the current API definition).
+Prints the CLI build version, and queries the Otterize Cloud for the current Cloud REST API version (e.g. `v1`) and revision (hash of the current Cloud REST API definition).
 
 #### Returns
 
-Returns the current version and revision of the Otterize REST API, as well as the version and revision against which this CLI is built.
+Returns the version of this CLI and the current version and revision of the Otterize Cloud REST API, as well as the version and revision against which this CLI is built.
 
 Note that the Otterize CLI is mostly a thin but useful utility for invoking the Otterize Cloud REST API.
 API versions that differ by version number may break backwards compatibility, while those that only differ by revision are backwards compatible: revisions add functionality or documentation but preserve all previous functionality.
@@ -218,9 +218,10 @@ If only the Cloud API has changed since the CLI was built (revisions don't match
 
 If also the Cloud API version is later than the CLI version, some CLI commands might fail.
 
-Beta version of the Cloud API (e.g. `v1beta`) are volatile: they can change and break backwards compatibility until they are out of beta.
+Beta versions of the Cloud API (e.g. `v1beta`) are volatile: they may change and break backwards compatibility until they are out of beta.
 
 ```shell
+Version: v0.1.1
 Current Cloud API:
     version: v1
     revision: 465ba4174008682f54f99e37d0b7791148aade14
