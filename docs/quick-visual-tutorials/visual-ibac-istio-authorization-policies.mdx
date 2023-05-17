@@ -9,16 +9,19 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
 Istio authorization policies are a powerful and flexible tool, but using them to achieve a zero-trust architecture with fine-grained pod-to-pod access control can be difficult to implement and maintain.
+
 In this tutorial, we will show you how to roll out Istio authorization policies with intent-based access control (IBAC).
 With IBAC, you won't need to manually keep track of pod labels or service accounts, and we'll even show you how to generate policies for all traffic in the cluster with just one command.
-In the end of this tutorial each service in the cluster will be able to communicate only with the servers declared in its client intents file, blocking any unintentional communication.
 
-All the capabilities of IBAC are within Otterize OSS, while the access graph in Otterize Cloud will guide us visually in these steps.
-We will:
-1. Install Otterize on your cluster
-2. View the traffic in your cluster in the cloud
-3. Declare one intent just to see how its generated policies effect the cluster
-4. Generate intents for all traffic in the cluster to achieve zero-trust in one command
+By the end of this tutorial, each server in the cluster will only allow the incoming calls declared by client services in their client intents files, and block any undeclared (unintentional) calls. Call declarations, and the authorization policies they'll generate, will specify not just the server but also the HTTP path and method.
+
+All the capabilities of IBAC for Istio are within Otterize OSS, while the access graph in Otterize Cloud will guide us visually in these steps.
+
+You will:
+1. Install Otterize OSS in your Kubernetes cluster, integrated to your Otterize Cloud account.
+2. View, within Otterize Cloud, the traffic in your cluster.
+3. Declare one intent just to see how the generated authorization policies affect the cluster.
+4. Generate client intents for all traffic in the cluster to achieve zero trust in one command.
 
 ## Prerequisites
 
