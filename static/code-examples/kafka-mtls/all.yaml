@@ -430,7 +430,7 @@ data:
     
     const (
         kafkaAddr     = "kafka.kafka:9092"
-        testTopicName = "transactions"
+        testTopicName = "mytopic"
         certFile      = "/var/otterize/credentials/cert.pem"
         keyFile       = "/var/otterize/credentials/key.pem"
         rootCAFile    = "/var/otterize/credentials/ca.pem"
