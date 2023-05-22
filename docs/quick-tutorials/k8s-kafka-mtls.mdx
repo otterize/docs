@@ -119,7 +119,7 @@ kubectl logs -n kafka statefulset/kafka | grep "Processing Acl change" | grep AN
 ```
 You should see the following output:
 ```
-[2023-04-12 20:05:32,344] INFO Processing Acl change notification for ResourcePattern(resourceType=TOPIC, name=mytopic, patternType=LITERAL), versionedAcls : Set(User:ANONYMOUS has DENY permission for operations: ALL from hosts: *), zkVersion : 0 (kafka.security.authorizer.AclAuthorizer)
+[2023-05-18 11:49:14,230] INFO Processing Acl change notification for ResourcePattern(resourceType=TOPIC, name=mytopic, patternType=LITERAL), versionedAcls : Set(User:ANONYMOUS has DENY permission for operations: ALL from hosts: *, User:* has ALLOW permission for operations: ALL from hosts: *), zkVersion : 0 (kafka.security.authorizer.AclAuthorizer)
 ```
 
 ## Deploy clients
