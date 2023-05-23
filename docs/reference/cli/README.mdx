@@ -27,6 +27,20 @@ easy to access on the fly.
 
 `otterize completion` offers instruction for generating command completions in various shells.
 
+
+## Usage Telemetry
+
+The CLI reports anonymous usage information back to the Otterize team, to help the team understand how the software is used in the community and what aspects users find useful. No personal or organizational identifying information is transmitted in these metrics: they only reflect patterns of usage. You may opt out at any time through a single configuration flag.
+
+To **disable** sending usage information:
+- Using a flag: `--telemetry-enabled=false`.
+- Via an environment variable: `OTTERIZE_TELEMETRY_ENABLED=false`.
+
+If the `telemetry` flag is omitted or set to `true`, telemetry will be enabled: usage information will be reported.
+
+Read more about it in the [Usage telemetry Documentation](https://docs.otterize.com/otterize-oss/usage-telemetry)
+
+
 ## Global options
 
 The following options apply to all CLI commands.
@@ -44,6 +58,8 @@ The following options apply to all CLI commands.
 | `--output` | text | Output the results of the command as text (`text`) or JSON (`json`). |
 | `-q` or `--quiet` |  | Suppress printing the results of the command. |
 | `--token` |  | The token to use in authenticating API calls. |
+| `--telemetry-enabled` |      | Whether to enable sending of anonymous usage telemetry to Otterize or not (default true) |
+
 
 ## Network mapper
 
