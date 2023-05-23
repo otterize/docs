@@ -17,13 +17,13 @@ The following are the commands offered by the Otterize CLI.
 
 ## Command structure
 
-Most CLI commands are of the form `otterize OBJECT ACTION`. Because there are multiple objects
-which each have multiple operations, this order makes the auto-completion and documentation built into the CLI
-easy to access on the fly.
+Most CLI commands are of the form `otterize NOUN VERB` where the `NOUN` is the type of object (e.g. `intents`, `clusters`) and the `VERB` is the operation being performed. 
+Putting the `NOUN` first makes the auto-completion and documentation built into the CLI easier to consume: you first choose the type of object you are interested in,
+then the built-in auto-completion or documentation shows you the options on that type of object. 
 
-- `otterize -h` or `otterize --help` offers help on the various objects
-- `otterize OBJECT -h` or `otterize OBJECT --help` offers help on the specified object
-- `otterize OBJECT OPERATION -h` or `otterize OBJECT OPERATION --help` offers help on the specified operation
+- `otterize -h` or `otterize --help` lists the various object types.
+- `otterize NOUN -h` or `otterize NOUN --help` offers help on the specified object type.
+- `otterize NOUN VERB -h` or `otterize NOUN VERB --help` offers help on the specified operation.
 
 `otterize completion` offers instruction for generating command completions in various shells.
 
