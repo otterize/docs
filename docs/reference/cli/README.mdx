@@ -31,19 +31,19 @@ easy to access on the fly.
 
 The following options apply to all CLI commands.
 
-| Name | Default | Description |
-| --- | --- | --- |
-| `-h` or `--help` |  | Get help on any command. |
-| `--api-address` | `https://app.otterize.com/api` | The URL for the Otterize API endpoint. |
-| `--client-id` |  | Set the client id, for use in authenticating API calls. |
-| `--client-secret` |  | Set the client secret, for use in authenticating API calls. |
-| `--config` | `~/.otterize/config` | Use the given path for the Otterize CLI config file. |
-| `--debug` |  | Show debug logs. |
-| `--interactive` | true | Ask for missing flags interactively. |
-| `--org-id` |  | Use the given organization id when calling the Otterize API. |
-| `--output` | text | Output the results of the command as text (`text`) or JSON (`json`). |
-| `-q` or `--quiet` |  | Suppress printing the results of the command. |
-| `--token` |  | The token to use in authenticating API calls. |
+| Name              | Default                        | Description                                                          |
+|-------------------|--------------------------------|----------------------------------------------------------------------|
+| `-h` or `--help`  |                                | Get help on any command.                                             |
+| `--api-address`   | `https://app.otterize.com/api` | The URL for the Otterize API endpoint.                               |
+| `--client-id`     |                                | Set the client id, for use in authenticating API calls.              |
+| `--client-secret` |                                | Set the client secret, for use in authenticating API calls.          |
+| `--config`        | `~/.otterize/config`           | Use the given path for the Otterize CLI config file.                 |
+| `--debug`         |                                | Show debug logs.                                                     |
+| `--interactive`   | true                           | Ask for missing flags interactively.                                 |
+| `--org-id`        |                                | Use the given organization id when calling the Otterize API.         |
+| `--format`        | text                           | Output the results of the command as text (`text`) or JSON (`json`). |
+| `-q` or `--quiet` |                                | Suppress printing the results of the command.                        |
+| `--token`         |                                | The token to use in authenticating API calls.                        |
 
 ## Network mapper
 
@@ -52,11 +52,11 @@ for each command.
 
 #### Common options
 
-| Name | Default | Description |
-| --- | --- | --- |
-| `--mapper-namespace` | `otterize-system` | Specifies the namespace where the mapper service was installed. |
-| `--mapper-service-name` | `otterize-network-mapper` | Specifies the name of the mapper service as it was installed. |
-| `--mapper-service-name` | `otterize-service-port` | Specifies the port on which the mapper service is listening. |
+| Name                    | Default                   | Description                                                     |
+|-------------------------|---------------------------|-----------------------------------------------------------------|
+| `--mapper-namespace`    | `otterize-system`         | Specifies the namespace where the mapper service was installed. |
+| `--mapper-service-name` | `otterize-network-mapper` | Specifies the name of the mapper service as it was installed.   |
+| `--mapper-service-name` | `otterize-service-port`   | Specifies the port on which the mapper service is listening.    |
 
 
 ### `otterize network-mapper reset`
@@ -70,9 +70,9 @@ as a list of clients and the servers they call.
 
 #### Options
 
-| Name | Default | Description |
-| --- | --- | --- |
-| `-n` or `--namespaces` |  | Include only clients in these namespaces (comma-separated). |
+| Name                   | Default | Description                                                 |
+|------------------------|---------|-------------------------------------------------------------|
+| `-n` or `--namespaces` |         | Include only clients in these namespaces (comma-separated). |
 
 #### Returns
 
@@ -110,11 +110,11 @@ Uses GraphViz (specifically go-graphviz) to generate the image.
 
 #### Options
 
-| Name | Default | Description |
-| --- | --- | --- |
-| `--format` | `png` | Image output format: "png" or "jpg". |
-| `-n` or `--namespaces` |  | Include only clients in these namespaces (comma-separated). |
-| `-o` or `--output-path` |  | Filename for the image. |
+| Name                    | Default | Description                                                 |
+|-------------------------|---------|-------------------------------------------------------------|
+| `--format`              | `png`   | Image output format: "png" or "jpg".                        |
+| `-n` or `--namespaces`  |         | Include only clients in these namespaces (comma-separated). |
+| `-o` or `--output-path` |         | Filename for the image.                                     |
 
 #### Returns
 
@@ -128,12 +128,12 @@ as YAML [client intents file(s)](/reference/intents-and-intents-files/#intents-f
 
 #### Options
 
-| Name | Default | Description |
-| --- | --- | --- |
-| `--format` | `yaml` | Specifies the format for the export: "yaml" or "json". |
-| `-n` or `--namespaces` |  | Export only clients in these namespaces (comma-separated). |
-| `-o` or `--output` | `STDOUT` | Filename or directory for redirecting the output. |
-| `--output-type` | `single-file` | Whether the output should be written as a single file (`single-file`) or as multiple files in a directory (`dir`). Requires the `-o` or `--output` to point to a directory. |
+| Name                   | Default       | Description                                                                                                                                                                 |
+|------------------------|---------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `--format`             | `yaml`        | Specifies the format for the export: "yaml" or "json".                                                                                                                      |
+| `-n` or `--namespaces` |               | Export only clients in these namespaces (comma-separated).                                                                                                                  |
+| `-o` or `--output`     | `STDOUT`      | Filename or directory for redirecting the output.                                                                                                                           |
+| `--output-type`        | `single-file` | Whether the output should be written as a single file (`single-file`) or as multiple files in a directory (`dir`). Requires the `-o` or `--output` to point to a directory. |
 
 #### Returns
 
