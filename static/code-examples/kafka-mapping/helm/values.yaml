@@ -1,11 +1,9 @@
-# Use TLS for the Kafka listeners (Kafka calls them SSL)
 listeners:
   - "CLIENT://:9092"
   - "INTERNAL://:9093"
 advertisedListeners:
   - "CLIENT://:9092"
   - "INTERNAL://:9093"
-listenerSecurityProtocolMap: "INTERNAL:SSL,CLIENT:SSL"
 # For a gradual rollout scenario we will want to keep the default permission for topics as allowed, unless an ACL was set
 allowEveryoneIfNoAclFound: true
 # Allocate resources
@@ -84,3 +82,4 @@ log4j: |
   # Access denials are logged at INFO level, change to DEBUG to also log allowed accesses
   log4j.logger.kafka.authorizer.logger=DEBUG, authorizerAppender
   log4j.additivity.kafka.authorizer.logger=false
+authorizerClassName: kafka.security.authorizer.AclAuthorizer

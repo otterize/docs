@@ -318,49 +318,6 @@ Sent message - Message 3 [sent by client-authenticated]
 
 </details>
 
-## Optional: Install Otterize CLI and examine topic-level Kafka access map
-
-Now that our 3 clients are accessing our Kafka server, which has the Otterize OSS Kafka watcher enabled and feeding data to the network mapper, we can query the network mapper directly
-to see the map it has built of topic-level access by those clients.
-
-<details>
-<summary>Install the Otterize CLI</summary>
-
-{@include: ../_common/install-otterize-cli.md}
-
-</details>
-
-<details>
-<summary>Query the mapper</summary>
-1. List pod communication in our tutorial namespace:
-
-```shell
-otterize network-mapper list -n otterize-tutorial-kafka-mtls
-```
-
-2. We should see all 3 of our clients producing data to topic `mytopic` of our Kafka server:
-
-```shell
-client in namespace otterize-tutorial-kafka-mtls calls:
-  - kafka in namespace kafka
-    - Kafka topic: mytopic, operations: [produce]
-client-authenticated in namespace otterize-tutorial-kafka-mtls calls:
-  - kafka in namespace kafka
-    - Kafka topic: transactions, operations: [produce]
-client-other in namespace otterize-tutorial-kafka-mtls calls:
-  - kafka in namespace kafka
-    - Kafka topic: mytopic, operations: [produce]
-```
-
-:::tip
-Enabling the Kafka watcher component of the network mapper shows which clients connect to running Kafka servers, the topics they access, and the operations they undertake on those topics.
-
-The information is interesting for various purposes, including running Otterize in "shadow mode" to see what would happen in "enforcement mode" before actually turning on enforcement, and auto-generating client intents to bootstrap rolling out IBAC.
-:::
-
-</details>
-
-
 ## Apply intents
 1. The client declares its intent to call the `kafka.kafka` server with this `intents.yaml` file:
 

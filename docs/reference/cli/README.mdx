@@ -125,11 +125,13 @@ Uses GraphViz (specifically go-graphviz) to generate the image.
 
 #### Options
 
-| Name                    | Default | Description                                                 |
-|-------------------------|---------|-------------------------------------------------------------|
-| `--format`              | `png`   | Image output format: "png" or "jpg".                        |
-| `-n` or `--namespaces`  |         | Include only clients in these namespaces (comma-separated). |
-| `-o` or `--output-path` |         | Filename for the image.                                     |
+| Name                    | Default | Description                                                                             |
+|-------------------------|---------|-----------------------------------------------------------------------------------------|
+| `--format`              | `png`   | Image output format: "png" or "jpg".                                                    |
+| `-n` or `--namespaces`  |         | Include only clients in these namespaces (comma-separated).                             |
+| `-o` or `--output-path` |         | Filename for the image.                                                                 |
+| `--exclude-labels`      |         | a list of labels that would exclude services from list/export. example: "include=false" |                                     |
+| `--exclude-services`    |         | a list of service to exclude from list/export. example: "service1,service2"             |                                     |
 
 #### Returns
 
@@ -149,7 +151,8 @@ as YAML [client intents file(s)](/reference/intents-and-intents-files/#intents-f
 | `-n` or `--namespaces` |               | Export only clients in these namespaces (comma-separated).                                                                                                                  |
 | `-o` or `--output`     | `STDOUT`      | Filename or directory for redirecting the output.                                                                                                                           |
 | `--output-type`        | `single-file` | Whether the output should be written as a single file (`single-file`) or as multiple files in a directory (`dir`). Requires the `-o` or `--output` to point to a directory. |
-
+| `--exclude-labels`     |               | a list of labels that would exclude services from list/export. example: "include=false"                                                                                     |                                     |
+| `--exclude-services`   |               | a list of service to exclude from list/export. example: "service1,service2"                                                                                                 |
 #### Returns
 
 Here's a partial output from `otterize network-mapper export -n otterize-ecom-demo`:
