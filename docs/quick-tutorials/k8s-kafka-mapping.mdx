@@ -34,9 +34,9 @@ So either forego browser visualization and:
 ```
 helm repo add otterize https://helm.otterize.com
 helm repo update
-helm install otterize otterize/otterize-kubernetes -n otterize-system --create-namespace \
---set networkMapper.kafkawatcher.enable=true \
---set networkMapper.kafkawatcher.kafkaServers={"kafka-0.kafka"}
+helm install otterize otterize/network-mapper -n otterize-system --create-namespace \
+--set kafkawatcher.enable=true \
+--set kafkawatcher.kafkaServers={"kafka-0.kafka"}
 ```
 
 </details>
@@ -72,18 +72,87 @@ In the chart we will configure Kafka to:
 - Recognize the Otterize intents operator as a super user so it can configure ACLs;
 - Turn on Kafka debug logging to allow the Kafka watcher to feed topic-level client access information to the network mapper;
 
+:::danger
+## ORI SHAVIT EDIT NEW VALUES & INSTALLATION INSTRUCTIONS HERE ##
+:::
+
 <details>
 <summary>Expand to see the Helm values.yaml used with the Bitnami chart</summary>
 
 ```yaml
-{@include: ../../static/code-examples/kafka-mtls/helm/values_mapping.yaml}
+{@include: ../../static/code-examples/kafka-mapping/helm/values.yaml}
 ```
 </details>
 
+The following command will deploy a Kafka cluster with this chart:
+ ```bash
+ helm repo add bitnami https://charts.bitnami.com/bitnami
+ helm repo update
+ helm install --create-namespace -n kafka \
+   -f https://docs.otterize.com/code-examples/kafka-mapping/helm/values.yaml kafka bitnami/kafka --version 21.4.4
+ ```
+
 ## Deploy demo to simulate traffic
 
-Let's add services and traffic to the cluster and see how the network mapper builds the map.
-Deploy the following simple example &mdash; `client`, `client2` and `nginx`, communicating over HTTP:
+Let's add services that will access our Kafka server and see how the network mapper builds the map.
+Deploy the following simple example &mdash; `client`, `client-other` and `client-authenticated`:
 ```shell
-kubectl apply -n otterize-tutorial-istio-mapping -f https://docs.otterize.com/code-examples/network-mapper/istio.yaml
+kubectl apply -n otterize-tutorial-kafka-mapping -f https://docs.otterize.com/code-examples/kafka-mapping/all.yaml
+```
+
+Now that our 3 clients are accessing our Kafka server, which has the Otterize OSS Kafka watcher enabled and feeding data to the network mapper, we can query the network mapper directly
+to see the map it has built of topic-level access by those clients.
+
+<details>
+<summary>Query the mapper</summary>
+1. List pod communication in our tutorial namespace:
+
+```shell
+otterize network-mapper list -n otterize-tutorial-kafka-mapping
+```
+
+2. We should see:
+    * `client` consuming from `mytopic`
+    * `client-other` producing to `mytopic`
+    * `client-authenticated` producing to `transactions`
+
+```shell
+client in namespace otterize-tutorial-kafka-mapping calls:
+  - kafka in namespace kafka
+    - Kafka topic: mytopic, operations: [consume]
+client-authenticated in namespace otterize-tutorial-kafka-mapping calls:
+  - kafka in namespace kafka
+    - Kafka topic: transactions, operations: [produce]
+client-other in namespace otterize-tutorial-kafka-mapping calls:
+  - kafka in namespace kafka
+    - Kafka topic: mytopic, operations: [produce]
+```
+</details>
+
+If you've attached Otterize OSS to Otterize Cloud, go back to see the [access graph in your browser](https://app.otterize.com). Click on the Kafka service, and click at the bottom of it to focus on it and show its details:
+
+![Access graph](/img/quick-tutorials/kafka-mapping/discovered.png)
+
+We can see `client`, `client-other` and `client-authenticated` who are accessing our Kafka server. Clicking on
+a specific edge reveals more data such as the topics being accessed, and the operations used on those topics.
+
+
+## What did we accomplish?
+Enabling the Kafka watcher component of the network mapper shows which clients connect to running Kafka servers, the topics they access, and the operations they undertake on those topics.
+
+The information is interesting for various purposes, including running Otterize in "shadow mode" to see what would happen in "enforcement mode" before actually turning on enforcement, and auto-generating client intents to bootstrap rolling out IBAC.
+
+
+## What's next
+- Try our [secure access for Kafka](/quick-tutorials/k8s-kafka-mtls) tutorial
+- Follow [a more visual tutorial](/quick-visual-tutorials/visual-ibac-kafka-k8s) for securing Kafka with IBAC in a demo ecommerce application.
+- Learn how to easily secure pod-to-pod access with IBAC using Kubernetes network policies, in [a hands-on tutorial](/quick-tutorials/k8s-network-policies) or [a more visual tutorial](/quick-visual-tutorials/visual-ibac-network-policies).
+
+## Teardown
+
+To remove the deployed examples run:
+```bash
+helm uninstall otterize -n otterize-system
+helm uninstall kafka -n kafka
+helm delete ns otterize-tutorial-kafka-mapping
 ```
