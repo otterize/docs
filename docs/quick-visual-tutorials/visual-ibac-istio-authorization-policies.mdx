@@ -11,7 +11,7 @@ import TabItem from '@theme/TabItem';
 Istio authorization policies are a powerful and flexible tool, but using them to achieve a zero-trust architecture with fine-grained pod-to-pod access control can be difficult to implement and maintain.
 
 In this tutorial, we will show you how to roll out Istio authorization policies with intent-based access control (IBAC).
-With IBAC, you won't need to manually keep track of pod labels or service accounts, and we'll even show you how to generate policies for all traffic in the cluster with just one command.
+With IBAC, you won't need to manually keep track of pod labels or service accounts. You won't need to manage Istio authorization policies at all &mdash; they'll be generated and managed automatically! We'll even show you how to generate policies for all discovered traffic in the cluster with just one command.
 
 By the end of this tutorial, each server in the cluster will only allow the incoming calls declared by client services in their client intents files, and block any undeclared (unintentional) calls. Call declarations, and the authorization policies they'll generate, will specify not just the server but also the HTTP path and method.
 
@@ -80,8 +80,8 @@ kubectl apply -f https://docs.otterize.com/code-examples/network-mapper/istio-te
 :::tip
 HTTP request paths and methods aren't exported in Envoy's connection metrics by default, but we do want to capture those
 details when creating the network map. That way we not only have better visibility of the calling patterns,
-e.g. in the access graph, but we can also use that information to automatically generate fine-grained intents and
-enforce them with Istio authorization policies.
+e.g. in the access graph, but we can also use that information to automatically capture fine-grained intents and
+use them to generate Istio authorization policies.
 :::
 
 ## Deploy demo to simulate traffic
@@ -111,15 +111,18 @@ And when you go back to the [access graph](https://app.otterize.com/access-graph
 ![Access graph](/img/quick-tutorials/istio-visual-tutorial/phase-0.png)
 
 Each service is shown as a node in the access graph, while the dashed lines (edges) connecting the services show access between them, as detected by the network mapper.
-We need to adjust the view to Istio authorization policies, so enable the Istio "Use in access graph" button and disable the NetworkPolicies and Kafka toggle buttons.
+
+The lines are dashed because the client services are missing intent declarations: we've discovered their intents to call the servers, but they haven't declared those intents.
+
+We need to adjust the access graph view to take into account Istio authorization policies, so turn on the Istio policies "Use in access graph" toggle and turn off the network policies and Kafka ACLs toggle buttons (to focus only on Istio).
 
 ![Access graph](/img/quick-tutorials/istio-visual-tutorial/access-graph-panel.png)
 
 ## Try out IBAC with shadow mode
 
-Now let's start to roll out access controls, but remain in shadow mode: no actual enforcement of controls, yet.
+Now let's start to roll out access controls, but remain in shadow mode: no actual enforcement of controls, yet. In shadow mode, Otterize doesn't actually generate access controls (in this case, Istio authorization policies) from client intents declarations, but the access graph still shows you the effects those declarations would have.
 
-We'll declare that the `frontend` intends to perform `GET` request to the `recommendationservice`.
+We'll declare that the `frontend` intends to call the `recommendationservice` by sending `GET` requests to the HTTP resource at `/recommendations`:
 
 ```yaml
 {@include: ../../static/code-examples/ibac-for-istio/phase-1.yaml}
@@ -127,7 +130,7 @@ We'll declare that the `frontend` intends to perform `GET` request to the `recom
 
 We expect this will provide secure access, allowing the intended access from the `frontend` while protecting the `recommendationservice` from unintended access.
 
-Apply this intents file with:
+Apply the above client intents file with:
 ```bash
 kubectl apply -n otterize-visual-tutorial-istio -f https://docs.otterize.com/code-examples/ibac-for-istio/phase-1.yaml
 ```
@@ -136,23 +139,22 @@ Look at the access graph again:
 
 ![Access graph](/img/quick-tutorials/istio-visual-tutorial/phase-1.png)
 
-The green line from `frontend` to `recommendationservice`, representing the discovered intent from the network mapper, no longer dashed, but rather **solid**.
+The green line from `frontend` to `recommendationservice`, representing the discovered intent from the network mapper, is no longer dashed, but rather **solid**: the access we discovered was needed has now been declared.
 
 Click on that `frontend` &rarr; `recommendationservice` line:
 <img src="/img/quick-tutorials/istio-visual-tutorial/frontend-recommendation-applied.png" alt="Discovered intents" width="600"/>
 
-- We can see the `frontend` can call the `recommendationservice`, and will be guaranteed access even once enforcement is turned on.
+- We can see the `frontend` calls the `recommendationservice`, and has declared that intent, so it will be guaranteed access even once enforcement is turned on.
 
 Click on the `recommendationservice` itself:
 <img src="/img/quick-tutorials/istio-visual-tutorial/recommendation-access-state.png" alt="Discovered intents" width="600"/>
 
-- We can see it's not protected now (we're in shadow mode, and there are no authorization policies who block access).
+- We can see this service is not currently protected: after all, we're in shadow mode, and there are no authorization policies blocking unintended access.
 - We can also see it would not block any clients once protection is enabled.
-- And there is no warning about it remaining unprotected once enforcement is turned on. All is ready for turning on enforcement and protecting this service from any unintended calls.
-
+- And there is no warning about it remaining unprotected once enforcement is turned on. We have **a green light**, at least as far as this service goes, **for turning on enforcement** and protecting this service from any unintended calls.
 
 ### Declare more intents
-Let’s add another intent, this time from `recommendationservice` to `productcatalogservice`.
+We can see in the access graph that the `recommendationservice` in turn calls the `productcatalogservice`, sending `GET` requests to the resource at `/similar-products`, so let's declare that intent:
 
 ```yaml
 {@include: ../../static/code-examples/ibac-for-istio/phase-2.yaml}
@@ -166,25 +168,26 @@ Look at the access graph again:
 
 ![Access graph](/img/quick-tutorials/istio-visual-tutorial/phase-2.png)
 
-As before, the line from `recommendationservice` &rarr; `productcatalogservice` is now solid green line, and no warnings. That's what we expected.
+As before, the line from `recommendationservice` &rarr; `productcatalogservice` is now solid green line, with no warnings. That's what we expected when we properly declare a discovered intent.
 
-But two other lines, `frontend` &rarr; `productcatalogservice` and `checkoutservice` &rarr; `productcatalogservice`, have turned orange. And the `productcatalogservice` lock icon has turned red. Why?
+But two other lines, `frontend` &rarr; `productcatalogservice` and `checkoutservice` &rarr; `productcatalogservice`, have turned orange. And a red warning has shown up on the `productcatalogservice`. Why?
 
 Click on one of those orange lines:
 <img src="/img/quick-tutorials/istio-visual-tutorial/frontend-productactalogservice-missing-intent.png" alt="Discovered intents" width="600"/>
 
-- This access is not blocked *now* &mdash; because we're still in shadow mode (otherwise the line would have been red).
-- But access *would be blocked* once enforcement is turned on. To prevent that, we're told to declare and apply an intent for this call.
+- There is no declaration of the discovered `GET` calls from the `frontend` to the `productcatalogservice` at `/products`.
+- This undeclared access is not blocked *now* &mdash; because we're still in shadow mode (otherwise the line would have been red).
+- But access *would* be blocked once enforcement is turned on. To prevent that, we're told to declare the intent for this call.
 
 Click on the `productcatalogservice`:
 <img src="/img/quick-tutorials/istio-visual-tutorial/productcatalog-would-block.png" alt="Discovered intents" width="600"/>
 
-- We can see it's not protected now, as before.
-- But we can also see it *would* block any clients once protection is enabled, which is why the lock is red.
+- We can see it's not protected now, again because we're in shadow mode.
+- But we can also see it *would* block any clients once protection is enabled.
 - And there is an explicit warning to apply the missing intents from all its clients before turning on enforcement.
 
 
-Let's add those intents for the `frontend` and `checkoutservice`.
+Let's declare those intents from the `frontend` and `checkoutservice` clients.
 
 <Tabs>
 <TabItem value="frontend" label="frontend" default>
@@ -214,24 +217,24 @@ Click on the `productcatalogservice`:
 
 ![Access graph](/img/quick-tutorials/istio-visual-tutorial/productcatalog-service-all-green.png)
 
-All is well again: the `productcatalogservice` will be protected, and its 3 clients will have access after enforcement is turned on.
-Each client access is limited to the HTTP resource and method declared in the intent.
+All is well again: the `productcatalogservice` will be protected, and its 3 declared clients will have access, after enforcement is turned on.
+Each client's access is limited to the HTTP resource and method declared in its intents file.
 
-:::tip We can see how to roll out IBAC gradually:
+:::tip We can now see how to roll out IBAC gradually:
 1. Pick a service to protect.
-2. Make sure all its clients declare and intents to call it.
-3. When you're ready, turn on enforcement.
+2. Make sure all its clients declare their intents to call it.
+3. When you're ready, and the access graph shows green solid arrows without warnings, turn on enforcement.
 
-The access graph and shadow mode allow us to gain confidence by showing what would happen and highlighting any problems.
+The access graph and shadow mode allow us to gain confidence by showing what would happen, highlighting any problems, and pointi ng to their fixes.
 :::
 
 
 ### Protect everything easily
-Could we somehow automatically bootstrap this for the whole cluster and protect all services, without breaking any intended calls? Yes!
+Since Otterize already knows the problems and their fixes, could we somehow automatically bootstrap this for the whole cluster and protect all services, without breaking any intended calls? Yes!
 
-The network mapper keeps track of all attempted calls, after all: those are the discovered intents. If you are confident that all of those calls are intended and appropriate, you can use that information to automatically generate intent declarations and apply them.
+The network mapper keeps track of all attempted calls, after all: those are the discovered intents. If you are confident that all intended call patterns have been exercised while the network mapper was running (so it could capture them), and all the calls it saw are intended and appropriate, you can use that information to automatically generate intent declarations and apply them.
 
-Let's use the Otterize CLI ([installation](/installation#install-the-otterize-cli) and [reference](/reference/cli) to export all discovered intents as YAML declarations:
+Let's use the [Otterize CLI](/reference/cli) to export all discovered intents as YAML declarations:
 ```bash
 otterize network-mapper export -n otterize-visual-tutorial-istio --output-type dir --output intents
 ```
@@ -252,11 +255,15 @@ Look at the access graph again:
 
 The graph confirms that all services would be protected, and no intended calls would be blocked, once we apply protection.
 
+:::tip
+In essence, in one shot, we've declared that all the traffic in the environment where the mapper was running is all the intended traffic: all these calls, and no other calls, should be allowed.
+:::
+
 
 ## Enable enforcement
-With the confidence we gained, let's enable enforcement (via authorization policies) by upgrading your Otterize installation to remove the `intentsOperator.operator.enableEnforcement=false` flag.
+With the confidence we've gained, let's enable enforcement (via Istio authorization policies) by upgrading your Otterize installation to remove the `intentsOperator.operator.enableEnforcement=false` flag.
 
-At the top of the access graph, click the **Configure cluster** button; or in the clusters page, clicking on the **Connection guide &rarr;** link for your cluster.
+At the top of the access graph, click the **Configure cluster** button; or in the clusters page, click on the **Connection guide &rarr;** link for your cluster.
 
 Then run the Helm commands shown there, and specifically follow the instructions to install Otterize <b>with enforcement on</b> (not in shadow mode). Namely, <b>omit</b> the following flag in the Helm command:
 
@@ -266,13 +273,13 @@ Let's look at the access graph again:
 
 ![Access graph](/img/quick-tutorials/shadow-mode/phase-5.png)
 
-Note that all (but two) of the lock icons are locked, indicating the services are protected. And all the locks and edges are green, indicating no call attempts (discovered by the network mapper) are being blocked.
+Note that all (but two) of the servers are shown in green, as protected. And no client call attempts (discovered by the network mapper) are being blocked. This is what a service-to-service zero-trust architecture looks like.
 
 :::tip How would blocked access attempts look now?
 From now on, if a client attempts a server call that wasn't covered by one of the declared intents, that would be discovered by the network mapper and show up as (new) discovered intents. Remember that the network mapper discovers attempted access, not just successful access. In this case, a red line would appear from that client to that server, and the lock on that server would turn red: calls from that client are being blocked.
 
 That may be because:
-- The calls didn't happen when the network mapper was building its map from which the intents were bootstrapped, in which case you may choose to generate all the intents again, or or just create and apply the new ones manually.
+- The calls were legitimate, but were missed when intents were generated because they didn't happen when the network mapper was building its map from which the intents were bootstrapped. In that case, you may choose to generate all the intents again, or or just create and apply the new ones manually.
 - Or... the client maliciously called this server, but is being blocked by the authorization policies. IBAC has saved the day!
 :::
 
