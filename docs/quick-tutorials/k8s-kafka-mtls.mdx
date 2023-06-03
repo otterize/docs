@@ -1,6 +1,6 @@
 ---
-sidebar_position: 2
-title: Simple, secure Kafka access
+sidebar_position: 3
+title: Kafka access automation
 ---
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
@@ -122,7 +122,12 @@ You should see the following output:
 
 ## Deploy clients
 
-Clients will authenticate to Kafka using mTLS. Otterize makes this easy, requiring just 3 simple changes to the client pod spec:
+Our simple example consists of a Kafka broker named "**Kafka**", and three client pods:
+- One named "**client**".
+- One named "**client-other**".
+- And one named "**client-authenticated**".
+
+These clients will authenticate to Kafka using mTLS. Otterize makes this easy, requiring just 3 simple changes to the client pod spec:
 1. **Generate credentials**: add the `credentials-operator.otterize.com/tls-secret-name` annotation, which tells Otterize to generate mTLS credentials and store them in a Kubernetes secret whose name is the value of this annotation.
 2. **Expose credentials in a volume**: add a volume containing this secret to the pod.
 3. **Mount the volume**: mount the volume in every container in the pod.
@@ -161,7 +166,6 @@ spec:
 ```
 </details>
 
-Our simple example consists of a three client pods &mdash; "client", "client-other", and "client-authenticated" &mdash; and the Kafka broker.
 <details>
 <summary>Expand to see the client specs used in this example</summary>
 <Tabs>
