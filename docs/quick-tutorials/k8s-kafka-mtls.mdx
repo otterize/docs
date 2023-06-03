@@ -62,7 +62,7 @@ Or choose to include browser visualization and:
 
 ## Install Kafka
 
-We will deploy a Kafka cluster using Bitnami's [Helm chart](https://github.com/bitnami/charts/tree/master/bitnami/kafka).
+We will deploy a Kafka broker using Bitnami's [Helm chart](https://github.com/bitnami/charts/tree/master/bitnami/kafka).
 In the chart we will configure Kafka to:
 - Recognize the Otterize intents operator as a super user so it can configure ACLs;
 - Use TLS (Kafka calls it SSL) for its listeners;
@@ -78,7 +78,7 @@ In the chart we will configure Kafka to:
 ```
 </details>
 
-The following command will deploy a Kafka cluster with this chart:
+The following command will deploy a Kafka broker with this chart:
  ```bash
  helm repo add bitnami https://charts.bitnami.com/bitnami
  helm repo update
