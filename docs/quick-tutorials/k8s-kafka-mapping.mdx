@@ -6,12 +6,14 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import styles from '/src/css/styles.module.css';
 
-With its Kafka watcher enabled, the network mapper allows you to map topic level access to Kafka servers within your K8s cluster.
-This provides a clear picture of which Kafka topics are being accessed and with what operations.
+With its Kafka watcher enabled, the network mapper allows you to map topic-level access to Kafka servers within your Kubernetes cluster.
+This provides a clear picture of which Kafka topics are being accessed and with which operations.
 In this tutorial, we will:
 
 - Deploy a Kafka broker, and three clients that call it.
-- Discover which topics are being accessed by those clients, and with what operations, using the Otterize network mapper's Kafka watcher.
+- Discover which topics are being accessed by those clients, and with which operations, using the Otterize network mapper's Kafka watcher.
+
+We will **not** be doing any access control in this demo, just purely mapping client-to-Kafka access at the topic and operation level.
 
 ## Prerequisites
 
@@ -67,10 +69,10 @@ Finally, you'll need to install the Otterize CLI (if you haven't already) to int
 
 ## Install Kafka
 
-We will deploy a Kafka cluster using Bitnami's [Helm chart](https://github.com/bitnami/charts/tree/master/bitnami/kafka).
+We will deploy a Kafka broker using Bitnami's [Helm chart](https://github.com/bitnami/charts/tree/master/bitnami/kafka).
 In the chart we will configure Kafka to:
-- Recognize the Otterize intents operator as a super user so it can configure ACLs;
-- Turn on Kafka debug logging to allow the Kafka watcher to feed topic-level client access information to the network mapper;
+- Recognize the Otterize intents operator as a super user so it can configure ACLs.
+- Turn on Kafka debug logging to allow the Kafka watcher to feed topic-level client access information to the network mapper.
 
 :::danger
 ## ORI SHAVIT EDIT NEW VALUES & INSTALLATION INSTRUCTIONS HERE ##
@@ -84,7 +86,7 @@ In the chart we will configure Kafka to:
 ```
 </details>
 
-The following command will deploy a Kafka cluster with this chart:
+The following command will deploy a Kafka broker with this chart:
  ```bash
  helm repo add bitnami https://charts.bitnami.com/bitnami
  helm repo update
@@ -94,28 +96,28 @@ The following command will deploy a Kafka cluster with this chart:
 
 ## Deploy demo to simulate traffic
 
-Let's add services that will access our Kafka server and see how the network mapper builds the map.
-Deploy the following simple example &mdash; `client`, `client-other` and `client-authenticated`:
+Let's add a few services that will access our Kafka server, and see how the network mapper builds the access map:
+- One service named "**client**".
+- One service named "**client-other**".
+- And one service named "**client-authenticated**".
+
+To deploy these services, use:
 ```shell
 kubectl apply -n otterize-tutorial-kafka-mapping -f https://docs.otterize.com/code-examples/kafka-mapping/all.yaml
 ```
 
-Now that our 3 clients are accessing our Kafka server, which has the Otterize OSS Kafka watcher enabled and feeding data to the network mapper, we can query the network mapper directly
-to see the map it has built of topic-level access by those clients.
-
-<details>
-<summary>Query the mapper</summary>
-1. List pod communication in our tutorial namespace:
+Each of these services is built to periodically call the Kafka broker we deployed. Because that broker has the Otterize OSS Kafka watcher enabled and feeding data to the network mapper, we can query the network mapper directly to see the map it has built up.
 
 ```shell
 otterize network-mapper list -n otterize-tutorial-kafka-mapping
 ```
 
-2. We should see:
-    * `client` consuming from `mytopic`
-    * `client-other` producing to `mytopic`
-    * `client-authenticated` producing to `transactions`
+We expect to see:
+- `client` consuming from `mytopic`.
+- `client-authenticated` producing to `transactions`.
+- `client-other` producing to `mytopic`.
 
+And indeed:
 ```shell
 client in namespace otterize-tutorial-kafka-mapping calls:
   - kafka in namespace kafka
@@ -127,14 +129,20 @@ client-other in namespace otterize-tutorial-kafka-mapping calls:
   - kafka in namespace kafka
     - Kafka topic: mytopic, operations: [produce]
 ```
-</details>
 
-If you've attached Otterize OSS to Otterize Cloud, go back to see the [access graph in your browser](https://app.otterize.com). Click on the Kafka service, and click at the bottom of it to focus on it and show its details:
+If you've attached Otterize OSS to Otterize Cloud, go back to see the [access graph in your browser](https://app.otterize.com).
 
 ![Access graph](/img/quick-tutorials/kafka-mapping/discovered.png)
 
-We can see `client`, `client-other` and `client-authenticated` who are accessing our Kafka server. Clicking on
-a specific edge reveals more data such as the topics being accessed, and the operations used on those topics.
+Clicking on a specific arrow between a client and the broker reveals which topic and operations are being accessed.
+
+Now click on the Kafka broker itself, and click at the bottom of it to focus on it and show its details:
+
+:::danger
+Evya to add screenshot of the details
+:::
+
+We can see `client`, `client-other` and `client-authenticated`, and how each accesses this Kafka broker.
 
 
 ## What did we accomplish?
