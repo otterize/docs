@@ -33,19 +33,6 @@ Checkout the network mapper [tutorial](/quick-tutorials/k8s-network-mapper) to s
 | `sniffer.tolerations`       | Tolerations override.     | `(none)`                 |
 | `sniffer.priorityClassName` | Set priorityClassName.    | `(none)`                 |
 
-
-## Kafka watcher parameters
-| Key                             | Description                                                 | Default                        |
-|---------------------------------|-------------------------------------------------------------|--------------------------------|
-| `kafkawatcher.enable`           | Enable Kafka watcher deployment (beta).                     | `false`                        |
-| `kafkawatcher.image.repository` | Kafka watcher image repository.                             | `otterize`                     |
-| `kafkawatcher.image.image`      | Kafka watcher image.                                        | `network-mapper-kafka-watcher` |
-| `kafkawatcher.image.tag`        | Kafka watcher image tag.                                    | `latest`                       |
-| `kafkawatcher.pullPolicy`       | Kafka watcher pull policy.                                  | `(none)`                       |
-| `kafkawatcher.pullSecrets`      | Kafka watcher pull secrets.                                 | `(none)`                       |
-| `kafkawatcher.resources`        | Resources override.                                         | `(none)`                       |
-| `kafkawatcher.kafkaServers`     | Kafka servers to watch, specified as `pod.namespace` items. | `(none)`                       |
-
 ## Istio watcher parameters
 | Key                             | Description                             | Default                        |
 |---------------------------------|-----------------------------------------|--------------------------------|

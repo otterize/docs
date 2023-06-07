@@ -3,32 +3,7 @@ sidebar_position: 2
 title: Kafka Watcher
 ---
 
-To deploy the network mapper with the Kafka watcher component, do the following:
-```bash
-helm repo add otterize https://helm.otterize.com
-helm repo update
-helm install network-mapper otterize/network-mapper -n otterize-system --create-namespace --set kafkawatcher.enable=true
-```
-Make sure to include `--set kafkaServers={}` and provide a list of Kafka servers whose logs the Kafka watcher should watch.
-Servers in the list should be specified as `name.namespace`.
-
-## Kafka watcher parameters
-| Key                             | Description                                                 | Default                        |
-|---------------------------------|-------------------------------------------------------------|--------------------------------|
-| `kafkawatcher.enable`           | Enable Kafka watcher deployment (beta).                     | `false`                        |
-| `kafkawatcher.image.repository` | Kafka watcher image repository.                             | `otterize`                     |
-| `kafkawatcher.image.image`      | Kafka watcher image.                                        | `network-mapper-kafka-watcher` |
-| `kafkawatcher.image.tag`        | Kafka watcher image tag.                                    | `latest`                       |
-| `kafkawatcher.pullPolicy`       | Kafka watcher pull policy.                                  | `(none)`                       |
-| `kafkawatcher.pullSecrets`      | Kafka watcher pull secrets.                                 | `(none)`                       |
-| `kafkawatcher.resources`        | Resources override.                                         | `(none)`                       |
-| `kafkawatcher.kafkaServers`     | Kafka servers to watch, specified as `pod.namespace` items. | `(none)`                       |
-
-## Enabling debug logs in Kafka servers
-The Kafka watcher periodically examines logs of Kafka servers provided by the user through configuration,
-parses them and deduces topic-level access to Kafka from pods in the Kubernetes cluster.
-In order for the Kafka watcher to correctly examine topic-level access, the Kafka server's ACL authorizer logger should be configured
-to log at debug level, and to stdout.
+The Kafka Watcher is deployed in a Kubernetes environment as a sidecar container in the Kafka pod. Kafka is configured as below to generate logs from authorization decisions and write them to a volume shared with the Watcher container. The Kafka Watcher collects these logs and sends them to the network mapper.
 
 ### Install Kafka via Helm with debug logs preconfigured
 For the Bitnami Kafka Helm chart used in other Kafka tutorials, we can add the following configuration to the chart's

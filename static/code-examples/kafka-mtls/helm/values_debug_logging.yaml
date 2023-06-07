@@ -32,73 +32,43 @@ resources:
   requests:
     cpu: 50m
     memory: 256Mi
+sidecars:
+  - name: otterize-sidecar
+    image: otterize/network-mapper-kafka-watcher:dev
+    imagePullPolicy: Never
+    volumeMounts:
+      - mountPath: /opt/otterize/kafka-watcher
+        name: kafka-authz-logs
+    env:
+      - name: OTTERIZE_MAPPER_API_URL
+        value: http://otterize-network-mapper.otterize-system.svc:9090/query
+      - name: OTTERIZE_DEBUG
+        value: "False"
+      - name: OTTERIZE_POD
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.name
+      - name: OTTERIZE_NAMESPACE
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.namespace
+extraVolumes:
+  - name: kafka-authz-logs
+    emptyDir:
+extraVolumeMounts:
+  - mountPath: /opt/otterize/kafka-watcher
+    name: kafka-authz-logs
 log4j: |
-  # Unspecified loggers and loggers with additivity=true output to server.log and stdout
-  # Note that INFO only applies to unspecified loggers, the log level of the child logger is used otherwise
-  
-  log4j.rootLogger=INFO, stdout, kafkaAppender
+  log4j.rootLogger=INFO, stdout
 
   log4j.appender.stdout=org.apache.log4j.ConsoleAppender
   log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
   log4j.appender.stdout.layout.ConversionPattern=[%d] %p %m (%c)%n
   
-  log4j.appender.kafkaAppender=org.apache.log4j.ConsoleAppender
-  log4j.appender.kafkaAppender.layout=org.apache.log4j.PatternLayout
-  log4j.appender.kafkaAppender.layout.ConversionPattern=[%d] %p %m (%c)%n
-  
-  log4j.appender.stateChangeAppender=org.apache.log4j.ConsoleAppender
-  log4j.appender.stateChangeAppender.layout=org.apache.log4j.PatternLayout
-  log4j.appender.stateChangeAppender.layout.ConversionPattern=[%d] %p %m (%c)%n
-  
-  log4j.appender.requestAppender=org.apache.log4j.ConsoleAppender
-  log4j.appender.requestAppender.layout=org.apache.log4j.PatternLayout
-  log4j.appender.requestAppender.layout.ConversionPattern=[%d] %p %m (%c)%n
-  
-  log4j.appender.cleanerAppender=org.apache.log4j.ConsoleAppender
-  log4j.appender.cleanerAppender.layout=org.apache.log4j.PatternLayout
-  log4j.appender.cleanerAppender.layout.ConversionPattern=[%d] %p %m (%c)%n
-  
-  log4j.appender.controllerAppender=org.apache.log4j.ConsoleAppender
-  log4j.appender.controllerAppender.layout=org.apache.log4j.PatternLayout
-  log4j.appender.controllerAppender.layout.ConversionPattern=[%d] %p %m (%c)%n
-  
-  log4j.appender.authorizerAppender=org.apache.log4j.ConsoleAppender
+  log4j.appender.authorizerAppender=org.apache.log4j.FileAppender
   log4j.appender.authorizerAppender.layout=org.apache.log4j.PatternLayout
   log4j.appender.authorizerAppender.layout.ConversionPattern=[%d] %p %m (%c)%n
-
-
-  # Change the line below to adjust ZK client logging
-  log4j.logger.org.apache.zookeeper=INFO
-
-  # Change the two lines below to adjust the general broker logging level (output to server.log and stdout)
-  log4j.logger.kafka=INFO, stdout
-  log4j.logger.org.apache.kafka=INFO
-
-  # Change to DEBUG or TRACE to enable request logging
-  log4j.logger.kafka.request.logger=WARN, requestAppender
-  log4j.additivity.kafka.request.logger=false
-
-  # Uncomment the lines below and change log4j.logger.kafka.network.RequestChannel$ to TRACE for additional output
-  # related to the handling of requests
-  #log4j.logger.kafka.network.Processor=TRACE, requestAppender
-  #log4j.logger.kafka.server.KafkaApis=TRACE, requestAppender
-  #log4j.additivity.kafka.server.KafkaApis=false
-  log4j.logger.kafka.network.RequestChannel$=WARN, requestAppender
-  log4j.additivity.kafka.network.RequestChannel$=false
-
-  # Change the line below to adjust KRaft mode controller logging
-  log4j.logger.org.apache.kafka.controller=INFO, controllerAppender
-  log4j.additivity.org.apache.kafka.controller=false
-
-  # Change the line below to adjust ZK mode controller logging
-  log4j.logger.kafka.controller=TRACE, controllerAppender
-  log4j.additivity.kafka.controller=false
-
-  log4j.logger.kafka.log.LogCleaner=INFO, cleanerAppender
-  log4j.additivity.kafka.log.LogCleaner=false
-
-  log4j.logger.state.change.logger=INFO, stateChangeAppender
-  log4j.additivity.state.change.logger=false
+  log4j.appender.authorizerAppender.file=/opt/otterize/kafka-watcher/authz.log
 
   # Access denials are logged at INFO level, change to DEBUG to also log allowed accesses
   log4j.logger.kafka.authorizer.logger=DEBUG, authorizerAppender
