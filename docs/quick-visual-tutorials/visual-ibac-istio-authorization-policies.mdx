@@ -15,7 +15,8 @@ With IBAC, you won't need to manually keep track of pod labels or service accoun
 
 By the end of this tutorial, each server in the cluster will only allow the incoming calls declared by client services in their client intents files, and block any undeclared (unintentional) calls. Call declarations, and the authorization policies they'll generate, will specify not just the server but also the HTTP path and method.
 
-All the capabilities of IBAC for Istio are within Otterize OSS, while the access graph in Otterize Cloud will guide us visually in these steps.
+All the capabilities of IBAC for Istio are within Otterize OSS, while the access graph in Otterize Cloud will guide us
+visually in these steps and support us in the process of zero trust adoption in our cluster without breaking anything.
 
 You will:
 1. Install Otterize OSS in your Kubernetes cluster, integrated to your Otterize Cloud account.
@@ -41,9 +42,9 @@ Before you start, you'll need a Kubernetes cluster. Having a cluster with a [CNI
 </details>
 
 <details>
-<summary>Install Otterize OSS <b>with Istio watcher active</b></summary>
+<summary>Install Otterize OSS </summary>
 
-{@include: ../_common/install-otterize-from-cloud-with-istiowatcher.md}
+{@include: ../_common/install-otterize-from-cloud.md}
 
 </details>
 
@@ -63,7 +64,11 @@ Before you start, you'll need a Kubernetes cluster. Having a cluster with a [CNI
 </details>
 
 <details>
-<summary>Add HTTP methods and request paths to Istio exported metrics</summary>
+<summary>Enhance Istio Exported Metrics with HTTP Methods and Request Paths</summary>
+
+After successfully installing Istio, we can enrich Otterize Network Mapper with Envoy metrics information to
+include HTTP resource access details in the network map. However, HTTP requests data isn't logged by default, so we
+need to enable it ourselves.
 
 Apply this configuration in the `istio-system` namespace, propagating it to all namespaces covered by the mesh.
 
@@ -104,9 +109,13 @@ kubectl apply -n otterize-visual-tutorial-istio -f https://docs.otterize.com/cod
 
 ## Seeing the access graph
 
-In the Otterize Cloud UI, your [cluster](https://app.otterize.com/clusters) should now show all 3 Otterize OSS operators &mdash; the intents operator, network mapper, and credentials operator &mdash; as connected, with a green status.
+In the Clusters table at Otterize Cloud UI, your [cluster](https://app.otterize.com/clusters) should be displaying all three Otterize OSS
+operators &mdash; the intents operator, network mapper, and credentials operator. They should all be in connected state, indicated by a green dot.
 
-And when you go back to the [access graph](https://app.otterize.com/access-graph) (and select your cluster from the dropdown, if needed), you should see the following map for the demo running in your cluster:
+![Access graph](/img/quick-tutorials/istio-visual-tutorial/cluster-connected.png)
+
+Now, let's head back to the [access graph](https://app.otterize.com/access-graph). If necessary, make sure to select your cluster from the dropdown menu.
+You should see the map for the demo running in your cluster:
 
 ![Access graph](/img/quick-tutorials/istio-visual-tutorial/phase-0.png)
 
@@ -114,15 +123,53 @@ Each service is shown as a node in the access graph, while the dashed lines (edg
 
 The lines are dashed because the client services are missing intent declarations: we've discovered their intents to call the servers, but they haven't declared those intents.
 
-We need to adjust the access graph view to take into account Istio authorization policies, so turn on the Istio policies "Use in access graph" toggle and turn off the network policies and Kafka ACLs toggle buttons (to focus only on Istio).
+Otterize can manage few enforcement mechanisms, but not every cluster will have all of them. Each view take into account
+its relevant implementation details and weather communication is enabled by default or not.
+In this case, we are using Istio authorization policies, so we need to adjust the access graph view to take into account
+Istio authorization policies, so turn on the Istio policies "Use in access graph" toggle and turn off the network
+policies and Kafka ACLs toggle buttons.
 
 ![Access graph](/img/quick-tutorials/istio-visual-tutorial/access-graph-panel.png)
 
 ## Try out IBAC with shadow mode
 
-Now let's start to roll out access controls, but remain in shadow mode: no actual enforcement of controls, yet. In shadow mode, Otterize doesn't actually generate access controls (in this case, Istio authorization policies) from client intents declarations, but the access graph still shows you the effects those declarations would have.
+Our mission in this tutorial is to achieve zero trust in our cluster, but we don't want to break anything in the process.
+One of the biggest challenges in doing so is that Istio authorization policies, like network policies and Kafka ACLs, doesn't
+have the ability to let us know what would be blocked *before* we actually block it.
 
-We'll declare that the `frontend` intends to call the `recommendationservice` by sending `GET` requests to the HTTP resource at `/recommendations`:
+Otterize solves this problem by providing a Shadow mode enforcement. In shadow mode, Otterize doesn't actually generate
+access controls (in this case, Istio authorization policies) from client intents declarations. Nothing is actually blocked
+and the access graph will help us understand what would happen if we were to enable enforcement.
+
+## Choose a first service to protect
+
+There are many services in the demo, but we will pick one and manually protect it before we will automate the process
+for the whole cluster. We will start with the `recommendationservice` service, so first find it in the graph, you can
+type its name in the search box and select it, the graph will zoom in on it:
+
+![Access graph](/img/quick-tutorials/istio-visual-tutorial/recommendation-graph-phase-0.png)
+
+Now, click on the `recommendationservice` service to see the details panel:
+
+![Access graph](/img/quick-tutorials/istio-visual-tutorial/recommendation-service-phase-0.png)
+
+On the left panel the state of this service as a server is presented. You can see that this service is unprotected, but
+since there are no intents declared for it, it won't block any access even if we enable enforcement - as long as there is
+no default `allow nothing` authorization policy in the cluster. On the right panel, the state of this service as a client
+is presented, it's not expected to be blocked by any authorization policy either.
+
+At the bottom part of panel we can see that this service is called by the `frontend`
+service and uses the `GET` method to access the `/recommendations` resource. Let's click the dashed line from `frontend`
+to `recommendationservice` to see the details of the access:
+
+![Access graph](/img/quick-tutorials/istio-visual-tutorial/frontend-recommendation-phase-0.png)
+
+On the left there is a discovered intent for those two services, but it is not declared.
+
+## Make it intentional!
+
+Now we will take the intent we just discovered and make intentional by declaring that the `frontend` service intends to
+call the `recommendationservice` by sending `GET` requests to the HTTP resource at `/recommendations`:
 
 ```yaml
 {@include: ../../static/code-examples/ibac-for-istio/phase-1.yaml}
@@ -149,7 +196,10 @@ Click on that `frontend` &rarr; `recommendationservice` line:
 Click on the `recommendationservice` itself:
 <img src="/img/quick-tutorials/istio-visual-tutorial/recommendation-access-state.png" alt="Discovered intents" width="600"/>
 
+Few more notes:
+
 - We can see this service is not currently protected: after all, we're in shadow mode, and there are no authorization policies blocking unintended access.
+- Small lock icon with the tag "Istio policies" indicates that this service is protected by Istio authorization policies, once we'll enable enforcement, of course.
 - We can also see it would not block any clients once protection is enabled.
 - And there is no warning about it remaining unprotected once enforcement is turned on. We have **a green light**, at least as far as this service goes, **for turning on enforcement** and protecting this service from any unintended calls.
 
@@ -246,8 +296,45 @@ kubectl apply -f intents
 
 Or, equivalently, just use the already-generated intents files included in this docs location:
 ```bash
-kubectl apply -n otterize-ecom-demo -f https://docs.otterize.com/code-examples/ibac-for-istio/all.yaml
+kubectl apply -n otterize-visual-tutorial-istio -f https://docs.otterize.com/code-examples/ibac-for-istio/all.yaml
 ```
+
+<details>
+<summary>If you are curious, have a look at the intents files generated by this single command:</summary>
+
+<Tabs>
+<TabItem value="frontend" label="frontend" default>
+
+```yaml
+{@include: ../../static/code-examples/ibac-for-istio/intents/frontend.yaml}
+```
+</TabItem>
+<TabItem value="checkout-service" label="checkoutservice" default>
+
+```yaml
+{@include: ../../static/code-examples/ibac-for-istio/intents/checkoutservice.yaml}
+```
+</TabItem>
+<TabItem value="recommendation-service" label="recommendationservice" default>
+
+```yaml
+{@include: ../../static/code-examples/ibac-for-istio/intents/recommendationservice.yaml}
+```
+</TabItem>
+<TabItem value="cart-service" label="cartservice" default>
+
+```yaml
+{@include: ../../static/code-examples/ibac-for-istio/intents/cartservice.yaml}
+```
+</TabItem>
+<TabItem value="load-generator" label="loadgenerator" default>
+
+```yaml
+{@include: ../../static/code-examples/ibac-for-istio/intents/loadgenerator.yaml}
+```
+</TabItem>
+</Tabs>
+</details>
 
 Look at the access graph again:
 
