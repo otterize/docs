@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: client
-          image: node
+          image: node:19
           command: [ "/bin/sh", "-c", "--" ]
           args: [ "while true; do node /app/client.js; sleep 2; done" ]
           volumeMounts:
