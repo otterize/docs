@@ -56,7 +56,7 @@ data:
           if err != nil {
               return
           }
-          fmt.Printf("Sent message - %s\n", msg)
+          fmt.Printf("Sent message: %s\n", msg)
           time.Sleep(2 * time.Second)
           i++
         }
@@ -81,7 +81,7 @@ data:
         if err != nil {
             return err
         }
-        fmt.Println("Creating a producer and a consumer for -", testTopicName)
+        fmt.Println("Creating a producer and a consumer for: ", testTopicName)
         config.Producer.Return.Successes = true
         config.Producer.Timeout = 5 * time.Second
         config.Consumer.MaxWaitTime = 5 * time.Second
@@ -105,7 +105,7 @@ data:
         }
     
         for msg := range partConsumer.Messages() {
-            fmt.Printf("Read message - %s\n", msg.Value)
+            fmt.Printf("Read message: %s\n", msg.Value)
         }
         return nil
     }
