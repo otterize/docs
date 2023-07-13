@@ -539,7 +539,11 @@ spec:
       labels:
         app: checkoutservice
     spec:
-      serviceAccountName: default
+      serviceAccountName: checkoutservice
+      initContainers:
+        - name: wait-for-kafka
+          image: bitnami/kubectl
+          command: [ "kubectl", "rollout", "status", "-n", "otterize-ecom-demo", "statefulset/kafka" ]
       containers:
         - name: server
           image: 'otterize/lab:checkoutservice-latest'
@@ -889,7 +893,11 @@ spec:
       labels:
         app: orderservice
     spec:
-      serviceAccountName: default
+      serviceAccountName: orderservice
+      initContainers:
+        - name: wait-for-kafka
+          image: bitnami/kubectl
+          command: [ "kubectl", "rollout", "status", "-n", "otterize-ecom-demo", "statefulset/kafka" ]
       containers:
         - name: server
           image: 'otterize/lab:orderservice-latest'
@@ -953,8 +961,12 @@ spec:
       labels:
         app: paymentservice
     spec:
-      serviceAccountName: default
+      serviceAccountName: paymentservice
       terminationGracePeriodSeconds: 5
+      initContainers:
+        - name: wait-for-kafka
+          image: bitnami/kubectl
+          command: [ "kubectl", "rollout", "status", "-n", "otterize-ecom-demo", "statefulset/kafka" ]
       containers:
       - name: server
         image: 'otterize/lab:paymentservice-latest'
