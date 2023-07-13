@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
         - name: server
-          image: node
+          image: node:19
           command: [ "/bin/sh","-c" ]
           args: [ "echo \"Hi, I am the server, you called, may I help you?\" > index.html; npx --yes http-server -p 80 " ]

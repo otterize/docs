@@ -23,19 +23,21 @@ Checkout the network mapper [tutorial](/quick-tutorials/k8s-network-mapper) to s
 | `mapper.uploadIntervalSeconds` | Interval for uploading data to cloud | `60`                           |
 
 ## Sniffer parameters
-| Key                        | Description               | Default                  |
-|----------------------------|---------------------------|--------------------------|
-| `sniffer.image.repository` | Sniffer image repository. | `otterize`               |
-| `sniffer.image.image`      | Sniffer image.            | `network-mapper-sniffer` |
-| `sniffer.image.tag`        | Sniffer image tag.        | `latest`                 |
-| `sniffer.pullPolicy`       | Sniffer pull policy.      | `(none)`                 |
-| `sniffer.resources`        | Resources override.       | `(none)`                 |
+| Key                         | Description               | Default                  |
+|-----------------------------|---------------------------|--------------------------|
+| `sniffer.image.repository`  | Sniffer image repository. | `otterize`               |
+| `sniffer.image.image`       | Sniffer image.            | `network-mapper-sniffer` |
+| `sniffer.image.tag`         | Sniffer image tag.        | `latest`                 |
+| `sniffer.pullPolicy`        | Sniffer pull policy.      | `(none)`                 |
+| `sniffer.resources`         | Resources override.       | `(none)`                 |
+| `sniffer.tolerations`       | Tolerations override.     | `(none)`                 |
+| `sniffer.priorityClassName` | Set priorityClassName.    | `(none)`                 |
 
 
 ## Kafka watcher parameters
 | Key                             | Description                                                 | Default                        |
 |---------------------------------|-------------------------------------------------------------|--------------------------------|
-| `kafkawatcher.enable`           | Enable Kafka watcher deployment (beta).             | `false`                        |
+| `kafkawatcher.enable`           | Enable Kafka watcher deployment (beta).                     | `false`                        |
 | `kafkawatcher.image.repository` | Kafka watcher image repository.                             | `otterize`                     |
 | `kafkawatcher.image.image`      | Kafka watcher image.                                        | `network-mapper-kafka-watcher` |
 | `kafkawatcher.image.tag`        | Kafka watcher image tag.                                    | `latest`                       |
@@ -45,23 +47,25 @@ Checkout the network mapper [tutorial](/quick-tutorials/k8s-network-mapper) to s
 | `kafkawatcher.kafkaServers`     | Kafka servers to watch, specified as `pod.namespace` items. | `(none)`                       |
 
 ## Istio watcher parameters
-| Key                             | Description                                     | Default                        |
-|---------------------------------|-------------------------------------------------|--------------------------------|
+| Key                             | Description                             | Default                        |
+|---------------------------------|-----------------------------------------|--------------------------------|
 | `istiowatcher.enable`           | Enable Istio watcher deployment (beta). | `false`                        |
-| `istiowatcher.image.repository` | Istio watcher image repository.                 | `otterize`                     |
-| `istiowatcher.image.image`      | Istio watcher image.                            | `network-mapper-istio-watcher` |
-| `istiowatcher.image.tag`        | Istio watcher image tag.                        | `latest`                       |
-| `istiowatcher.pullPolicy`       | Istio watcher pull policy.                      | `(none)`                       |
-| `istiowatcher.pullSecrets`      | Istio watcher pull secrets.                     | `(none)`                       |
-| `istiowatcher.resources`        | Resources override.                             | `(none)`                       |
+| `istiowatcher.image.repository` | Istio watcher image repository.         | `otterize`                     |
+| `istiowatcher.image.image`      | Istio watcher image.                    | `network-mapper-istio-watcher` |
+| `istiowatcher.image.tag`        | Istio watcher image tag.                | `latest`                       |
+| `istiowatcher.pullPolicy`       | Istio watcher pull policy.              | `(none)`                       |
+| `istiowatcher.pullSecrets`      | Istio watcher pull secrets.             | `(none)`                       |
+| `istiowatcher.resources`        | Resources override.                     | `(none)`                       |
 
 ## Cloud parameters
-| Key                                             | Description                                     | Default  |
-|-------------------------------------------------|-------------------------------------------------|----------|
-| `global.otterizeCloud.credentials.clientId`     | Client ID for connecting to Otterize Cloud.     | `(none)` |
-| `global.otterizeCloud.credentials.clientSecret` | Client secret for connecting to Otterize Cloud. | `(none)` |
-| `global.otterizeCloud.apiAddress`               | Overrides Otterize Cloud default API address.   | `(none)` |
-| `global.otterizeCloud.apiExtraCAPEMSecret`      | The name of a secret containing a single `CA.pem` file for an extra root CA used to connect to Otterize Cloud. The secret should be placed in the same namespace as the Otterize deployment. | `(none)` |
+| Key                                                        | Description                                                                                                                                                                                  | Default  |
+|------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
+| `global.otterizeCloud.credentials.clientId`                | Client ID for connecting to Otterize Cloud.                                                                                                                                                  | `(none)` |
+| `global.otterizeCloud.credentials.clientSecret`            | Client secret for connecting to Otterize Cloud.                                                                                                                                              | `(none)` |
+| `global.otterizeCloud.credentials.secretKeyRef.secretName` | If specified, the name of a pre-created Kubernetes Secret to be used instead of creating a secret with the value of clientSecret.                                                            | `(none)` |
+| `global.otterizeCloud.credentials.secretKeyRef.secretKey`  | If specified, the key for the clientSecret in a pre-created Kubernetes Secret to be used instead of creating a secret with the value of clientSecret.                                        | `(none)` |
+| `global.otterizeCloud.apiAddress`                          | Overrides Otterize Cloud default API address.                                                                                                                                                | `(none)` |
+| `global.otterizeCloud.apiExtraCAPEMSecret`                 | The name of a secret containing a single `CA.pem` file for an extra root CA used to connect to Otterize Cloud. The secret should be placed in the same namespace as the Otterize deployment. | `(none)` |
 
 ## Global parameters
 | Key                              | Description                                                                                                                                 | Default |
