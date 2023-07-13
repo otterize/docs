@@ -554,7 +554,11 @@ spec:
         credentials-operator.otterize.com/cert-file-name: svid.pem
         credentials-operator.otterize.com/ca-file-name: bundle.pem
     spec:
-      serviceAccountName: default
+      serviceAccountName: checkoutservice
+      initContainers:
+        - name: wait-for-kafka
+          image: bitnami/kubectl
+          command: [ "kubectl", "rollout", "status", "-n", "otterize-ecom-demo", "statefulset/kafka" ]
       containers:
         - name: server
           image: 'otterize/lab:checkoutservice-latest'
@@ -918,7 +922,11 @@ spec:
       annotations:
         credentials-operator.otterize.com/tls-secret-name: orderservice-credentials-secret
     spec:
-      serviceAccountName: default
+      serviceAccountName: orderservice
+      initContainers:
+        - name: wait-for-kafka
+          image: bitnami/kubectl
+          command: [ "kubectl", "rollout", "status", "-n", "otterize-ecom-demo", "statefulset/kafka" ]
       containers:
         - name: server
           image: 'otterize/lab:orderservice-latest'
@@ -1000,12 +1008,16 @@ spec:
         credentials-operator.otterize.com/cert-file-name: svid.pem
         credentials-operator.otterize.com/ca-file-name: bundle.pem
     spec:
-      serviceAccountName: default
+      serviceAccountName: paymentservice
       terminationGracePeriodSeconds: 5
       volumes:
         - name: otterize-credentials
           secret:
             secretName: paymentservice-credentials-secret
+      initContainers:
+        - name: wait-for-kafka
+          image: bitnami/kubectl
+          command: [ "kubectl", "rollout", "status", "-n", "otterize-ecom-demo", "statefulset/kafka" ]
       containers:
       - name: server
         image: 'otterize/lab:paymentservice-latest'
@@ -1651,3 +1663,43 @@ spec:
         resources:
           requests:
             storage: "8Gi"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: statefulset-reader
+rules:
+  - apiGroups: ["apps"]
+    resources: ["statefulsets"]
+    verbs: ["get", "watch", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: read-statefulsets
+subjects:
+  - kind: ServiceAccount
+    name: paymentservice
+  - kind: ServiceAccount
+    name: orderservice
+  - kind: ServiceAccount
+    name: checkoutservice
+roleRef:
+  kind: Role
+  name: statefulset-reader
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: checkoutservice
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: paymentservice
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: orderservice

@@ -539,7 +539,11 @@ spec:
       labels:
         app: checkoutservice
     spec:
-      serviceAccountName: default
+      serviceAccountName: checkoutservice
+      initContainers:
+        - name: wait-for-kafka
+          image: bitnami/kubectl
+          command: [ "kubectl", "rollout", "status", "-n", "otterize-ecom-demo", "statefulset/kafka" ]
       containers:
         - name: server
           image: 'otterize/lab:checkoutservice-latest'
@@ -889,7 +893,11 @@ spec:
       labels:
         app: orderservice
     spec:
-      serviceAccountName: default
+      serviceAccountName: orderservice
+      initContainers:
+        - name: wait-for-kafka
+          image: bitnami/kubectl
+          command: [ "kubectl", "rollout", "status", "-n", "otterize-ecom-demo", "statefulset/kafka" ]
       containers:
         - name: server
           image: 'otterize/lab:orderservice-latest'
@@ -953,8 +961,12 @@ spec:
       labels:
         app: paymentservice
     spec:
-      serviceAccountName: default
+      serviceAccountName: paymentservice
       terminationGracePeriodSeconds: 5
+      initContainers:
+        - name: wait-for-kafka
+          image: bitnami/kubectl
+          command: [ "kubectl", "rollout", "status", "-n", "otterize-ecom-demo", "statefulset/kafka" ]
       containers:
       - name: server
         image: 'otterize/lab:paymentservice-latest'
@@ -1574,3 +1586,43 @@ spec:
         resources:
           requests:
             storage: "8Gi"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: statefulset-reader
+rules:
+  - apiGroups: ["apps"]
+    resources: ["statefulsets"]
+    verbs: ["get", "watch", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: read-statefulsets
+subjects:
+  - kind: ServiceAccount
+    name: paymentservice
+  - kind: ServiceAccount
+    name: orderservice
+  - kind: ServiceAccount
+    name: checkoutservice
+roleRef:
+  kind: Role
+  name: statefulset-reader
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: checkoutservice
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: paymentservice
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: orderservice
