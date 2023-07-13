@@ -69,6 +69,27 @@ Or choose to include browser visualization and:
 {@include: ../_common/install-istio.md}
 
 </details>
+<details>
+<summary>Add HTTP methods and request paths to Istio exported metrics</summary>
+
+Apply this configuration in the `istio-system` namespace, propagating it to all namespaces covered by the mesh.
+
+```
+kubectl apply -f https://docs.otterize.com/code-examples/network-mapper/istio-telemetry-enablement.yaml -n istio-system
+```
+
+```yaml
+{@include: ../../static/code-examples/network-mapper/istio-telemetry-enablement.yaml}
+```
+
+</details>
+
+:::tip
+HTTP request paths and methods aren't exported in Envoy's connection metrics by default, but we do want to capture those
+details when creating the network map. That way we not only have better visibility of the calling patterns,
+e.g. in the access graph, but we can also use that information to automatically generate fine-grained intents and
+enforce them with Istio authorization policies.
+:::
 
 ## Deploy the two clients and the server
 
