@@ -20,9 +20,12 @@ visually in these steps and support us in the process of zero trust adoption in 
 
 You will:
 1. Install Otterize OSS in your Kubernetes cluster, integrated to your Otterize Cloud account.
-2. View, within Otterize Cloud, the traffic in your cluster.
-3. Declare one intent just to see how the generated authorization policies affect the cluster.
-4. Generate client intents for all traffic in the cluster to achieve zero trust in one command.
+2. Install and configure Istio into your cluster.
+3. Deploy, as in previous tutorials, a set of services based on the [Google microservices demo](https://github.com/GoogleCloudPlatform/microservices-demo)
+(a simple e-commerce application) to your Kubernetes cluster.
+4. View, within Otterize Cloud, the traffic in your cluster.
+5. Declare one intent in your cluster just to see how the generated authorization policies affect the cluster.
+6. Generate client intents for all traffic in the cluster to achieve zero trust in one command.
 
 ## Prerequisites
 
@@ -119,39 +122,39 @@ Each service is shown as a node in the access graph, while the dashed lines (edg
 
 The lines are dashed because the client services are missing intent declarations: we've *discovered* their intents to call the servers, but they haven't *declared* those intents.
 
-Otterize can manage several, and the access graph can take into account their state. For this demo, we're only using Istio authorization policies, so let's adjust the access graph view to only take them into account: in the Istio policies section at the top, toggle on "Use in access graph"; and in the sections for network
+Otterize can configure several access control mechanisms, such as network policies and Kafka ACLs, and the access graph can take into account their combined state. But for this demo, we're only using Istio authorization policies, so let's adjust the access graph view to only take these Istio policies into account: in the Istio policies section at the top, toggle on "Use in access graph"; and in the sections for network
 policies and Kafka ACLs, toggle off "Use in access graph".
 
 ![Access graph](/img/quick-tutorials/istio-visual-tutorial/access-graph-panel.png)
 
-:::danger
-Presumably there was something that should be shown once you adjust the toggles as above? I suggest you indicate what that is, and show it here.
-:::
+Finally, let's filter out all but the `otterize-visual-tutorial-istio` namespace, as that's where the functional services are running. Select that namespace from the namespace filter at the top.
 
 ## Try out IBAC with shadow mode
 
-Our mission in this tutorial is to achieve zero trust in our cluster, but we don't want to break anything in the process.
-One of the biggest challenges in doing so is that Istio authorization policies, like network policies and Kafka ACLs, can't let us know what would be blocked *before* we actually block it.
+Our mission in this tutorial is to achieve zero trust in our cluster, but we don't want to break anything in the process. So we'll start off by rolling out IBAC for just one service: only it will be protected from any unauthorized access.
+
+Even then, one of the biggest challenges in rolling out zero trust is that Istio authorization policies, like network policies and Kafka ACLs, can't let us know what would be blocked *before* we actually block it.
 
 Otterize solves this problem by providing a "shadow mode" enforcement. In shadow mode, Otterize doesn't actually generate
 Istio authorization policies from client intents declarations, so nothing is actually blocked.
-But Otterize still sees any intent declarations that *would* generate policies, so the access graph can preview what access would be blocked or enabled if we were to generate policies (actual enforcement).
+But Otterize still sees any intent declarations that *would* generate policies, so the access graph can preview what access would be blocked or enabled if we were to generate policies.
 
 ## Choose a first service to protect
 
-Let's pick one service and manually protect it before automating the process for the whole cluster. We will start with the `recommendationservice`. Find it in the access graph, e.g. by typing its name in the search box and selecting it, and the graph will zoom in on it:
+Let's pick one service and manually protect it, before automating the process for the whole cluster.
+We will start with the `recommendationservice`. Find it in the access graph. If you have a large graph, you can always type its name in the search box on the left and select it to bring it into view. You can also zoom in to see it larger:
 
 ![Access graph](/img/quick-tutorials/istio-visual-tutorial/recommendation-graph-phase-0.png)
 
-Click on the `recommendationservice` service to see more details:
+Click on the `recommendationservice` to see more details:
 
 ![Access graph](/img/quick-tutorials/istio-visual-tutorial/recommendation-service-phase-0.png)
 
-At the  bottom of this panel, you can see this service as a server (on the left) receiving requests, and as a client (on the right) sending requests.
+At the  bottom of this panel, you can see it as a server (on the left) receiving requests, and as a client (on the right) sending requests.
 
-As a server, you can see that this service is currently unprotected: Why?
+As a server, the access graph tells you it's currently unprotected. Why?
 - There is no default `allow nothing` authorization policy configured for the cluster, as we informed the graph in the "Istio policies" section at the top right. That's appropriate for our situation: we want to roll out protection one service at a time, without breaking access to the others.
-- The first authorization policy would protect this server, but no policies would be created for it if enforcement were turned on, since no clients have declared their intents to call it. We'll do that in the next step.
+- The first authorization policy would protect this server, but no such policies would be created for it right now if enforcement were turned on, since no clients have declared their intents to call it. We'll do that in the next step.
 
 At the very bottom of the server section, we can see that this service is called by the `frontend`
 service, which uses the `GET` method to access the `/recommendations` resource. Let's click the dashed line from `frontend`
@@ -161,7 +164,7 @@ to `recommendationservice` to see the details of the access:
 
 We see that the network mapper *discovered* the intent by the `frontend` to `GET` `/recommendations` on the `recommendationservice`, but the `frontend` did not *declare* it.
 
-(Note also that, as a client, we see the `recommendationservice` not being blocked by any authorization policy either.)
+(Note also that the `recommendationservice` *as a client* is also not blocked by any authorization policy.)
 
 ## Declare your intentions!
 
@@ -172,7 +175,8 @@ call the `recommendationservice` via `GET` requests to the HTTP resource at `/re
 {@include: ../../static/code-examples/ibac-for-istio/phase-1.yaml}
 ```
 
-We expect this will eventually provide secure access: **allowing** the intended access from the `frontend`, while **protecting** the `recommendationservice` from unintended access (since it will now have an authorization policy on it). Why eventually? Because we'll still need to go from shadow mode to actual enforcement, after getting the reassurance we need.
+We expect this will eventually provide secure access: **allowing** the intended access from the `frontend`, while **protecting** the `recommendationservice` from unintended access (since it will now have an authorization policy on it).
+Why eventually? Because we'll still need to go from shadow mode to actual enforcement, after getting reassured in shadow mode that intentional calls won't be blocked.
 
 Apply the above client intents file with:
 ```bash
@@ -188,24 +192,25 @@ The green line from `frontend` to `recommendationservice` is no longer dashed, b
 Click on that solid `frontend` &rarr; `recommendationservice` line:
 <img src="/img/quick-tutorials/istio-visual-tutorial/frontend-recommendation-applied.png" alt="Discovered intents" width="600"/>
 
-We can see the discovered intent to access is also declared, so it will be guaranteed access even after enforcement is turned on.
+We can see that:
+- The *discovered* intent to access is now also *declared*, and as a result...
+- ...this call will be guaranteed access even after enforcement is turned on: the arrow is now **solid** green.
 
 Click on the `recommendationservice` itself:
 <img src="/img/quick-tutorials/istio-visual-tutorial/recommendation-access-state.png" alt="Discovered intents" width="600"/>
 
 The access graph shows us:
-
 - This service is still not currently protected: after all, we're in shadow mode, without enforcement, so there are no authorization policies blocking unintended access.
-- The "Istio policies" tag indicates that the protection would be supplied by Istio authorization policies.
+- The "Istio policies" tag indicates that specifically it's not currently protected by Istio authorization policies. Had we been using other access controls, you would see the protection status for those too.
 - There is no longer a warning about the `recommendationservice` remaining unprotected once enforcement is turned on.
-- The arrow leading into the `recommendationservice` (from the `frontend`) is green, meaning it will not be blocked.
+- From this server's perspective, all's ready to activate enforcement.
 
-We now have **a green light**, at least as far as this service goes, **for turning on enforcement** and protecting this service from any unintended calls without breaking its intended clients.
+We now have **a green light for turning on enforcement** and protecting this service from any unintended calls without breaking its intended clients.
 
-:::info Ready to enforce?
-We could turn on enforcement now.
+:::tip Ready to enforce?
+We could certainly turn on enforcement now.
 
-But instead, let's first protect another service, to show how the access graph would warn us if we're not ready to turn on enforcement.
+But instead, let's first protect another service, just to show how the access graph would warn us if we're not ready to turn on enforcement.
 :::
 
 ### Declare more intents
@@ -235,19 +240,15 @@ Click on one of those orange lines:
 - This undeclared access is not blocked *now* &mdash; because we're still in shadow mode (otherwise the line would have been red).
 - But access *would* be blocked once enforcement is turned on. To prevent that, we're told to declare the intent for this call.
 
-Click on the `productcatalogservice` to read its warning:
+Click on the `productcatalogservice` to read its warnings, and what's there and what's missing:
 <img src="/img/quick-tutorials/istio-visual-tutorial/productcatalog-would-block.png" alt="Discovered intents" width="600"/>
-
-:::danger
-Update the above screenshot, please, to show Istio policies, and not network policies, for the enforcement.
-:::
 
 - We can see it's not protected now, again because we're in shadow mode.
 - But we can also see it *would* block some clients once protection is enabled.
-- And there is an explicit warning to apply the missing intents from all its clients before turning on enforcement.
+- We can see that the `recommendationservice` will be allowed to `GET /similar-products`, but no other clients are guaranteed access.
+- And there is an explicit warning to apply the missing intents from **all** the clients of the `productcatalogservice` before turning on enforcement.
 
-Let's declare those intents from the `frontend` and `checkoutservice` clients.
-
+Let's declare those intents from the `frontend` and `checkoutservice` clients:
 <Tabs>
 <TabItem value="frontend" label="frontend" default>
 
@@ -278,8 +279,9 @@ Click on the `productcatalogservice`:
 
 ![Access graph](/img/quick-tutorials/istio-visual-tutorial/productcatalog-service-all-green.png)
 
-All is well again: the `productcatalogservice` will be protected, and its 3 declared clients will have access, once enforcement is turned on.
-Each client's access will be limited to the HTTP resource and method declared in its intents file.
+All is well again:
+- The `productcatalogservice` will be protected, without blocking its 3 declared clients, once enforcement is turned on. We have **a green light to activate enforcement**.
+- Each client's access will be limited to the HTTP resource and method declared in its intents file. Clients have the intended access and nothing more (least privilege).
 
 :::tip We can now see how to roll out IBAC gradually:
 1. Pick a service to protect.
@@ -368,12 +370,12 @@ Then run the Helm commands shown there, and specifically follow the instructions
 
 Let's look at the access graph again:
 
-![Access graph](/img/quick-tutorials/shadow-mode/phase-5.png)
+![Access graph](/img/quick-tutorials/istio-visual-tutorial/phase-5.png)
 
-Note that all (but two) of the servers are shown in green, as protected. And no client call attempts (discovered by the network mapper) are being blocked. This is what a service-to-service zero-trust architecture looks like.
+Note that all of the servers (the server sides of the services) are shown in green, as protected. And no client call attempts (discovered by the network mapper) are being blocked. This is what a service-to-service zero-trust architecture looks like.
 
 :::tip How would blocked access attempts look now?
-From now on, if a client attempts a server call that wasn't covered by one of the declared intents, that would be discovered by the network mapper and show up as (new) discovered intents. Remember that the network mapper discovers attempted access, not just successful access. In this case, a red line would appear from that client to that server, and the lock on that server would turn red: calls from that client are being blocked.
+From now on, if a client attempts a server call that wasn't covered by one of the declared intents, that would be discovered by the network mapper and show up as (new) discovered intents. Remember that the network mapper discovers attempted access, not just successful access. In this case, a red line would appear from that client to that server, and a red warning would show up on the server and client, saying: calls from that client are being blocked.
 
 That may be because:
 - The calls were legitimate, but were missed when intents were generated because they didn't happen when the network mapper was building its map from which the intents were bootstrapped. In that case, you may choose to generate all the intents again, or or just create and apply the new ones manually.
