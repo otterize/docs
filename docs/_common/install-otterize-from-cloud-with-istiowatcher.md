@@ -1,6 +1,7 @@
 If no Kubernetes clusters are connected to your account, click the "connect your cluster" button to:
 1. Create a Cloud cluster object, specifying its name and the name of an environment to which all namespaces in that cluster will belong, by default.
-2. Connect it with your actual Kubernetes cluster, by clicking on the "Connection guide &rarr;" link and running the Helm commands shown there. You'll want to keep enforcement off, and be in shadow mode.
+2. Connect it with your actual Kubernetes cluster, by clicking on the "Connection guide &rarr;" link and running the Helm commands shown there.
+    1. Follow the instructions to install OtterizeAnd <b>add</b> the following flag to the Helm command:  `--set networkMapper.istiowatcher.enable=true`
 
 <details>
 <summary>More details, if you're curious</summary>
@@ -10,5 +11,7 @@ Connecting your cluster simply entails installing Otterize OSS via Helm, using c
 The credentials will already be inlined into the Helm command shown in the Cloud UI, so you just need to copy that line and run it from your shell.
 If you don't give it the Cloud credentials, Otterize OSS will run fully standalone in your cluster &mdash; you just won't have the visualization in Otterize Cloud.
 
-The Helm command shown in the Cloud UI also includes flags to turn off enforcement: Otterize OSS will be running in "shadow mode," meaning that it will not create network policies to restrict pod-to-pod traffic, or create Kafka ACLs to control access to Kafka topics. Instead, it will report to Otterize Cloud what **would** happen if enforcement were to be enabled, guiding you to implement IBAC without blocking intended access.
+The Helm command shown in the Cloud UI also includes flags to turn off enforcement: Otterize OSS will be running in "shadow mode," 
+meaning that it will show you what **would** happen if it were to create/update your access controls (Kubernetes network policies,  Kafka ACLs, Istio authorization policies, etc.).
+Later in this tutorial, we'll turn on enforcement, but for now we'll leave it in shadow mode.
 </details>
