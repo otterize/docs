@@ -1,113 +1,117 @@
-apiVersion: v1
-kind: Namespace
+apiVersion: k8s.otterize.com/v1alpha2
+kind: ClientIntents
 metadata:
-  name: otterize-tutorial-istio
-  labels:
-    istio-injection: enabled
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: client
-  namespace: otterize-tutorial-istio
+  name: cartservice
+  namespace: otterize-visual-tutorial-istio
 spec:
-  selector:
-    matchLabels:
-      app: client
-  template:
-    metadata:
-      labels:
-        app: client
-    spec:
-      serviceAccountName: client-service-account
-      containers:
-        - name: client
-          image: alpine/curl
-          command: [ "/bin/sh", "-c", "--" ]
-          args: [ "while true; do echo \"Calling server...\"; if ! timeout 2 curl -si nginx-service:8080/client-path; then echo \"curl timed out\"; fi; sleep 2; done" ]
+  service:
+    name: cartservice
+  calls:
+    - name: redis-cart
+      type: http
+      resources:
+        - path: /items
+          methods:
+            - GET
+            - POST
 ---
-apiVersion: v1
-kind: ServiceAccount
+apiVersion: k8s.otterize.com/v1alpha2
+kind: ClientIntents
 metadata:
-  name: client-service-account
-  namespace: otterize-tutorial-istio
-  labels:
-    app: client
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: other-client
-  namespace: otterize-tutorial-istio
+  name: checkoutservice
+  namespace: otterize-visual-tutorial-istio
 spec:
-  selector:
-    matchLabels:
-      app: other-client
-  template:
-    metadata:
-      labels:
-        app: other-client
-    spec:
-      serviceAccountName: other-client-service-account
-      containers:
-        - name: other-client
-          image: alpine/curl
-          command: [ "/bin/sh", "-c", "--" ]
-          args: [ "while true; do echo \"Calling server...\"; if ! timeout 2 curl -si nginx-service:8080/other-client-path; then echo \"curl timed out\"; fi; sleep 2; done" ]
+  service:
+    name: checkoutservice
+  calls:
+    - name: productcatalogservice
+      type: http
+      resources:
+        - path: /products
+          methods:
+            - POST
 ---
-apiVersion: v1
-kind: ServiceAccount
+apiVersion: k8s.otterize.com/v1alpha2
+kind: ClientIntents
 metadata:
-  name: other-client-service-account
-  namespace: otterize-tutorial-istio
-  labels:
-    app: other-client
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: nginx
-  namespace: otterize-tutorial-istio
+  name: frontend
+  namespace: otterize-visual-tutorial-istio
 spec:
-  selector:
-    matchLabels:
-      app: nginx
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        app: nginx
-    spec:
-      containers:
-        - name: nginx
-          image: nginx:1.14.2
-          command: ["/bin/sh", "-c"]
-          args:
-            - |
-              echo 'events {}' > /etc/nginx/nginx.conf;
-              echo 'http {' >> /etc/nginx/nginx.conf;
-              echo '    include /etc/nginx/mime.types;' >> /etc/nginx/nginx.conf;
-              echo '    server {' >> /etc/nginx/nginx.conf;
-              echo '        listen 80;' >> /etc/nginx/nginx.conf;
-              echo '        server_name localhost;' >> /etc/nginx/nginx.conf;
-              echo '        location /client-path { return 200 "hello from /client-path\n"; }' >> /etc/nginx/nginx.conf;
-              echo '        location /other-client-path { return 200 "hello from /other-client-path\n"; }' >> /etc/nginx/nginx.conf;
-              echo '    }' >> /etc/nginx/nginx.conf;
-              echo '}' >> /etc/nginx/nginx.conf;
-              nginx -g "daemon off;"
-          ports:
-            - containerPort: 80
+  service:
+    name: frontend
+  calls:
+    - name: adservice
+      type: http
+      resources:
+        - path: /ads
+          methods:
+            - GET
+    - name: cartservice
+      type: http
+      resources:
+        - path: /items
+          methods:
+            - GET
+            - POST
+    - name: checkoutservice
+      type: http
+      resources:
+        - path: /checkout
+          methods:
+            - POST
+    - name: currencyservice
+      type: http
+      resources:
+        - path: /currency
+          methods:
+            - GET
+    - name: productcatalogservice
+      type: http
+      resources:
+        - path: /products
+          methods:
+            - GET
+    - name: recommendationservice
+      type: http
+      resources:
+        - path: /recommendations
+          methods:
+            - GET
+    - name: shippingservice
+      type: http
+      resources:
+        - path: /shipping
+          methods:
+            - POST
 ---
-apiVersion: v1
-kind: Service
+apiVersion: k8s.otterize.com/v1alpha2
+kind: ClientIntents
 metadata:
-  name: nginx-service
-  namespace: otterize-tutorial-istio
+  name: loadgenerator
+  namespace: otterize-visual-tutorial-istio
 spec:
-  selector:
-    app: nginx
-  ports:
-    - protocol: TCP
-      port: 8080
-      targetPort: 80
+  service:
+    name: loadgenerator
+  calls:
+    - name: frontend
+      type: http
+      resources:
+        - path: /
+          methods:
+            - GET
 ---
+apiVersion: k8s.otterize.com/v1alpha2
+kind: ClientIntents
+metadata:
+  name: recommendationservice
+  namespace: otterize-visual-tutorial-istio
+spec:
+  service:
+    name: recommendationservice
+  calls:
+    - name: productcatalogservice
+      type: http
+      resources:
+        - path: /similar-products
+          methods:
+            - GET

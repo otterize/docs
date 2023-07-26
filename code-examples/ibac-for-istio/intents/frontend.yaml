@@ -1,0 +1,52 @@
+apiVersion: k8s.otterize.com/v1alpha2
+kind: ClientIntents
+metadata:
+  name: frontend
+  namespace: otterize-visual-tutorial-istio
+spec:
+  service:
+    name: frontend
+  calls:
+    - name: adservice
+      type: http
+      resources:
+        - path: /ads
+          methods:
+            - GET
+    - name: cartservice
+      type: http
+      resources:
+        - path: /items
+          methods:
+            - POST
+            - GET
+    - name: checkoutservice
+      type: http
+      resources:
+        - path: /checkout
+          methods:
+            - POST
+    - name: currencyservice
+      type: http
+      resources:
+        - path: /currency
+          methods:
+            - GET
+    - name: productcatalogservice
+      type: http
+      resources:
+        - path: /products
+          methods:
+            - GET
+    - name: recommendationservice
+      type: http
+      resources:
+        - path: /recommendations
+          methods:
+            - GET
+    - name: shippingservice
+      type: http
+      resources:
+        - path: /shipping
+          methods:
+            - POST

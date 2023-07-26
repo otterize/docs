@@ -1,0 +1,16 @@
+apiVersion: k8s.otterize.com/v1alpha2
+kind: ClientIntents
+metadata:
+  name: cartservice
+  namespace: otterize-visual-tutorial-istio
+spec:
+  service:
+    name: cartservice
+  calls:
+    - name: redis-cart
+      type: http
+      resources:
+        - path: /items
+          methods:
+            - GET
+            - POST

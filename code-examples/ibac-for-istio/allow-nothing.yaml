@@ -2,6 +2,6 @@ apiVersion: security.istio.io/v1
 kind: AuthorizationPolicy
 metadata:
   name: allow-nothing
-  namespace: otterize-tutorial-istio
+  namespace: otterize-visual-tutorial-istio
 spec:
   {}
