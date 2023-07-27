@@ -95,7 +95,7 @@ enforce them with Istio authorization policies.
 
 Deploy a simple example consisting of `client` and `other-client` calling `nginx` over HTTP:
 ```shell
-kubectl apply -n otterize-tutorial-istio -f https://docs.otterize.com/code-examples/ibac-for-istio/all.yaml
+kubectl apply -n otterize-tutorial-istio -f https://docs.otterize.com/code-examples/istio-authorization-policies/all.yaml
 ```
 
 ## Apply intents
@@ -108,7 +108,7 @@ Otterize will add an Istio authorization policy to allow the intended call
 
 1. Here is the `intents.yaml` declaration of the client, which we will apply below:
 ```yaml
-{@include: ../../static/code-examples/ibac-for-istio/intents.yaml}
+{@include: ../../static/code-examples/istio-authorization-policies/intents.yaml}
 ```
 
 ### See it in action
@@ -116,7 +116,7 @@ Otterize will add an Istio authorization policy to allow the intended call
 Keep an eye on the logs being tailed in the **[client-other]** terminal window,
    and apply this `intents.yaml` file in your **main terminal window** using:
    ```shell
-   kubectl apply -f https://docs.otterize.com/code-examples/ibac-for-istio/intents.yaml
+   kubectl apply -f https://docs.otterize.com/code-examples/istio-authorization-policies/intents.yaml
    ```
 :::tip
 Client intents are the cornerstone of [intent-based access control (IBAC)](https://otterize.com/ibac).
