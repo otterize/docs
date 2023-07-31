@@ -12,7 +12,7 @@ spec:
     keyFile: /etc/otterize-spire/key.pem
     rootCAFile: /etc/otterize-spire/ca.pem
   topics:
-    - topic: "*"
+    - topic: "transactions"
       pattern: literal
-      clientIdentityRequired: false
-      intentsRequired: false
+      clientIdentityRequired: true
+      intentsRequired: true

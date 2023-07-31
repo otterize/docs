@@ -13,149 +13,161 @@ data:
     package main
 
     import (
-        "crypto/tls"
-        "crypto/x509"
-        "fmt"
-        "github.com/Shopify/sarama"
-        "github.com/sirupsen/logrus"
-        "io/ioutil"
-        "time"
+      "crypto/tls"
+      "crypto/x509"
+      "fmt"
+      "github.com/Shopify/sarama"
+      "github.com/sirupsen/logrus"
+      "os"
+      "time"
     )
-    
-    const (
-        kafkaAddr     = "kafka.kafka:9092"
-        testTopicName = "mytopic"
-        certFile      = "/var/otterize/credentials/cert.pem"
-        keyFile       = "/var/otterize/credentials/key.pem"
-        rootCAFile    = "/var/otterize/credentials/ca.pem"
-    )
-    
-    func getTLSConfig() (*tls.Config, error) {
-        cert, err := tls.LoadX509KeyPair(certFile, keyFile)
-        if err != nil {
-            return nil, fmt.Errorf("failed loading x509 key pair: %w", err)
-        }
-    
-        pool := x509.NewCertPool()
-        rootCAPEM, err := ioutil.ReadFile(rootCAFile)
-        if err != nil {
-            return nil, fmt.Errorf("failed loading root CA PEM file: %w ", err)
-        }
-        pool.AppendCertsFromPEM(rootCAPEM)
-    
-        return &tls.Config{
-            Certificates: []tls.Certificate{cert},
-            RootCAs:      pool,
-        }, nil
-    }
-    
-    func send_messages(producer sarama.SyncProducer) {
-        i := 1
-        for {
-          msg := fmt.Sprintf("Message %d [sent by client]", i)
-          _, _, err := producer.SendMessage(&sarama.ProducerMessage{
-              Topic:     testTopicName,
-              Partition: -1,
-              Value:     sarama.StringEncoder(msg),
-          })
-          if err != nil {
-              return
-          }
-          fmt.Printf("Sent message - %s\n", msg)
-          time.Sleep(2 * time.Second)
-          i++
-        }
-    }
-    
-    func loop_kafka() error {
-        addrs := []string{kafkaAddr}
-    
-        config := sarama.NewConfig()
-        fmt.Println("Loading mTLS certificates")
-        config.Net.TLS.Enable = true
-        tlsConfig, err := getTLSConfig()
-        if err != nil {
-            return err
-        }
-        config.Net.TLS.Config = tlsConfig
-        fmt.Println("Connecting to Kafka")
-        config.Net.DialTimeout = 5 * time.Second
-        config.Net.ReadTimeout = 5 * time.Second
-        config.Net.WriteTimeout = 5 * time.Second
-        client, err := sarama.NewClient(addrs, config)
-        if err != nil {
-            return err
-        }
-        fmt.Println("Creating a producer and a consumer for -", testTopicName)
-        config.Producer.Return.Successes = true
-        config.Producer.Timeout = 5 * time.Second
-        config.Consumer.MaxWaitTime = 5 * time.Second
-        config.Producer.Return.Errors = true
-        config.Consumer.Return.Errors = true
-        producer, err := sarama.NewSyncProducerFromClient(client)
-        if err != nil {
-            return err
-        }
-    
-        consumer, err := sarama.NewConsumerFromClient(client)
-        if err != nil {
-            return err
-        }
-        fmt.Println("Sending messages")
-        go send_messages(producer)
-    
-        partConsumer, err := consumer.ConsumePartition(testTopicName, 0, 0)
-        if err != nil {
-            return err
-        }
-    
-        for msg := range partConsumer.Messages() {
-            fmt.Printf("Read message - %s\n", msg.Value)
-        }
-        return nil
-    }
-    
-    func main() {
-        for {
-            err := loop_kafka()
-            logrus.WithError(err).Println()
-            fmt.Println("Loop exited")
-            time.Sleep(2 * time.Second)
-        }
+
+    func getTopics() [2]string {
+      return [2]string{"mytopic", "transactions"}
     }
 
+    const (
+      kafkaAddr  = "kafka.kafka:9092"
+      certFile   = "/var/otterize/credentials/cert.pem"
+      keyFile    = "/var/otterize/credentials/key.pem"
+      rootCAFile = "/var/otterize/credentials/ca.pem"
+    )
+
+    func getTLSConfig() (*tls.Config, error) {
+      cert, err := tls.LoadX509KeyPair(certFile, keyFile)
+      if err != nil {
+        return nil, fmt.Errorf("[client] failed loading x509 key pair: %w", err)
+      }
+
+      pool := x509.NewCertPool()
+      rootCAPEM, err := os.ReadFile(rootCAFile)
+      if err != nil {
+        return nil, fmt.Errorf("[client] failed loading root CA PEM file: %w ", err)
+      }
+      pool.AppendCertsFromPEM(rootCAPEM)
+
+      return &tls.Config{
+        Certificates: []tls.Certificate{cert},
+        RootCAs:      pool,
+      }, nil
+    }
+
+    func send_messages(producer sarama.SyncProducer, topic string) {
+      i := 1
+      for {
+        msg := fmt.Sprintf("[client] message %d", i)
+        _, _, err := producer.SendMessage(&sarama.ProducerMessage{
+          Topic:     topic,
+          Value:     sarama.StringEncoder(msg),
+          Partition: -1,
+        })
+        if err != nil {
+          return
+        }
+        fmt.Printf("[debug: client] Sent message to [%s] - %s\n", topic, msg)
+
+        time.Sleep(2 * time.Second)
+        i++
+      }
+    }
+
+    func createQueue(topic string, config *sarama.Config, client sarama.Client) error {
+      fmt.Println("[client] Creating a producer and a consumer for -", topic)
+      config.Producer.Return.Successes = true
+      config.Producer.Timeout = 5 * time.Second
+      config.Consumer.MaxWaitTime = 5 * time.Second
+      config.Producer.Return.Errors = true
+      config.Consumer.Return.Errors = true
+      producer, err := sarama.NewSyncProducerFromClient(client)
+      if err != nil {
+        return err
+      }
+
+      consumer, err := sarama.NewConsumerFromClient(client)
+      if err != nil {
+        return err
+      }
+      fmt.Println("[client] Sending messages")
+      go send_messages(producer, topic)
+
+      partConsumer, err := consumer.ConsumePartition(topic, 0, 0)
+      if err != nil {
+        return err
+      }
+      for {
+        for msg := range partConsumer.Messages() {
+          fmt.Printf("[client] Read message from [%s] - %s\n", topic, msg.Value)
+        }
+      }
+    }
+
+    func loop_kafka() error {
+      addrs := []string{kafkaAddr}
+
+      config := sarama.NewConfig()
+      fmt.Println("[client] Loading mTLS certificates")
+      config.Net.TLS.Enable = true
+      tlsConfig, err := getTLSConfig()
+      if err != nil {
+        return err
+      }
+      config.Net.TLS.Config = tlsConfig
+      fmt.Println("[client] Connecting to Kafka")
+      config.Net.DialTimeout = 5 * time.Second
+      config.Net.ReadTimeout = 5 * time.Second
+      config.Net.WriteTimeout = 5 * time.Second
+      client, err := sarama.NewClient(addrs, config)
+      if err != nil {
+        return err
+      }
+      for _, topic := range getTopics() {
+        go createQueue(topic, config, client)
+      }
+      return nil
+    }
+
+    func main() {
+      for {
+        err := loop_kafka()
+        logrus.WithError(err).Println()
+        fmt.Println("Loop exited")
+        time.Sleep(2 * time.Second)
+      }
+    }
 
   go.mod: |
     module main
-            
-            go 1.18
-            
-            require (
-            github.com/Shopify/sarama v1.36.0
-            github.com/sirupsen/logrus v1.9.0
-            )
-            
-            require (
-            github.com/davecgh/go-spew v1.1.1 // indirect
-            github.com/eapache/go-resiliency v1.3.0 // indirect
-            github.com/eapache/go-xerial-snappy v0.0.0-20180814174437-776d5712da21 // indirect
-            github.com/eapache/queue v1.1.0 // indirect
-            github.com/golang/snappy v0.0.4 // indirect
-            github.com/hashicorp/errwrap v1.0.0 // indirect
-            github.com/hashicorp/go-multierror v1.1.1 // indirect
-            github.com/hashicorp/go-uuid v1.0.3 // indirect
-            github.com/jcmturner/aescts/v2 v2.0.0 // indirect
-            github.com/jcmturner/dnsutils/v2 v2.0.0 // indirect
-            github.com/jcmturner/gofork v1.7.6 // indirect
-            github.com/jcmturner/gokrb5/v8 v8.4.3 // indirect
-            github.com/jcmturner/rpc/v2 v2.0.3 // indirect
-            github.com/klauspost/compress v1.15.9 // indirect
-            github.com/pierrec/lz4/v4 v4.1.15 // indirect
-            github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
-            golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa // indirect
-            golang.org/x/net v0.0.0-20220809184613-07c6da5e1ced // indirect
-            golang.org/x/sys v0.0.0-20220728004956-3c1f35247d10 // indirect
-            )
+
+    go 1.20
+
+    require (
+      github.com/Shopify/sarama v1.38.1
+      github.com/sirupsen/logrus v1.9.3
+    )
+
+    require (
+      github.com/davecgh/go-spew v1.1.1 // indirect
+      github.com/eapache/go-resiliency v1.3.0 // indirect
+      github.com/eapache/go-xerial-snappy v0.0.0-20230111030713-bf00bc1b83b6 // indirect
+      github.com/eapache/queue v1.1.0 // indirect
+      github.com/golang/snappy v0.0.4 // indirect
+      github.com/hashicorp/errwrap v1.0.0 // indirect
+      github.com/hashicorp/go-multierror v1.1.1 // indirect
+      github.com/hashicorp/go-uuid v1.0.3 // indirect
+      github.com/jcmturner/aescts/v2 v2.0.0 // indirect
+      github.com/jcmturner/dnsutils/v2 v2.0.0 // indirect
+      github.com/jcmturner/gofork v1.7.6 // indirect
+      github.com/jcmturner/gokrb5/v8 v8.4.3 // indirect
+      github.com/jcmturner/rpc/v2 v2.0.3 // indirect
+      github.com/klauspost/compress v1.15.14 // indirect
+      github.com/pierrec/lz4/v4 v4.1.17 // indirect
+      github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
+      golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa // indirect
+      golang.org/x/net v0.5.0 // indirect
+      golang.org/x/sys v0.4.0 // indirect
+    )
+
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -204,132 +216,163 @@ metadata:
 data:
   client-other.go: |
     package main
-    
-    import (
-        "crypto/tls"
-        "crypto/x509"
-        "fmt"
-        "github.com/Shopify/sarama"
-        "github.com/sirupsen/logrus"
-        "io/ioutil"
-        "time"
-    )
-    
-    const (
-        kafkaAddr     = "kafka.kafka:9092"
-        testTopicName = "mytopic"
-        certFile      = "/var/otterize/credentials/cert.pem"
-        keyFile       = "/var/otterize/credentials/key.pem"
-        rootCAFile    = "/var/otterize/credentials/ca.pem"
-    )
-    
-    func getTLSConfig() (*tls.Config, error) {
-        cert, err := tls.LoadX509KeyPair(certFile, keyFile)
-        if err != nil {
-            return nil, fmt.Errorf("failed loading x509 key pair: %w", err)
-        }
 
-        pool := x509.NewCertPool()
-        rootCAPEM, err := ioutil.ReadFile(rootCAFile)
+    import (
+      "crypto/tls"
+      "crypto/x509"
+      "fmt"
+      "github.com/Shopify/sarama"
+      "github.com/sirupsen/logrus"
+      "os"
+      "time"
+    )
+
+    func getTopics() [2]string {
+      return [2]string{"mytopic", "transactions"}
+    }
+
+    const (
+      kafkaAddr  = "kafka.kafka:9092"
+      certFile   = "/var/otterize/credentials/cert.pem"
+      keyFile    = "/var/otterize/credentials/key.pem"
+      rootCAFile = "/var/otterize/credentials/ca.pem"
+    )
+
+    func getTLSConfig() (*tls.Config, error) {
+      cert, err := tls.LoadX509KeyPair(certFile, keyFile)
+      if err != nil {
+        return nil, fmt.Errorf("[client-other] failed loading x509 key pair: %w", err)
+      }
+
+      pool := x509.NewCertPool()
+      rootCAPEM, err := os.ReadFile(rootCAFile)
+      if err != nil {
+        return nil, fmt.Errorf("[client-other] failed loading root CA PEM file: %w ", err)
+      }
+      pool.AppendCertsFromPEM(rootCAPEM)
+
+      return &tls.Config{
+        Certificates: []tls.Certificate{cert},
+        RootCAs:      pool,
+      }, nil
+    }
+
+    func send_messages(producer sarama.SyncProducer, topic string) {
+      i := 1
+      for {
+        msg := fmt.Sprintf("[client-other] message %d", i)
+        _, _, err := producer.SendMessage(&sarama.ProducerMessage{
+          Topic:     topic,
+          Value:     sarama.StringEncoder(msg),
+          Partition: -1,
+        })
         if err != nil {
-            return nil, fmt.Errorf("failed loading root CA PEM file: %w ", err)
+          return
         }
-        pool.AppendCertsFromPEM(rootCAPEM)
-        
-        return &tls.Config{
-            Certificates: []tls.Certificate{cert},
-            RootCAs:      pool,
-        }, nil
+     		fmt.Printf("[debug: client-other] Sent message to [%s] - %s\n", topic, msg)
+        time.Sleep(2 * time.Second)
+        i++
+      }
+    }
+
+    func createQueue(topic string, config *sarama.Config, client sarama.Client) error {
+      fmt.Println("[client-other] Creating a producer and a consumer for -", topic)
+      config.Producer.Return.Successes = true
+      config.Producer.Timeout = 5 * time.Second
+      config.Consumer.MaxWaitTime = 5 * time.Second
+      config.Producer.Return.Errors = true
+      config.Consumer.Return.Errors = true
+      producer, err := sarama.NewSyncProducerFromClient(client)
+      if err != nil {
+        return err
+      }
+
+      consumer, err := sarama.NewConsumerFromClient(client)
+      if err != nil {
+        return err
+      }
+      fmt.Println("[client-other] Sending messages")
+      go send_messages(producer, topic)
+
+      partConsumer, err := consumer.ConsumePartition(topic, 0, 0)
+      if err != nil {
+        return err
+      }
+      for {
+        for msg := range partConsumer.Messages() {
+          fmt.Printf("[client-other] Read message from [%s] - %s\n", topic, msg.Value)
+        }
+      }
     }
 
     func loop_kafka() error {
-        addrs := []string{kafkaAddr}
-        
-        config := sarama.NewConfig()
-        fmt.Println("Loading mTLS certificates")
-        config.Net.TLS.Enable = true
-        tlsConfig, err := getTLSConfig()
-        if err != nil {
-            return err
-        }
-        config.Net.TLS.Config = tlsConfig
-        fmt.Println("Connecting to Kafka")
-        config.Net.DialTimeout = 5 * time.Second
-        config.Net.ReadTimeout = 5 * time.Second
-        config.Net.WriteTimeout = 5 * time.Second
-        client, err := sarama.NewClient(addrs, config)
-        if err != nil {
-            return err
-        }
-        fmt.Println("Creating a producer for -", testTopicName)
-        config.Producer.Return.Successes = true
-        config.Producer.Timeout = 5 * time.Second
-        config.Producer.Return.Errors = true
-        producer, err := sarama.NewSyncProducerFromClient(client)
-        if err != nil {
-            return err
-        }
+      addrs := []string{kafkaAddr}
 
-        fmt.Println("Sending messages")
-        i := 1
-        for {
-          msg := fmt.Sprintf("Message %d [sent by client-other]", i)
-          _, _, err = producer.SendMessage(&sarama.ProducerMessage{
-              Topic:     testTopicName,
-              Partition: -1,
-              Value:     sarama.StringEncoder(msg),
-          })
-          if err != nil {
-              return err
-          }
-          fmt.Printf("Sent message - %s\n", msg)
-          time.Sleep(1 * time.Second)
-          i++
-        }
-        return nil
+      config := sarama.NewConfig()
+      fmt.Println("[client-other] Loading mTLS certificates")
+      config.Net.TLS.Enable = true
+      tlsConfig, err := getTLSConfig()
+      if err != nil {
+        return err
+      }
+      config.Net.TLS.Config = tlsConfig
+      fmt.Println("[client-other] Connecting to Kafka")
+      config.Net.DialTimeout = 5 * time.Second
+      config.Net.ReadTimeout = 5 * time.Second
+      config.Net.WriteTimeout = 5 * time.Second
+      client, err := sarama.NewClient(addrs, config)
+      if err != nil {
+        return err
+      }
+      for _, topic := range getTopics() {
+        go createQueue(topic, config, client)
+      }
+      return nil
     }
 
     func main() {
-        for {
-            err := loop_kafka()
-            logrus.WithError(err).Println()
-            fmt.Println("Loop exited")
-            time.Sleep(2 * time.Second)
-        }
+      for {
+        err := loop_kafka()
+        logrus.WithError(err).Println()
+        fmt.Println("Loop exited")
+        time.Sleep(2 * time.Second)
+      }
     }
+
 
 
   go.mod: |
     module main
-            
-            go 1.18
-            
-            require (
-            github.com/Shopify/sarama v1.36.0
-            github.com/sirupsen/logrus v1.9.0
-            )
-            
-            require (
-            github.com/davecgh/go-spew v1.1.1 // indirect
-            github.com/eapache/go-resiliency v1.3.0 // indirect
-            github.com/eapache/go-xerial-snappy v0.0.0-20180814174437-776d5712da21 // indirect
-            github.com/eapache/queue v1.1.0 // indirect
-            github.com/golang/snappy v0.0.4 // indirect
-            github.com/hashicorp/errwrap v1.0.0 // indirect
-            github.com/hashicorp/go-multierror v1.1.1 // indirect
-            github.com/hashicorp/go-uuid v1.0.3 // indirect
-            github.com/jcmturner/aescts/v2 v2.0.0 // indirect
-            github.com/jcmturner/dnsutils/v2 v2.0.0 // indirect
-            github.com/jcmturner/gofork v1.7.6 // indirect
-            github.com/jcmturner/gokrb5/v8 v8.4.3 // indirect
-            github.com/jcmturner/rpc/v2 v2.0.3 // indirect
-            github.com/klauspost/compress v1.15.9 // indirect
-            github.com/pierrec/lz4/v4 v4.1.15 // indirect
-            github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
-            golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa // indirect
-            golang.org/x/net v0.0.0-20220809184613-07c6da5e1ced // indirect
-            golang.org/x/sys v0.0.0-20220728004956-3c1f35247d10 // indirect
-            )
+
+    go 1.20
+
+    require (
+      github.com/Shopify/sarama v1.38.1
+      github.com/sirupsen/logrus v1.9.3
+    )
+
+    require (
+      github.com/davecgh/go-spew v1.1.1 // indirect
+      github.com/eapache/go-resiliency v1.3.0 // indirect
+      github.com/eapache/go-xerial-snappy v0.0.0-20230111030713-bf00bc1b83b6 // indirect
+      github.com/eapache/queue v1.1.0 // indirect
+      github.com/golang/snappy v0.0.4 // indirect
+      github.com/hashicorp/errwrap v1.0.0 // indirect
+      github.com/hashicorp/go-multierror v1.1.1 // indirect
+      github.com/hashicorp/go-uuid v1.0.3 // indirect
+      github.com/jcmturner/aescts/v2 v2.0.0 // indirect
+      github.com/jcmturner/dnsutils/v2 v2.0.0 // indirect
+      github.com/jcmturner/gofork v1.7.6 // indirect
+      github.com/jcmturner/gokrb5/v8 v8.4.3 // indirect
+      github.com/jcmturner/rpc/v2 v2.0.3 // indirect
+      github.com/klauspost/compress v1.15.14 // indirect
+      github.com/pierrec/lz4/v4 v4.1.17 // indirect
+      github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
+      golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa // indirect
+      golang.org/x/net v0.5.0 // indirect
+      golang.org/x/sys v0.4.0 // indirect
+    )
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -417,129 +460,158 @@ metadata:
 data:
   client-authenticated.go: |
     package main
-    
-    import (
-        "crypto/tls"
-        "crypto/x509"
-        "fmt"
-        "github.com/Shopify/sarama"
-        "github.com/sirupsen/logrus"
-        "io/ioutil"
-        "time"
-    )
-    
-    const (
-        kafkaAddr     = "kafka.kafka:9092"
-        testTopicName = "transactions"
-        certFile      = "/var/otterize/credentials/cert.pem"
-        keyFile       = "/var/otterize/credentials/key.pem"
-        rootCAFile    = "/var/otterize/credentials/ca.pem"
-    )
-    
-    func getTLSConfig() (*tls.Config, error) {
-        cert, err := tls.LoadX509KeyPair(certFile, keyFile)
-        if err != nil {
-            return nil, fmt.Errorf("failed loading x509 key pair: %w", err)
-        }
 
-        pool := x509.NewCertPool()
-        rootCAPEM, err := ioutil.ReadFile(rootCAFile)
+    import (
+      "crypto/tls"
+      "crypto/x509"
+      "fmt"
+      "github.com/Shopify/sarama"
+      "github.com/sirupsen/logrus"
+      "os"
+      "time"
+    )
+
+    func getTopics() [2]string {
+      return [2]string{"mytopic", "transactions"}
+    }
+
+    const (
+      kafkaAddr  = "kafka.kafka:9092"
+      certFile   = "/var/otterize/credentials/cert.pem"
+      keyFile    = "/var/otterize/credentials/key.pem"
+      rootCAFile = "/var/otterize/credentials/ca.pem"
+    )
+
+    func getTLSConfig() (*tls.Config, error) {
+      cert, err := tls.LoadX509KeyPair(certFile, keyFile)
+      if err != nil {
+        return nil, fmt.Errorf("[client-authenticated] failed loading x509 key pair: %w", err)
+      }
+
+      pool := x509.NewCertPool()
+      rootCAPEM, err := os.ReadFile(rootCAFile)
+      if err != nil {
+        return nil, fmt.Errorf("[client-authenticated] failed loading root CA PEM file: %w ", err)
+      }
+      pool.AppendCertsFromPEM(rootCAPEM)
+
+      return &tls.Config{
+        Certificates: []tls.Certificate{cert},
+        RootCAs:      pool,
+      }, nil
+    }
+
+    func send_messages(producer sarama.SyncProducer, topic string) {
+      i := 1
+      for {
+        msg := fmt.Sprintf("[client-authenticated] message %d", i)
+        _, _, err := producer.SendMessage(&sarama.ProducerMessage{
+          Topic:     topic,
+          Value:     sarama.StringEncoder(msg),
+          Partition: -1,
+        })
         if err != nil {
-            return nil, fmt.Errorf("failed loading root CA PEM file: %w ", err)
+          return
         }
-        pool.AppendCertsFromPEM(rootCAPEM)
-        
-        return &tls.Config{
-            Certificates: []tls.Certificate{cert},
-            RootCAs:      pool,
-        }, nil
+        fmt.Printf("[debug: client-authenticated] Sent message to [%s] - %s\n", topic, msg)
+        time.Sleep(2 * time.Second)
+        i++
+      }
+    }
+
+    func createQueue(topic string, config *sarama.Config, client sarama.Client) error {
+      fmt.Println("[client-authenticated] Creating a producer and a consumer for -", topic)
+      config.Producer.Return.Successes = true
+      config.Producer.Timeout = 5 * time.Second
+      config.Consumer.MaxWaitTime = 5 * time.Second
+      config.Producer.Return.Errors = true
+      config.Consumer.Return.Errors = true
+      producer, err := sarama.NewSyncProducerFromClient(client)
+      if err != nil {
+        return err
+      }
+
+      consumer, err := sarama.NewConsumerFromClient(client)
+      if err != nil {
+        return err
+      }
+      fmt.Println("[client-authenticated] Sending messages")
+      go send_messages(producer, topic)
+
+      partConsumer, err := consumer.ConsumePartition(topic, 0, 0)
+      if err != nil {
+        return err
+      }
+      for {
+        for msg := range partConsumer.Messages() {
+          fmt.Printf("[client-authenticated] Read message from [%s] - %s\n", topic, msg.Value)
+        }
+      }
     }
 
     func loop_kafka() error {
-        addrs := []string{kafkaAddr}
-        
-        config := sarama.NewConfig()
-        fmt.Println("Loading mTLS certificates")
-        config.Net.TLS.Enable = true
-        tlsConfig, err := getTLSConfig()
-        if err != nil {
-            return err
-        }
-        config.Net.TLS.Config = tlsConfig
-        fmt.Println("Connecting to Kafka")
-        config.Net.DialTimeout = 5 * time.Second
-        config.Net.ReadTimeout = 5 * time.Second
-        config.Net.WriteTimeout = 5 * time.Second
-        client, err := sarama.NewClient(addrs, config)
-        if err != nil {
-            return err
-        }
-        fmt.Println("Creating a producer for -", testTopicName)
-        config.Producer.Return.Successes = true
-        config.Producer.Timeout = 5 * time.Second
-        config.Producer.Return.Errors = true
-        producer, err := sarama.NewSyncProducerFromClient(client)
-        if err != nil {
-            return err
-        }
+      addrs := []string{kafkaAddr}
 
-        fmt.Println("Sending messages")
-        i := 1
-        for {
-          msg := fmt.Sprintf("Message %d [sent by client-authenticated]", i)
-          _, _, err = producer.SendMessage(&sarama.ProducerMessage{
-              Topic:     testTopicName,
-              Partition: -1,
-              Value:     sarama.StringEncoder(msg),
-          })
-          if err != nil {
-              return err
-          }
-          fmt.Printf("Sent message - %s\n", msg)
-          time.Sleep(1 * time.Second)
-          i++
-        }
-        return nil
+      config := sarama.NewConfig()
+      fmt.Println("[client-authenticated] Loading mTLS certificates")
+      config.Net.TLS.Enable = true
+      tlsConfig, err := getTLSConfig()
+      if err != nil {
+        return err
+      }
+      config.Net.TLS.Config = tlsConfig
+      fmt.Println("[client-authenticated] Connecting to Kafka")
+      config.Net.DialTimeout = 5 * time.Second
+      config.Net.ReadTimeout = 5 * time.Second
+      config.Net.WriteTimeout = 5 * time.Second
+      client, err := sarama.NewClient(addrs, config)
+      if err != nil {
+        return err
+      }
+      for _, topic := range getTopics() {
+        go createQueue(topic, config, client)
+      }
+      return nil
     }
 
     func main() {
-        for {
-            err := loop_kafka()
-            logrus.WithError(err).Println()
-            fmt.Println("Loop exited")
-            time.Sleep(2 * time.Second)
-        }
+      for {
+        err := loop_kafka()
+        logrus.WithError(err).Println()
+        fmt.Println("Loop exited")
+        time.Sleep(2 * time.Second)
+      }
     }
 
 
   go.mod: |
     module main
-            
-            go 1.18
-            
-            require (
-            github.com/Shopify/sarama v1.36.0
-            github.com/sirupsen/logrus v1.9.0
-            )
-            
-            require (
-            github.com/davecgh/go-spew v1.1.1 // indirect
-            github.com/eapache/go-resiliency v1.3.0 // indirect
-            github.com/eapache/go-xerial-snappy v0.0.0-20180814174437-776d5712da21 // indirect
-            github.com/eapache/queue v1.1.0 // indirect
-            github.com/golang/snappy v0.0.4 // indirect
-            github.com/hashicorp/errwrap v1.0.0 // indirect
-            github.com/hashicorp/go-multierror v1.1.1 // indirect
-            github.com/hashicorp/go-uuid v1.0.3 // indirect
-            github.com/jcmturner/aescts/v2 v2.0.0 // indirect
-            github.com/jcmturner/dnsutils/v2 v2.0.0 // indirect
-            github.com/jcmturner/gofork v1.7.6 // indirect
-            github.com/jcmturner/gokrb5/v8 v8.4.3 // indirect
-            github.com/jcmturner/rpc/v2 v2.0.3 // indirect
-            github.com/klauspost/compress v1.15.9 // indirect
-            github.com/pierrec/lz4/v4 v4.1.15 // indirect
-            github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
-            golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa // indirect
-            golang.org/x/net v0.0.0-20220809184613-07c6da5e1ced // indirect
-            golang.org/x/sys v0.0.0-20220728004956-3c1f35247d10 // indirect
-            )
+
+    go 1.20
+
+    require (
+      github.com/Shopify/sarama v1.38.1
+      github.com/sirupsen/logrus v1.9.3
+    )
+
+    require (
+      github.com/davecgh/go-spew v1.1.1 // indirect
+      github.com/eapache/go-resiliency v1.3.0 // indirect
+      github.com/eapache/go-xerial-snappy v0.0.0-20230111030713-bf00bc1b83b6 // indirect
+      github.com/eapache/queue v1.1.0 // indirect
+      github.com/golang/snappy v0.0.4 // indirect
+      github.com/hashicorp/errwrap v1.0.0 // indirect
+      github.com/hashicorp/go-multierror v1.1.1 // indirect
+      github.com/hashicorp/go-uuid v1.0.3 // indirect
+      github.com/jcmturner/aescts/v2 v2.0.0 // indirect
+      github.com/jcmturner/dnsutils/v2 v2.0.0 // indirect
+      github.com/jcmturner/gofork v1.7.6 // indirect
+      github.com/jcmturner/gokrb5/v8 v8.4.3 // indirect
+      github.com/jcmturner/rpc/v2 v2.0.3 // indirect
+      github.com/klauspost/compress v1.15.14 // indirect
+      github.com/pierrec/lz4/v4 v4.1.17 // indirect
+      github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
+      golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa // indirect
+      golang.org/x/net v0.5.0 // indirect
+      golang.org/x/sys v0.4.0 // indirect
+    )

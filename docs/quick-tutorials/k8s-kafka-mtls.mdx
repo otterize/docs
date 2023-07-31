@@ -18,13 +18,6 @@ In this tutorial, we will:
 
 ## Prerequisites
 
-:::note
-For this tutorial, we'll configure Otterize to not manage network policies, so we can focus on topic-level Kafka ACL authorization (vs just accessing Kafka at all).
-
-Of course you can also choose to combine them &mdash; after all, Kafka is just another service running in the cluster. To do that, reinstall Otterize without the `--set intentsOperator.operator.enableNetworkPolicyCreation=false` flag.
-:::
-
-
 <details>
 <summary>Prepare a Kubernetes cluster</summary>
 
@@ -49,6 +42,13 @@ So either forego browser visualization and:
 Or choose to include browser visualization and:
 
 <details>
+
+:::note
+For this tutorial, we'll configure Otterize to not manage network policies, so we can focus on topic-level Kafka ACL authorization (vs just accessing Kafka at all).
+
+Of course you can also choose to combine them &mdash; after all, Kafka is just another service running in the cluster. To do that, reinstall Otterize without the **`--set intentsOperator.operator.enableNetworkPolicyCreation=false`** flag.
+:::
+
 <summary>Install Otterize in your cluster, <b>with</b> Otterize Cloud (and no network policy management)</summary>
 
 #### Create an Otterize Cloud account
@@ -57,8 +57,8 @@ Or choose to include browser visualization and:
 
 #### Install Otterize OSS, connected to Otterize Cloud
 
-{@include: ../_common/install-otterize-from-cloud-with-enforcement.md}
-
+{@include: ../_common/install-otterize-from-cloud-with-enforcement-and-kafka-watcher.md}
+Make sure you also include the **`--set intentsOperator.operator.enableNetworkPolicyCreation=false`** flag. as well.
 </details>
 
 ## Install Kafka
@@ -241,21 +241,19 @@ This client should be able to access both topics:
 ```
 Loading mTLS certificates
 Connecting to Kafka
-Creating a producer and a consumer for: mytopic
+Creating a producer and a consumer for - mytopic
+Creating a producer and a consumer for - transactions
 Sending messages
-Sent message - Message 1 [sent by client]
-Read message - Message 1 [sent by client]
-Read message - Message 1 [sent by client-other]
-Sent message - Message 2 [sent by client]
-Read message - Message 2 [sent by client-other]
-Read message - Message 2 [sent by client]
-Read message - Message 3 [sent by client-other]
-Sent message - Message 3 [sent by client]
-Read message - Message 3 [sent by client]
+[client] Read message from topic: mytopic - [client] Sent message 1
+[client] Read message from topic: mytopic - [client] Sent message 2
+[client] Read message from topic: mytopic - [client] Sent message 3
+[client] Sent message to topic: mytopic - [client] Sent message 4
+[client] Sent message to topic: transactions - [client] Sent message 4
+[client] Read message from topic: mytopic - [client] Sent message 4
+[client] Sent message to topic: mytopic - [client] Sent message 5
+[client] Sent message to topic: transactions - [client] Sent message 5
+[client] Read message from topic: mytopic - [client] Sent message 5
 ```
-:::danger
-Fix the output above to match how the client now works
-:::
 
 3. **Open another terminal window [client-other]** and tail the client-other log:
 ```bash
@@ -271,9 +269,6 @@ Sent message - Message 1 [sent by client-other]
 Sent message - Message 2 [sent by client-other]
 Sent message - Message 3 [sent by client-other]
 ```
-:::danger
-Fix the output above to match how the other client now works
-:::
 
 If you've attached Otterize OSS to Otterize Cloud, you can now browse to your account at [https://app.otterize.com](https://app.otterize.com) and see the access graph for your cluster:
 
@@ -285,6 +280,10 @@ If you've attached Otterize OSS to Otterize Cloud, you can now browse to your ac
 In addition to the Kafka service and the 3 clients we deployed, the network mapper also picked up the calls between the intents operator and Kafka, and between Kafka and zookeeper, so those discovered intents are reflected in the access graph (in light blue).
 
 The access graph also reflects an intent that's already been declared and applied, and was reported by the intents operator to the access graph: it's the intent which the intents operator created for itself to ensure it has access to Kafka. That's [automatically generated](/reference/configuration/intents-operator/configuration) by the intents operator when you apply the KafkaServerConfig: at that point the intents operator knows there is a Kafka service, and in order to ensure it can reach it and configure it, it declares its intent to do so. Specifically that will generate a network policy between the intents operator and the Kafka service, if network policies are in active enforcement and supported by your cluster, so the intents operator doesn't get blocked itself.
+
+:::note
+If you're running this tutorial in GKE, you'll also see the `konnectivity-agent` and the `metrics-server` as in the image above.
+:::
 
 </details>
 

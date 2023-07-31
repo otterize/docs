@@ -113,7 +113,60 @@ Otterize will add an Istio authorization policy to allow the intended call
 
 ### See it in action
 
-Keep an eye on the logs being tailed in the **[client-other]** terminal window,
+<details>
+<summary>Optional: check deployment status</summary>
+Check that the client and server pods were deployed
+
+```bash
+kubectl get pods -n otterize-tutorial-istio
+```
+You should see
+```
+NAME                           READY   STATUS    RESTARTS   AGE
+client-68b775f766-749r4         2/2     Running   0          32s
+nginx-c646898-2lq7l             2/2     Running   0          32s
+other-client-74cc54f7b5-9rctd   2/2     Running   0          32s
+```
+</details>
+
+monitor both client attempts to call the server with additional terminal windows,
+so we can see the effects of our changes in real time.
+
+2. **Open a new terminal window [client]** and tail the client log:
+```bash
+kubectl logs -f --tail 1 -n otterize-tutorial-istio deploy/client
+```
+<details>
+<summary>Expected output</summary>
+
+At this point the client should be able to communicate with the server:
+```
+Calling server...
+HTTP/1.1 200 OK
+...
+hello from /client-path
+```
+</details>
+
+3. **Open another terminal window [client-other]** and tail the other-client log:
+```bash
+kubectl logs -f --tail 1 -n otterize-tutorial-istio deploy/other-client
+```
+
+<details>
+<summary>Expected output</summary>
+
+At this point the client should be able to communicate with the server:
+```
+Calling server...
+HTTP/1.1 200 OK
+...
+hello from /other-client-path
+```
+
+</details>
+
+Keep an eye on the logs being tailed in the **[other-client]** terminal window,
    and apply this `intents.yaml` file in your **main terminal window** using:
    ```shell
    kubectl apply -f https://docs.otterize.com/code-examples/istio-authorization-policies/intents.yaml
@@ -121,7 +174,7 @@ Keep an eye on the logs being tailed in the **[client-other]** terminal window,
 :::tip
 Client intents are the cornerstone of [intent-based access control (IBAC)](https://otterize.com/ibac).
 :::
-2. You should quickly see in the **[client-other]** terminal that it times out when calling the server,
+2. You should quickly see in the **[other-client]** terminal that it times out when calling the server,
    as expected since it didn't declare its intents:
 ```bash
 Calling server...
@@ -130,9 +183,8 @@ HTTP/1.1 200 OK
 hello from /other-client-path  # <- before applying the intents file
 # highlight-start
 Calling server...              # <- after applying the intents file
-RBAC: access denied
-Calling server...
-RBAC: access denied
+curl timed out
+Terminated
 # highlight-end
 ```
 
