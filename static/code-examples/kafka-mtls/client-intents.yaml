@@ -11,4 +11,6 @@ spec:
       type: kafka
       topics:
         - name: mytopic
-          operations: [ all ]
+          operations: [ produce,describe,consume ]
+        - name: transactions
+          operations: [ produce,describe,consume ]
