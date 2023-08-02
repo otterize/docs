@@ -18,12 +18,12 @@ data:
         "github.com/sirupsen/logrus"
         "time"
     )
-    
+
     const (
         kafkaAddr     = "kafka.kafka:9092"
         testTopicName = "mytopic"
     )
-    
+
     func send_messages(producer sarama.SyncProducer) {
         i := 1
         for {
@@ -37,14 +37,14 @@ data:
               return
           }
           fmt.Printf("Sent message - %s\n", msg)
-          time.Sleep(2 * time.Second)
+          time.Sleep(5 * time.Second)
           i++
         }
     }
-    
+
     func loop_kafka() error {
         addrs := []string{kafkaAddr}
-    
+
         config := sarama.NewConfig()
         fmt.Println("Connecting to Kafka")
         config.Net.DialTimeout = 5 * time.Second
@@ -60,29 +60,30 @@ data:
         config.Consumer.MaxWaitTime = 5 * time.Second
         config.Producer.Return.Errors = true
         config.Consumer.Return.Errors = true
+        config.Consumer.StartingOffset = sarama.OffsetOldest
         producer, err := sarama.NewSyncProducerFromClient(client)
         if err != nil {
             return err
         }
-    
+
         consumer, err := sarama.NewConsumerFromClient(client)
         if err != nil {
             return err
         }
         fmt.Println("Sending messages")
         go send_messages(producer)
-    
+
         partConsumer, err := consumer.ConsumePartition(testTopicName, 0, 0)
         if err != nil {
             return err
         }
-    
+
         for msg := range partConsumer.Messages() {
             fmt.Printf("Read message - %s\n", msg.Value)
         }
         return nil
     }
-    
+
     func main() {
         for {
             err := loop_kafka()
@@ -95,14 +96,14 @@ data:
 
   go.mod: |
     module main
-            
+
             go 1.18
-            
+
             require (
             github.com/Shopify/sarama v1.36.0
             github.com/sirupsen/logrus v1.9.0
             )
-            
+
             require (
             github.com/davecgh/go-spew v1.1.1 // indirect
             github.com/eapache/go-resiliency v1.3.0 // indirect
@@ -166,14 +167,14 @@ metadata:
 data:
   client-other.go: |
     package main
-    
+
     import (
         "fmt"
         "github.com/Shopify/sarama"
         "github.com/sirupsen/logrus"
         "time"
     )
-    
+
     const (
         kafkaAddr     = "kafka.kafka:9092"
         testTopicName = "mytopic"
@@ -181,7 +182,7 @@ data:
 
     func loop_kafka() error {
         addrs := []string{kafkaAddr}
-        
+
         config := sarama.NewConfig()
         fmt.Println("Connecting to Kafka")
         config.Net.DialTimeout = 5 * time.Second
@@ -213,7 +214,7 @@ data:
               return err
           }
           fmt.Printf("Sent message - %s\n", msg)
-          time.Sleep(1 * time.Second)
+          time.Sleep(5 * time.Second)
           i++
         }
         return nil
@@ -231,14 +232,14 @@ data:
 
   go.mod: |
     module main
-            
+
             go 1.18
-            
+
             require (
             github.com/Shopify/sarama v1.36.0
             github.com/sirupsen/logrus v1.9.0
             )
-            
+
             require (
             github.com/davecgh/go-spew v1.1.1 // indirect
             github.com/eapache/go-resiliency v1.3.0 // indirect
@@ -331,23 +332,23 @@ metadata:
 data:
   client-authenticated.go: |
     package main
-    
+
     import (
         "fmt"
         "github.com/Shopify/sarama"
         "github.com/sirupsen/logrus"
         "time"
     )
-    
+
     const (
         kafkaAddr     = "kafka.kafka:9092"
         testTopicName = "transactions"
     )
-    
+
 
     func loop_kafka() error {
         addrs := []string{kafkaAddr}
-        
+
         config := sarama.NewConfig()
         fmt.Println("Connecting to Kafka")
         config.Net.DialTimeout = 5 * time.Second
@@ -379,7 +380,7 @@ data:
               return err
           }
           fmt.Printf("Sent message - %s\n", msg)
-          time.Sleep(1 * time.Second)
+          time.Sleep(5 * time.Second)
           i++
         }
         return nil
@@ -397,14 +398,14 @@ data:
 
   go.mod: |
     module main
-            
+
             go 1.18
-            
+
             require (
             github.com/Shopify/sarama v1.36.0
             github.com/sirupsen/logrus v1.9.0
             )
-            
+
             require (
             github.com/davecgh/go-spew v1.1.1 // indirect
             github.com/eapache/go-resiliency v1.3.0 // indirect

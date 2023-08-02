@@ -16,21 +16,13 @@ spec:
     spec:
       containers:
         - name: client-other
-          image: golang
-          command: [ "/bin/sh", "-c", "--" ]
-          args: [ "while true; do cd /app; cp src/* .; go get main; go run .; sleep infinity; done" ]
+          image: santafen/otterize-kafka-client:1.0.7
+          command: [ "/bin/sh", "-c", "cd /app/client-other;./client-other" ]
           volumeMounts:
-            - name: ephemeral
-              mountPath: /app
-            - mountPath: /app/src
-              name: client-other-go
             - name: otterize-credentials
               mountPath: /var/otterize/credentials
               readOnly: true
       volumes:
-        - name: client-other-go
-          configMap:
-            name: client-other-go
         - name: otterize-credentials
           secret:
             secretName: client-other-credentials-secret

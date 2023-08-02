@@ -89,6 +89,15 @@ The following command will deploy a Kafka broker with this chart:
 
 You can watch for all pods to be `Ready` using `kubectl get pods -n kafka -w`.
 
+<details>
+<summary>If you're using Otterize Cloud, adjust your display settings</summary>
+You want to make sure that under **Istio Policies** *Use in access graph* is turned off and that under **Network Policies** *Use in access graph* is also turned off.
+
+Turning *Use in access graph* **on** under **Kafka ACLs** will make it clear that we're only looking for the effects of Kafka ACLs, not network policies or Istio policies.
+
+![Make sure Istio is disabled](../../static/img/quick-tutorials/k8s-kafka-mtls/cloud-settings.png)
+</details>
+
 ## Configure Otterize to manage Kafka access
 
 In our simple example, we'll call the Kafka broker service simply "kafka".
@@ -98,6 +107,8 @@ kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/kafkaserverc
 ```
 <details>
 <summary>Expand to see the KafkaServerConfig</summary>
+
+Our Kafka server will have 2 topics `transactions` and `mytopic` that our clients will be accessing.
 <Tabs>
 
 <TabItem value="kafkaserverconfig.yaml" label="kafkaserverconfig.yaml">
@@ -110,7 +121,7 @@ kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/kafkaserverc
 </Tabs>
 </details>
 
-We've chosen to allow unauthenticated access to all topics to begin with.
+We've chosen to allow unauthenticated access to both topics to begin with.
 This will be the base state, from which we can gradually secure access to specific topics.
 
 ## Deploy clients
@@ -178,14 +189,6 @@ spec:
 
 </TabItem>
 
-<TabItem value="client-configmap.yaml" label="client-configmap.yaml">
-
-```yaml
-{@include: ../../static/code-examples/kafka-mtls/client-configmap.yaml}
-```
-
-</TabItem>
-
 <TabItem value="client-other-deployment.yaml" label="client-other-deployment.yaml">
 
 ```yaml
@@ -194,20 +197,8 @@ spec:
 
 </TabItem>
 
-<TabItem value="client-other-configmap.yaml" label="client-other-configmap.yaml">
-
-```yaml
-{@include: ../../static/code-examples/kafka-mtls/client-other-configmap.yaml}
-```
-
-</TabItem>
-
 </Tabs>
 </details>
-
-:::danger
-Fix the client specs to indeed each call the two topics
-:::
 
 1. Deploy the two clients into a namespace called `otterize-tutorial-kafka-mtls` using `kubectl`:
 ```bash
@@ -239,21 +230,26 @@ kubectl logs -f --tail 1 -n otterize-tutorial-kafka-mtls deploy/client
 ```
 This client should be able to access both topics:
 ```
-Loading mTLS certificates
-Connecting to Kafka
-Creating a producer and a consumer for - mytopic
-Creating a producer and a consumer for - transactions
-Sending messages
-[client] Read message from topic: mytopic - [client] Sent message 1
-[client] Read message from topic: mytopic - [client] Sent message 2
-[client] Read message from topic: mytopic - [client] Sent message 3
-[client] Sent message to topic: mytopic - [client] Sent message 4
-[client] Sent message to topic: transactions - [client] Sent message 4
-[client] Read message from topic: mytopic - [client] Sent message 4
-[client] Sent message to topic: mytopic - [client] Sent message 5
-[client] Sent message to topic: transactions - [client] Sent message 5
-[client] Read message from topic: mytopic - [client] Sent message 5
+[client] Loading mTLS certificates
+[client] Connecting to Kafka
+[client] Creating a producer and a consumer for - mytopic
+[client] Sending Messages
+[debug]  [client] Sent message 1 [mytopic]
+[client] Creating a producer and a consumer for - transactions
+[client] Sending messages
+[debug]  [client] Sent message 1 [transactions]
+[client] Sent message to topic: transactions - [client] Sent message 1 [transactions]
+[client] Sent message to topic: mytopic - [client] Sent message 1 [mytopic]
+[client] Read message from topic: mytopic - [client-other] Sent message 27 [mytopic]
+[client] Read message from topic: mytopic - [client-other] Sent message 18 [mytopic]
+[client] Read message from topic: mytopic - [client] Sent message 2 [mytopic]
+[client] Read message from topic: mytopic - [client-other] Sent message 36 [mytopic]
+[client] Read message from topic: mytopic - [client-other] Sent message 6 [mytopic]
+[client] Read message from topic: mytopic - [client-other] Sent message 33 [mytopic]
+[client] Read message from topic: mytopic - [client-other] Sent message 19 [mytopic]
 ```
+
+As you can see, both `client` and `client-other` are currently able to access both `mytopic` and `transactions` topics.
 
 3. **Open another terminal window [client-other]** and tail the client-other log:
 ```bash
@@ -261,13 +257,17 @@ kubectl logs -f --tail 1 -n otterize-tutorial-kafka-mtls deploy/client-other
 ```
 This other client should also be able to access both topics:
 ```
-Loading mTLS certificates
-Connecting to Kafka
-Creating a producer for - mytopic
-Sending messages
-Sent message - Message 1 [sent by client-other]
-Sent message - Message 2 [sent by client-other]
-Sent message - Message 3 [sent by client-other]
+[client-other] Loading mTLS certificates
+[client-other] Connecting to Kafka
+[client-other] Creating a producer and a consumer for - mytopic
+[client-other] Sending messages
+[client-other] Creating a producer and a consumer for - transactions
+[client-other] Sending messages
+[debug]  [client-other] Sent message 1 [mytopic]
+[debug]  [client-other] Sent message 1 [transactions]
+[client-other] Sent message to topic: transactions - [client-other] Sent message 1 [transactions]
+[client-other] Sent message to topic: mytopic - [client-other] Sent message 1 [mytopic]
+[client-other] Read message from topic: transactions - [client] Sent message 5 [transactions]
 ```
 
 If you've attached Otterize OSS to Otterize Cloud, you can now browse to your account at [https://app.otterize.com](https://app.otterize.com) and see the access graph for your cluster:
@@ -275,9 +275,11 @@ If you've attached Otterize OSS to Otterize Cloud, you can now browse to your ac
 ![Access graph](/img/quick-tutorials/k8s-kafka-mtls/base.png)
 
 <details>
-<summary>Why do I see six services?</summary>
+<summary>Why do I see eight services?</summary>
 
-In addition to the Kafka service and the 3 clients we deployed, the network mapper also picked up the calls between the intents operator and Kafka, and between Kafka and zookeeper, so those discovered intents are reflected in the access graph (in light blue).
+In addition to the Kafka service and the 3 clients we deployed (yes, we snuck a 3rd client in there), the network mapper also picked up the calls between the intents operator and Kafka, and between Kafka and zookeeper, so those discovered intents are reflected in the access graph (in light blue).
+
+We also deployed the Otterize kafka-watcher to monitor Kafka for new topics and intents, and that watcher communicates with the network-mapper in order to report the discovered intents (in grey).
 
 The access graph also reflects an intent that's already been declared and applied, and was reported by the intents operator to the access graph: it's the intent which the intents operator created for itself to ensure it has access to Kafka. That's [automatically generated](/reference/configuration/intents-operator/configuration) by the intents operator when you apply the KafkaServerConfig: at that point the intents operator knows there is a Kafka service, and in order to ensure it can reach it and configure it, it declares its intent to do so. Specifically that will generate a network policy between the intents operator and the Kafka service, if network policies are in active enforcement and supported by your cluster, so the intents operator doesn't get blocked itself.
 
@@ -295,13 +297,15 @@ kubectl logs -f --tail 1 -n otterize-tutorial-kafka-mtls deploy/client-authentic
 ```
 
 ```
-Loading mTLS certificates
-Connecting to Kafka
-Creating a producer for - transactions
-Sending messages
-Sent message - Message 1 [sent by client-authenticated]
-Sent message - Message 2 [sent by client-authenticated]
-Sent message - Message 3 [sent by client-authenticated]
+[client-authenticated] Loading mTLS certificates
+[client-authenticated] Connecting to Kafka
+[client-authenticated] Creating a producer and a consumer for - mytopic
+[client-authenticated] Sending messages
+[client-authenticated] Creating a producer and a consumer for - transactions
+[client-authenticated] Sending messages
+[debug: client-authenticated] Sent message to [mytopic] - [client-authenticated] Sent message 1
+[debug: client-authenticated] Sent message to [transactions] - [client-authenticated] Sent message 1
+
 ```
 
 </details>
@@ -316,7 +320,21 @@ Sent message - Message 3 [sent by client-authenticated]
 Client intents are the cornerstone of [intent-based access control](https://otterize.com/ibac).
 :::
 
-2. Keep an eye on the logs being tailed in the **[client-other]** while you apply this `intents.yaml` file in your **main terminal window** using:
+2. At this point, since the Kafka server is not actually protected, the `client-other` can still access the topics. But if you look at your Otterize Cloud access graph, you'll see that the connection between the `client` and the Kafka server is now green because we have a declared intent.
+
+![Declared Intent](../../static/img/quick-tutorials/k8s-kafka-mtls/declared-intent.png)
+
+3. Now let's make a change to the `kafkaserverconfig` to require intents for the 2 topics.
+
+```bash
+kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/kafkaserverconfig-intents.yaml
+```
+
+Keep an eye on your Otterize Cloud access graph as you do this, as the 2 lients *without* declared intents should turn orange indicating that, if enforcement were turned on, they would be blocked.
+
+![Blocked Without Intent](../../static/img/quick-tutorials/k8s-kafka-mtls/blocked-without-intent.png)
+
+ Keep an eye on the logs being tailed in the **[client-other]** while you apply this `intents.yaml` file in your **main terminal window** using:
 ```bash
 kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/client-intents.yaml
 ```
