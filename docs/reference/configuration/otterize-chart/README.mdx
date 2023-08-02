@@ -59,6 +59,8 @@ Further information about intents-operator parameters can be found [in the inten
 | `intentsOperator.operator.autoCreateNetworkPoliciesForExternalTraffic`                          | Automatically allow external traffic, if a new ClientIntents resource would result in blocking external (internet) traffic and there is an Ingress/Service resource indicating external traffic is expected.       | `true`             |
 | `intentsOperator.operator.autoCreateNetworkPoliciesForExternalTrafficDisableIntentsRequirement` | **experimental** - If `autoCreateNetworkPoliciesForExternalTraffic` is enabled, do not require ClientIntents resources - simply create network policies based off of the existence of an Ingress/Service resource. | `false`            |
 | `intentsOperator.operator.resources`                                                            | Resources override.                                                                                                                                                                                                |                    |
+| `intentsOperator.operator.enableDatabaseReconciler`                                             | **experimental** - If set to true, the new database reconciler is enabled.                                                                                                                                         | `false`            |
+
 
 ## SPIRE parameters
 All configurable parameters of SPIRE can be configured under the alias `spire`.
