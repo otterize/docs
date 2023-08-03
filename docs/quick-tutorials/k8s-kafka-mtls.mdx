@@ -330,31 +330,11 @@ Client intents are the cornerstone of [intent-based access control](https://otte
 kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/kafkaserverconfig-intents.yaml
 ```
 
-Keep an eye on your Otterize Cloud access graph as you do this, as the 2 lients *without* declared intents should turn orange indicating that, if enforcement were turned on, they would be blocked.
+Keep an eye on your Otterize Cloud access graph as you do this, as the 2 clients *without* declared intents should turn orange indicating that, if enforcement were turned on, they would be blocked. This is because we changed the KafkaServerConfig to require intents for those topics with `intentRequired: true`:
 
 ![Blocked Without Intent](../../static/img/quick-tutorials/k8s-kafka-mtls/blocked-without-intent.png)
 
- Keep an eye on the logs being tailed in the **[client-other]** while you apply this `intents.yaml` file in your **main terminal window** using:
-```bash
-kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/client-intents.yaml
-```
-
-You should quickly see in the **[client-other]** that the **other client cannot** access the topic:
-```
-Sent message - Message 12 [sent by client-other]            # <- before applying the intents file
-Sent message - Message 13 [sent by client-other]            # <- before applying the intents file
-time="2022-10-06T09:44:53Z" level=info error="kafka server: # <- after applying the intents file
- The client is not authorized to access this topic"
-Loop exited
-```
-Meanwhile, in the **[client]** terminal you can see that the **client can** access the topic:
-```
-Sent message - Message 24 [sent by client]
-Read message - Message 24 [sent by client]
-Sent message - Message 25 [sent by client]
-Read message - Message 25 [sent by client]
-```
-3. Verify that an ACL for this client was configured on the Kafka broker:
+4. Verify that an ACL for this client was configured on the Kafka broker:
 ```bash
 kubectl logs -n kafka statefulset/kafka | grep "Processing Acl change" | grep mytopic | tail -n 1
 ```
@@ -366,25 +346,6 @@ versionedAcls : Set(User:ANONYMOUS has DENY permission for operations:
 ALL from hosts: *, User:CN=client.otterize-tutorial-kafka-mtls,O=SPIRE,C=US has ALLOW permission
 for operations: ALL from hosts: *), zkVersion : 6 (kafka.security.authorizer.AclAuthorizer)
 ```
-
-<details>
-<summary>Optional: check that <b>[client-authenticated]</b> wasn't blocked</summary>
-
-```bash
-kubectl logs -f --tail 1 -n otterize-tutorial-kafka-mtls deploy/client-authenticated
-```
-
-```
-Loading mTLS certificates
-Connecting to Kafka
-Creating a producer for - transactions
-Sending messages
-Sent message - Message 263 [sent by client-authenticated]
-Sent message - Message 264 [sent by client-authenticated]
-Sent message - Message 265 [sent by client-authenticated]
-```
-
-</details>
 
 If you've attached Otterize OSS to Otterize Cloud, go back to see the [access graph in your browser](https://app.otterize.com). Click on the Kafka service, and click at the bottom of it to focus on it and show its details:
 

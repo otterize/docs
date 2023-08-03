@@ -1,5 +1,5 @@
 # Configure Otterize as a super user to grant it access to configure ACLs
-superUsers: "User:CN=kafka.kafka,O=SPIRE,C=US;User:CN=intents-operator-controller-manager.otterize,O=SPIRE,C=US"
+superUsers: "User:CN=kafka.kafka,O=SPIRE,C=US;User:CN=intents-operator.otterize-system,O=SPIRE,C=US;User:CN=kafka.kafka;User:CN=intents-operator.otterize-system"
 # Use TLS for the Kafka listeners (Kafka calls them SSL)
 listeners:
   - "CLIENT://:9092"
@@ -9,7 +9,7 @@ advertisedListeners:
   - "INTERNAL://:9093"
 listenerSecurityProtocolMap: "INTERNAL:SSL,CLIENT:SSL"
 # For a gradual rollout scenario we will want to keep the default permission for topics as allowed, unless an ACL was set
-allowEveryoneIfNoAclFound: true
+allowEveryoneIfNoAclFound: false
 # Annotations for Otterize to generate credentials
 podAnnotations:
   credentials-operator.otterize.com/cert-type: jks
@@ -26,6 +26,7 @@ auth:
     existingSecrets:
       - kafka-tls-secret
     password: password
+authorizerClassName: kafka.security.authorizer.AclAuthorizer
 # Allocate resources
 resources:
   requests:
@@ -35,7 +36,7 @@ log4j: |
   # Unspecified loggers and loggers with additivity=true output to server.log and stdout
   # Note that INFO only applies to unspecified loggers, the log level of the child logger is used otherwise
 
-  log4j.rootLogger=DEBUG, stdout, kafkaAppender
+  log4j.rootLogger=INFO, stdout, kafkaAppender
 
   log4j.appender.stdout=org.apache.log4j.ConsoleAppender
   log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
@@ -67,39 +68,38 @@ log4j: |
 
 
   # Change the line below to adjust ZK client logging
-  log4j.logger.org.apache.zookeeper=DEBUG
+  log4j.logger.org.apache.zookeeper=INFO
 
   # Change the two lines below to adjust the general broker logging level (output to server.log and stdout)
-  log4j.logger.kafka=DEBUG, stdout
-  log4j.logger.org.apache.kafka=DEBUG
+  log4j.logger.kafka=INFO, stdout
+  log4j.logger.org.apache.kafka=INFO
 
   # Change to DEBUG or TRACE to enable request logging
-  log4j.logger.kafka.request.logger=DEBUG, requestAppender
-  log4j.additivity.kafka.request.logger=true
+  log4j.logger.kafka.request.logger=WARN, requestAppender
+  log4j.additivity.kafka.request.logger=false
 
   # Uncomment the lines below and change log4j.logger.kafka.network.RequestChannel$ to TRACE for additional output
   # related to the handling of requests
   #log4j.logger.kafka.network.Processor=TRACE, requestAppender
   #log4j.logger.kafka.server.KafkaApis=TRACE, requestAppender
-  #log4j.additivity.kafka.server.KafkaApis=true
+  #log4j.additivity.kafka.server.KafkaApis=false
   log4j.logger.kafka.network.RequestChannel$=WARN, requestAppender
-  log4j.additivity.kafka.network.RequestChannel$=true
+  log4j.additivity.kafka.network.RequestChannel$=false
 
   # Change the line below to adjust KRaft mode controller logging
-  log4j.logger.org.apache.kafka.controller=DEBUG, controllerAppender
-  log4j.additivity.org.apache.kafka.controller=true
+  log4j.logger.org.apache.kafka.controller=INFO, controllerAppender
+  log4j.additivity.org.apache.kafka.controller=false
 
   # Change the line below to adjust ZK mode controller logging
-  log4j.logger.kafka.controller=DEBUG, controllerAppender
-  log4j.additivity.kafka.controller=true
+  log4j.logger.kafka.controller=TRACE, controllerAppender
+  log4j.additivity.kafka.controller=false
 
-  log4j.logger.kafka.log.LogCleaner=DEBUG, cleanerAppender
-  log4j.additivity.kafka.log.LogCleaner=true
+  log4j.logger.kafka.log.LogCleaner=INFO, cleanerAppender
+  log4j.additivity.kafka.log.LogCleaner=false
 
-  log4j.logger.state.change.logger=DEBUG, stateChangeAppender
-  log4j.additivity.state.change.logger=true
+  log4j.logger.state.change.logger=INFO, stateChangeAppender
+  log4j.additivity.state.change.logger=false
 
   # Access denials are logged at INFO level, change to DEBUG to also log allowed accesses
   log4j.logger.kafka.authorizer.logger=DEBUG, authorizerAppender
-  log4j.additivity.kafka.authorizer.logger=true
-authorizerClassName: kafka.security.authorizer.AclAuthorizer
+  log4j.additivity.kafka.authorizer.logger=false
