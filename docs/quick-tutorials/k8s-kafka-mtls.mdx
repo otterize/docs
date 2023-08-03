@@ -450,6 +450,18 @@ helm install --create-namespace -n kafka \
    -f https://docs.otterize.com/code-examples/kafka-mtls/helm/values-protect.yaml kafka bitnami/kafka --version 21.4.4
 ```
 
+Finally we need to turn enforcement on in our cluster by updating our Otterize helm configuration.
+
+```bash
+helm install --install otterize otterize/otterize-kubernetes -n otterize-system --create-namespace \
+    --set global.otterizeCloud.credentials.clientId=<your_id> \
+    --set global.otterizeCloud.credentials.clientSecret=<your_secret> \
+    --set intentsOperator.operator.enableEnforcement=true \
+    --set global.otterizeCloud.useCloudToGenerateTLSCredentials=true \
+    --set networkMapper.kafkawatcher.enable=true \
+    --set networkMapper.kafkawatcher.kafkaServers={"kafka-0.kafka"}
+```
+
 If you once again tail the logs for `client-other` you'll see that it can no longer connect to Kafka:
 
 ```
