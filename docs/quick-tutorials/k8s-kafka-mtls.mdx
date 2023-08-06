@@ -494,7 +494,7 @@ and that Kafka ACLs are configured to reflect precisely the intended topic-level
 <details>
 <summary>Expand to see what happened behind the scenes</summary>
 
-### One-time setups:
+### One-time setups
 
 We configured the Helm chart for Kafka to:
 * Allow the Otterize intents operator to be a Kafka super user (authenticated with a certificate).
@@ -506,7 +506,7 @@ We configured Kafka itself to:
 * Add the TLS certificates of the Otterize credentials operator.
 * Set the default ACL for all topics to allow anonymous access.
 
-### Per-client setups:
+### Per-client setups
 
 We configured each of our clients to:
 * Let Otterize know it should generate mTLS credentials for that client.
