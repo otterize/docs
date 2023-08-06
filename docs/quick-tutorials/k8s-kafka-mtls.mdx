@@ -336,7 +336,7 @@ This is our first step in protecting our Kafka service. Since we have configured
 We've provided you with a `kafkaserverconfig.yaml` file with the `clientIdentityRequired` flag enabled, so you can apply that now:
 
 ```bash
-kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/kafkaserverconfig-auth.yaml -n otterize-tutorial-kafka-mtls
+kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/kafkaserverconfig-auth.yaml
 ```
 
 If you go back to your access graph and click on your Kafka broker you can see that authorization is now required.
@@ -446,14 +446,14 @@ Let's see that in action. This only requires a single change to our helm chart's
 If we apply this new configuration, we should see the `client-other` denied access.
 
 ```bash
-helm install --create-namespace -n kafka \
+helm upgrade --install -n kafka \
    -f https://docs.otterize.com/code-examples/kafka-mtls/helm/values-protect.yaml kafka bitnami/kafka --version 21.4.4
 ```
 
 Finally we need to turn enforcement on in our cluster by updating our Otterize helm configuration.
 
 ```bash
-helm install --install otterize otterize/otterize-kubernetes -n otterize-system --create-namespace \
+helm upgrade --install otterize otterize/otterize-kubernetes -n otterize-system --create-namespace \
     --set global.otterizeCloud.credentials.clientId=<your_id> \
     --set global.otterizeCloud.credentials.clientSecret=<your_secret> \
     --set intentsOperator.operator.enableEnforcement=true \
