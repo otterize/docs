@@ -1,4 +1,4 @@
-If no Kubernetes clusters are connected to your account, click the "connect your cluster" button to:
+If no Kubernetes clusters are connected to your account, click the "Connect your cluster" button to:
 1. Create a Cloud cluster object, specifying its name and the name of an environment to which all namespaces in that cluster will belong, by default.
 2. Connect it with your actual Kubernetes cluster, by clicking on the "Connection guide &rarr;" link and running the Helm commands shown there.
 
