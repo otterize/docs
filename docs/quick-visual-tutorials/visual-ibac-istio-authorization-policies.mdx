@@ -8,17 +8,69 @@ import CodeBlock from "@theme/CodeBlock";
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-:::info Coming soon
+Istio authorization policies are a powerful and flexible tool, but using them to achieve a zero-trust architecture with fine-grained pod-to-pod access control can be difficult to implement and maintain.
 
-This visual tutorial for IBAC with Istio authorization policies is not yet ready.
+In this tutorial, we will show you how to roll out Istio authorization policies with intent-based access control (IBAC).
+With IBAC, you won't need to manually keep track of pod labels or service accounts. You won't need to manage Istio authorization policies at all &mdash; they'll be generated and managed automatically. We'll even show you how to generate policies for all discovered traffic in the cluster with just one command.
 
-In the meantime, you might want to check out some similar tutorials:
-* [IBAC with network policies](/quick-visual-tutorials/visual-ibac-network-policies)
-* [IBAC with Kafka in Kubernetes](/quick-visual-tutorials/visual-ibac-kafka-k8s).
+By the end of this tutorial, each server in the cluster will only allow the incoming calls declared by client services in their client intents files, and block any undeclared (unintended) calls. Call declarations, and the authorization policies they'll generate, will be specific not just down to the server but also to the HTTP path and method.
 
-And for a simple, less visual tutorial, see:
-* [Istio AuthorizationPolicy automation with intents](/quick-tutorials/k8s-istio-authorization-policies)
+All the capabilities of IBAC for Istio are within Otterize OSS, while the access graph in Otterize Cloud will guide us
+visually in these steps and support us in the process of zero trust adoption in our cluster without breaking anything.
 
+You will:
+1. Install Otterize OSS in your Kubernetes cluster, integrated to your Otterize Cloud account.
+2. Install and configure Istio into your cluster.
+3. Deploy, as in previous tutorials, a set of services based on the [Google microservices demo](https://github.com/GoogleCloudPlatform/microservices-demo)
+(a simple e-commerce application) to your Kubernetes cluster.
+4. View, within Otterize Cloud, the traffic in your cluster.
+5. Declare one intent in your cluster just to see how the generated authorization policies affect the cluster.
+6. Generate client intents for all traffic in the cluster to achieve zero trust in one command.
+
+## Prerequisites
+
+<details>
+<summary>Prepare a Kubernetes cluster</summary>
+
+Before you start, you'll need a Kubernetes cluster. Having a cluster with a [CNI](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/) that supports [NetworkPolicies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) isn't required for this tutorial, but is recommended so that your cluster works with other tutorials.
+
+{@include: ../_common/cluster-setup.md}
+</details>
+
+<details>
+<summary>Create an Otterize Cloud account</summary>
+
+{@include: ../_common/create-account.md}
+
+</details>
+
+<details>
+<summary>Install Otterize OSS </summary>
+
+{@include: ../_common/install-otterize-from-cloud.md}
+
+</details>
+
+<details>
+<summary>Install the Otterize CLI</summary>
+
+{@include: ../_common/install-otterize-cli.md}
+
+</details>
+
+## Install and configure Istio
+<details>
+<summary>Install Istio in the cluster via Helm</summary>
+
+{@include: ../_common/install-istio.md}
+
+</details>
+
+:::tip
+HTTP request paths and methods aren't exported in Envoy's connection metrics by default, but we do want to capture those
+details when creating the network map. That way we not only have better visibility of the calling patterns,
+e.g. in the access graph, but we can also use that information to automatically capture fine-grained intents and
+use them to generate Istio authorization policies.
 :::
 
 <details>
