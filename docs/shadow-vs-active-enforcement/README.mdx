@@ -5,7 +5,7 @@ title: 'Shadow vs active enforcement'
 
 When installing Otterize, the intents operator can be [configured](/reference/configuration/intents-operator/helm-chart) to enforce access controls or not.
 
-By default, the intents operator enforces access controls by creating, updating and deleting network policies and Kafka ACLs, for example, but all enforcement can be disabled by setting `enableEnforcement` to be `false`, or more granularly setting `enableNetworkPolicyCreation` and/or `enableNetworkPolicyCreation` to be `false`.
+By default, the intents operator enforces access controls by creating, updating and deleting network policies and Kafka ACLs, for example, but all enforcement can be disabled by setting `mode` to be `defaultShadow`, or more granularly setting `enableNetworkPolicyCreation`, `enableKafkaACLCreation` and/or `enableIstioPolicyCreation` to be `false`.
 
 ## Active enforcement
 
@@ -33,6 +33,23 @@ And the Otterize network mapper, if installed in the Kubernetes cluster, still r
 So by operating in this "shadow mode", and comparing the discovered intents with the declared intents, you can predict what *would* happen if enforcement were to be active: which clients calls that are in fact happening now would be blocked or allowed, which servers are ready to have enforcement for them activated because none of their clients would get blocked, and so on.
 
 To unlock these insights, the Otterize OSS components (the intents operator, the network mapper, and the credentials operator) can be configured to connect to Otterize Cloud in order to report their configurations, the discovered intents, and the declared intents in the cluster. Within Otterize Cloud, the results are processed and displayed as an access graph:
+
+## Protected services
+
+When in shadow enforcement mode, you are able to enable per-service protection for a single service. Currently, this is only supported for network policies.
+
+To do so, create a ProtectedService resource, like so:
+```yaml
+apiVersion: k8s.otterize.com/v1alpha2
+kind: ProtectedService
+metadata:
+  name: protectedservice-resource-name
+  namespace: otterize-tutorial-npol
+spec:
+  name: server # the service name
+```
+
+This will place a default-deny network policy on the server immediately, and also create network policies to allow intentional access declared using ClientIntents.
 
 ![Otterize Cloud - access graph](/img/shadow-vs-active-enforcement/access-graph-screenshot.png)
 
