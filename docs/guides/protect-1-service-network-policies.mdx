@@ -324,10 +324,18 @@ Sure enough, the `productcatalogservice` is <span style={{color:"#238C32", fontW
 
 :::danger Section to be written:
 
-- Talk briefly about ingress and Kyverno
-- Talk briefly about CI/CD
+### How will load balancers, ingress, and other external traffic be handled?
+The intents operator automatically detects resources of kind Service (with type LoadBalancer or NodePort), or Ingress, and creates network policies to allow external traffic to relevant pods.
 
-:::
+You do not need to configure anything to get this to work. Learn more.
+
+### Working with admission webhook controllers, such as policy validators like Kyverno
+Since you are not placing a global default-deny policy that would affect controllers in your cluster, Otterize will not affect them and they will continue functioning as before.
+
+### Working with Otterize in CI/CD
+We recommend placing the ClientIntents and ProtectedService resources alongside the services that own them in your Git repositories:
+- ProtectedService alongside the servers, in the Helm chart belonging to the server, or similar
+- ClientIntents alongside the clients, in the Helm chart belonging to the client, or similar
 
 ## In summary
 
