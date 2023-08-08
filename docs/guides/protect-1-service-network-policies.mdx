@@ -322,12 +322,10 @@ Sure enough, the `productcatalogservice` is <span style={{color:"#238C32", fontW
 
 ## Ready for production
 
-:::danger Section to be written:
-
 ### How will load balancers, ingress, and other external traffic be handled?
 The intents operator automatically detects resources of kind Service (with type LoadBalancer or NodePort), or Ingress, and creates network policies to allow external traffic to relevant pods.
 
-You do not need to configure anything to get this to work. Learn more.
+You do not need to configure anything to get this to work. [Learn more.](/reference/configuration/intents-operator#handling-external-traffic)
 
 ### Working with admission webhook controllers, such as policy validators like Kyverno
 Since you are not placing a global default-deny policy that would affect controllers in your cluster, Otterize will not affect them and they will continue functioning as before.
