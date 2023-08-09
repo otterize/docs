@@ -11,7 +11,7 @@ import TabItem from '@theme/TabItem';
 Otterize enables intent-based access control (IBAC).
 In this guide, we'll roll out IBAC gradually, protecting just one service, and taking it all the way to production. We'll show how this can be done quickly, safely, and reproducibly:
 
-- **Choose one service to protect** and prepare to protect it. Until then, you'll run in "shadow mode": no network policies will actually be created against this server.
+- **Choose one service to protect**. Until you ensure its intended clients will have access, you'll run in "shadow mode": no network policies will actually be created against this server.
 - **Declare all its clients' intents** to call it &mdash; which may be done automatically using the network mapper. See that it would now allow those clients if protection (using network policies) were turned on.
 - **Turn on protection** for this one service: it is now secure against unintended access.
 - **Take it to production** by understanding how this would also not break other production-relevant access such as ingress and policy management (e.g. Kyverno), and by putting this into your CI/CD process.
@@ -132,10 +132,10 @@ The graph shows services (nodes) connected by arrows (edges) indicating that one
 
 In fact the graph shows a lot of interesting insights, such as:
 - For each **service** you can see its namespace and environment. You can also see its state as a server and as a client, if applicable.
-  - As a server, you'll see whether it's protected against unauthorized access:
+  - As a **server**, you'll see whether it's **protected** against unauthorized access:
     - <span style={{color:"#F3AF3D", fontWeight:"bold"}}>unprotected</span>;
     - <span style={{color:"#238C32", fontWeight:"bold"}}>protected</span>.
-  - As a client, you'll see whether it's allowed to call its servers:
+  - As a **client**, you'll see whether it's **allowed** to call its servers:
     - <span style={{color:"#F3AF3D", fontWeight:"bold"}}>would be blocked</span> from making some of its calls if the corresponding servers were protected;
     - <span style={{color:"#238C32", fontWeight:"bold"}}>allowed</span> to make all its calls even when all its servers are protected; or
     - <span style={{color:"#E9615C", fontWeight:"bold"}}>blocked</span> now from making some of its calls.
@@ -183,13 +183,13 @@ Go ahead and close the `productcatalogservice` details. It's time to declare its
 
 The access graph shows three services calling the `productcatalogservice`: `frontend`, `recommendationservice`, and `checkoutservice`. The access graph shows an arrow between a client and a server if the network mapper discovered calls were happening ("discovered intent"), or if the client explicitly declared an intent to call the server, or both.
 
-Click, for example, on the dashed green arrow from `frontend` &rarr; `productcatalogservice`:
+Click, for example, on the yellow arrow from `frontend` &rarr; `productcatalogservice`:
 
 <img src="/img/guides/protect-1-service-network-policies/frontend-calls-productcatalogservice-no-intents.png" alt="Clicked on frontend to productcatalogservice" width="600"/>
 
 We see that:
 - There is a discovered intent, but without a corresponding declared intent.
-- Access would therefore be blocked, once the `productcatalogservice` server was protected.
+- Access would therefore be blocked, once the `productcatalogservice` server is protected.
 
 </details>
 
@@ -205,7 +205,7 @@ But you don't actually have to look at the graph, nor know in advance the way th
 :::tip
 It's likely you'll want the client devs who own the `frontend`, `recommendationservice`, and `checkoutservice` to eventually own those intent declarations, evolve them with their client code as their clients' needs change, review and approve them when they do, etc. They can then serve themselves, and make sure they can access the servers they need, while those servers remain protected.
 
-But if you're just getting started with IBAC, and want to first see it in production before getting client devs involved, you can just auto-generate the needed client intents. In fact, you don't need to know in advance which clients call the server: the network mapper will tell you all you need.
+But if you're just getting started with IBAC, and want to first see it in production before getting client devs involved, you can just auto-generate the needed client intents. In fact, you don't need to know in advance which clients call the server: the network mapper will tell you all you need. Just make sure there is representative traffic (load) in your cluster so that the network mapper will see all the expected call patterns.
 :::
 
 Let's ask the network mapper to export all the client intents it discovered for the clients of `productcatalogservice`:
