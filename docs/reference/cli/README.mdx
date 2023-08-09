@@ -147,13 +147,13 @@ as YAML [client intents file(s)](/reference/intents-and-intents-files/#intents-f
 
 | Name                   | Default       | Description                                                                                                                                                                 |
 |------------------------|---------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `--format`             | `yaml`        | Specifies the format for the export: "yaml" or "json".                                                                                                                      |
+| `--format`             | `yaml`        | Specifies the format for the export: either `yaml` or `json`.                                                                                                                      |
 | `-n` or `--namespaces` |               | Export only clients in these namespaces (comma-separated).                                                                                                                  |
 | `-o` or `--output`     | `STDOUT`      | Filename or directory for redirecting the output.                                                                                                                           |
 | `--output-type`        | `single-file` | Whether the output should be written as a single file (`single-file`) or as multiple files in a directory (`dir`). Requires the `-o` or `--output` to point to a directory. |
-| `--server `             |               | Export only intents that call this server. Specify the full service name, such as `servername.namespace`                                                                                                                                   |
-| `--exclude-labels`     |               | A list of labels that would exclude services from list/export. example: "include=false"                                                                                     |
-| `--exclude-services`   |               | A list of service to exclude from list/export. example: "service1,service2"                                                                                                 |
+| `--server`             |               | Export only intents for clients that call this server. The server name must be specified with both service name and namespace, in the format `<SERVERNAME>.<SERVER_NAMESPACE>`. Example: `cartservice.otterize-ecom-demo`.                                                       |
+| `--exclude-labels`     |               | A list of labels that would exclude services from list/export. Example: `include=false` would exclude any service labeled with `include=false` from being included in list/export. |
+| `--exclude-services`   |               | A list of services to exclude from list/export. Example: `service1,service2`.                                                                                                |
 
 #### Returns
 
