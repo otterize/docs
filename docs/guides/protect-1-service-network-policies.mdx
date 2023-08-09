@@ -128,23 +128,22 @@ And when you go back to the [access graph](https://app.otterize.com/access-graph
 
 ![Access graph - network map](/img/guides/protect-1-service-network-policies/network-map.png)
 
-Each service is shown as a node in the access graph, while the lines with arrows (edges, in graph-speak) connecting the services show actual access between them, as discovered by the network mapper.
+The graph shows services (nodes) connected by arrows (edges) indicating that one service (acting as a client) called another service (acting as a server). The arrows may be due to calls discovered by the network mapper, or to declared client intents YAMLs, or both.
 
 In fact the graph shows a lot of interesting insights, such as:
 - For each **service** you can see its namespace and environment. You can also see its state as a server and as a client, if applicable.
-  - As a server, you'll see whether it's protected against unauthorized access and whether it's blocking authorized clients:
+  - As a server, you'll see whether it's protected against unauthorized access:
     - <span style={{color:"#F3AF3D", fontWeight:"bold"}}>unprotected</span>;
-    - <span style={{color:"#238C32", fontWeight:"bold"}}>protected and allowing authorized clients</span>; or
-    - <span style={{color:"#E9615C", fontWeight:"bold"}}>protected but blocking authorized clients</span>.
+    - <span style={{color:"#238C32", fontWeight:"bold"}}>protected</span>.
   - As a client, you'll see whether it's allowed to call its servers:
     - <span style={{color:"#F3AF3D", fontWeight:"bold"}}>would be blocked</span> from making some of its calls if the corresponding servers were protected;
     - <span style={{color:"#238C32", fontWeight:"bold"}}>allowed</span> to make all its calls even when all its servers are protected; or
-    - <span style={{color:"#E9615C", fontWeight:"bold"}}>blocked</span> from making some of its calls.
-- An **arrow** (&rarr;) indicates an intent by a client to call a server. It's derived from any **discovered intent** &mdash; a call discovered by the network mapper &mdash; and any **declared intent** that the client declared in its `ClientIntents` YAML.
+    - <span style={{color:"#E9615C", fontWeight:"bold"}}>blocked</span> now from making some of its calls.
+- An **arrow** (&rarr;) indicates an intent by a client to call a server. It's derived from any **discovered intent** &mdash; a call discovered by the network mapper &mdash; and any explicitly **declared intent** that the client declared in its `ClientIntents` YAML.
   - Its color indicates the blocking status of calls from that client to that server:
     - <span style={{color:"#F3AF3D", fontWeight:"bold"}}>would be blocked</span> if the server were protected;
     - <span style={{color:"#238C32", fontWeight:"bold"}}>allowed</span> even when the server is protected; or
-    - <span style={{color:"#E9615C", fontWeight:"bold"}}>blocked</span>.
+    - <span style={{color:"#E9615C", fontWeight:"bold"}}>blocked</span> right now.
 
 For our demo, the services and the arrows are all <span style={{color:"#F3AF3D", fontWeight:"bold"}}>yellow</span> because the servers aren't (yet) protected, and because we haven't declared any intents so calls would be blocked if the servers were protected.
 
@@ -173,16 +172,16 @@ Click on the `productcatalogservice` to show more details about it:
 <img src="/img/guides/protect-1-service-network-policies/productcatalogservice-no-intents.png" alt="Clicked on productcatalogservice" width="600"/>
 
 We can see that:
-- As a server, it's currently unprotected (specifically, by network policies); that's expected, as we haven't yet turned on protection.
-- It would block its clients if it were protected (because there would be no network policies allowing their access).
-- To authorize its clients' access, we're told to declare their intents (which would generate those network policies &mdash; this is what IBAC means, after all).
+- As a server, it's currently **unprotected** (specifically, by network policies); that's expected, as we haven't yet turned on protection.
+- It **would block its clients if it were protected** (because there would be no network policies allowing their access).
+- To authorize its clients' access, we're told to **declare their intents** (which would generate those network policies &mdash; this is what IBAC means, after all).
 
 Go ahead and close the `productcatalogservice` details. It's time to declare its clients' intents.
 
 <details>
 <summary><b>Optional: Understanding intents from the access graph</b></summary>
 
-The access graph shows three services calling the `productcatalogservice`: `frontend`, `recommendationservice`, and `checkoutservice`. The access graph shows an arrow between a client and a server if the network mapper discovered a call attempted ("discovered intent"), or if the client declared an intent to call the server, or both.
+The access graph shows three services calling the `productcatalogservice`: `frontend`, `recommendationservice`, and `checkoutservice`. The access graph shows an arrow between a client and a server if the network mapper discovered calls were happening ("discovered intent"), or if the client explicitly declared an intent to call the server, or both.
 
 Click, for example, on the dashed green arrow from `frontend` &rarr; `productcatalogservice`:
 
@@ -209,7 +208,7 @@ It's likely you'll want the client devs who own the `frontend`, `recommendations
 But if you're just getting started with IBAC, and want to first see it in production before getting client devs involved, you can just auto-generate the needed client intents. In fact, you don't need to know in advance which clients call the server: the network mapper will tell you all you need.
 :::
 
-Let's ask the network mapper to export all the client intents it discovered that are incoming to the `productcatalogservice`:
+Let's ask the network mapper to export all the client intents it discovered for the clients of `productcatalogservice`:
 
 ```bash
 otterize network-mapper export --server productcatalogservice.otterize-ecom-demo
@@ -217,6 +216,23 @@ otterize network-mapper export --server productcatalogservice.otterize-ecom-demo
 
 Here's the output:
 ```yaml
+apiVersion: k8s.otterize.com/v1alpha2
+kind: ClientIntents
+metadata:
+  name: checkoutservice
+  namespace: otterize-ecom-demo
+spec:
+  service:
+    name: checkoutservice
+  calls:
+    - name: cartservice
+    - name: currencyservice
+    - name: emailservice
+    - name: kafka
+    - name: paymentservice
+    - name: productcatalogservice
+    - name: shippingservice
+---
 apiVersion: k8s.otterize.com/v1alpha2
 kind: ClientIntents
 metadata:
@@ -244,23 +260,6 @@ spec:
     name: recommendationservice
   calls:
     - name: productcatalogservice
----
-apiVersion: k8s.otterize.com/v1alpha2
-kind: ClientIntents
-metadata:
-  name: checkoutservice
-  namespace: otterize-ecom-demo
-spec:
-  service:
-    name: checkoutservice
-  calls:
-    - name: cartservice
-    - name: currencyservice
-    - name: emailservice
-    - name: kafka
-    - name: paymentservice
-    - name: productcatalogservice
-    - name: shippingservice
 ```
 
 These are indeed the 3 clients of the `productcatalogservice`.
@@ -278,7 +277,7 @@ otterize network-mapper export --server productcatalogservice.otterize-ecom-demo
 | kubectl apply -f -
 ```
 
-If we now look at the access graph, lo and behold: the lines and arrows from all 3 clients to `productcatalogservice` are now **solid** green: all the necessary intents have been declared.
+If we now look at the access graph, lo and behold: the lines and arrows from all 3 clients to `productcatalogservice` are now **solid** green: all the necessary intents have been declared. (And a lot of other lines are now green too, since these clients also call many other servers; these other servers may soon be ready to protect too.)
 
 ![3 intents declared](/img/guides/protect-1-service-network-policies/3-intents-unprotected.png)
 
@@ -296,7 +295,7 @@ The server is still <span style={{color:"#F3AF3D", fontWeight:"bold"}}>yellow</s
 
 Now that we've verified no intended clients would be blocked, we can safely protect the server.
 
-To do so, recall that we configured Otterize OSS to be in the `defaultShadow` mode: by default, it's in shadow mode for all services, not actually managing network policies for them. To protect a service is a simple matter of applying a `ProtectedService` YAML for it:
+To do so, recall that we configured Otterize OSS to be in the `defaultShadow` mode: by default, it's in shadow mode for all services, not actually managing network policies for them. To protect a service is a simple matter of applying a `ProtectedService` YAML for it, overriding the default for it:
 
 ```yaml
 {@include: ../../static/code-examples/guides/protect-1-service-network-policies/protect-productcatalogservice.yaml}
@@ -316,30 +315,30 @@ Let's look again at the access graph to see what happened in the cluster:
 
 ![3 intents declared and server protected](/img/guides/protect-1-service-network-policies/3-intents-protected.png)
 
-Sure enough, the `productcatalogservice` is <span style={{color:"#238C32", fontWeight:"bold"}}>green</span>: it's **protected against unauthorized access**, and **allowing authorized clients**. Clicking on it confirms this:
+Sure enough, the `productcatalogservice` is <span style={{color:"#238C32", fontWeight:"bold"}}>green</span>: it's **protected against unauthorized access**, and **allowing authorized clients** since its clients' arrows are green. Clicking on it confirms this:
 
 <img src="/img/guides/protect-1-service-network-policies/productcatalogservice-with-intents-protected.png" alt="Clicked on productcatalogservice" width="600"/>
 
 ## Ready for production
 
-### How will load balancers, ingress, and other external traffic be handled?
-The intents operator automatically detects resources of kind Service (with type LoadBalancer or NodePort), or Ingress, and creates network policies to allow external traffic to relevant pods.
+### Will load balancers, ingress, and other external traffic be affected?
+The intents operator automatically detects resources of kind `Service` (with type `LoadBalancer` or `NodePort`), or of kind `Ingress`, and creates network policies to allow external traffic to relevant pods.
 
-You do not need to configure anything to get this to work. [Learn more.](/reference/configuration/intents-operator#handling-external-traffic)
+You do not need to configure anything to get this to work. [Learn more here.](/reference/configuration/intents-operator#handling-external-traffic)
 
-### Working with admission webhook controllers, such as policy validators like Kyverno
-Since you are not placing a global default-deny policy that would affect controllers in your cluster, Otterize will not affect them and they will continue functioning as before.
+### Will admission webhook controllers, e.g. policy validators like Kyverno, be affected?
+Since you are not placing a global default-deny policy that would affect controllers in your cluster, only default-deny network policies on individual pods, Otterize will not affect calls to admission webhook controllers and they will continue functioning as before.
 
 ### Working with Otterize in CI/CD
-We recommend placing the ClientIntents and ProtectedService resources alongside the services that own them in your Git repositories:
-- ProtectedService alongside the servers, in the Helm chart belonging to the server, or similar
-- ClientIntents alongside the clients, in the Helm chart belonging to the client, or similar
+We recommend placing the `ClientIntents` and `ProtectedService` resource YAMLs alongside the services that own them, in their respective Git repositories:
+- The `ProtectedService` YAMLs alongside the servers they are protecting, e.g. in the Helm chart belonging to the server.
+- `ClientIntents` YAMLs, whether they were generated from the network mapper or created and maintained by the client developer teams, alongside each client, e.g. in the Helm chart belonging to the client.
 
 ## In summary
 
 So what have we learned? You can gradually roll out IBAC and drive towards zero trust, service by service, in a safe, predictable, and quick way, by following 4 simple steps:
 
-1. Choose a service to protect, say `NAME>.<NAMESPACE>`.
+1. Choose a service to protect, say `<NAME>.<NAMESPACE>`.
 2. Export its client's intents: `otterize network-mapper export --server <NAME>.<NAMESPACE> > protect-<NAME>.yaml`.
 3. Declare those intents: `kubectl apply -f protect-<NAME>.yaml`.
 4. Now protect that server by `kubectl apply -f` with the following YAML:
@@ -353,10 +352,7 @@ spec:
   name: <NAME>
 ```
 
-Lather, rinse repeat, with the access graph providing visibility at each step of the way.
-
-## What's next
-- Learn how to [manage secure access for Kafka](/quick-visual-tutorials/visual-ibac-kafka-k8s) using the demo lab tutorial.
+Lather, rinse repeat, protecting service after service as you grow more comfortable, with the access graph providing visibility at each step of the way.
 
 ## Teardown
 
