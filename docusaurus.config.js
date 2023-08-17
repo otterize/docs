@@ -31,8 +31,21 @@ const config = {
     { src: "/pixels.js", async: true },
   ],
   plugins: [
+    ['@docusaurus/plugin-client-redirects',
+    {
+      redirects: [
+        {
+          from: '/getting-started/oss-installation',
+          to: '/installation',
+        },
+        // Redirect from multiple old paths to the new path
+        // {
+        //   to: '/docs/newDoc2',
+        //   from: ['/docs/oldDocFrom2019', '/docs/legacyDocFrom2016'],
+        // },
+      ],
+    }],
     ["docusaurus-plugin-includes", {}],
-    ["docusaurus-plugin-hotjar", {}],
     [
       "@docusaurus/plugin-google-gtag",
       {

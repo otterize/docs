@@ -2,7 +2,7 @@
    helm repo add otterize https://helm.otterize.com
    helm repo update
    helm install otterize otterize/otterize-kubernetes -n otterize-system --create-namespace \
-   --set intentsOperator.operator.enableEnforcement=false
+   --set intentsOperator.operator.mode=defaultShadow
    ```
 
 

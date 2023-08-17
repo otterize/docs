@@ -269,13 +269,13 @@ They may not even be callable. But if they are callable but are not being called
 </details>
 
 ## Enable enforcement
-With the confidence we gained, let's enable enforcement (via network policies) by upgrading your Otterize installation to remove the `intentsOperator.operator.enableEnforcement=false` flag.
+With the confidence we gained, let's enable enforcement (via network policies) by upgrading your Otterize installation and setting the Helm chart flag `intentsOperator.operator.mode=defaultActive`.
 
 At the top of the access graph, click the **Configure cluster** button; or in the clusters page, clicking on the **Connection guide &rarr;** link for your cluster.
 
 Then run the Helm commands shown there, and specifically follow the instructions to install Otterize <b>with enforcement on</b> (not in shadow mode). Namely, <b>omit</b> the following flag in the Helm command:
 
-`--set intentsOperator.operator.enableEnforcement=false`
+`--set intentsOperator.operator.mode=defaultShadow`
 
 Let's look at the access graph again:
 
