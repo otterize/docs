@@ -69,7 +69,7 @@ In the chart we will configure Kafka to:
 - Use TLS (Kafka calls it SSL) for its listeners;
 - Tell the Otterize credentials operator, via pod annotations, how credentials should be created;
 - Authenticate clients using mTLS credentials provided as a Kubernetes secret; and
-- Allow access to any topic by default unless denied by an ACL.
+- Allow access to any topic by default unless denied by an ACL (achieved using `allowEveryoneIfNoAclFound: true`).
 
 <details>
 <summary>Expand to see the Helm values.yaml used with the Bitnami chart</summary>
@@ -313,38 +313,6 @@ kubectl logs -f --tail 1 -n otterize-tutorial-kafka-mtls deploy/client-authentic
 
 </details>
 
-## Require authentication
-
-This is our first step in protecting our Kafka service. Since we have configured the client processes to generate and mount an mTLS certificate we can safely turn on the `clientIdentityRequired: true` flag in our `kafkaserverconfig.yaml` file.
-
-<details>
-<summary>Turn on tLS authentication</summary>
-
-<Tabs>
-
-<TabItem value="kafkaserverconfig-auth.yaml" label="kafkaserverconfig-auth.yaml" default>
-
-```yaml
-{@include: ../../static/code-examples/kafka-mtls/kafkaserverconfig-auth.yaml}
-```
-
-</TabItem>
-</Tabs>
-
-</details>
-
-We've provided you with a `kafkaserverconfig.yaml` file with the `clientIdentityRequired` flag enabled, so you can apply that now:
-
-```bash
-kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/kafkaserverconfig-auth.yaml
-```
-
-If you go back to your access graph and click on your Kafka broker you can see that authorization is now required.
-
-![Kafka Authorization required](../../static/img/quick-tutorials/k8s-kafka-mtls/kafka-identity-required.png)
-
-Now it's time to start truly securing it with intents.
-
 ## Apply intents
 1. The client declares its intent to call the `kafka.kafka` server with this `intents.yaml` file:
 
@@ -426,37 +394,16 @@ Also, the access graph shows information about the mTLS certificates (credential
 
 At this point, we haven't actually protected our Kafka broker. From everything we've done so far, we can see, however, that if we were to turn on protection, the `client-other` and `client-authenticated` would lose access to the broker.
 
-Let's see that in action. This only requires a single change to our helm chart's `values.yaml` file to set `allowEveryoneIfNoAclFound: false` which will set a `DEFAULT: deny` ACL. Our clients that have not declared intents will be blocked from accessing the broker.
+Let's see that in action. Our clients that have not declared intents will be blocked from accessing the broker.
 
-<details>
-<summary>See the changed values.yaml file</summary>
 
-<Tabs>
-
-<TabItem value="values-protect.yaml" label="values-protect.yaml">
-
-```yaml
-{@include: ../../static/code-examples/kafka-mtls/helm/values-protect.yaml}
-```
-
-</TabItem>
-</Tabs>
-</details>
-
-If we apply this new configuration, we should see the `client-other` denied access.
-
-```bash
-helm upgrade --install -n kafka \
-   -f https://docs.otterize.com/code-examples/kafka-mtls/helm/values-protect.yaml kafka bitnami/kafka --version 21.4.4
-```
-
-Finally we need to turn enforcement on in our cluster by updating our Otterize helm configuration.
+We need to turn enforcement on in our cluster by updating our Otterize helm configuration.
 
 ```bash
 helm upgrade --install otterize otterize/otterize-kubernetes -n otterize-system --create-namespace \
     --set global.otterizeCloud.credentials.clientId=<your_id> \
     --set global.otterizeCloud.credentials.clientSecret=<your_secret> \
-    --set intentsOperator.operator.enableEnforcement=true \
+    --set intentsOperator.operator.mode=defaultActive \
     --set global.otterizeCloud.useCloudToGenerateTLSCredentials=true \
     --set networkMapper.kafkawatcher.enable=true \
     --set networkMapper.kafkawatcher.kafkaServers={"kafka-0.kafka"}
