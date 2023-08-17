@@ -14,9 +14,9 @@ spec:
   topics:
     - topic: "transactions"
       pattern: literal
-      clientIdentityRequired: false
-      intentsRequired: false
+      clientIdentityRequired: true
+      intentsRequired: true
     - topic: "mytopic"
       pattern: literal
-      clientIdentityRequired: false
-      intentsRequired: false
+      clientIdentityRequired: true
+      intentsRequired: true
