@@ -94,8 +94,7 @@ The following command will deploy a Kafka broker with this chart:
 
 Let's add a few services that will access our Kafka server, and see how the network mapper builds the access map:
 - One service named "**client**".
-- One service named "**client-other**".
-- And one service named "**client-authenticated**".
+- One service named "**client-2**".
 
 To deploy these services, use:
 ```shell
@@ -110,41 +109,36 @@ otterize network-mapper list -n otterize-tutorial-kafka-mapping
 
 We expect to see:
 - `client` consuming from `mytopic`.
-- `client-authenticated` producing to `transactions`.
-- `client-other` producing to `mytopic`.
+- `client-2` producing to `mytopic`.
 
 And indeed:
 ```shell
 client in namespace otterize-tutorial-kafka-mapping calls:
   - kafka in namespace kafka
-    - Kafka topic: mytopic, operations: [consume]
-client-authenticated in namespace otterize-tutorial-kafka-mapping calls:
+    - Kafka topic: transactions, operations: [describe]
+    - Kafka topic: mytopic, operations: [describe consume]
+client-2 in namespace otterize-tutorial-kafka-mapping calls:
   - kafka in namespace kafka
-    - Kafka topic: transactions, operations: [produce]
-client-other in namespace otterize-tutorial-kafka-mapping calls:
-  - kafka in namespace kafka
-    - Kafka topic: mytopic, operations: [produce]
+    - Kafka topic: transactions, operations: [describe]
+    - Kafka topic: mytopic, operations: [produce describe]
 ```
 
 If you've attached Otterize OSS to Otterize Cloud, go back to see the [access graph in your browser](https://app.otterize.com).
+**To only see Kafka information**, make sure to de-select the 'Use in access graph' settings for network policies and Istio policies, and leave Kafka ACLs selected, like so:
+![Access graph settings](/img/quick-tutorials/kafka-mapping/settings.png)
 
 ![Access graph](/img/quick-tutorials/kafka-mapping/discovered.png)
+Only the arrows between the clients and the Kafka are green, because we've selected Kafka ACLs for access graph. The other arrows were detected through network mapping, but since there's no Kafka mapping for those arrows, they are grayed out.
 
 Clicking on a specific arrow between a client and the broker reveals which topic and operations are being accessed.
-
-Now click on the Kafka broker itself, and click at the bottom of it to focus on it and show its details:
-
-:::danger
-Evya to add screenshot of the details
-:::
-
-We can see `client`, `client-other` and `client-authenticated`, and how each accesses this Kafka broker.
-
 
 ## What did we accomplish?
 Enabling the Kafka watcher component of the network mapper shows which clients connect to running Kafka servers, the topics they access, and the operations they undertake on those topics.
 
-The information is interesting for various purposes, including running Otterize in "shadow mode" to see what would happen in "enforcement mode" before actually turning on enforcement, and auto-generating client intents to bootstrap rolling out IBAC.
+You can consume this information in various ways:
+* Visually via the access graph, where shadow mode shows you what would in enforcement mode before actually turning on enforcement, and auto-generating client intents to bootstrap rolling out IBAC.
+* [Via the CLI](/reference/cli): from the network mapper directly or the cloud.
+* [Via the API](https://app.otterize.com/api/rest/v1beta).
 
 
 ## What's next

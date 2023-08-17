@@ -24,24 +24,6 @@ data:
         testTopicName = "mytopic"
     )
 
-    func send_messages(producer sarama.SyncProducer) {
-        i := 1
-        for {
-          msg := fmt.Sprintf("Message %d [sent by client]", i)
-          _, _, err := producer.SendMessage(&sarama.ProducerMessage{
-              Topic:     testTopicName,
-              Partition: -1,
-              Value:     sarama.StringEncoder(msg),
-          })
-          if err != nil {
-              return
-          }
-          fmt.Printf("Sent message - %s\n", msg)
-          time.Sleep(5 * time.Second)
-          i++
-        }
-    }
-
     func loop_kafka() error {
         addrs := []string{kafkaAddr}
 
@@ -60,18 +42,12 @@ data:
         config.Consumer.MaxWaitTime = 5 * time.Second
         config.Producer.Return.Errors = true
         config.Consumer.Return.Errors = true
-        config.Consumer.StartingOffset = sarama.OffsetOldest
-        producer, err := sarama.NewSyncProducerFromClient(client)
-        if err != nil {
-            return err
-        }
+        config.Consumer.Offsets.Initial = sarama.OffsetOldest
 
         consumer, err := sarama.NewConsumerFromClient(client)
         if err != nil {
             return err
         }
-        fmt.Println("Sending messages")
-        go send_messages(producer)
 
         partConsumer, err := consumer.ConsumePartition(testTopicName, 0, 0)
         if err != nil {
@@ -159,13 +135,44 @@ spec:
         - name: ephemeral
           emptyDir: { }
 ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client-2
+  namespace: otterize-tutorial-kafka-mapping
+spec:
+  selector:
+    matchLabels:
+      app: client-2
+  template:
+    metadata:
+      labels:
+        app: client-2
+    spec:
+      containers:
+        - name: client-2
+          image: golang
+          command: [ "/bin/sh", "-c", "--" ]
+          args: [ "while true; do cd /app; cp src/* .; go get main; go run .; sleep infinity; done" ]
+          volumeMounts:
+            - name: ephemeral
+              mountPath: /app
+            - mountPath: /app/src
+              name: client-2-go
+      volumes:
+        - name: client-2-go
+          configMap:
+            name: client-2-go
+        - name: ephemeral
+          emptyDir: { }
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: client-other-go
+  name: client-2-go
   namespace: otterize-tutorial-kafka-mapping
 data:
-  client-other.go: |
+  client-2.go: |
     package main
 
     import (
@@ -180,171 +187,6 @@ data:
         testTopicName = "mytopic"
     )
 
-    func loop_kafka() error {
-        addrs := []string{kafkaAddr}
-
-        config := sarama.NewConfig()
-        fmt.Println("Connecting to Kafka")
-        config.Net.DialTimeout = 5 * time.Second
-        config.Net.ReadTimeout = 5 * time.Second
-        config.Net.WriteTimeout = 5 * time.Second
-        client, err := sarama.NewClient(addrs, config)
-        if err != nil {
-            return err
-        }
-        fmt.Println("Creating a producer for -", testTopicName)
-        config.Producer.Return.Successes = true
-        config.Producer.Timeout = 5 * time.Second
-        config.Producer.Return.Errors = true
-        producer, err := sarama.NewSyncProducerFromClient(client)
-        if err != nil {
-            return err
-        }
-
-        fmt.Println("Sending messages")
-        i := 1
-        for {
-          msg := fmt.Sprintf("Message %d [sent by client-other]", i)
-          _, _, err = producer.SendMessage(&sarama.ProducerMessage{
-              Topic:     testTopicName,
-              Partition: -1,
-              Value:     sarama.StringEncoder(msg),
-          })
-          if err != nil {
-              return err
-          }
-          fmt.Printf("Sent message - %s\n", msg)
-          time.Sleep(5 * time.Second)
-          i++
-        }
-        return nil
-    }
-
-    func main() {
-        for {
-            err := loop_kafka()
-            logrus.WithError(err).Println()
-            fmt.Println("Loop exited")
-            time.Sleep(2 * time.Second)
-        }
-    }
-
-
-  go.mod: |
-    module main
-
-            go 1.18
-
-            require (
-            github.com/Shopify/sarama v1.36.0
-            github.com/sirupsen/logrus v1.9.0
-            )
-
-            require (
-            github.com/davecgh/go-spew v1.1.1 // indirect
-            github.com/eapache/go-resiliency v1.3.0 // indirect
-            github.com/eapache/go-xerial-snappy v0.0.0-20180814174437-776d5712da21 // indirect
-            github.com/eapache/queue v1.1.0 // indirect
-            github.com/golang/snappy v0.0.4 // indirect
-            github.com/hashicorp/errwrap v1.0.0 // indirect
-            github.com/hashicorp/go-multierror v1.1.1 // indirect
-            github.com/hashicorp/go-uuid v1.0.3 // indirect
-            github.com/jcmturner/aescts/v2 v2.0.0 // indirect
-            github.com/jcmturner/dnsutils/v2 v2.0.0 // indirect
-            github.com/jcmturner/gofork v1.7.6 // indirect
-            github.com/jcmturner/gokrb5/v8 v8.4.3 // indirect
-            github.com/jcmturner/rpc/v2 v2.0.3 // indirect
-            github.com/klauspost/compress v1.15.9 // indirect
-            github.com/pierrec/lz4/v4 v4.1.15 // indirect
-            github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
-            golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa // indirect
-            golang.org/x/net v0.0.0-20220809184613-07c6da5e1ced // indirect
-            golang.org/x/sys v0.0.0-20220728004956-3c1f35247d10 // indirect
-            )
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: client-other
-  namespace: otterize-tutorial-kafka-mapping
-spec:
-  selector:
-    matchLabels:
-      app: client-other
-  template:
-    metadata:
-      labels:
-        app: client-other
-    spec:
-      containers:
-        - name: client-other
-          image: golang
-          command: [ "/bin/sh", "-c", "--" ]
-          args: [ "while true; do cd /app; cp src/* .; go get main; go run .; sleep infinity; done" ]
-          volumeMounts:
-            - name: ephemeral
-              mountPath: /app
-            - mountPath: /app/src
-              name: client-other-go
-      volumes:
-        - name: client-other-go
-          configMap:
-            name: client-other-go
-        - name: ephemeral
-          emptyDir: { }
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: client-authenticated
-  namespace: otterize-tutorial-kafka-mapping
-spec:
-  selector:
-    matchLabels:
-      app: client-authenticated
-  template:
-    metadata:
-      labels:
-        app: client-authenticated
-    spec:
-      containers:
-        - name: client-authenticated
-          image: golang
-          command: [ "/bin/sh", "-c", "--" ]
-          args: [ "while true; do cd /app; cp src/* .; go get main; go run .; sleep infinity; done" ]
-          volumeMounts:
-            - name: ephemeral
-              mountPath: /app
-            - mountPath: /app/src
-              name: client-authenticated-go
-      volumes:
-        - name: client-authenticated-go
-          configMap:
-            name: client-authenticated-go
-        - name: ephemeral
-          emptyDir: { }
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: client-authenticated-go
-  namespace: otterize-tutorial-kafka-mapping
-data:
-  client-authenticated.go: |
-    package main
-
-    import (
-        "fmt"
-        "github.com/Shopify/sarama"
-        "github.com/sirupsen/logrus"
-        "time"
-    )
-
-    const (
-        kafkaAddr     = "kafka.kafka:9092"
-        testTopicName = "transactions"
-    )
-
 
     func loop_kafka() error {
         addrs := []string{kafkaAddr}
@@ -370,7 +212,7 @@ data:
         fmt.Println("Sending messages")
         i := 1
         for {
-          msg := fmt.Sprintf("Message %d [sent by client-authenticated]", i)
+          msg := fmt.Sprintf("Message %d [sent by client-2]", i)
           _, _, err = producer.SendMessage(&sarama.ProducerMessage{
               Topic:     testTopicName,
               Partition: -1,
