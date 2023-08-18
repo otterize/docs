@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: client
-          image: santafen/otterize-kafka-client:1.0.7
+          image: santafen/otterize-kafka-client:1.0.9
           command: [ "/bin/sh", "-c", "cd /app/client;./client" ]
           volumeMounts:
             - name: otterize-credentials
@@ -52,7 +52,7 @@ spec:
     spec:
       containers:
         - name: client-other
-          image: santafen/otterize-kafka-client:1.0.7
+          image: santafen/otterize-kafka-client:1.0.9
           command: [ "/bin/sh", "-c", "cd /app/client-other;./client-other" ]
           volumeMounts:
             - name: otterize-credentials
@@ -62,36 +62,5 @@ spec:
         - name: otterize-credentials
           secret:
             secretName: client-other-credentials-secret
-        - name: ephemeral
-          emptyDir: { }
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: client-authenticated
-  namespace: otterize-tutorial-kafka-mtls
-spec:
-  selector:
-    matchLabels:
-      app: client-authenticated
-  template:
-    metadata:
-      labels:
-        app: client-authenticated
-      annotations:
-        credentials-operator.otterize.com/tls-secret-name: client-authenticated-credentials-secret
-    spec:
-      containers:
-        - name: client-authenticated
-          image: santafen/otterize-kafka-client:1.0.7
-          command: [ "/bin/sh", "-c", "cd /app/client-authenticated;./client-authenticated" ]
-          volumeMounts:
-            - name: otterize-credentials
-              mountPath: /var/otterize/credentials
-              readOnly: true
-      volumes:
-        - name: otterize-credentials
-          secret:
-            secretName: client-authenticated-credentials-secret
         - name: ephemeral
           emptyDir: { }

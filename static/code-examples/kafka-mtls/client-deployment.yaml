@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: client
-          image: santafen/otterize-kafka-client:1.0.7
+          image: santafen/otterize-kafka-client:1.0.9
           command: [ "/bin/sh", "-c", "cd /app/client;./client" ]
           volumeMounts:
             - name: otterize-credentials
