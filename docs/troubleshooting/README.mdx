@@ -7,25 +7,30 @@ import TabItem from '@theme/TabItem';
 
 The following areas provide tips for troubleshooting specific areas of Otterize usage.
 
-## Connecting Otterize OSS in a Kubernetes cluster to Otterize Cloud
+<details open>
 
-### Components remain in 'Not integrated' status or become 'Disconnected'
+<summary><h2>Connecting Otterize OSS in a Kubernetes cluster to Otterize Cloud</h2></summary>
+
+### Problem: components remain in 'Not integrated' status or become 'Disconnected'
 
 ![Components not integrated](/img/troubleshooting/not-integrated.png)
 
-#### Check that all your Otterize pods are in 'Running' state: `kubectl get pods -n otterize-system`
-If the intents-operator, network-mapper, or credentials-operator are not running, that is why. Run `kubectl describe pod -n otterize-system <pod name>` and check the status and events to see why the pod is not starting.
+### Steps to try:
 
-#### Verify that the client ID and client secret you specified on the command line is correct
+#### 1. Check that all your Otterize pods are in 'Running' state: `kubectl get pods -n otterize-system`
+
+Check whether the intents operator, network mapper, or credentials operator are running. Use `kubectl describe pod -n otterize-system <pod name>` to check the status and events and see why those pods may not be starting.
+
+#### 2. Verify that the client id and client secret you specified on the command line is correct
 The pod may be having trouble connecting to Otterize Cloud because the credentials are incorrect.
-Make sure that the credentials specified as values to the Helm chart are correct.
-
-The Otterize Cloud connection guide provides you with a Helm command that has the correct values.
+Make sure that the Cloud credentials specified as values to the Helm chart are correct. The Otterize Cloud connection guide provides you with a Helm command that has the correct values.
 
 ![Components not integrated](/img/troubleshooting/connection-guide-cloud-instructions.png)
 
-#### Check the not connected component's logs: `kubectl logs -n otterize-system <pod name>`
+#### 3. Check the disconnected component's logs: `kubectl logs -n otterize-system <pod name>`
 The component may not be able to connect to Otterize Cloud due to connectivity issues.
 Check for connectivity errors in the relevant component's logs. All errors related to Otterize Cloud will mention Otterize Cloud explicitly.
 
-Common problems may include an egress default-deny network policy, which blocks all outgoing traffic. To solve this, make sure you exclude `otterize-system` from the namespaces the policy applies to.
+One possible problem is an egress default-deny network policy, which blocks all outgoing traffic. To solve this, make sure you exclude `otterize-system` from the namespaces to which the policy applies.
+
+</details>
