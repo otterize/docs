@@ -63,6 +63,6 @@ To deploy the network mapper, [use the Helm chart](/reference/configuration/netw
 You can override the service name the network mapper uses when it computes the service name using a pod annotation.
 
 
-| Annotation                          | Description                                     | Default                                       |
-|-------------------------------------|-------------------------------------------------|-----------------------------------------------|
-| `intents.otterize.com/service-name` | Otterize-wide override for this service's name. | See [Service identities](/reference/service-identities) |
+| Annotation                          | Description                                     |
+|-------------------------------------|-------------------------------------------------|
+| `intents.otterize.com/service-name` | Used for [service identity resolution](/reference/service-identities#kubernetes-service-identity-resolution). |

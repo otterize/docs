@@ -26,9 +26,9 @@ To learn how to use the intents operator to control access, consult the guides f
 You can override the service name the intents operator uses when it computes network policies and Kafka ACLs with a pod annotation.
 
 
-| Annotation                          | Description                                                                                                                                          | Default                                       |
-|-------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------|
-| `intents.otterize.com/service-name` | Otterize-wide override for this service's name. Used by the operator when computing a pod's service name for use in network policies and Kafka ACLs. The annotation namer can be changed to a custom annotation name when installing the operator by setting the value of `global.serviceNameOverrideAnnotationName`| See [Service identities](/reference/service-identities) |
+| Annotation                          | Description                                                                                                                                          |
+|-------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `intents.otterize.com/service-name` | Used for [service identity resolution](/reference/service-identities#kubernetes-service-identity-resolution).|
 
 ## Supported enforcement types
 
