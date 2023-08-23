@@ -76,7 +76,7 @@ Checkout the network mapper [tutorial](/quick-tutorials/k8s-network-mapper) to s
 | `global.commonLabels`            | Labels to add to all deployed objects                                                                                                       | {}      |
 | `global.podAnnotations`          | Annotations to add to all deployed pods                                                                                                     | {}      |
 | `global.podLabels`               | Labels to add to all deployed pods                                                                                                          | {}      |
-| `global.serviceNameOverrideAnnotationName` | Specify an annotation name that by setting it, one can override otterize's service name resolution.                                                                                                                                                                                                                                                                                                                                                                                                                     | `intents.otterize.com/service-name` |
+| `global.serviceNameOverrideAnnotationName` | Which annotation to use (in the [service name resolution algorithm](/reference/service-identities#kubernetes-service-identity-resolution)) for setting a pod's service name, if not the default. Use this if you already have annotations on your pods that provide the correct service name. | `intents.otterize.com/service-name` |
 
 
 ## Common parameters
