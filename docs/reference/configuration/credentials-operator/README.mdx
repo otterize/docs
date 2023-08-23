@@ -46,9 +46,6 @@ The operator consults the label `credentials-operator.otterize.com/tls-secret-na
 When using SPIRE, once the operator has registered the pod with SPIRE, which happens automatically upon startup, the pod can use the SPIRE Workload API to generate credentials for the SVID `<servicename>.<namespace>`.
 
 ### Service name resolution and automatic pod labeling
-Service name resolution is performed one of two ways:
-1. If an `intents.otterize.com/service-name` annotation is present, that name is used (`intents.otterize.com/service-name` can be changed to a custom annotation name when installing the operator by setting the value of `global.serviceNameOverrideAnnotationName`.).
-2. If not, a recursive look up is performed for the Kubernetes resource owner for a Pod until the root is reached. For example, if you have a `Deployment` named `client`, which then creates and owns a `ReplicaSet`, which then creates and owns a `Pod`, then the service name for that pod is `client` - same as the name of the `Deployment`.
-
-The value resulting from this process forms the value of the label `credentials-operator.otterize.com/service-name`.
+The operator performs service name resolution for each pod. You can read more about the resolution algorithm [here](/reference/service-identities#kubernetes-service-identity-resolution).
+The value resulting from this resolution process forms the value of the label `credentials-operator.otterize.com/service-name`.
 
