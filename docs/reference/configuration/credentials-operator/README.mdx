@@ -32,7 +32,7 @@ To learn more, check out the documentation for [SPIRE](https://spiffe.io/docs/la
 | `credentials-operator.otterize.com/truststore-file-name`               | Truststore key name in the secret. When mounted, this is the filename for the truststore. Only used when cert-type is `jks`.                                         | `truststore.jks`                                          |
 | `credentials-operator.otterize.com/jks-password`                       | Password for the JKS truststore and keystore. Only used when cert-type is `jks`.                                                                                     | `password`                                                |
 | `credentials-operator.otterize.com/restart-pod-on-certificate-renewal` | A pod with this annotation (no matter the value) will be restarted after certificate renewal, along with any replicas. Should be ideally set through the pod owner's `template` spec so it will persist between restarts. | N/A                                                   |
-| `intents.otterize.com/service-name`                                 | Otterize-wide override for this service's name. Used by the operator when registering the service with SPIRE and generating credentials.                             | See [Service identities](/reference/service-identities)             |
+| `intents.otterize.com/service-name`                                 | Used for [service identity resolution](/reference/service-identities#kubernetes-service-identity-resolution).|             |
 
 ## How does the credentials operator work?
 
@@ -46,9 +46,6 @@ The operator consults the label `credentials-operator.otterize.com/tls-secret-na
 When using SPIRE, once the operator has registered the pod with SPIRE, which happens automatically upon startup, the pod can use the SPIRE Workload API to generate credentials for the SVID `<servicename>.<namespace>`.
 
 ### Service name resolution and automatic pod labeling
-Service name resolution is performed one of two ways:
-1. If an `intents.otterize.com/service-name` annotation is present, that name is used.
-2. If not, a recursive look up is performed for the Kubernetes resource owner for a Pod until the root is reached. For example, if you have a `Deployment` named `client`, which then creates and owns a `ReplicaSet`, which then creates and owns a `Pod`, then the service name for that pod is `client` - same as the name of the `Deployment`.
-
-The value resulting from this process forms the value of the label `credentials-operator.otterize.com/service-name`.
+The operator performs service name resolution for each pod. You can read more about the resolution algorithm [here](/reference/service-identities#kubernetes-service-identity-resolution).
+The value resulting from this resolution process forms the value of the label `credentials-operator.otterize.com/service-name`.
 
