@@ -56,9 +56,11 @@ To unlock these insights, the Otterize OSS components (the intents operator, the
 
 ## Protected services
 
-To override the default non-enforcing shadow mode for a service, enforcing access controls for it, and in fact protecting it with a default-deny against unauthorized access, you simply create a `ProtectedService` resource.
+When the operator is in `defaultShadow` mode, to override the default non-enforcing shadow mode for a service and enforce access controls for it, you simply create a `ProtectedService` resource.
 
-*Currently, this is only supported for network policies. Support for Kafka ACLs and Istio policies is coming shortly.*
+For network policies, this also creates a default-deny policy and protects the service.
+For Istio, no default-deny policy is created, so this just enables enforcement: Istio authorization policies are created for this service when ClientIntents resources are created.
+For Kafka, no default-deny policy or equivalent is created, so this just enables enforcement: Kafka ACLs are created when either ClientIntents or KafkaServerConfig resources are created.
 
 First, you would want to make sure all the intents of all this service's clients are declared, so Otterize enables their access while protecting the service. One easy way to do that, if you have a cluster where those clients are making their expected calls, is to build a network map with the Otterize network mapper, and export just this service's clients' intents:
 
