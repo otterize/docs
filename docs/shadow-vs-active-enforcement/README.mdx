@@ -56,7 +56,7 @@ To unlock these insights, the Otterize OSS components (the intents operator, the
 
 ## Protected services
 
-To override the default non-enforcing shadow mode for a service, when the operator is in `defaultShadow` mode, enforcing access controls for it, you simply create a `ProtectedService` resource.
+When the operator is in `defaultShadow` mode, to override the default non-enforcing shadow mode for a service and enforce access controls for it, you simply create a `ProtectedService` resource.
 
 For network policies, this also creates a default-deny policy and protects the service.
 For Istio, no default-deny policy is created, so this just enables enforcement: Istio authorization policies are created for this service when ClientIntents resources are created.
