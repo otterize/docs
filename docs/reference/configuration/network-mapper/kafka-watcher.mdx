@@ -1,133 +1,70 @@
 ---
 sidebar_position: 2
-title: Kafka Watcher
+title: Kafka watcher
 ---
 
-The Kafka Watcher is deployed in a Kubernetes environment as a sidecar container in the Kafka pod. Kafka is configured as below to generate logs from authorization decisions and write them to a volume shared with the Watcher container. The Kafka Watcher collects these logs and sends them to the network mapper.
+The Kafka watcher periodically examines logs of Kafka brokers provided by the user through configuration,
+parses them and deduces topic-level access to Kafka from pods in the Kubernetes cluster.
 
-### Install Kafka via Helm with debug logs preconfigured
-For the Bitnami Kafka Helm chart used in other Kafka tutorials, we can add the following configuration to the chart's
-`values.yaml` to start Kafka with its ACL authorizer logging to stdout at debug level:
+## Enabling debug logs for the Bitnami Kafka chart
+In order for the Kafka watcher to be able to examine topic-level access, the Kafka server's ACL authorizer logger must be configured.
 
+We do this by setting the logger for `kafka.authorizer` to DEBUG level.
+
+
+The deployment examples below include examples on how to configure the Kafka logger and Kafka watcher to work together.
+The examples are given in the form of a `values.yaml` for the [Bitnami Kafka](https://artifacthub.io/packages/helm/bitnami/kafka) chart, and work with our tutorials.
+
+## Deployment
+The Kafka watcher can be deployed in a Kubernetes environment in two modes. As a sidecar, and as an independent pod that tails Kafka broker logs using the Kubernetes API.
+
+### Deploy a sidecar container in the Kafka pod
+In this mode, Kafka is configured to generate logs from authorization decisions and write them to a volume shared with the Kafka watcher container, which is deployed as a sidecar in the same pod.
+
+The Kafka watcher collects these logs and sends them to the network mapper.
+
+#### Configure the Bitnami Kafka chart to output logs to file and the Kafka watcher as a sidecar container
 <details>
-<summary>Kafka debug logs values.yaml</summary>
+    <summary>Expand to see the Helm values.yaml used with the Bitnami chart</summary>
 
 ```yaml
-log4j: |
-  # Licensed to the Apache Software Foundation (ASF) under one or more
-  # contributor license agreements.  See the NOTICE file distributed with
-  # this work for additional information regarding copyright ownership.
-  # The ASF licenses this file to You under the Apache License, Version 2.0
-  # (the "License"); you may not use this file except in compliance with
-  # the License.  You may obtain a copy of the License at
-  #
-  #    http://www.apache.org/licenses/LICENSE-2.0
-  #
-  # Unless required by applicable law or agreed to in writing, software
-  # distributed under the License is distributed on an "AS IS" BASIS,
-  # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  # See the License for the specific language governing permissions and
-  # limitations under the License.
-
-  # Unspecified loggers and loggers with additivity=true output to server.log and stdout
-  # Note that INFO only applies to unspecified loggers, the log level of the child logger is used otherwise
-  log4j.rootLogger=INFO, stdout, kafkaAppender
-
-  log4j.appender.stdout=org.apache.log4j.ConsoleAppender
-  log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
-  log4j.appender.stdout.layout.ConversionPattern=[%d] %p %m (%c)%n
-
-  log4j.appender.kafkaAppender=org.apache.log4j.ConsoleAppender
-  log4j.appender.kafkaAppender.layout=org.apache.log4j.PatternLayout
-  log4j.appender.kafkaAppender.layout.ConversionPattern=[%d] %p %m (%c)%n
-
-  log4j.appender.stateChangeAppender=org.apache.log4j.ConsoleAppender
-  log4j.appender.stateChangeAppender.layout=org.apache.log4j.PatternLayout
-  log4j.appender.stateChangeAppender.layout.ConversionPattern=[%d] %p %m (%c)%n
-
-  log4j.appender.requestAppender=org.apache.log4j.ConsoleAppender
-  log4j.appender.requestAppender.layout=org.apache.log4j.PatternLayout
-  log4j.appender.requestAppender.layout.ConversionPattern=[%d] %p %m (%c)%n
-
-  log4j.appender.cleanerAppender=org.apache.log4j.ConsoleAppender
-  log4j.appender.cleanerAppender.layout=org.apache.log4j.PatternLayout
-  log4j.appender.cleanerAppender.layout.ConversionPattern=[%d] %p %m (%c)%n
-
-  log4j.appender.controllerAppender=org.apache.log4j.ConsoleAppender
-  log4j.appender.controllerAppender.layout=org.apache.log4j.PatternLayout
-  log4j.appender.controllerAppender.layout.ConversionPattern=[%d] %p %m (%c)%n
-
-  log4j.appender.authorizerAppender=org.apache.log4j.ConsoleAppender
-  log4j.appender.authorizerAppender.layout=org.apache.log4j.PatternLayout
-  log4j.appender.authorizerAppender.layout.ConversionPattern=[%d] %p %m (%c)%n
-
-
-  # Change the line below to adjust ZK client logging
-  log4j.logger.org.apache.zookeeper=INFO
-
-  # Change the two lines below to adjust the general broker logging level (output to server.log and stdout)
-  log4j.logger.kafka=INFO, stdout
-  log4j.logger.org.apache.kafka=INFO
-
-  # Change to DEBUG or TRACE to enable request logging
-  log4j.logger.kafka.request.logger=WARN, requestAppender
-  log4j.additivity.kafka.request.logger=false
-
-  # Uncomment the lines below and change log4j.logger.kafka.network.RequestChannel$ to TRACE for additional output
-  # related to the handling of requests
-  #log4j.logger.kafka.network.Processor=TRACE, requestAppender
-  #log4j.logger.kafka.server.KafkaApis=TRACE, requestAppender
-  #log4j.additivity.kafka.server.KafkaApis=false
-  log4j.logger.kafka.network.RequestChannel$=WARN, requestAppender
-  log4j.additivity.kafka.network.RequestChannel$=false
-
-  # Change the line below to adjust KRaft mode controller logging
-  log4j.logger.org.apache.kafka.controller=INFO, controllerAppender
-  log4j.additivity.org.apache.kafka.controller=false
-
-  # Change the line below to adjust ZK mode controller logging
-  log4j.logger.kafka.controller=TRACE, controllerAppender
-  log4j.additivity.kafka.controller=false
-
-  log4j.logger.kafka.log.LogCleaner=INFO, cleanerAppender
-  log4j.additivity.kafka.log.LogCleaner=false
-
-  log4j.logger.state.change.logger=INFO, stateChangeAppender
-  log4j.additivity.state.change.logger=false
-
-  # Access denials are logged at INFO level, change to DEBUG to also log allowed accesses
-  log4j.logger.kafka.authorizer.logger=DEBUG, authorizerAppender
-  log4j.additivity.kafka.authorizer.logger=false
+{@include: ../../../../static/code-examples/kafka-mtls/helm/values_debug_logging_k8s_watcher.yaml}
 ```
-
-Notice the `log4j.logger.kafka.authorizer.logger=DEBUG` line that sets the ACL authorizer logger to debug level.
 </details>
 
-### Configure an already running Kafka server
-Alternatively, we can also configure an already-running Kafka server and set its ACL authorizer logger level to debug.
-The Kafka server must be configured to log to stdout so the Kafka watcher could examine its logs.
 
-First, deploy an interactive Kafka client:
-```shell
-kubectl apply -f https://docs.otterize.com/code-examples/ibac-for-kafka/client-deployment-no-creds.yaml
+### Deploy as part of the Otterize deployment, tailing Kafka logs
+In this mode, an additional `kafka-watcher` pod is deployed alongside the Otterize network mapper, which uses the Kubernetes API to tail logs outputted to stdout by Kafka brokers in the cluster.
+To configure the Kafka brokers, use the `kafkawatcher.kafkaServers` value in the Helm chart.
+
+To deploy the network mapper with the Kafka watcher component:
+```bash
+helm repo add otterize https://helm.otterize.com
+helm repo update
+helm install network-mapper otterize/network-mapper -n otterize-system --create-namespace --set kafkawatcher.enableK8sWatchModeK8sWatchMode=true
 ```
-Connect to the interactive Kafka client using shell (replace the pod name with the name from your cluster):
-```shell
-kubectl exec -it -n ibac-for-kafka interactive-869fc7b89b-rgmfm -- /bin/bash
+Make sure to include `--set kafkawatcher.kafkaServers=<server list>` and provide a list of Kafka servers whose logs the Kafka watcher should watch.
+Servers in the list should be specified as `name.namespace`. For example, `--set kafkawatcher.kafkaServers=["kafka-0.kafka"]`
+
+
+#### Configure the Bitnami Kafka chart to output logs to stdout for the Kafka watcher to read them
+<details>
+<summary>Expand to see the Helm values.yaml used with the Bitnami chart</summary>
+
+```yaml
+{@include: ../../../../static/code-examples/kafka-mtls/helm/values_debug_logging_k8s_watcher.yaml}
 ```
-Once connected, use the interactive shell to configure the ACL authorizer's logging level:
-```shell
-$ cd opt/bitnami/kafka/
-# query existing logging settings. Replace "kafka.kafka:9092" with the relevant service name, namespace and port.
-$ bin/kafka-configs.sh --bootstrap-server kafka.kafka:9092 --describe --all --entity-type broker-loggers --entity-name 0  | grep authorizer
-  kafka.security.authorizer.AclAuthorizer=INFO sensitive=false synonyms={}
-  kafka.authorizer.logger=INFO sensitive=false synonyms={}
-# enable authorizer debug logging
-$ bin/kafka-configs.sh --bootstrap-server kafka.kafka:9092 --alter --add-config "kafka.authorizer.logger=DEBUG" --entity-type broker-loggers --entity-name 0
-Completed updating config for broker-logger 0.
-```
-Check out your Kafka server logs. You should now see log records indicating allow/denied connections
-from the ACL authorizer (assuming you have clients producing/consuming data from topics):
-```shell
-[2023-03-22 16:06:22,746] DEBUG operation = READ on resource = ResourcePattern(resourceType=TOPIC, name=mytopic, patternType=LITERAL) from host = 10.244.0.12 is ALLOW based on acl = User:* has ALLOW permission for operations: ALL from hosts: * (kafka.authorizer.logger)
-```
+</details>
+
+
+## Kafka watcher parameters
+| Key                                           | Description                                                                                                  | Default                        |
+|-----------------------------------------------|--------------------------------------------------------------------------------------------------------------|--------------------------------|
+| `kafkawatcher.enableK8sWatchModeK8sWatchMode` | Enable Kafka watcher deployment, which reads Kafka logs using the Kubernetes API, for pods in `kafkaServers` | `false`                        |
+| `kafkawatcher.kafkaServers`                   | Kafka servers to watch, formatted as a list of `pod.namespace`. For example, `["kafka-0.kafka"]`             | `(none)`                       |
+| `kafkawatcher.image.repository`               | Kafka watcher image repository.                                                                              | `otterize`                     |
+| `kafkawatcher.image.image`                    | Kafka watcher image.                                                                                         | `network-mapper-kafka-watcher` |
+| `kafkawatcher.image.tag`                      | Kafka watcher image tag.                                                                                     | `latest`                       |
+| `kafkawatcher.pullPolicy`                     | Kafka watcher pull policy.                                                                                   | `(none)`                       |
+| `kafkawatcher.pullSecrets`                    | Kafka watcher pull secrets.                                                                                  | `(none)`                       |
+| `kafkawatcher.resources`                      | Resources override.                                                                                          | `(none)`                       |

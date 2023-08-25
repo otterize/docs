@@ -32,6 +32,32 @@ resources:
   requests:
     cpu: 50m
     memory: 256Mi
+sidecars:
+  - name: otterize-sidecar
+    image: otterize/network-mapper-kafka-watcher:dev
+    imagePullPolicy: Never
+    volumeMounts:
+      - mountPath: /opt/otterize/kafka-watcher
+        name: kafka-authz-logs
+    env:
+      - name: OTTERIZE_MAPPER_API_URL
+        value: http://otterize-network-mapper.otterize-system.svc:9090/query
+      - name: OTTERIZE_DEBUG
+        value: "False"
+      - name: OTTERIZE_POD
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.name
+      - name: OTTERIZE_NAMESPACE
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.namespace
+extraVolumes:
+  - name: kafka-authz-logs
+    emptyDir:
+extraVolumeMounts:
+  - mountPath: /opt/otterize/kafka-watcher
+    name: kafka-authz-logs
 log4j: |
   log4j.rootLogger=INFO, stdout
 
@@ -39,10 +65,10 @@ log4j: |
   log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
   log4j.appender.stdout.layout.ConversionPattern=[%d] %p %m (%c)%n
   
-  # Write to stdout for the k8s-watcher
-  log4j.appender.authorizerAppender=org.apache.log4j.ConsoleAppender
+  log4j.appender.authorizerAppender=org.apache.log4j.FileAppender
   log4j.appender.authorizerAppender.layout=org.apache.log4j.PatternLayout
   log4j.appender.authorizerAppender.layout.ConversionPattern=[%d] %p %m (%c)%n
+  log4j.appender.authorizerAppender.file=/opt/otterize/kafka-watcher/authz.log
 
   # Access denials are logged at INFO level, change to DEBUG to also log allowed accesses
   log4j.logger.kafka.authorizer.logger=DEBUG, authorizerAppender

@@ -3,7 +3,7 @@
    helm repo update
    helm install otterize otterize/otterize-kubernetes -n otterize-system --create-namespace \
    --set intentsOperator.operator.enableNetworkPolicyCreation=false \
-   --set networkMapper.kafkawatcher.enable=true \
+   --set networkMapper.kafkawatcher.enableK8sWatchMode=true \
    --set networkMapper.kafkawatcher.kafkaServers={"kafka-0.kafka"}
    ```
 This chart is a bundle of the Otterize intents operator, Otterize credentials operator, Otterize network mapper, and SPIRE.
