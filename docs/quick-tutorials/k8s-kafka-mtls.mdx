@@ -64,7 +64,7 @@ Make sure you also include the **`--set intentsOperator.operator.enableNetworkPo
 We will deploy a Kafka broker using Bitnami's [Helm chart](https://github.com/bitnami/charts/tree/master/bitnami/kafka).
 In the chart we will configure Kafka to:
 - Recognize the Otterize intents operator as a super user so it can configure ACLs;
-- Use TLS (Kafka calls it SSL) for its listeners;
+- Use TLS/SSL for its listeners;
 - Tell the Otterize credentials operator, via pod annotations, how credentials should be created;
 - Authenticate clients using mTLS credentials provided as a Kubernetes secret; and
 - Allow access to any topic by default unless denied by an ACL (achieved using `allowEveryoneIfNoAclFound: true`).
