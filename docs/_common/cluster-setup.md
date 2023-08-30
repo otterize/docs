@@ -74,6 +74,66 @@ gcloud container clusters update CLUSTER_NAME --enable-network-policy
 </Tabs>
 </TabItem>
 <TabItem value="eks" label="AWS EKS">
+
+Starting Aug 29, 2023, [you can configure the built-in VPC CNI add-on to enable network policy support](https://aws.amazon.com/blogs/containers/amazon-vpc-cni-now-supports-kubernetes-network-policies).
+To spin up a new cluster, use the following eksctl ClusterConfig, and save it to a file called cluster.yaml.
+
+Spin up the cluster using `eksctl create cluster -f cluster.yaml`. This will spin up a cluster called `network-policy-demo` in `us-west-2`.
+
+The important bit is the configuration for the VPC CNI addon:
+
+```yaml
+    configurationValues: |-
+       # highlight-next-line
+      enableNetworkPolicy: "true"
+```
+
+```yaml
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: network-policy-demo
+  version: "1.27"
+  region: us-west-2
+
+iam:
+  withOIDC: true
+
+vpc:
+  clusterEndpoints:
+    publicAccess: true
+    privateAccess: true
+
+addons:
+  - name: vpc-cni
+    version: 1.14.0
+    attachPolicyARNs: #optional
+    - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy 
+    configurationValues: |-
+       # highlight-next-line
+      enableNetworkPolicy: "true"
+  - name: coredns
+  - name: kube-proxy
+
+managedNodeGroups:
+  - name: x86-al2-on-demand
+    amiFamily: AmazonLinux2
+    instanceTypes: [ "m6i.xlarge", "m6a.xlarge" ]
+    minSize: 0
+    desiredCapacity: 2
+    maxSize: 6
+    privateNetworking: true
+    disableIMDSv1: true
+    volumeSize: 100
+    volumeType: gp3
+    volumeEncrypted: true
+    tags:
+      team: "eks"
+```
+
+If you're not using the VPC CNI, you can set up the Calico network policy controller using the following instructions:
+
 <a href="https://docs.aws.amazon.com/eks/latest/userguide/calico.html">Visit the official documentation</a>, or follow the instructions below:
 
 1. Spin up an [EKS cluster](https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html) using the console, AWS CLI or `eksctl`.
