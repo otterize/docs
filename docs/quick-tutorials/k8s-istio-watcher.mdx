@@ -1,6 +1,6 @@
 ---
-sidebar_position: 6
-title: Istio HTTP-level access mapping
+sidebar_position: 5
+title: Istio traffic mapping
 ---
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
@@ -83,7 +83,7 @@ kubectl label namespace otterize-tutorial-istio-mapping istio-injection=enabled
 Apply this configuration in the `istio-system` namespace, propagating it to all namespaces covered by the mesh.
 
 ```
-kubectl apply -f https://docs.otterize.com/code-examples/network-mapper/istio-telemetry-enablement.yaml -n istio-system
+kubectl apply -f https://docs.otterize.com/code-examples/network-mapper/istio-telemetry-enablement.yaml
 ```
 
 ```yaml
@@ -125,11 +125,9 @@ If you've attached Otterize OSS to Otterize Cloud, you can now also see the [acc
 
 ![Access graph](/img/quick-tutorials/network-mapper/otterize-tutorial-access-graph-istio.png)
 
-Note, for example, that the `client` &rightarrow; `nginx` arrow is dashed. Clicking on it shows:
+Note, for example, that the `client` &rightarrow; `nginx` arrow is yellow. Clicking on it shows:
 
-<div style={{textAlign: 'center'}}>
-    <img src="/img/quick-tutorials/network-mapper/otterize-tutorial-access-graph-istio-insights.png" alt="Access graph insights" width="600"/>
-</div>
+<img src="/img/quick-tutorials/network-mapper/otterize-tutorial-access-graph-istio-edge-info.png" alt="Access graph edge info" />
 
 The access graph reveals several types of information and insights, such as:
 1. Seeing the network map for different clusters, seeing the subset of the map for a given namespace, or even &mdash; according to how you've mapped namespaces to environments &mdash; seeing the subset of the map for a specific environment.
