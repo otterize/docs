@@ -117,17 +117,17 @@ In the Otterize Cloud UI, your [cluster](https://app.otterize.com/clusters) shou
 
 And when you go back to the [access graph](https://app.otterize.com/access-graph) (and select your cluster from the dropdown, if needed), you should see the following map for the demo running in your cluster:
 
-![Access graph](/img/quick-tutorials/shadow-mode/phase-0.png)
+![Access graph](/img/quick-tutorials/cluster-mapping/base.png)
 
 Each service is shown as a node in the access graph, while the thick lines (edges) connecting the services show access between them, as detected by the network mapper.
 
 ### The network map of the cluster
 
-If only the network mapper were connected to the Cloud, the services would be shown without the lock icons, and the thick connecting lines would be shown in blue, because we would have no more information about what access is or would be blocked once enforcement were turned on.
+If only the network mapper were connected to the Cloud, the services would be shown as "Would be blocked", and the thick connecting lines would be shown in yellow, because we would have no more information about what access is or would be blocked once enforcement were turned on.
 
 The network mapper gives insights on which services are trying to, or actually are, calling other services, which already provides useful insights. We call these "discovered intents": the intent of the client service to call the server service is discovered by the attempt to call the server service, not by an explicit declaration.
 
-![Access graph - network mapper](/img/quick-tutorials/shadow-mode/network-mapper-only.png)
+![Access graph - network mapper](/img/quick-tutorials/cluster-mapping/network-mapper-only.png)
 
 ### Understanding access and building confidence
 
@@ -143,17 +143,15 @@ We also (as a default) told Otterize Cloud that there is a global default-deny n
 
 #### Blocking status
 
-Note that the locks themselves are green, indicating that you could now turn on enforcement without blocking any clients.
+Note that the locks themselves are yellow, indicating that you could now turn on enforcement and blocking not intented clients.
 
-Similarly, all the thick connecting lines between the services are green: none of these client calls would be blocked if enforcement were turned on. If one were red, that would tell you it would be blocked, as you might have guessed.
+Similarly, all the thick connecting lines between the services are yellow: Client calls would be blocked if enforcement were turned on. If one were red, that would tell you it is blocked, as you might have guessed.
 
-But why would these clients not be blocked if enforcement were on &mdash; doesn't that mean the services they call would not be protected? Yes, and the access graph lets you know that too.
+Click on a service, e.g. the payment service:
 
-Note the red notifications on the services. Click on a service, e.g. the payment service:
+![Access graph - clicked service](/img/quick-tutorials/cluster-mapping/would-be-blocked-unprotected.png)
 
-![Access graph - clicked service](/img/quick-tutorials/shadow-mode/would-not-block-unprotected.png)
-
-- You can see the service isn't protected now, and it's ready to turn on enforcement without blocking any clients.
+- You can see the service isn't protected now, and it's ready to turn on enforcement and blocking clients.
 - You can also see it won't be protected even after enabling enforcement &mdash; and what you need to do:
   - If you explicitly create and apply intents from the clients, they will be guaranteed access, but also the server will be protected from any undeclared access.
 - So why do you need to declare intents to *protect* services as well as to *enable* clients?
