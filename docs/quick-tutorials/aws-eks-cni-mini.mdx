@@ -70,15 +70,9 @@ You can now install Otterize in your cluster, and optionally connect to Otterize
 So either forego browser visualization and:
 
 <details>
-<summary>Install Otterize in your cluster with the Kafka watcher component enabled, <b>without</b> Otterize Cloud</summary>
+<summary>Install Otterize in your cluster, <b>without</b> Otterize Cloud</summary>
 
-```
-helm repo add otterize https://helm.otterize.com
-helm repo update
-helm install otterize otterize/network-mapper -n otterize-system --create-namespace \
---set kafkawatcher.enable=true \
---set kafkawatcher.kafkaServers={"kafka-0.kafka"}
-```
+{@include: ../_common/install-otterize.md}
 
 </details>
 
@@ -93,7 +87,7 @@ Or choose to include browser visualization and:
 
 #### Install Otterize OSS, connected to Otterize Cloud
 
-{@include: ../_common/install-otterize-from-cloud-with-enforcement-and-kafka-watcher.md}
+{@include: ../_common/install-otterize-from-cloud.md}
 
 </details>
 
@@ -106,12 +100,12 @@ Finally, you'll need to install the Otterize CLI (if you haven't already) to int
 
 </details>
 
-### Install the Otterize ecom demo application
+### Install some basic pods
 
-So that we have some pods to look at (and protect), you can install our E-commerce Demo application, or you can deploy your own application to see hwo this would work with your app.
+So that we have some pods to look at (and protect), you can install our simple clients and server demo app that will deploy a server and 2 clients.
 
-```shell
-kubectl apply -f https://raw.githubusercontent.com/otterize/ecom-demo/master/ecom-demo.yaml
+```bash
+kubectl apply -f https://docs.otterize.com/code-examples/automate-network-policies/all.yaml
 ```
 
 Once you have that installed and running your Otterize access graph should look something like this:
@@ -120,10 +114,10 @@ Once you have that installed and running your Otterize access graph should look 
 
 ## Step three: Create an intent
 
-Now that you have the Otterize agents installed, you can create an intent to make sure that, when you apply security, your service isn't blocked to the `frontend` service.
+Now that you have the Otterize agents installed, you can create an intent to make sure that, when you apply security, your clients aren't blocked to the `server`.
 
 ```shell
-otterize network-mapper export --server frontend.otterize-ecom-demo | kubectl apply -f -
+otterize network-mapper export --server server.otterize-tutorial-npol | kubectl apply -f -
 ```
 
 At which point you should see that the `frontend` service is ready to be protected:
@@ -136,15 +130,16 @@ And you can then protect the `frontend` service by applying the following `yaml`
 apiVersion: k8s.otterize.com/v1alpha2
 kind: ProtectedService
 metadata:
-  name: frontend
-  namespace: otterize-ecom-demo
+  name: server
+  namespace: otterize-tutorial-npol
+
 spec:
-  name: frontend
+  name: server
 ```
-Save that to a file called `protect-frontendservice.yaml` and then run:
+Save that to a file called `protect-server.yaml` and then run:
 
 ```shell
-% kubectl apply -f protect-frontendservice.yaml
+% kubectl apply -f protect-server.yaml
 ```
 And you should see your access graph showing the service as protected:
 
@@ -152,13 +147,15 @@ And you should see your access graph showing the service as protected:
 
 ## What's next
 
-Have a look at the [Guide](https://docs.otterize.com/guides/protect-1-service-network-policies) on how to proceed through all of the remaining services and protect them one at a time.
+Have a look at the [Guide](https://docs.otterize.com/guides/protect-1-service-network-policies) on how to deploy protection to a larger, more complex application on step at a time.
 
 ## Teardown
 
 To remove the deployed examples run:
 ```bash
+kubectl delete -f protect-server.yaml
+otterize network-mapper export --server server.otterize-tutorial-npol | kubectl delete -f -
+kubectl delete -f https://docs.otterize.com/code-examples/automate-network-policies/all.yaml
 helm uninstall otterize -n otterize-system
-helm uninstall otterize-ecom-demo -n otterize-ecom-demo
-helm delete ns otterize-ecom-demo
+eksctl delete cluster -f sample-config-file.yaml
 ```
