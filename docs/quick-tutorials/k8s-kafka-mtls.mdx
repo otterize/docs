@@ -425,18 +425,22 @@ Sent message - Message 265 [sent by client-authenticated]
 
 </details>
 
-If you've attached Otterize OSS to Otterize Cloud, go back to see the [access graph in your browser](https://app.otterize.com). Click on the Kafka service, and click at the bottom of it to focus on it and show its details:
+If you've attached Otterize OSS to Otterize Cloud, go back to see the [access graph in your browser](https://app.otterize.com).
 
 ![Access graph](/img/quick-tutorials/k8s-kafka-mtls/protected.png)
 
 We can see what happened:
-1. Kafka topic-specific intents from **[client]** are declared (solid black inner line and Kafka icon).
-2. Calls from **[client-other]** are not declared (missing "white" inner line).
-3. Looking at the Kafka service, we can see that **[client]** has specific access configured (via Kafka ACLs) to perform `all` operations on the `mytopic` topic.
+1. The client intents are reflected as a green line from **[client]** to **[kafka]** ("Allowed").
+2. Calls from **[client-other]** are not declared, therefore reflected as yellow line ("Would be blocked").
 
 Since discovered intents from the network mapper don't specify what specific topics and operations clients are performing (or attempting to perform), the access graph cannot show information on what is being blocked vs allowed (red vs green). That feature is in development.
 
 Also, the access graph shows information about the mTLS certificates (credentials) distributed to the various services, as long as [Cloud-managed credentials](/security#cryptographic-credentials) are being used. Visibility for certificates distributed through an in-cluster SPIRE is in development.
+
+Click on **Kafka** service to get more details:
+![Access graph](/img/quick-tutorials/k8s-kafka-mtls/info-modal.png)
+
+Looking at the **Kafka topics** table, we can see that **[client]** has specific access configured (via Kafka ACLs) to perform `All` operations on the `mytopic` topic.
 
 ## What did we accomplish?
 
