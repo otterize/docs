@@ -114,7 +114,7 @@ Once you have that installed and running your Otterize access graph should look 
 
 ## Step three: Create an intent
 
-Now that you have the Otterize agents installed, you can create an intent to make sure that, when you apply security, your clients aren't blocked to the `server`.
+Now that you have Otterize installed, the next step is to create an intent which will enable access to the server from the client. If you enable protection on the server without declaring an intent, the client will be blocked.
 
 ```shell
 otterize network-mapper export --server server.otterize-tutorial-npol | kubectl apply -f -
