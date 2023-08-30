@@ -18,8 +18,6 @@ This tutorial will walk you through deploying an AWS EKS cluster with the AWS VP
 
 ## Step one: Create an AWS EKS cluster with the AWS VPC CNI plugin
 
-### Prepare a Kubernetes cluster
-
 Before you start, you'll need an AWS Kubernetes cluster. Having a cluster with a [CNI](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/) that supports [NetworkPolicies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) is required for this tutorial.
 
 Save this `yaml` as `cluster-config.yaml`:
@@ -33,24 +31,39 @@ metadata:
   region: us-west-2
   version: "1.27"
 
-kubernetesNetworkConfig:
-  ipFamily: IPv4
+iam:
+  withOIDC: true
 
-managedNodeGroups:
-  - name: np-ipv4-127-nodegroup
-    instanceType: t3.medium
-    desiredCapacity: 3
-    ssh:
-      enableSsm: true
-    iam:
-      withAddonPolicies:
-        albIngress: true
+vpc:
+  clusterEndpoints:
+    publicAccess: true
+    privateAccess: true
 
 addons:
   - name: vpc-cni
-    version: v1.12.6-eksbuild.2 # optional
+    version: 1.14.0
+    attachPolicyARNs: #optional
+    - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+    configurationValues: |-
+       # highlight-next-line
+      enableNetworkPolicy: "true"
   - name: coredns
-    version: v1.10.1-eksbuild.1 # optional
+  - name: kube-proxy
+
+managedNodeGroups:
+  - name: x86-al2-on-demand
+    amiFamily: AmazonLinux2
+    instanceTypes: [ "m6i.xlarge", "m6a.xlarge" ]
+    minSize: 0
+    desiredCapacity: 2
+    maxSize: 6
+    privateNetworking: true
+    disableIMDSv1: true
+    volumeSize: 100
+    volumeType: gp3
+    volumeEncrypted: true
+    tags:
+      team: "eks"
 ```
 
 Then run the following command to create your AWS cluster:
@@ -129,7 +142,7 @@ And you can then protect the `server` service by applying the following `yaml` f
 Protect the server with the following command:
 
 ```bash
-kubectl apply -f https://otterize.com/code-examples/aws-eks-mini/protect-server.yaml
+kubectl apply -f https://docs.otterize.com/code-examples/aws-eks-mini/protect-server.yaml
 ```
 Save that to a file called `protect-server.yaml` and then run:
 
@@ -152,5 +165,5 @@ kubectl delete -f protect-server.yaml
 otterize network-mapper export --server server.otterize-tutorial-npol | kubectl delete -f -
 kubectl delete -f https://docs.otterize.com/code-examples/automate-network-policies/all.yaml
 helm uninstall otterize -n otterize-system
-eksctl delete cluster -f sample-config-file.yaml
+eksctl delete cluster -f cluster-config.yaml
 ```
