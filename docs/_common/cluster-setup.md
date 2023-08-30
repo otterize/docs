@@ -75,8 +75,8 @@ gcloud container clusters update CLUSTER_NAME --enable-network-policy
 </TabItem>
 <TabItem value="eks" label="AWS EKS">
 
-Starting Aug 29, 2023, [you can configure the built-in VPC CNI add-on to enable network policy support](https://aws.amazon.com/blogs/containers/amazon-vpc-cni-now-supports-kubernetes-network-policies).
-To spin up a new cluster, use the following eksctl ClusterConfig, and save it to a file called cluster.yaml.
+Starting August 29, 2023, [you can configure the built-in VPC CNI add-on to enable network policy support](https://aws.amazon.com/blogs/containers/amazon-vpc-cni-now-supports-kubernetes-network-policies).
+To spin up a new cluster, use the following `eksctl` `ClusterConfig`, and save it to a file called `cluster.yaml`.
 
 Spin up the cluster using `eksctl create cluster -f cluster.yaml`. This will spin up a cluster called `network-policy-demo` in `us-west-2`.
 
