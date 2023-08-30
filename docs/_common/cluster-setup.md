@@ -133,7 +133,6 @@ managedNodeGroups:
 ```
 
 For guides that deploy the larger set of services, Kafka and ZooKeeper are also deployed, and you will also need the EBS CSI driver to accommodate their storage needs. [Follow the AWS guide for the EBS CSI add-on to do so.](https://docs.aws.amazon.com/eks/latest/userguide/managing-ebs-csi.html)
-
 If you're not using the VPC CNI, you can set up the Calico network policy controller using the following instructions:
 
 <a href="https://docs.aws.amazon.com/eks/latest/userguide/calico.html">Visit the official documentation</a>, or follow the instructions below:

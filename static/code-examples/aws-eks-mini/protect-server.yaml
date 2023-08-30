@@ -1,0 +1,8 @@
+apiVersion: k8s.otterize.com/v1alpha2
+kind: ProtectedService
+metadata:
+  name: server
+  namespace: otterize-tutorial-npol
+
+spec:
+  name: server
