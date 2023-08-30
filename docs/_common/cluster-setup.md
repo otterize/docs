@@ -75,8 +75,8 @@ gcloud container clusters update CLUSTER_NAME --enable-network-policy
 </TabItem>
 <TabItem value="eks" label="AWS EKS">
 
-Starting Aug 29, 2023, [you can configure the built-in VPC CNI add-on to enable network policy support](https://aws.amazon.com/blogs/containers/amazon-vpc-cni-now-supports-kubernetes-network-policies).
-To spin up a new cluster, use the following eksctl ClusterConfig, and save it to a file called cluster.yaml.
+Starting August 29, 2023, [you can configure the built-in VPC CNI add-on to enable network policy support](https://aws.amazon.com/blogs/containers/amazon-vpc-cni-now-supports-kubernetes-network-policies).
+To spin up a new cluster, use the following `eksctl` `ClusterConfig`, and save it to a file called `cluster.yaml`.
 
 Spin up the cluster using `eksctl create cluster -f cluster.yaml`. This will spin up a cluster called `network-policy-demo` in `us-west-2`.
 
@@ -132,6 +132,7 @@ managedNodeGroups:
       team: "eks"
 ```
 
+For guides that deploy the larger set of services, Kafka and ZooKeeper are also deployed, and you will also need the EBS CSI driver to accommodate their storage needs. [Follow the AWS guide for the EBS CSI add-on to do so.](https://docs.aws.amazon.com/eks/latest/userguide/managing-ebs-csi.html)
 If you're not using the VPC CNI, you can set up the Calico network policy controller using the following instructions:
 
 <a href="https://docs.aws.amazon.com/eks/latest/userguide/calico.html">Visit the official documentation</a>, or follow the instructions below:
