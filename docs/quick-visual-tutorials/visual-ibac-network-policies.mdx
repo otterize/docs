@@ -124,7 +124,7 @@ In the Otterize Cloud UI, your [cluster](https://app.otterize.com/clusters) shou
 
 And when you go back to the [access graph](https://app.otterize.com/access-graph) (and select your cluster from the dropdown, if needed), you should see the following map for the demo running in your cluster:
 
-![Access graph](/img/quick-tutorials/shadow-mode/phase-0.png)
+![Access graph](/img/quick-tutorials/visual-ibac-network-policies/phase-0.png)
 
 Each service is shown as a node in the access graph, while the thick lines (edges) connecting the services show access between them, as detected by the network mapper.
 
@@ -149,17 +149,17 @@ kubectl apply -n otterize-ecom-demo -f https://docs.otterize.com/code-examples/s
 
 Look at the access graph again:
 
-![Access graph](/img/quick-tutorials/shadow-mode/phase-1.png)
+![Access graph](/img/quick-tutorials/visual-ibac-network-policies/phase-1.png)
 
-The thick green line from `frontend` to `recommendationservice`, representing the discovered intent from the network mapper, no longer has an empty center, but rather a **solid black center, representing the explicitly declared intent**.
+The thick green line from `frontend` to `recommendationservice`, representing the discovered intent from the network mapper, no longer has a yellow line, but rather a **green**, representing the explicitly declared intent.
 
 Click on that `frontend` &rarr; `recommendationservice` line:
-<img src="/img/quick-tutorials/shadow-mode/frontend-recommendation-applied.png" alt="Discovered intents" width="600"/>
+<img src="/img/quick-tutorials/visual-ibac-network-policies/phase-1-frontend-recommendation-edge-info.png" alt="Frontend recommendation edge info" />
 
 - We can see the `frontend` can call the `recommendationservice`, and will be guaranteed access even once enforcement is turned on.
 
 Click on the `recommendationservice` itself:
-<img src="/img/quick-tutorials/shadow-mode/recommendation-access-state.png" alt="Discovered intents" width="600"/>
+<img src="/img/quick-tutorials/visual-ibac-network-policies/phase-1-recommendation-service-info.png" alt="Recommendation service info" />
 
 - We can see it's not protected now (we're in shadow mode, and there are no default-deny network policies in place).
 - We can also see it would not block any clients once protection is enabled.
@@ -178,23 +178,15 @@ kubectl apply -n otterize-ecom-demo -f https://docs.otterize.com/code-examples/s
 ```
 Look at the access graph again:
 
-![Access graph](/img/quick-tutorials/shadow-mode/phase-2.png)
+![Access graph](/img/quick-tutorials/visual-ibac-network-policies/phase-2.png)
 
-As before, the line from `recommendationservice` &rarr; `productcatalogservice` now has a solid black center, and no warnings. That's what we expected.
-
-But two other lines, `frontend` &rarr; `productcatalogservice` and `checkoutservice` &rarr; `productcatalogservice`, have turned orange. And the `productcatalogservice` lock icon has turned red. Why?
-
-Click on one of those orange lines:
-<img src="/img/quick-tutorials/shadow-mode/frontend-productcatalog.png" alt="Discovered intents" width="600"/>
-
-- This access is not blocked *now* &mdash; because we're still in shadow mode (otherwise the line would have been red).
-- But access *would be blocked* once enforcement is turned on. To prevent that, we're told to declare and apply an intent for this call.
+Now, the line from `recommendationservice` &rarr; `productcatalogservice` is green. That's what we expected.
 
 Click on the `productcatalogservice`:
-<img src="/img/quick-tutorials/shadow-mode/productcatalog-woud-block.png" alt="Discovered intents" width="600"/>
+<img src="/img/quick-tutorials/visual-ibac-network-policies/productcatalogservice-info.png" alt="productcatalogservice info" />
 
 - We can see it's not protected now, as before.
-- But we can also see it *would* block any clients once protection is enabled, which is why the lock is red.
+- But we can also see it *would* block any clients once protection is enabled.
 - And there is an explicit warning to apply the missing intents from all its clients before turning on enforcement.
 
 Let's add those intents for the `frontend` and `checkoutservice`.
@@ -221,7 +213,7 @@ kubectl apply -n otterize-ecom-demo -f https://docs.otterize.com/code-examples/s
 
 Let's go back to the access graph:
 
-![Access graph](/img/quick-tutorials/shadow-mode/phase-3.png)
+![Access graph](/img/quick-tutorials/visual-ibac-network-policies/phase-3.png)
 
 All is well again: the `productcatalogservice` will be protected, and its 3 clients will still have access, after enforcement is turned on.
 
@@ -255,7 +247,7 @@ kubectl apply -n otterize-ecom-demo -f https://docs.otterize.com/code-examples/s
 
 Look at the access graph again:
 
-![Access graph](/img/quick-tutorials/shadow-mode/phase-4.png)
+![Access graph](/img/quick-tutorials/visual-ibac-network-policies/phase-4.png)
 
 The graph confirms that all (but two) services would be protected, and no intended calls would be blocked, once we apply protection.
 
@@ -279,7 +271,7 @@ Then run the Helm commands shown there, and specifically follow the instructions
 
 Let's look at the access graph again:
 
-![Access graph](/img/quick-tutorials/shadow-mode/phase-5.png)
+![Access graph](/img/quick-tutorials/visual-ibac-network-policies/phase-5.png)
 
 Note that all (but two) of the lock icons are locked, indicating the services are protected. And all the locks and edges are green, indicating no call attempts (discovered by the network mapper) are being blocked.
 
