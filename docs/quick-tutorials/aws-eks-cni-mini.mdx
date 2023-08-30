@@ -126,15 +126,10 @@ At which point you should see that the `server` service is ready to be protected
 
 And you can then protect the `server` service by applying the following `yaml` file:
 
-```yaml
-apiVersion: k8s.otterize.com/v1alpha2
-kind: ProtectedService
-metadata:
-  name: server
-  namespace: otterize-tutorial-npol
+Protect the server with the following command:
 
-spec:
-  name: server
+```bash
+kubectl apply -f https://otterize.com/code-examples/aws-eks-mini/protect-server.yaml
 ```
 Save that to a file called `protect-server.yaml` and then run:
 
