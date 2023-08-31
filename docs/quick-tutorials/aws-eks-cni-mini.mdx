@@ -130,7 +130,32 @@ Once you have that installed and running your Otterize access graph should look 
 Now that you have Otterize installed, the next step is to create an intent which will enable access to the server from the client. If you enable protection on the server without declaring an intent, the client will be blocked.
 
 ```shell
-otterize network-mapper export --server server.otterize-tutorial-npol | kubectl apply -f -
+otterize network-mapper export --server server.otterize-tutorial-eks | kubectl apply -f -
+```
+
+Running this command will generate the following `ClientIntents` for each client connected to `server` and apply it to your cluster. You could also place it in a Helm chart or apply it some other way, instead of piping it directly to kubectl.
+```yaml
+apiVersion: k8s.otterize.com/v1alpha2
+kind: ClientIntents
+metadata:
+  name: client
+  namespace: otterize-tutorial-eks
+spec:
+  service:
+    name: client
+  calls:
+    - name: server
+---
+apiVersion: k8s.otterize.com/v1alpha2
+kind: ClientIntents
+metadata:
+  name: client-other
+  namespace: otterize-tutorial-eks
+spec:
+  service:
+    name: client-other
+  calls:
+    - name: server
 ```
 
 At which point you should see that the `server` service is ready to be protected:
@@ -139,7 +164,11 @@ At which point you should see that the `server` service is ready to be protected
 
 And you can then protect the `server` service by applying the following `yaml` file:
 
-Protect the server with the following command:
+```yaml
+{@include: ../../static/code-examples/aws-eks-mini/protect-server.yaml}
+```
+
+Protect the server by applying the resource:
 
 ```bash
 kubectl apply -f https://docs.otterize.com/code-examples/aws-eks-mini/protect-server.yaml
@@ -162,7 +191,7 @@ Have a look at the [Guide](https://docs.otterize.com/guides/protect-1-service-ne
 To remove the deployed examples run:
 ```bash
 kubectl delete -f protect-server.yaml
-otterize network-mapper export --server server.otterize-tutorial-npol | kubectl delete -f -
+otterize network-mapper export --server server.otterize-tutorial-eks | kubectl delete -f -
 kubectl delete -f https://docs.otterize.com/code-examples/automate-network-policies/all.yaml
 helm uninstall otterize -n otterize-system
 eksctl delete cluster -f cluster-config.yaml
