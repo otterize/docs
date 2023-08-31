@@ -197,9 +197,10 @@ kubectl apply -n otterize-ecom-kafka-demo -f https://docs.otterize.com/code-exam
 
 In the Otterize Cloud UI, the [access graph](https://app.otterize.com/access-graph) should now show the following map for the demo running in your cluster:
 
-![Access graph](/img/quick-tutorials/shadow-mode/phase-5.png)
+![Access graph](/img/quick-tutorials/visual-ibac-kafka-k8s/phase-1.png)
+![Access graph](/img/quick-tutorials/visual-ibac-kafka-k8s/phase-1-kafka-service-zoom.png)
 
-Notice that the Kafka service (called `kafka` in this demo) is shown just like any other service that's called by other services (four, in our case) acting as its clients. We'll let Otterize know this is specifically a Kafka-type service in the next step.
+Notice that the Kafka service (called `kafka` in this demo) is shown just like any other service that's called by other services (three, in our case) acting as its clients. We'll let Otterize know this is specifically a Kafka-type service in the next step.
 
 ## Manage Kafka access with Otterize
 
@@ -224,13 +225,13 @@ kubectl apply -n otterize-ecom-kafka-demo -f https://docs.otterize.com/code-exam
 Upon applying the KSC, an ACL will configure Kafka to allow anonymous access to all topics.
 This will be the base state, from which we will gradually roll out secure access to specific topics.
 
-We can see in the access graph that the service is now marked with the "Kafka" logo and a "KSC" icon, since Otterize now recognizes it as a Kafka broker.
+We can see in the access graph that the service is now marked with the "Kafka" logo, since Otterize now recognizes it as a Kafka broker.
 
-![Kafka Server Config](/img/quick-tutorials/shadow-mode/kafka-node.png)
+![Kafka Server Config](/img/quick-tutorials/visual-ibac-kafka-k8s/kafka-service-with-kafka-logo.png)
 
-By clicking the Kafka service twice, we can focus on this service to inspect its configuration and credentials.
+By clicking the Kafka service, we can see its details:
 
-![Kafka Server Config](/img/quick-tutorials/shadow-mode/kafka-focus.png)
+<img src="/img/quick-tutorials/visual-ibac-kafka-k8s/kafka-service-info.png" alt="Kafka service info" width="600"/>
 
 We can see:
 - The `kafka` service is protected by network policies ("NetPols") and Kafka ACLs, because Otterize is in enforcement mode and managing network policies as well as ACLs.
@@ -270,11 +271,10 @@ Let's apply these intents:
 kubectl apply -n otterize-ecom-kafka-demo -f https://docs.otterize.com/code-examples/shadow-mode/kafka-intents.yaml
 ```
 
-Looking back at the access graph, we can see the results:
+Clicking again on Kafka service, we can see the results:
 
-![Kafka Server Config](/img/quick-tutorials/shadow-mode/kafka-edges.png)
+<img src="/img/quick-tutorials/visual-ibac-kafka-k8s/kafka-service-info-after-checkout-service-apply.png" alt="Kafka service info" width="600"/>
 
-- Each of the lines from the declared Kafka clients is now marked with the Kafka icon, indicating it has specific Kafka access configured.
 - The `kafka` service shows the access granted:
   - The `payments` topic allows the `paymentservice` service to perform `all` operations;
   - The `orders` topic allows the `checkoutservice` to `produce` events and the `orderservice` to `consume` events.
@@ -285,7 +285,7 @@ That's the Kafka server perspective &mdash; and remember, no server admin had to
 
 To get the Kafka client perspective, click on any of the lines from the clients to Kafka:
 
-<img src="/img/quick-tutorials/shadow-mode/kafka-edge-modal.png" alt="Kafka client perspective" width="600"/>
+<img src="/img/quick-tutorials/visual-ibac-kafka-k8s/checkoutservice-kafka-edge-info.png" alt="Kafka client perspective" width="600"/>
 
 You can see the exact access the client is configured to have, and trace it back to the specific intent that generated it. (You can also see that the client is actually calling Kafka, via the discovered intents, so you know the access is indeed needed.)
 
