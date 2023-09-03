@@ -4,7 +4,7 @@ If no Kubernetes clusters are connected to your account, click the "connect your
     1. Follow the instructions to install Otterize <b>with enforcement on</b> (not in shadow mode) for this tutorial. In other words, <b>omit</b> the following flag in the Helm command: `--set intentsOperator.operator.mode=defaultShadow` 
     2. And <b>add</b> the following flags to the Helm command: 
        ```
-       --set intentsOperator.operator.enableNetworkPolicyCreation=false \ 
+       --set intentsOperator.operator.enableNetworkPolicyCreation=false \
        --set networkMapper.kafkawatcher.enable=true \
        --set networkMapper.kafkawatcher.kafkaServers={"kafka-0.kafka"}
        ```
