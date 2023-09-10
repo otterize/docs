@@ -6,9 +6,9 @@ You'll need [Helm](https://helm.sh/docs/intro/install/) installed on your machin
    helm install otterize otterize/otterize-kubernetes -n otterize-system --create-namespace --set networkMapper.istiowatcher.enable=true
    ```
 
-This chart is a bundle of the Otterize intents operator, Otterize credentials operator, Otterize network mapper with the Istio watcher component enabled.
+This chart is a bundle of the Otterize intents operator, the Otterize credentials operator, and the Otterize network mapper with the Istio watcher component enabled.
 Initial deployment may take a couple of minutes.
-You can add the `--wait` flag for Helm to wait for deployment to complete and all pods to be Ready, or manually watch for all pods to be `Ready` using `kubectl get pods -n otterize-system -w`.
+You can add the `--wait` flag for Helm to wait for deployment to complete and all pods to be `Ready`, or manually watch for all pods to be `Ready` using `kubectl get pods -n otterize-system -w`.
 
 After all the pods are ready you should see the following (or similar) in your terminal when you run `kubectl get pods -n otterize-system`:
 
