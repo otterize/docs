@@ -8,7 +8,7 @@
    --set intentsOperator.operator.enableNetworkPolicyCreation=false
    ```
 
-:::note This example disable network policy enforcement. 
+:::note This example disables network policy enforcement. 
 
 This chart is a bundle of the Otterize intents operator, the Otterize credentials operator, and the Otterize network mapper.
 Initial deployment may take a couple of minutes.
@@ -24,3 +24,4 @@ otterize-network-mapper-779fffd959-twjqd                   1/1    Running   0   
 otterize-network-sniffer-65mjt                             1/1    Running   0     9s
 otterize-watcher-b9bf87bcd-276nt                           1/1    Running   0     9s
 ```
+:::
