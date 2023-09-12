@@ -53,3 +53,8 @@ spec:
         - name: otterize-credentials
           secret:
             secretName: interactive-credentials-secret
+            items:
+              - key: truststore.jks
+                path: kafka.truststore.jks
+              - key: keystore.jks
+                path: kafka.keystore.jks

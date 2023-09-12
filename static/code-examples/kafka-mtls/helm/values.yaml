@@ -26,6 +26,8 @@ auth:
     existingSecrets:
       - kafka-tls-secret
     password: password
+    jksTruststore: truststore.jks
+    jksKeystoreSAN: keystore.jks
 authorizerClassName: kafka.security.authorizer.AclAuthorizer
 # Allocate resources
 resources:
