@@ -18,7 +18,7 @@ If you would like to deploy it on its own, add the Otterize Helm chart repositor
 
 | Key                              | Description                                                                                                                                 | Default   |
 |----------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------|-----------|
-| `global.credentialsProvider`     | What provider should be used to generate certificates/credentials - `"spire"`, `"otterize-cloud"` or `"cert-manager"`                       | `"spire"` |
+| `global.certificateProvider`     | What provider should be used to generate certificates - `"spire"`, `"otterize-cloud"` or `"cert-manager"`                       | `"spire"` |
 | `global.spire.serverServiceName` | If deployed with SPIRE, this key specifies SPIRE-server's service name. You should use either this **OR** `spire.serverAddress` (not both). |           |
 | `global.allowGetAllResources`    | If defined overrides                                                                                                                        | `false`   |
 | `global.commonAnnotations`       | Annotations to add to all deployed objects                                                                                                  | {}        |
