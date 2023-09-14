@@ -31,6 +31,13 @@ spec:
         - name: otterize-credentials
           secret:
             secretName: client-credentials-secret
+            items:
+              - key: tls.crt
+                path: cert.pem
+              - key: tls.key
+                path: key.pem
+              - key: ca.crt
+                path: ca.pem
         - name: ephemeral
           emptyDir: { }
 ---
@@ -62,5 +69,12 @@ spec:
         - name: otterize-credentials
           secret:
             secretName: client-other-credentials-secret
+            items:
+              - key: tls.crt
+                path: cert.pem
+              - key: tls.key
+                path: key.pem
+              - key: ca.crt
+                path: ca.pem
         - name: ephemeral
           emptyDir: { }
