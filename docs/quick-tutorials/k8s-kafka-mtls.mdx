@@ -56,7 +56,6 @@ Of course you can also choose to combine them &mdash; after all, Kafka is just a
 #### Install Otterize OSS, connected to Otterize Cloud
 
 {@include: ../_common/install-otterize-from-cloud-with-enforcement-and-kafka-watcher.md}
-Make sure you also include the **`--set intentsOperator.operator.enableNetworkPolicyCreation=false`** flag. as well.
 </details>
 
 ## Install Kafka
@@ -129,8 +128,9 @@ Our simple example consists of two client pods:
 - And one named "**client-other**".
 
 These clients are connecting to Kafka using mTLS, the credentials which they will receive from Otterize. Otterize makes this easy, requiring just 4 simple changes:
+1. **Generate credentials**: add the `credentials-operator.otterize.com/tls-secret-name` annotation, which tells Otterize to generate mTLS credentials and store them in a Kubernetes secret whose name is the value of this annotation.
+2. **Expose credentials in a volume**: add a volume containing this secret to the pod.
 3. **Mount the volume**: mount the volume in every container in the pod.
-4. **Enable mTLS**: configure the Kafka client library to require authentication.
 
 <details>
 <summary>Expand to see this structure</summary>
@@ -319,8 +319,6 @@ We can see what happened:
 2. Calls from **[client-other]** are not declared (orange line).
 3. Looking at the Kafka service, we can see that **[client]** has specific access configured (via Kafka ACLs) to perform `all` operations on the `mytopic` topic.
 
-Since discovered intents from the network mapper don't specify what specific topics and operations clients are performing (or attempting to perform), the access graph cannot show information on what is being blocked vs allowed (red vs green) on a per-topic basis. That feature is in development.
-
 Also, the access graph shows information about the mTLS certificates (credentials) distributed to the various services, as long as [Cloud-managed credentials](/security#cryptographic-credentials) are being used. Visibility for certificates distributed through an in-cluster SPIRE is in development.
 
 ## Turn on protection
@@ -330,7 +328,7 @@ At this point, we haven't actually protected our Kafka broker. From everything w
 Let's see that in action. Our clients that have not declared intents will be blocked from accessing the broker.
 
 
-We need to turn enforcement on in our cluster by updating our Otterize helm configuration.
+We need to turn enforcement on in our cluster by updating our Otterize Helm configuration.
 
 ```bash
 helm upgrade --install otterize otterize/otterize-kubernetes -n otterize-system --create-namespace \
@@ -338,6 +336,7 @@ helm upgrade --install otterize otterize/otterize-kubernetes -n otterize-system 
     --set global.otterizeCloud.credentials.clientSecret=<your_secret> \
     --set intentsOperator.operator.mode=defaultActive \
     --set global.otterizeCloud.useCloudToGenerateTLSCredentials=true \
+    --set intentsOperator.operator.enableNetworkPolicyCreation=false
     --set networkMapper.kafkawatcher.enable=true \
     --set networkMapper.kafkawatcher.kafkaServers={"kafka-0.kafka"}
 ```
