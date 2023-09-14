@@ -74,5 +74,7 @@ spec:
                 path: cert.pem
               - key: tls.key
                 path: key.pem
+              - key: ca.crt
+                path: ca.pem
         - name: ephemeral
           emptyDir: { }
