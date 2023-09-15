@@ -42,7 +42,7 @@ scoop install otterize-cli
 <TabItem value="64-bit" label="64-bit">
 
 ```PowerShell
-Invoke-WebRequest -Uri https://get.otterize.com/otterize-cli/v0.1.30/otterize_Windows_x86_64.zip -OutFile otterize_Windows_x86_64.zip
+Invoke-WebRequest -Uri https://get.otterize.com/otterize-cli/v0.1.30/otterize_windows_x86_64.zip -OutFile otterize_Windows_x86_64.zip
 Expand-Archive otterize_Windows_x86_64.zip -DestinationPath .
 # optionally move to PATH
 ```
@@ -54,8 +54,8 @@ Expand-Archive otterize_Windows_x86_64.zip -DestinationPath .
 <TabItem value="64-bit" label="64-bit">
 
 ```bash
-wget https://get.otterize.com/otterize-cli/v0.1.30/otterize_Linux_x86_64.tar.gz
-tar xf otterize_Linux_x86_64.tar.gz
+wget https://get.otterize.com/otterize-cli/v0.1.30/otterize_linux_x86_64.tar.gz
+tar xf otterize_linux_x86_64.tar.gz
 sudo cp otterize /usr/local/bin  # optionally move to PATH
 ```
 </TabItem>
