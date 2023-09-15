@@ -1,5 +1,5 @@
 ---
-sidebar_position: 5
+sidebar_position: 6
 title: Istio AuthorizationPolicy automation
 ---
 import CodeBlock from "@theme/CodeBlock";
@@ -71,7 +71,7 @@ Or choose to include browser visualization and:
 Apply this configuration in the `istio-system` namespace, propagating it to all namespaces covered by the mesh.
 
 ```
-kubectl apply -f https://docs.otterize.com/code-examples/network-mapper/istio-telemetry-enablement.yaml -n istio-system
+kubectl apply -f ${ABSOLUTE_URL}/code-examples/network-mapper/istio-telemetry-enablement.yaml -n istio-system
 ```
 
 ```yaml
@@ -91,7 +91,7 @@ enforce them with Istio authorization policies.
 
 Deploy a simple example consisting of `client` and `other-client` calling `nginx` over HTTP:
 ```shell
-kubectl apply -n otterize-tutorial-istio -f https://docs.otterize.com/code-examples/istio-authorization-policies/all.yaml
+kubectl apply -n otterize-tutorial-istio -f ${ABSOLUTE_URL}/code-examples/istio-authorization-policies/all.yaml
 ```
 
 ## Apply intents
@@ -165,7 +165,7 @@ hello from /other-client-path
 Keep an eye on the logs being tailed in the **[other-client]** terminal window,
    and apply this `intents.yaml` file in your **main terminal window** using:
    ```shell
-   kubectl apply -f https://docs.otterize.com/code-examples/istio-authorization-policies/intents.yaml
+   kubectl apply -f ${ABSOLUTE_URL}/code-examples/istio-authorization-policies/intents.yaml
    ```
 :::tip
 Client intents are the cornerstone of [intent-based access control (IBAC)](https://otterize.com/ibac).

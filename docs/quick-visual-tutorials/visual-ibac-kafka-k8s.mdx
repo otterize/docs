@@ -119,7 +119,7 @@ spec:
 To deploy the demo services into your cluster:
 ```bash
 kubectl create namespace otterize-ecom-kafka-demo
-kubectl apply -n otterize-ecom-kafka-demo -f https://docs.otterize.com/code-examples/shadow-mode/ecom-demo-mtls.yaml
+kubectl apply -n otterize-ecom-kafka-demo -f ${ABSOLUTE_URL}/code-examples/shadow-mode/ecom-demo-mtls.yaml
 ```
 
 <details>
@@ -190,7 +190,7 @@ so we'll put in place the same intents that we had in that tutorial, just in cas
 So let's get back to that state by applying that same set of initial intents:
 
 ```bash
-kubectl apply -n otterize-ecom-kafka-demo -f https://docs.otterize.com/code-examples/shadow-mode/all.yaml
+kubectl apply -n otterize-ecom-kafka-demo -f ${ABSOLUTE_URL}/code-examples/shadow-mode/all.yaml
 ```
 
 ### Seeing the deployed demo
@@ -205,7 +205,7 @@ Notice that the Kafka service (called `kafka` in this demo) is shown just like a
 
 Let's configure Otterize to recognize Kafka and communicate with it by applying a `KafkaServerConfig` (KSC):
 ```bash
-kubectl apply -n otterize-ecom-kafka-demo -f https://docs.otterize.com/code-examples/shadow-mode/kafkaserverconfig.yaml
+kubectl apply -n otterize-ecom-kafka-demo -f ${ABSOLUTE_URL}/code-examples/shadow-mode/kafkaserverconfig.yaml
 ```
 <details>
 <summary>Expand to see the KafkaServerConfig</summary>
@@ -267,7 +267,7 @@ To see how this works, let's declare what the `checkoutservice`, `orderservice`,
 Let's apply these intents:
 
 ```bash
-kubectl apply -n otterize-ecom-kafka-demo -f https://docs.otterize.com/code-examples/shadow-mode/kafka-intents.yaml
+kubectl apply -n otterize-ecom-kafka-demo -f ${ABSOLUTE_URL}/code-examples/shadow-mode/kafka-intents.yaml
 ```
 
 Looking back at the access graph, we can see the results:
@@ -339,15 +339,15 @@ To continue gradually rolling out IBAC, protecting more topics while granting ac
 
 To remove the deployed demo, first delete the client intents:
 ```bash
-kubectl delete -n otterize-ecom-kafka-demo -f https://docs.otterize.com/code-examples/shadow-mode/all.yaml
+kubectl delete -n otterize-ecom-kafka-demo -f ${ABSOLUTE_URL}/code-examples/shadow-mode/all.yaml
 ```
 
 Next, remove the Kafka server config:
 ```bash
-kubectl delete -n otterize-ecom-kafka-demo -f https://docs.otterize.com/code-examples/shadow-mode/kafkaserverconfig.yaml
+kubectl delete -n otterize-ecom-kafka-demo -f ${ABSOLUTE_URL}/code-examples/shadow-mode/kafkaserverconfig.yaml
 ```
 Finally, remove the demo services and the namespace:
 ```bash
-kubectl delete -n otterize-ecom-kafka-demo -f https://docs.otterize.com/code-examples/shadow-mode/ecom-demo-mtls.yaml
+kubectl delete -n otterize-ecom-kafka-demo -f ${ABSOLUTE_URL}/code-examples/shadow-mode/ecom-demo-mtls.yaml
 kubectl delete namespace otterize-ecom-kafka-demo
 ```

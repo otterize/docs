@@ -103,7 +103,7 @@ Our simple example consists of three pods: an HTTP server and two clients that c
 1. Deploy the two clients and the server in their namespace using `kubectl`:
 
 ```shell
-kubectl apply -f https://docs.otterize.com/code-examples/automate-network-policies/all.yaml
+kubectl apply -f ${ABSOLUTE_URL}/code-examples/automate-network-policies/all.yaml
 ```
 
 <details>
@@ -180,7 +180,7 @@ Otterize will add a network policy to allow the intended calls
 Keep an eye on the logs being tailed in the **[client-other]** terminal window,
    and apply this `intents.yaml` file in your **main terminal window** using:
    ```shell
-   kubectl apply -f https://docs.otterize.com/code-examples/automate-network-policies/intents.yaml
+   kubectl apply -f ${ABSOLUTE_URL}/code-examples/automate-network-policies/intents.yaml
    ```
 :::tip
 Client intents are the cornerstone of [intent-based access control (IBAC)](https://otterize.com/ibac).

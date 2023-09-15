@@ -79,7 +79,7 @@ use them to generate Istio authorization policies.
 Apply this configuration in the `istio-system` namespace, propagating it to all namespaces covered by the mesh.
 
 ```
-kubectl apply -f https://docs.otterize.com/code-examples/network-mapper/istio-telemetry-enablement.yaml
+kubectl apply -f ${ABSOLUTE_URL}/code-examples/network-mapper/istio-telemetry-enablement.yaml
 ```
 
 ```yaml
@@ -102,7 +102,7 @@ kubectl label namespace otterize-visual-tutorial-istio istio-injection=enabled
 <summary>Deploy the demo set of services</summary>
 
 ```
-kubectl apply -n otterize-visual-tutorial-istio -f https://docs.otterize.com/code-examples/ibac-for-istio/demo-app.yaml
+kubectl apply -n otterize-visual-tutorial-istio -f ${ABSOLUTE_URL}/code-examples/ibac-for-istio/demo-app.yaml
 ```
 </details>
 
@@ -180,7 +180,7 @@ Why eventually? Because we'll still need to go from shadow mode to actual enforc
 
 Apply the above client intents file with:
 ```bash
-kubectl apply -n otterize-visual-tutorial-istio -f https://docs.otterize.com/code-examples/ibac-for-istio/phase-1.yaml
+kubectl apply -n otterize-visual-tutorial-istio -f ${ABSOLUTE_URL}/code-examples/ibac-for-istio/phase-1.yaml
 ```
 
 Look at the access graph again:
@@ -223,7 +223,7 @@ We can see in the access graph that the `recommendationservice` in turn calls th
 
 Apply this intents file with:
 ```bash
-kubectl apply -n otterize-visual-tutorial-istio -f https://docs.otterize.com/code-examples/istio-visual-tutorial/phase-2.yaml
+kubectl apply -n otterize-visual-tutorial-istio -f ${ABSOLUTE_URL}/code-examples/istio-visual-tutorial/phase-2.yaml
 ```
 Look at the access graph again:
 
@@ -266,7 +266,7 @@ Let's declare those intents from the `frontend` and `checkoutservice` clients:
 
 Apply these intents files with:
 ```bash
-kubectl apply -n otterize-visual-tutorial-istio -f https://docs.otterize.com/code-examples/ibac-for-istio/phase-3.yaml
+kubectl apply -n otterize-visual-tutorial-istio -f ${ABSOLUTE_URL}/code-examples/ibac-for-istio/phase-3.yaml
 ```
 
 Let's go back to the access graph:
@@ -308,7 +308,7 @@ kubectl apply -f intents
 
 Or, equivalently, just use the already-generated intents files included in this docs location:
 ```bash
-kubectl apply -n otterize-visual-tutorial-istio -f https://docs.otterize.com/code-examples/ibac-for-istio/all.yaml
+kubectl apply -n otterize-visual-tutorial-istio -f ${ABSOLUTE_URL}/code-examples/ibac-for-istio/all.yaml
 ```
 
 <details>
@@ -434,6 +434,6 @@ spec:
 To remove the deployed demo run:
 
 ```bash
-kubectl delete -n otterize-vizual-tutorial-istio -f https://docs.otterize.com/code-examples/ibac-for-istio/all.yaml
-kubectl delete -n otterize-vizual-tutorial-istio -f https://docs.otterize.com/code-examples/ibac-for-istio/demo-app.yaml
+kubectl delete -n otterize-vizual-tutorial-istio -f ${ABSOLUTE_URL}/code-examples/ibac-for-istio/all.yaml
+kubectl delete -n otterize-vizual-tutorial-istio -f ${ABSOLUTE_URL}/code-examples/ibac-for-istio/demo-app.yaml
 ```

@@ -1,14 +1,17 @@
 ---
 sidebar_position: 3
-title: Kafka access automation
+title: Kafka access automation using Otterize Cloud mTLS
 ---
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-This tutorial will walk you through declaring and applying intents to easily secure access to Kafka running inside a Kubernetes cluster, automating the management of Kafka ACLs, and the generation and deployment of certificates for mTLS between Kafka and its clients.
+This tutorial will walk you through declaring and applying intents to easily secure access to Kafka running inside a Kubernetes cluster, automating the management of Kafka ACLs, and the generation and deployment of certificates for mTLS between Kafka and its clients using Otterize Cloud as the certificate provider.
+
+If you prefer to generate certificates using [`cert-manager`](https://cert-manager.io), try [the tutorial for cert-manager](/quick-tutorials/k8s-kafka-mtls-cert-manager).
 
 In this tutorial, we will:
 
+- Deploy Otterize with network policy enforcement disabled to focus on Kafka ACL enforcement
 - Deploy a Kafka broker with 2 topics, and two clients that call these topics.
 - Protect just 1 of those topics with Otterize. See that access to that topic is blocked.
 - Declare that one client pod intends to access that protected topic.
@@ -16,54 +19,41 @@ In this tutorial, we will:
 
 ## Prerequisites
 
+### Prepare a Kubernetes cluster
 <details>
-<summary>Prepare a Kubernetes cluster</summary>
+<summary>Expand for cluster setup instructions</summary>
 
 Before you start, you'll need a Kubernetes cluster.
 
 {@include: ../_common/cluster-setup.md}
 </details>
 
-You can now install (or reinstall) Otterize in your cluster, and optionally connect to Otterize Cloud. Connecting to Cloud lets you:
+
+### Install Otterize
+You can now install Otterize in your cluster, and connect to Otterize Cloud. Connecting to Cloud lets you:
 1. See what's happening visually in your browser, through the "access graph";
-2. Avoid using SPIRE (which can be installed with Otterize) for issuing certificates, as Otterize Cloud provides a certificate service.
+2. Generate certificates using the Otterize Cloud hosted service. If you prefer to generate certificates in-cluster, you can [follow the tutorial for cert-manager](/quick-tutorials/k8s-kafka-mtls-cert-manager).
 
-So either forgo browser visualization and:
 
-<details>
-<summary>Install Otterize in your cluster, <b>without</b> Otterize Cloud (and no network policy management)</summary>
-
-{@include: ../_common/install-otterize-kafka.md}
-
-</details>
-
-Or choose to include browser visualization and:
-
-<details>
-
-:::note
-For this tutorial, we'll configure Otterize to not manage network policies, so we can focus on topic-level Kafka ACL authorization (vs just accessing Kafka at all).
-
-Of course you can also choose to combine them &mdash; after all, Kafka is just another service running in the cluster. To do that, reinstall Otterize without the **`--set intentsOperator.operator.enableNetworkPolicyCreation=false`** flag.
-:::
-
-<summary>Install Otterize in your cluster, <b>with</b> Otterize Cloud (and no network policy management)</summary>
-
-#### Create an Otterize Cloud account
-
-{@include: ../_common/create-account.md}
 
 #### Install Otterize OSS, connected to Otterize Cloud
 
 {@include: ../_common/install-otterize-from-cloud-with-enforcement-and-kafka-watcher.md}
-</details>
+
+#### Configure the access graph in Otterize Cloud to only show Kafka authorization status
+You want to make sure that under **Istio Policies** *Use in access graph* is turned off and that under **Network Policies** *Use in access graph* is also turned off.
+
+Keep *Use in access graph* **on** under **Kafka ACLs** so that the access graph only shows the authorization status for Kafka ACLs.
+
+![Make sure access graph is configured correctly](../../static/img/quick-tutorials/k8s-kafka-mtls/cloud-settings.png)
+
 
 ## Install Kafka
 
 We will deploy a Kafka broker using Bitnami's [Helm chart](https://github.com/bitnami/charts/tree/master/bitnami/kafka).
 In the chart we will configure Kafka to:
 - Recognize the Otterize intents operator as a super user so it can configure ACLs;
-- Use TLS (Kafka calls it SSL) for its listeners;
+- Use TLS/SSL for its listeners;
 - Tell the Otterize credentials operator, via pod annotations, how credentials should be created;
 - Authenticate clients using mTLS credentials provided as a Kubernetes secret; and
 - Allow access to any topic by default unless denied by an ACL (achieved using `allowEveryoneIfNoAclFound: true`).
@@ -81,45 +71,23 @@ The following command will deploy a Kafka broker with this chart:
  helm repo add bitnami https://charts.bitnami.com/bitnami
  helm repo update
  helm install --create-namespace -n kafka \
-   -f https://docs.otterize.com/code-examples/kafka-mtls/helm/values.yaml kafka bitnami/kafka --version 21.4.4
+   -f ${ABSOLUTE_URL}/code-examples/kafka-mtls/helm/values.yaml kafka bitnami/kafka --version 21.4.4
  ```
 
 You can watch for all pods to be `Ready` using `kubectl get pods -n kafka -w`.
 
-<details>
-<summary>If you're using Otterize Cloud, adjust your display settings</summary>
-
-You want to make sure that under **Istio Policies** *Use in access graph* is turned off and that under **Network Policies** *Use in access graph* is also turned off.
-
-Turning *Use in access graph* **on** under **Kafka ACLs** will make it clear that we're only looking for the effects of Kafka ACLs, not network policies or Istio policies.
-
-![Make sure Istio is disabled](../../static/img/quick-tutorials/k8s-kafka-mtls/cloud-settings.png)
-</details>
-
 ## Configure Otterize to manage Kafka access
 
 In our simple example, we'll call the Kafka broker service simply "kafka".
-Let's connect Otterize to it by applying an Otterize `KafkaServerConfig`, naming it and configuring default access:
+Let's tell Otterize how to connect to the Kafka broker by applying an Otterize `KafkaServerConfig`, naming it `kafka`.
 ```bash
-kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/kafkaserverconfig.yaml
+kubectl apply -f ${ABSOLUTE_URL}/code-examples/kafka-mtls/kafkaserverconfig.yaml
 ```
-<details>
-<summary>Expand to see the KafkaServerConfig</summary>
-
-Our Kafka server will have 2 topics `transactions` and `mytopic` that our clients will be accessing.
-<Tabs>
-
-<TabItem value="kafkaserverconfig.yaml" label="kafkaserverconfig.yaml">
 
 ```yaml
 {@include: ../../static/code-examples/kafka-mtls/kafkaserverconfig.yaml}
 ```
 
-</TabItem>
-</Tabs>
-</details>
-
-We've chosen not to allow unauthenticated access to both topics to begin with. We're also requiring declared intents, but since we have not turned enforcement on, everything is open. This will be the base state, from which we can gradually secure access to specific topics.
 
 ## Deploy clients
 
@@ -128,12 +96,12 @@ Our simple example consists of two client pods:
 - And one named "**client-other**".
 
 These clients are connecting to Kafka using mTLS, the credentials which they will receive from Otterize. Otterize makes this easy, requiring just 4 simple changes:
-1. **Generate credentials**: add the `credentials-operator.otterize.com/tls-secret-name` annotation, which tells Otterize to generate mTLS credentials and store them in a Kubernetes secret whose name is the value of this annotation.
+1. **Generate credentials**: add the `credentials-operator.otterize.com/tls-secret-name` annotation, which tells Otterize to generate mTLS credentials and store them in a Kubernetes Secret whose name is the value of this annotation.
 2. **Expose credentials in a volume**: add a volume containing this secret to the pod.
 3. **Mount the volume**: mount the volume in every container in the pod.
 
 <details>
-<summary>Expand to see this structure</summary>
+<summary>Expand to see how to configure a Pod to mount the secret</summary>
 
 ```yaml
 spec:
@@ -167,16 +135,8 @@ spec:
 </details>
 
 <details>
-<summary>Expand to see the client specs used in this example</summary>
+<summary>Expand to see the YAML for the pods used in this example</summary>
 <Tabs>
-
-<TabItem value="namespace.yaml" label="namespace.yaml" default>
-
-```yaml
-{@include: ../../static/code-examples/kafka-mtls/namespace.yaml}
-```
-
-</TabItem>
 
 <TabItem value="client-deployment.yaml" label="client-deployment.yaml">
 
@@ -199,7 +159,7 @@ spec:
 
 1. Deploy the two clients into a namespace called `otterize-tutorial-kafka-mtls` using `kubectl`:
 ```bash
-kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/all.yaml
+kubectl apply -f ${ABSOLUTE_URL}/code-examples/kafka-mtls/all.yaml
 ```
 
 <details>
@@ -267,25 +227,11 @@ kubectl logs -f --tail 1 -n otterize-tutorial-kafka-mtls deploy/client-other
 [client-other] Read message from topic: transactions - [client] Sent message 5 [transactions]
 ```
 
-If you've attached Otterize OSS to Otterize Cloud, you can now browse to your account at [https://app.otterize.com](https://app.otterize.com) and see the access graph for your cluster:
+You can now browse to your account at [https://app.otterize.com](https://app.otterize.com) and see the access graph for your cluster:
 
 ![Access graph](/img/quick-tutorials/k8s-kafka-mtls/base.png)
 
 The access graph shows, through its green and orange lines linking the services, that no clients are currently blocked because we haven't enabled any sort of enforcement yet. The orange lines indicate that, since we have not declared any intents for these clients, they *would* be blocked if we were to turn enforcement on.
-
-<details>
-<summary>Why do I see seven services?</summary>
-
-In addition to the Kafka service and the 2 clients we deployed, the network mapper also picked up the calls between the intents operator and Kafka, and between Kafka and zookeeper, so those intents are reflected in the access graph.
-
-We also deployed the Otterize kafka-watcher to monitor Kafka for new topics and intents, and that watcher communicates with the network-mapper in order to report the discovered intents.
-
-The access graph also reflects an intent that's already been declared and applied, and was reported by the intents operator to the access graph: it's the intent which the intents operator created for itself to ensure it has access to Kafka. That's [automatically generated](/reference/configuration/intents-operator/configuration) by the intents operator when you apply the KafkaServerConfig: at that point the intents operator knows there is a Kafka service, and in order to ensure it can reach it and configure it, it declares its intent to do so. Specifically that will generate a network policy between the intents operator and the Kafka service, if network policies are in active enforcement and supported by your cluster, so the intents operator doesn't get blocked itself.
-
-:::note
-If you're running this tutorial in GKE, you'll also see the `konnectivity-agent` and the `metrics-server` as in the image above.
-:::
-</details>
 
 ## Apply intents
 1. The client declares its intent to call the `kafka.kafka` server with this `intents.yaml` file:
@@ -293,14 +239,11 @@ If you're running this tutorial in GKE, you'll also see the `konnectivity-agent`
 ```yaml
 {@include: ../../static/code-examples/kafka-mtls/client-intents.yaml}
 ```
-:::tip
-Client intents are the cornerstone of [intent-based access control](https://otterize.com/ibac).
-:::
 
 We can apply intents for the `client` by applying the `client-intents.yaml` file:
 
 ```bash
-kubectl apply -f https://docs.otterize.com/code-examples/kafka-mtls/client-intents.yaml
+kubectl apply -f ${ABSOLUTE_URL}/code-examples/kafka-mtls/client-intents.yaml
 ```
 
 If you go back to your access graph, you'll now see that the `client` has a solid green line connecting it to the Kafka broker. This is because the `client` has both declared its intent to access the Kafka broker, and it has been authenticated using mTLS.
@@ -319,7 +262,7 @@ We can see what happened:
 2. Calls from **[client-other]** are not declared (orange line).
 3. Looking at the Kafka service, we can see that **[client]** has specific access configured (via Kafka ACLs) to perform `all` operations on the `mytopic` topic.
 
-Also, the access graph shows information about the mTLS certificates (credentials) distributed to the various services, as long as [Cloud-managed credentials](/security#cryptographic-credentials) are being used. Visibility for certificates distributed through an in-cluster SPIRE is in development.
+Also, the access graph shows information about the mTLS certificates (credentials) distributed to the various services, as long as [Cloud-managed credentials](/security#cryptographic-credentials) are being used.
 
 ## Turn on protection
 
@@ -417,9 +360,9 @@ it is able to do so.
 To remove the deployed examples run:
 ```bash
 # run this first:
-kubectl delete -f https://docs.otterize.com/code-examples/kafka-mtls/client-intents.yaml
+kubectl delete -f ${ABSOLUTE_URL}/code-examples/kafka-mtls/client-intents.yaml
 # then the rest:
-kubectl delete -f https://docs.otterize.com/code-examples/kafka-mtls/all.yaml
-kubectl delete -f https://docs.otterize.com/code-examples/kafka-mtls/kafkaserverconfig.yaml
+kubectl delete -f ${ABSOLUTE_URL}/code-examples/kafka-mtls/all.yaml
+kubectl delete -f ${ABSOLUTE_URL}/code-examples/kafka-mtls/kafkaserverconfig.yaml
 helm uninstall kafka -n kafka
 ```

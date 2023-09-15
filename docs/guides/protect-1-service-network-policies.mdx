@@ -41,7 +41,7 @@ Before you start, you'll need a Kubernetes cluster.
 To deploy these into your cluster:
 ```bash
 kubectl create namespace otterize-ecom-demo
-kubectl apply -n otterize-ecom-demo -f https://docs.otterize.com/code-examples/shadow-mode/ecom-demo.yaml
+kubectl apply -n otterize-ecom-demo -f ${ABSOLUTE_URL}/code-examples/shadow-mode/ecom-demo.yaml
 ```
 
 </details>
@@ -304,7 +304,7 @@ To do so, recall that we configured Otterize OSS to be in the `defaultShadow` mo
 Let's apply this file to our cluster:
 
 ```shell
-kubectl apply -n otterize-ecom-demo -f https://docs.otterize.com/code-examples/guides/protect-1-service-network-policies/protect-productcatalogservice.yaml
+kubectl apply -n otterize-ecom-demo -f ${ABSOLUTE_URL}/code-examples/guides/protect-1-service-network-policies/protect-productcatalogservice.yaml
 ```
 
 This has two effects:
@@ -359,7 +359,7 @@ Lather, rinse repeat, protecting service after service as you grow more comforta
 To remove the deployed demo run:
 
 ```bash
-kubectl delete -n otterize-ecom-demo -f https://docs.otterize.com/code-examples/shadow-mode/all.yaml
-kubectl delete -n otterize-ecom-demo -f https://docs.otterize.com/code-examples/shadow-mode/ecom-demo.yaml
+kubectl delete -n otterize-ecom-demo -f ${ABSOLUTE_URL}/code-examples/shadow-mode/all.yaml
+kubectl delete -n otterize-ecom-demo -f ${ABSOLUTE_URL}/code-examples/shadow-mode/ecom-demo.yaml
 kubectl delete namespace otterize-ecom-demo
 ```

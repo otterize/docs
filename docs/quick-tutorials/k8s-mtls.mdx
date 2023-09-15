@@ -1,5 +1,5 @@
 ---
-sidebar_position: 7
+sidebar_position: 8
 title: Simple mTLS deployment
 ---
 import Tabs from '@theme/Tabs';
@@ -188,7 +188,7 @@ https.createServer(
 
 Deploy the client and server using `kubectl`:
 ```bash
-kubectl apply -f https://docs.otterize.com/code-examples/mtls/all.yaml
+kubectl apply -f ${ABSOLUTE_URL}/code-examples/mtls/all.yaml
 ```
 
 <details>
@@ -321,5 +321,5 @@ For more information, see [the documentation for the credentials operator](/refe
 To remove the deployed examples run:
 
 ```bash
-kubectl delete -f https://docs.otterize.com/code-examples/mtls/all.yaml
+kubectl delete -f ${ABSOLUTE_URL}/code-examples/mtls/all.yaml
 ```

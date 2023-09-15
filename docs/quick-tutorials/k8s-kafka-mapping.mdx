@@ -1,5 +1,5 @@
 ---
-sidebar_position: 4
+sidebar_position: 5
 title: Kafka topic-level access mapping
 ---
 import Tabs from '@theme/Tabs';
@@ -87,7 +87,7 @@ The following command will deploy a Kafka broker with this chart:
  helm repo add bitnami https://charts.bitnami.com/bitnami
  helm repo update
  helm install --create-namespace -n kafka \
-   -f https://docs.otterize.com/code-examples/kafka-mapping/helm/values.yaml kafka bitnami/kafka --version 21.4.4
+   -f ${ABSOLUTE_URL}/code-examples/kafka-mapping/helm/values.yaml kafka bitnami/kafka --version 21.4.4
  ```
 
 ## Deploy demo to simulate traffic
@@ -98,7 +98,7 @@ Let's add a few services that will access our Kafka server, and see how the netw
 
 To deploy these services, use:
 ```shell
-kubectl apply -n otterize-tutorial-kafka-mapping -f https://docs.otterize.com/code-examples/kafka-mapping/all.yaml
+kubectl apply -n otterize-tutorial-kafka-mapping -f ${ABSOLUTE_URL}/code-examples/kafka-mapping/all.yaml
 ```
 
 Each of these services is built to periodically call the Kafka broker we deployed. Because that broker has the Otterize OSS Kafka watcher enabled and feeding data to the network mapper, we can query the network mapper directly to see the map it has built up.

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 6
+sidebar_position: 7
 title: Istio HTTP-level access mapping
 ---
 import Tabs from '@theme/Tabs';
@@ -82,7 +82,7 @@ kubectl label namespace otterize-tutorial-istio-mapping istio-injection=enabled
 Apply this configuration in the `istio-system` namespace, propagating it to all namespaces covered by the mesh.
 
 ```
-kubectl apply -f https://docs.otterize.com/code-examples/network-mapper/istio-telemetry-enablement.yaml -n istio-system
+kubectl apply -f ${ABSOLUTE_URL}/code-examples/network-mapper/istio-telemetry-enablement.yaml -n istio-system
 ```
 
 ```yaml
@@ -103,7 +103,7 @@ enforce them with Istio authorization policies.
 Let's add services and traffic to the cluster and see how the network mapper builds the map.
 Deploy the following simple example &mdash; `client`, `client2` and `nginx`, communicating over HTTP:
 ```shell
-kubectl apply -n otterize-tutorial-istio-mapping -f https://docs.otterize.com/code-examples/network-mapper/istio.yaml
+kubectl apply -n otterize-tutorial-istio-mapping -f ${ABSOLUTE_URL}/code-examples/network-mapper/istio.yaml
 ```
 
 ## Map the cluster
