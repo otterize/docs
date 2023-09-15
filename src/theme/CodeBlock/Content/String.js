@@ -41,12 +41,6 @@ export default function CodeBlockString({
   });
   const absoluteBaseUrlWithNoTrailingSlash = useBaseUrl("/", {absolute: true}).slice(0, -1) // remove the trailing slash. We have to specify "/" as the path here otherwise this returns undefined.
   const codeWithAbsoluteURLReplaced = code.replace(`\$\{ABSOLUTE_URL\}`, absoluteBaseUrlWithNoTrailingSlash)
-  // line = line.map(item =>
-  // {
-  //   item.content = item.content.replace(`\$\{ABSOLUTE_URL\}`, absoluteBaseUrlWithNoTrailingSlash)
-  //   item.types = item.types.filter(type => type !== "variable") // Since ${ABSOLUTE_URL} is a variable, it gets syntax highlighted as such. Remove it.
-  //   return item
-  // })
   const showLineNumbers =
     showLineNumbersProp ?? containsLineNumbers(metastring);
   return (
