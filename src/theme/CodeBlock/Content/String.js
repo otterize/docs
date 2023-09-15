@@ -40,7 +40,7 @@ export default function CodeBlockString({
     magicComments,
   });
   const absoluteBaseUrlWithNoTrailingSlash = useBaseUrl("/", {absolute: true}).slice(0, -1) // remove the trailing slash. We have to specify "/" as the path here otherwise this returns undefined.
-  const codeWithAbsoluteURLReplaced = code.replace(`\$\{ABSOLUTE_URL\}`, absoluteBaseUrlWithNoTrailingSlash)
+  const codeWithAbsoluteURLReplaced = code.replaceAll(`\$\{ABSOLUTE_URL\}`, absoluteBaseUrlWithNoTrailingSlash)
   const showLineNumbers =
     showLineNumbersProp ?? containsLineNumbers(metastring);
   return (
