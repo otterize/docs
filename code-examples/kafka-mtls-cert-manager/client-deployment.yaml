@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client
+  namespace: otterize-tutorial-kafka-mtls
+spec:
+  selector:
+    matchLabels:
+      app: client
+  template:
+    metadata:
+      labels:
+        app: client
+      annotations:
+        credentials-operator.otterize.com/tls-secret-name: client-credentials-secret
+    spec:
+      containers:
+        - name: client
+          image: santafen/otterize-kafka-client:1.0.9
+          command: [ "/bin/sh", "-c", "cd /app/client;./client" ]
+          volumeMounts:
+            - name: otterize-credentials
+              mountPath: /var/otterize/credentials
+              readOnly: true
+      volumes:
+        - name: otterize-credentials
+          secret:
+            secretName: client-credentials-secret
+        - name: ephemeral
+          emptyDir: { }
