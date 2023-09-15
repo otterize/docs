@@ -37,7 +37,7 @@ you'll use them in the next tutorial, so you may just want to install them now. 
 To deploy these into your cluster:
 ```bash
 kubectl create namespace otterize-ecom-demo
-kubectl apply -n otterize-ecom-demo -f https://docs.otterize.com/code-examples/shadow-mode/ecom-demo.yaml
+kubectl apply -n otterize-ecom-demo -f ${ABSOLUTE_URL}/code-examples/shadow-mode/ecom-demo.yaml
 ```
 
 <details>
@@ -172,7 +172,7 @@ In short, the access graph will provide insights about the current access to ser
 To remove the deployed demo run:
 
 ```bash
-kubectl delete -n otterize-ecom-demo -f https://docs.otterize.com/code-examples/shadow-mode/all.yaml
-kubectl delete -n otterize-ecom-demo -f https://docs.otterize.com/code-examples/shadow-mode/ecom-demo.yaml
+kubectl delete -n otterize-ecom-demo -f ${ABSOLUTE_URL}/code-examples/shadow-mode/all.yaml
+kubectl delete -n otterize-ecom-demo -f ${ABSOLUTE_URL}/code-examples/shadow-mode/ecom-demo.yaml
 kubectl delete namespace otterize-ecom-demo
 ```

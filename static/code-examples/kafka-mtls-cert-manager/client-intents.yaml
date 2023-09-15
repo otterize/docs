@@ -1,0 +1,16 @@
+apiVersion: k8s.otterize.com/v1alpha2
+kind: ClientIntents
+metadata:
+  name: client
+  namespace:  otterize-tutorial-kafka-mtls
+spec:
+  service:
+    name: client
+  calls:
+    - name: kafka.kafka
+      type: kafka
+      topics:
+        - name: mytopic
+          operations: [ produce,describe,consume ]
+        - name: transactions
+          operations: [ produce,describe,consume ]

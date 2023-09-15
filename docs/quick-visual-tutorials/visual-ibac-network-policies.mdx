@@ -39,7 +39,7 @@ Before you start, you'll need a Kubernetes cluster.
 To deploy these into your cluster:
 ```bash
 kubectl create namespace otterize-ecom-demo
-kubectl apply -n otterize-ecom-demo -f https://docs.otterize.com/code-examples/shadow-mode/ecom-demo.yaml
+kubectl apply -n otterize-ecom-demo -f ${ABSOLUTE_URL}/code-examples/shadow-mode/ecom-demo.yaml
 ```
 
 </details>
@@ -144,7 +144,7 @@ We expect this will provide secure access, allowing the intended access from the
 
 Apply this intents file with:
 ```bash
-kubectl apply -n otterize-ecom-demo -f https://docs.otterize.com/code-examples/shadow-mode/phase-1.yaml
+kubectl apply -n otterize-ecom-demo -f ${ABSOLUTE_URL}/code-examples/shadow-mode/phase-1.yaml
 ```
 
 Look at the access graph again:
@@ -174,7 +174,7 @@ Let’s add another intent, this time from `recommendationservice` to `productca
 
 Apply this intents file with:
 ```bash
-kubectl apply -n otterize-ecom-demo -f https://docs.otterize.com/code-examples/shadow-mode/phase-2.yaml
+kubectl apply -n otterize-ecom-demo -f ${ABSOLUTE_URL}/code-examples/shadow-mode/phase-2.yaml
 ```
 Look at the access graph again:
 
@@ -216,7 +216,7 @@ Let's add those intents for the `frontend` and `checkoutservice`.
 
 Apply these intents files with:
 ```bash
-kubectl apply -n otterize-ecom-demo -f https://docs.otterize.com/code-examples/shadow-mode/phase-3.yaml
+kubectl apply -n otterize-ecom-demo -f ${ABSOLUTE_URL}/code-examples/shadow-mode/phase-3.yaml
 ```
 
 Let's go back to the access graph:
@@ -250,7 +250,7 @@ kubectl apply -f intents
 
 Or, equivalently, just use the already-generated intents files included in this docs location:
 ```bash
-kubectl apply -n otterize-ecom-demo -f https://docs.otterize.com/code-examples/shadow-mode/all.yaml
+kubectl apply -n otterize-ecom-demo -f ${ABSOLUTE_URL}/code-examples/shadow-mode/all.yaml
 ```
 
 Look at the access graph again:
@@ -372,7 +372,7 @@ Go ahead and browse to the URL above to "shop" and get a feel for the demo's beh
 To remove the deployed demo run:
 
 ```bash
-kubectl delete -n otterize-ecom-demo -f https://docs.otterize.com/code-examples/shadow-mode/all.yaml
-kubectl delete -n otterize-ecom-demo -f https://docs.otterize.com/code-examples/shadow-mode/ecom-demo.yaml
+kubectl delete -n otterize-ecom-demo -f ${ABSOLUTE_URL}/code-examples/shadow-mode/all.yaml
+kubectl delete -n otterize-ecom-demo -f ${ABSOLUTE_URL}/code-examples/shadow-mode/ecom-demo.yaml
 kubectl delete namespace otterize-ecom-demo
 ```

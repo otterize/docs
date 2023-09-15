@@ -1,5 +1,5 @@
 ---
-sidebar_position: 8
+sidebar_position: 9
 title: Network policies on AWS EKS with the VPC CNI
 ---
 import CodeBlock from "@theme/CodeBlock";
@@ -117,7 +117,7 @@ Finally, you'll need to install the Otterize CLI (if you haven't already) to int
 So that we have some pods to look at (and protect), you can install our simple clients and server demo app that will deploy a server and 2 clients.
 
 ```bash
-kubectl apply -f https://docs.otterize.com/code-examples/automate-network-policies/all.yaml
+kubectl apply -f ${ABSOLUTE_URL}/code-examples/automate-network-policies/all.yaml
 ```
 
 Once you have that installed and running your Otterize access graph should look something like this:
@@ -170,7 +170,7 @@ And you can then protect the `server` service by applying the following `yaml` f
 Protect the server by applying the resource:
 
 ```bash
-kubectl apply -f https://docs.otterize.com/code-examples/aws-eks-mini/protect-server.yaml
+kubectl apply -f ${ABSOLUTE_URL}/code-examples/aws-eks-mini/protect-server.yaml
 ```
 Save that to a file called `protect-server.yaml` and then run:
 
@@ -191,7 +191,7 @@ To remove the deployed examples run:
 ```bash
 kubectl delete -f protect-server.yaml
 otterize network-mapper export --server server.otterize-tutorial-eks | kubectl delete -f -
-kubectl delete -f https://docs.otterize.com/code-examples/automate-network-policies/all.yaml
+kubectl delete -f ${ABSOLUTE_URL}/code-examples/automate-network-policies/all.yaml
 helm uninstall otterize -n otterize-system
 eksctl delete cluster -f cluster-config.yaml
 ```

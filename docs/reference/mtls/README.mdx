@@ -167,7 +167,7 @@ and mounted as volumes into pod containers.
 
 To retrieve the credentials directly from the Kubernetes secrets store, fetch them via `kubectl get secret`:
 ```shell
-kubectl get secret -n otterize-tutorial-mtls client-credentials-secret -o jsonpath='{.data.svid\.pem}' | base64 -d > svid.pem
+kubectl get secret -n otterize-tutorial-mtls client-credentials-secret -o jsonpath='{.data.cert\.pem}' | base64 -d > svid.pem
 ```
 
 Alternatively, retrieve the credentials from the container's mounted volume, e.g. by executing a shell command:

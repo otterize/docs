@@ -7,10 +7,10 @@ const darkCodeTheme = require("prism-react-renderer/themes/oceanicNext");
 // /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: "Otterize",
-  url: "https://docs.otterize.com",
+  url: process.env.NODE_ENV === "production" ? "https://docs.otterize.com" : "http://localhost:3003/",
   baseUrl: "/",
-  onBrokenLinks: "warn",
-  onBrokenMarkdownLinks: "warn",
+  onBrokenLinks: "throw",
+  onBrokenMarkdownLinks: "throw",
   favicon: "img/favicon.svg",
   trailingSlash: false,
 
