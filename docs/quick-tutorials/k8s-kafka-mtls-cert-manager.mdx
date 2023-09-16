@@ -87,7 +87,7 @@ helm upgrade --install otterize otterize/otterize-kubernetes -n otterize-system 
 --set intentsOperator.operator.mode=defaultShadow \
 --set global.deployment.credentialsOperator=true \
 --set global.certificateProvider=cert-manager \
---set global.issuerName=ca-issuer
+--set credentialsOperator.certManager.issuerName=ca-issuer
 --set intentsOperator.operator.enableNetworkPolicyCreation=false \
 --set networkMapper.kafkawatcher.enable=true \
 --set networkMapper.kafkawatcher.kafkaServers={"kafka-0.kafka"}
