@@ -122,7 +122,7 @@ Our simple example consists of two client pods:
 - One named "**client**".
 - And one named "**client-other**".
 
-These clients are connecting to Kafka using mTLS, the credentials which they will receive from Otterize. Otterize makes this easy, requiring just 4 simple changes:
+These clients are connecting to Kafka using mTLS, the credentials which they will receive from Otterize. Otterize makes this easy, requiring just 3 simple changes:
 1. **Generate credentials**: add the `credentials-operator.otterize.com/tls-secret-name` annotation, which tells Otterize to generate mTLS credentials and store them in a Kubernetes Secret whose name is the value of this annotation.
 2. **Expose credentials in a volume**: add a volume containing this secret to the pod.
 3. **Mount the volume**: mount the volume in every container in the pod.
