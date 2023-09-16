@@ -16,8 +16,8 @@ spec:
     spec:
       containers:
         - name: client
-          image: santafen/otterize-kafka-client:1.0.9
-          command: [ "/bin/sh", "-c", "cd /app/client;./client" ]
+          image: otterize/tutorial-kafka-client:latest
+          imagePullPolicy: Always
           volumeMounts:
             - name: otterize-credentials
               mountPath: /var/otterize/credentials

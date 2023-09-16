@@ -7,8 +7,3 @@ spec:
   service:
     name: kafka
   addr: kafka.kafka:9092
-  topics: # configuration for topic scope - how ACLs should be applied to each topic or set of topics.
-    - topic: "*" # A specific topic or a prefix. Can be "*" for all.
-      pattern: literal # Prefix or literal. Use literal for "*".
-      clientIdentityRequired: true # Whether client identity is required. If set to true to, access by anonymous users will be denied.
-      intentsRequired: true # Whether intents are required - if set to true, all access will be denied unless intents are declared
