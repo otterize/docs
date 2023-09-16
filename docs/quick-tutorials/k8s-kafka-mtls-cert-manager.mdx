@@ -5,7 +5,7 @@ title: Kafka access automation using cert-manager mTLS
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-This tutorial will walk you through declaring and applying intents to easily secure access to Kafka running inside a Kubernetes cluster, automating the management of Kafka ACLs, and the generation and deployment of certificates for mTLS between Kafka and its clients.
+This tutorial will walk you through declaring and applying intents to easily secure access to Kafka running inside a Kubernetes cluster, automating the management of [Kafka ACLs](https://docs.confluent.io/platform/current/kafka/authorization.html), and the generation and deployment of certificates for mTLS between Kafka and its clients.
 
 If you prefer to generate certificates using Otterize Cloud, try [the tutorial for Otterize Cloud](/quick-tutorials/k8s-kafka-mtls).
 
@@ -16,6 +16,7 @@ In this tutorial, we will:
 - Deploy a Kafka broker with 2 topics, and two clients that call these topics.
 - Protect just 1 of those topics with Otterize. See that access to that topic is blocked.
 - Declare that one client pod intends to access that protected topic.
+- Enable protection for this Kafka broker.
 - See that an ACL was auto-generated to allow just that, while blocking calls to that topic from the other client.
 
 ## Prerequisites
@@ -87,7 +88,7 @@ helm upgrade --install otterize otterize/otterize-kubernetes -n otterize-system 
 --set intentsOperator.operator.mode=defaultShadow \
 --set global.deployment.credentialsOperator=true \
 --set global.certificateProvider=cert-manager \
---set credentialsOperator.certManager.issuerName=ca-issuer
+--set credentialsOperator.certManager.issuerName=ca-issuer \
 --set intentsOperator.operator.enableNetworkPolicyCreation=false \
 --set networkMapper.kafkawatcher.enable=true \
 --set networkMapper.kafkawatcher.kafkaServers={"kafka-0.kafka"}
@@ -126,7 +127,7 @@ You can watch for all pods to be `Ready` using `kubectl get pods -n kafka -w`.
 ## Configure Otterize to manage Kafka access
 
 In our simple example, we'll call the Kafka broker service simply "kafka".
-Let's tell Otterize how to connect to the Kafka broker by applying an Otterize `KafkaServerConfig`, naming it `kafka`.
+Let's tell Otterize how to connect to the Kafka broker by applying an Otterize `KafkaServerConfig`, naming it `kafka`. The name will be the name we later use to declare `ClientIntents`.
 ```bash
 kubectl apply -f ${ABSOLUTE_URL}/code-examples/kafka-mtls-cert-manager/kafkaserverconfig.yaml
 ```
@@ -145,7 +146,7 @@ Our simple example consists of two client pods:
 These clients are connecting to Kafka using mTLS, the credentials which they will receive from Otterize. Otterize makes this easy, requiring just 3 simple changes:
 1. **Generate credentials**: add the `credentials-operator.otterize.com/tls-secret-name` annotation, which tells Otterize to generate mTLS credentials and store them in a Kubernetes Secret whose name is the value of this annotation.
 2. **Expose credentials in a volume**: add a volume containing this secret to the pod.
-3. **Mount the volume**: mount the volume in every container in the pod.
+3. **Mount the volume**: mount the volume in the pod.
 
 <details>
 <summary>Expand to see how to configure a Pod to mount the secret</summary>
@@ -402,7 +403,7 @@ We configured the Helm chart for Kafka to:
 
 We configured Kafka itself to:
 * Add the TLS certificates of the Otterize credentials operator.
-* Set the default ACL for all topics to allow anonymous access.
+* Allow access if no ACLs are present on a topic.
 
 ### Per-client setups
 
@@ -416,11 +417,13 @@ Then we applied intents:
 * We only declared that the *client* pod (not the *client-other* pod) needed to access the `mytopic` topic.
 
 This allowed the *client* pod its access and protected `mytopic` from any unintended access, such as from *client-other*.
+This was achieved by using the built-in Kafka ACL mechanism, which the intents operator configured.
 
 </details>
 
 ## What's next
-- Follow [a more visual tutorial](/quick-visual-tutorials/visual-ibac-kafka-k8s) for securing Kafka with IBAC in a demo ecommerce application.
+- [Learn more about credentials-operator works with cert-manager](/reference/configuration/credentials-operator#cert-manager).
+- [Enable the credentials-operator `CertificateRequest` auto-approver](/reference/configuration/credentials-operator/helm-chart#cert-manager-parameters) for production deployments of cert-manager where the default auto-approver is disabled.
 - Learn how to easily secure pod-to-pod access with IBAC using Kubernetes network policies, in [a hands-on tutorial](/quick-tutorials/k8s-network-policies) or [a more visual tutorial](/quick-visual-tutorials/visual-ibac-network-policies).
 
 ## Teardown
