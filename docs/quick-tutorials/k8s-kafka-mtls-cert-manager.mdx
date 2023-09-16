@@ -62,8 +62,9 @@ You can now install Otterize in your cluster, and connect to Otterize Cloud. Con
 2. Generate certificates using the Otterize Cloud hosted service. If you prefer to generate certificates in-cluster, you can [follow the tutorial for cert-manager](/quick-tutorials/k8s-kafka-mtls-cert-manager).
 
 
+<Tabs groupId="otterize-install">
 
-#### Install Otterize OSS, connected to Otterize Cloud
+<TabItem value="cloud" label="With the Otterize Cloud access graph">
 
 {@include: ../_common/install-otterize-from-cloud-with-enforcement-and-kafka-watcher-and-cert-manager.md}
 
@@ -73,7 +74,26 @@ You want to make sure that under **Istio Policies** *Use in access graph* is tur
 Keep *Use in access graph* **on** under **Kafka ACLs** so that the access graph only shows the authorization status for Kafka ACLs.
 
 ![Make sure access graph is configured correctly](../../static/img/quick-tutorials/k8s-kafka-mtls-cert-mgr//cloud-settings.png)
+</TabItem>
+<TabItem value="no-cloud" label="Without the Otterize Cloud access graph - open source only">
 
+To install without connecting to Otterize Cloud and no access graph, run the following command:
+
+```shell
+helm repo add otterize https://helm.otterize.com
+helm repo update
+
+helm upgrade --install otterize otterize/otterize-kubernetes -n otterize-system --create-namespace \
+--set intentsOperator.operator.mode=defaultShadow \
+--set global.deployment.credentialsOperator=true \
+--set global.certificateProvider=cert-manager \
+--set global.issuerName=ca-issuer
+--set intentsOperator.operator.enableNetworkPolicyCreation=false \
+--set networkMapper.kafkawatcher.enable=true \
+--set networkMapper.kafkawatcher.kafkaServers={"kafka-0.kafka"}
+```
+</TabItem>
+</Tabs>
 
 ## Install Kafka
 
@@ -183,6 +203,41 @@ spec:
 
 </Tabs>
 </details>
+
+
+
+:::tip
+If you prefer, it is possible to avoid using a Secret by using the `cert-manager` [`csi-driver`](https://cert-manager.io/docs/projects/csi-driver/). This requires some manual configuration, but an otterize-csi-driver is coming soon that will require zero configuration.
+<details>
+    <summary>Expand to learn how to use the cert-manager csi-driver</summary>
+Make sure you have set up csi-driver before proceeding.
+
+<br/>Instead of specifying the `credentials-operator.otterize.com/tls-secret-name` pod annotation and mounting a Secret, you can mount the volume from the CSI driver directly.
+
+Specify the service name for the pod using the pod annotation `intents.otterize.com/service-name`, and then use it in the DNS names with `csi-driver`.
+
+```yaml
+kind: Pod
+    metadata:
+        annotations:
+            # highlight-next-line
+            intents.otterize.com/service-name: client
+
+[...]
+volumes:
+    - name: tls
+      csi:
+        driver: csi.cert-manager.io
+        volumeAttributes:
+            csi.cert-manager.io/issuer-name: ca-issuer
+            # service name from the annotation goes before the pod namespace
+            # highlight-next-line
+            csi.cert-manager.io/dns-names: client.${POD_NAMESPACE}.svc.cluster.local
+```
+
+</details>
+:::
+
 
 1. Deploy the two clients into a namespace called `otterize-tutorial-kafka-mtls` using `kubectl`:
 ```bash
@@ -295,32 +350,28 @@ At this point, we haven't actually protected our Kafka broker. From everything w
 
 Let's see that in action. Our clients that have not declared intents will be blocked from accessing the broker.
 
+We need to turn protection on in for this Kafka broker by declaring it as a protected service:
 
-We need to turn enforcement on in our cluster by updating our Otterize Helm configuration.
-
-```bash
-helm upgrade --install otterize otterize/otterize-kubernetes -n otterize-system --create-namespace \
-    --set global.otterizeCloud.credentials.clientId=<your_id> \
-    --set global.otterizeCloud.credentials.clientSecret=<your_secret> \
-    --set intentsOperator.operator.mode=defaultActive \
-    --set global.otterizeCloud.useCloudToGenerateTLSCredentials=true \
-    --set intentsOperator.operator.enableNetworkPolicyCreation=false
-    --set networkMapper.kafkawatcher.enable=true \
-    --set networkMapper.kafkawatcher.kafkaServers={"kafka-0.kafka"}
+```yaml
+{@include: ../../static/code-examples/kafka-mtls-cert-manager/protectedservice.yaml}
 ```
 
-If you once again tail the logs for `client-other` you'll see that it can no longer connect to Kafka:
+Apply this `ProtectedService` resource:
+```shell
+kubectl apply -f ${ABSOLUTE_URL}/code-examples/kafka-mtls-cert-manager/protectedservice.yaml
+```
+
+If you once again tail the logs for `client-other` you'll see that it is no longer authorized to access this topic:
 
 ```
-[client-other] Creating a producer and a consumer for - transactions
-[client-other] Sending messages
-[client-other] Creating a producer and a consumer for - mytopic
-[client-other] Sending messages
-[debug]  [client-other] Sent message 1 [mytopic]
-[debug]  [client-other] Sent message 1 [transactions]
 [client-other] Loading mTLS certificates
 [client-other] Connecting to Kafka
-time="2023-08-03T22:16:15Z" level=info error="kafka: client has run out of available brokers to talk to: dial tcp 10.110.91.88:9092: i/o timeout"
+[client-other] Creating a producer and a consumer for - transactions
+[client] Sending messages
+[client-other] Creating a producer and a consumer for - transactions
+[client] Sending messages
+time="[...]" level=error msg="Failed reading/writing to Kafka"
+error="kafka server: The client is not authorized to access this topic
 ```
 
 And if you look back at your access graph, you'll see that the Kafka broker is now protected, and that the `client-other` and `client-authenticated` are blocked.

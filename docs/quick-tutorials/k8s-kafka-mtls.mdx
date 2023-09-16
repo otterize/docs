@@ -284,18 +284,17 @@ helm upgrade --install otterize otterize/otterize-kubernetes -n otterize-system 
     --set networkMapper.kafkawatcher.kafkaServers={"kafka-0.kafka"}
 ```
 
-If you once again tail the logs for `client-other` you'll see that it can no longer connect to Kafka:
+If you once again tail the logs for `client-other` you'll see that it is no longer authorized to access this topic:
 
 ```
-[client-other] Creating a producer and a consumer for - transactions
-[client-other] Sending messages
-[client-other] Creating a producer and a consumer for - mytopic
-[client-other] Sending messages
-[debug]  [client-other] Sent message 1 [mytopic]
-[debug]  [client-other] Sent message 1 [transactions]
 [client-other] Loading mTLS certificates
 [client-other] Connecting to Kafka
-time="2023-08-03T22:16:15Z" level=info error="kafka: client has run out of available brokers to talk to: dial tcp 10.110.91.88:9092: i/o timeout"
+[client-other] Creating a producer and a consumer for - transactions
+[client] Sending messages
+[client-other] Creating a producer and a consumer for - transactions
+[client] Sending messages
+time="[...]" level=error msg="Failed reading/writing to Kafka"
+error="kafka server: The client is not authorized to access this topic
 ```
 
 And if you look back at your access graph, you'll see that the Kafka broker is now protected, and that the `client-other` and `client-authenticated` are blocked.
