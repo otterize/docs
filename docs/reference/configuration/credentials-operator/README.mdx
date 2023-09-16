@@ -29,7 +29,7 @@ The operator creates a cert-manager [`Certificate`](https://cert-manager.io/docs
 
 The operator will use a [`ClusterIssuer`](https://cert-manager.io/docs/concepts/issuer/) or an [`Issuer`](https://cert-manager.io/docs/concepts/issuer/) to create the Certificate resource, which it expects to find in the same namespace as the `Pod` with the annotation. The `Issuer` is configured at deploy time, using the [Helm chart](/reference/configuration/credentials-operator/helm-chart).
 
-In the event that the default approver controller in `cert-manager` is [disabled](https://cert-manager.io/docs/concepts/certificaterequest/#approver-controller), the credentials operator will auto-approve its own [`CertificateRequests`](https://cert-manager.io/docs/concepts/certificaterequest/)
+In the event that the default approver controller in `cert-manager` is [disabled](https://cert-manager.io/docs/concepts/certificaterequest/#approver-controller), the credentials operator can auto-approve its own [`CertificateRequests`](https://cert-manager.io/docs/concepts/certificaterequest/). Enable this capability by [configuring the Helm chart `autoApprove` flag](/reference/configuration/credentials-operator/helm-chart#cert-manager-parameters).
 
 #### Otterize Cloud
 The operator requests certificates from Otterize Cloud, which internally manages them in Hashicorp Vault. The certificates are then placed within a Kubernetes Secret named with the value of the annotation `credentials-operator.otterize.com/tls-secret-name`.
