@@ -13,8 +13,7 @@ In this tutorial, we will:
 
 - Deploy Otterize with network policy enforcement disabled to focus on Kafka ACL enforcement
 - Deploy a Kafka broker with 2 topics, and two clients that call these topics.
-- Protect just 1 of those topics with Otterize. See that access to that topic is blocked.
-- Declare that one client pod intends to access that protected topic.
+- Declare that one client pod intends to access one of the topic.
 - Enable protection for this Kafka broker.
 - See that an ACL was auto-generated to allow just that, while blocking calls to that topic from the other client.
 
