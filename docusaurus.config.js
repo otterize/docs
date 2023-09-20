@@ -38,6 +38,30 @@ const config = {
           from: '/getting-started/oss-installation',
           to: '/installation',
         },
+        {
+          from: '/quick-tutorials/k8s-network-policies',
+          to: '/quickstart/access-control/k8s-network-policies',
+        },
+        {
+          from: '/quick-tutorials/k8s-istio-authorization-policies',
+          to: '/quickstart/access-control/k8s-istio-authorization-policies',
+        },
+        {
+          from: '/quick-tutorials/k8s-kafka-mtls',
+          to: '/quickstart/access-control/k8s-kafka-mtls',
+        },
+        {
+          from: '/quick-tutorials/aws-eks-cni-mini',
+          to: '/quickstart/access-control/aws-eks-cni-mini',
+        },
+        {
+          from: '/quick-tutorials/k8s-kafka-mtls-cert-manager',
+          to: '/quickstart/access-control/k8s-kafka-mtls-cert-manager',
+        },
+        {
+          from: '/quick-tutorials/k8s-mtls',
+          to: '/quickstart/access-control/k8s-mtls',
+        },
         // Redirect from multiple old paths to the new path
         // {
         //   to: '/docs/newDoc2',
