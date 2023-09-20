@@ -22,7 +22,7 @@ In this tutorial, we will:
 
 Before you start, you'll need a Kubernetes cluster. Having a cluster with a [CNI](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/) that supports [NetworkPolicies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) isn't required for this tutorial, but is recommended so that your cluster works with other tutorials.
 
-{@include: ../\_common/cluster-setup.md}
+{@include: ../../_common/cluster-setup.md}
 
 </details>
 
@@ -35,7 +35,7 @@ So either forego browser visualization and:
 <details>
 <summary>Install the Otterize network mapper in your cluster with the Istio watcher component enabled, and <b>without</b> Otterize Cloud</summary>
 
-{@include: ../\_common/install-otterize-istio-watcher.md}
+{@include: ../../_common/install-otterize-istio-watcher.md}
 
 </details>
 
@@ -46,11 +46,11 @@ Or choose to include browser visualization and:
 
 #### Create an Otterize Cloud account
 
-{@include: ../\_common/create-account.md}
+{@include: ../../_common/create-account.md}
 
 #### Install Otterize OSS, connected to Otterize Cloud
 
-{@include: ../\_common/install-otterize-from-cloud-with-enforcement-with-istiowatcher.md}
+{@include: ../../_common/install-otterize-from-cloud-with-enforcement-with-istiowatcher.md}
 
 </details>
 
@@ -59,7 +59,7 @@ Finally, you'll need to install the Otterize CLI (if you haven't already) to int
 <details>
 <summary>Install the Otterize CLI</summary>
 
-{@include: ../\_common/install-otterize-cli.md}
+{@include: ../../_common/install-otterize-cli.md}
 
 </details>
 
@@ -68,7 +68,7 @@ Finally, you'll need to install the Otterize CLI (if you haven't already) to int
 <details>
 <summary>Install Istio in the cluster via Helm</summary>
 
-{@include: ../\_common/install-istio.md}
+{@include: ../../_common/install-istio.md}
 
 </details>
 <details>
@@ -90,7 +90,7 @@ kubectl apply -f ${ABSOLUTE_URL}/code-examples/network-mapper/istio-telemetry-en
 ```
 
 ```yaml
-{@include: ../../static/code-examples/network-mapper/istio-telemetry-enablement.yaml}
+{@include: ../../../static/code-examples/network-mapper/istio-telemetry-enablement.yaml}
 ```
 
 </details>

@@ -24,7 +24,7 @@ In this tutorial, we will:
 
 Before you start, you'll need a Kubernetes cluster. Having a cluster with a [CNI](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/) that supports [NetworkPolicies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) isn't required for this tutorial, but is recommended so that your cluster works with other tutorials.
 
-{@include: ../\_common/cluster-setup.md}
+{@include: ../../_common/cluster-setup.md}
 
 </details>
 
@@ -38,7 +38,7 @@ So either forego browser visualization and:
 <details>
 <summary>Install Otterize in your cluster, <b>without</b> Otterize Cloud</summary>
 
-{@include: ../\_common/install-otterize-mtls.md}
+{@include: ../../_common/install-otterize-mtls.md}
 
 </details>
 
@@ -49,11 +49,11 @@ Or choose to include browser visualization and Cloud-managed credentials:
 
 #### Create an Otterize Cloud account
 
-{@include: ../\_common/create-account.md}
+{@include: ../../_common/create-account.md}
 
 #### Install Otterize OSS, connected to Otterize Cloud
 
-{@include: ../\_common/install-otterize-from-cloud.md}
+{@include: ../../_common/install-otterize-from-cloud.md}
 
 </details>
 
@@ -110,7 +110,7 @@ spec:
 <TabItem value="namespace.yaml" label="namespace.yaml" default>
 
 ```yaml
-{@include: ../../static/code-examples/kafka-mtls/namespace.yaml}
+{@include: ../../../static/code-examples/kafka-mtls/namespace.yaml}
 ```
 
 </TabItem>
@@ -118,7 +118,7 @@ spec:
 <TabItem value="client-deployment.yaml" label="client-deployment.yaml">
 
 ```yaml
-{@include: ../../static/code-examples/kafka-mtls/client-deployment.yaml}
+{@include: ../../../static/code-examples/kafka-mtls/client-deployment.yaml}
 ```
 
 </TabItem>
@@ -126,7 +126,7 @@ spec:
 <TabItem value="client-configmap.yaml" label="client-configmap.yaml">
 
 ```yaml
-{@include: ../../static/code-examples/kafka-mtls/client-configmap.yaml}
+{@include: ../../../static/code-examples/kafka-mtls/client-configmap.yaml}
 ```
 
 </TabItem>

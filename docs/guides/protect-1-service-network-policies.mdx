@@ -32,7 +32,7 @@ Note: all the capabilities of IBAC are within Otterize OSS, while the access gra
 
 Before you start, you'll need a Kubernetes cluster.
 
-{@include: ../_common/cluster-setup.md}
+{@include: ../../_common/cluster-setup.md}
 </details>
 
 <details>
@@ -49,14 +49,14 @@ kubectl apply -n otterize-ecom-demo -f ${ABSOLUTE_URL}/code-examples/shadow-mode
 <details>
 <summary>Create an Otterize Cloud account</summary>
 
-{@include: ../_common/create-account.md}
+{@include: ../../_common/create-account.md}
 
 </details>
 
 <details>
 <summary>Install Otterize OSS</summary>
 
-{@include: ../_common/install-otterize-from-cloud.md}
+{@include: ../../_common/install-otterize-from-cloud.md}
 
 </details>
 
@@ -298,7 +298,7 @@ Now that we've verified no intended clients would be blocked, we can safely prot
 To do so, recall that we configured Otterize OSS to be in the `defaultShadow` mode: by default, it's in shadow mode for all services, not actually managing network policies for them. To protect a service is a simple matter of applying a `ProtectedService` YAML for it, overriding the default for it:
 
 ```yaml
-{@include: ../../static/code-examples/guides/protect-1-service-network-policies/protect-productcatalogservice.yaml}
+{@include: ../../../static/code-examples/guides/protect-1-service-network-policies/protect-productcatalogservice.yaml}
 ```
 
 Let's apply this file to our cluster:

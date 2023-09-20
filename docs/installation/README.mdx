@@ -6,7 +6,7 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
 ## Install Otterize without Otterize Cloud (OSS only)
-{@include: ../_common/install-otterize.md}
+{@include: ../../_common/install-otterize.md}
 
 
 <details>
@@ -17,11 +17,11 @@ import TabItem from '@theme/TabItem';
 
 Before you start, you need to have a Kubernetes cluster with a [CNI](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/) that supports [NetworkPolicies](https://kubernetes.io/docs/concepts/services-networking/network-policies/).
 
-{@include: ../_common/cluster-setup.md}
+{@include: ../../_common/../cluster-setup.md}
 </details>
 
 ### Upgrade Otterize
-{@include: ../_common/upgrade-otterize.md}
+{@include: ../../_common/upgrade-otterize.md}
 
 ## Connect Otterize OSS to Otterize Cloud, or install Otterize with Otterize Cloud
 To connect Otterize OSS to Otterize Cloud you will need to [login](https://app.otterize.com), create a cluster, and follow the instructions.
@@ -29,7 +29,7 @@ To connect Otterize OSS to Otterize Cloud you will need to [login](https://app.o
 In a nutshell, you need to `helm upgrade` the same Helm chart, but provide Otterize Cloud credentials. Upon creating a cluster, a guide will appear that walks you through doing this with the new credentials jut created.
 
 ## Install just the Otterize network mapper
-{@include: ../_common/install-otterize-network-mapper.md}
+{@include: ../../_common/install-otterize-network-mapper.md}
 
 ## Install the Otterize CLI
 
@@ -37,7 +37,7 @@ The [Otterize CLI](/reference/cli) is a command-line utility used to control and
 
 To install the CLI:
 
-{@include: ../_common/install-otterize-cli.md}
+{@include: ../../_common/install-otterize-cli.md}
 
 
 ## Uninstall Otterize
