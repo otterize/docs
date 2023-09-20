@@ -1,10 +1,11 @@
 ---
-sidebar_position: 6
+sidebar_position: 2
 title: Istio AuthorizationPolicy automation
 ---
+
 import CodeBlock from "@theme/CodeBlock";
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
 
 Otterize automates mTLS-based, HTTP-level pod-to-pod access control with Istio authorization (authZ) policies, within your Kubernetes cluster.
 
@@ -27,10 +28,12 @@ In this tutorial, we will:
 
 Before you start, you'll need a Kubernetes cluster. Having a cluster with a [CNI](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/) that supports [NetworkPolicies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) isn't required for this tutorial, but is recommended so that your cluster works with other tutorials.
 
-{@include: ../_common/cluster-setup.md}
+{@include: ../\_common/cluster-setup.md}
+
 </details>
 
 You can now install (or reinstall) Otterize in your cluster, and optionally connect to Otterize Cloud. Connecting to Cloud lets you:
+
 1. See what's happening visually in your browser, through the "access graph";
 
 So either forego browser visualization and:
@@ -38,7 +41,7 @@ So either forego browser visualization and:
 <details>
 <summary>Install Otterize in your cluster, <b>without</b> Otterize Cloud</summary>
 
-{@include: ../_common/install-otterize-istio-enabled.md}
+{@include: ../\_common/install-otterize-istio-enabled.md}
 
 </details>
 
@@ -47,13 +50,13 @@ Or choose to include browser visualization and:
 <details>
 <summary>Install Otterize in your cluster, <b>with</b> Otterize Cloud</summary>
 
-####  Create an Otterize Cloud account
+#### Create an Otterize Cloud account
 
-{@include: ../_common/create-account.md}
+{@include: ../\_common/create-account.md}
 
 #### Install Otterize OSS, connected to Otterize Cloud
 
-{@include: ../_common/install-otterize-from-cloud-with-istio-enforcement.md}
+{@include: ../\_common/install-otterize-from-cloud-with-istio-enforcement.md}
 
 </details>
 
@@ -62,7 +65,7 @@ Or choose to include browser visualization and:
 <details>
 <summary>Install Istio in the cluster via Helm</summary>
 
-{@include: ../_common/install-istio.md}
+{@include: ../\_common/install-istio.md}
 
 </details>
 <details>
@@ -90,19 +93,21 @@ enforce them with Istio authorization policies.
 ## Deploy the two clients and the server
 
 Deploy a simple example consisting of `client` and `other-client` calling `nginx` over HTTP:
+
 ```shell
 kubectl apply -n otterize-tutorial-istio -f ${ABSOLUTE_URL}/code-examples/istio-authorization-policies/all.yaml
 ```
 
 ## Apply intents
+
 We will now declare that the **client** intends to call the **server** at a particular HTTP path using a specific HTTP method.
 
 When the intents YAML is applied, creating a custom resource of type `ClientIntents`,
 Otterize will add an Istio authorization policy to allow the intended call
 (**client** &rarr; **server** with the declared path and method) and block all unintended calls (e.g., **client-other** &rarr; **server**).
 
-
 1. Here is the `intents.yaml` declaration of the client, which we will apply below:
+
 ```yaml
 {@include: ../../static/code-examples/istio-authorization-policies/intents.yaml}
 ```
@@ -116,35 +121,43 @@ Check that the client and server pods were deployed
 ```bash
 kubectl get pods -n otterize-tutorial-istio
 ```
+
 You should see
+
 ```
 NAME                           READY   STATUS    RESTARTS   AGE
 client-68b775f766-749r4         2/2     Running   0          32s
 nginx-c646898-2lq7l             2/2     Running   0          32s
 other-client-74cc54f7b5-9rctd   2/2     Running   0          32s
 ```
+
 </details>
 
 monitor both client attempts to call the server with additional terminal windows,
 so we can see the effects of our changes in real time.
 
 2. **Open a new terminal window [client]** and tail the client log:
+
 ```bash
 kubectl logs -f --tail 1 -n otterize-tutorial-istio deploy/client
 ```
+
 <details>
 <summary>Expected output</summary>
 
 At this point the client should be able to communicate with the server:
+
 ```
 Calling server...
 HTTP/1.1 200 OK
 ...
 hello from /client-path
 ```
+
 </details>
 
 3. **Open another terminal window [client-other]** and tail the other-client log:
+
 ```bash
 kubectl logs -f --tail 1 -n otterize-tutorial-istio deploy/other-client
 ```
@@ -153,6 +166,7 @@ kubectl logs -f --tail 1 -n otterize-tutorial-istio deploy/other-client
 <summary>Expected output</summary>
 
 At this point the client should be able to communicate with the server:
+
 ```
 Calling server...
 HTTP/1.1 200 OK
@@ -163,15 +177,17 @@ hello from /other-client-path
 </details>
 
 Keep an eye on the logs being tailed in the **[other-client]** terminal window,
-   and apply this `intents.yaml` file in your **main terminal window** using:
-   ```shell
-   kubectl apply -f ${ABSOLUTE_URL}/code-examples/istio-authorization-policies/intents.yaml
-   ```
+and apply this `intents.yaml` file in your **main terminal window** using:
+
+```shell
+kubectl apply -f ${ABSOLUTE_URL}/code-examples/istio-authorization-policies/intents.yaml
+```
+
 :::tip
 Client intents are the cornerstone of [intent-based access control (IBAC)](https://otterize.com/ibac).
-:::
-2. You should quickly see in the **[other-client]** terminal that it times out when calling the server,
-   as expected since it didn't declare its intents:
+::: 2. You should quickly see in the **[other-client]** terminal that it times out when calling the server,
+as expected since it didn't declare its intents:
+
 ```bash
 Calling server...
 HTTP/1.1 200 OK
@@ -185,17 +201,22 @@ Terminated
 ```
 
 3. And in the **[client]** terminal you should see that calls go through, as expected since they were declared:
+
 ```bash
 Calling server...
 HTTP/1.1 200 OK
 ...
 hello from /client-path
 ```
+
 4. You should also see that a new Istio authorization policy was created:
+
 ```bash
 kubectl get authorizationpolicies.security.istio.io -n otterize-tutorial-istio
 ```
+
 This should return:
+
 ```
 NAME                                                                AGE
 authorization-policy-to-nginx-from-client.otterize-tutorial-istio   6s
@@ -209,12 +230,13 @@ And upon clicking the green arrow:
 ![Access graph](/img/quick-tutorials/k8s-istio-authorization-policies/protected-edge.png)
 
 It's now clear what happened:
+
 1. The server is now protected, and is also blocking some of its clients.
 2. Calls from **[client]** &rarr; **[nginx]** are declared and therefore allowed (green arrow).
 3. Calls from **[client-other]** &rarr; **[nginx]** are not declared and therefore blocked (red arrow). Click on the arrow to see what to do about it.
 
 :::tip Done!
-Otterize did its job of both protecting the server *and* allowing intended access.
+Otterize did its job of both protecting the server _and_ allowing intended access.
 :::
 
 ## What did we accomplish?
@@ -227,13 +249,13 @@ Otterize did its job of both protecting the server *and* allowing intended acces
 
 - The next `kubectl apply` ensures that authorization policies automatically reflect the most recent intended pod-to-pod access.
 
-
 <details>
 <summary>Expand to see what happened behind the scenes</summary>
 
 Otterize generated a specific Istio authorization policy on the ingress of the pod of the server, allowing the server to
 be accessed by the pod of the client, based on that client's declared intent. Otterize uses labels to define the authorization policy and associate it
 with a server in a namespace, and uses service accounts to identify clients, as Istio requires. This happens as follows:
+
 1. The server's pod is given a label `intents.otterize.com/server` whose value uniquely represents that server.
    The Istio authorization policy stipulates that it applies to the ingress of server pods with this label.
 2. The client's service account is looked up through its pod, and used in the policy.
@@ -244,6 +266,7 @@ Otterize saved us from doing all this work: by simply declaring the client's int
 all the appropriate configuration was managed automatically behind the scenes.
 
 [Learn more about Istio authorization policies and Otterize](/reference/configuration/intents-operator#istio-authorizationpolicy).
+
 </details>
 
 :::tip Bonus tutorial
@@ -256,7 +279,6 @@ Try to create an intents file yourself for **client-other**, and apply it to all
   for use in [intent-based access control (IBAC)](https://otterize.com/ibac).
 - See in advance what calls will be allowed or blocked, by running Otterize in **shadow mode** &mdash; just follow the [quick visual tutorial for IBAC with Istio authorization policies](/quick-visual-tutorials/visual-ibac-istio-authorization-policies).
 - Learn how to easily secure Kafka with IBAC, in [a hands-on tutorial](/quick-tutorials/k8s-kafka-mtls) or [a more visual tutorial](/quick-visual-tutorials/visual-ibac-kafka-k8s).
-
 
 ## Teardown
 
