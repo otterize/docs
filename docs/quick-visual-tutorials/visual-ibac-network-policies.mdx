@@ -273,9 +273,7 @@ With the confidence we gained, let's enable enforcement (via network policies) b
 
 At the top of the access graph, click the **Configure cluster** button; or in the clusters page, clicking on the **Connection guide &rarr;** link for your cluster.
 
-Then run the Helm commands shown there, and specifically follow the instructions to install Otterize <b>with enforcement on</b> (not in shadow mode). Namely, <b>omit</b> the following flag in the Helm command:
-
-`--set intentsOperator.operator.mode=defaultShadow`
+Then run the Helm commands shown there, and specifically follow the instructions to install Otterize <b>with enforcement on</b> (use the toggle to make `Enforcement mode: active`)
 
 Let's look at the access graph again:
 
