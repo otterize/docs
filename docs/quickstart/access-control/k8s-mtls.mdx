@@ -1,10 +1,11 @@
 ---
-sidebar_position: 8
+sidebar_position: 3
 title: Simple mTLS deployment
 sidebar_class_name: hidden
 ---
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
 
 Otterize can automatically provision mTLS credentials by using the service identities implied by Kubernetes.
 This tutorial will walk you through deploying mTLS certificates on a sample client-server deployment using the [Otterize credentials operator](/reference/configuration/credentials-operator).
@@ -23,10 +24,12 @@ In this tutorial, we will:
 
 Before you start, you'll need a Kubernetes cluster. Having a cluster with a [CNI](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/) that supports [NetworkPolicies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) isn't required for this tutorial, but is recommended so that your cluster works with other tutorials.
 
-{@include: ../_common/cluster-setup.md}
+{@include: ../../_common/cluster-setup.md}
+
 </details>
 
 You can now install Otterize in your cluster (if it's not already installed), and optionally connect to Otterize Cloud. Connecting to Cloud lets you:
+
 1. See what's happening visually in your browser, through the "access graph";
 2. Avoid using SPIRE (which can be installed with Otterize) for issuing certificates, as Otterize Cloud provides a certificate service.
 
@@ -35,7 +38,7 @@ So either forego browser visualization and:
 <details>
 <summary>Install Otterize in your cluster, <b>without</b> Otterize Cloud</summary>
 
-{@include: ../_common/install-otterize-mtls.md}
+{@include: ../../_common/install-otterize-mtls.md}
 
 </details>
 
@@ -44,13 +47,13 @@ Or choose to include browser visualization and Cloud-managed credentials:
 <details>
 <summary>Install Otterize in your cluster, <b>with</b> Otterize Cloud</summary>
 
-####  Create an Otterize Cloud account
+#### Create an Otterize Cloud account
 
-{@include: ../_common/create-account.md}
+{@include: ../../_common/create-account.md}
 
 #### Install Otterize OSS, connected to Otterize Cloud
 
-{@include: ../_common/install-otterize-from-cloud.md}
+{@include: ../../_common/install-otterize-from-cloud.md}
 
 </details>
 
@@ -58,6 +61,7 @@ Or choose to include browser visualization and Cloud-managed credentials:
 
 Our example consists of two pods, "client" and "server", communicating over HTTP with mTLS.
 Otterize makes mTLS easy, requiring just 3 simple changes to a client pod spec:
+
 1. **Generate credentials**: add the `credentials-operator.otterize.com/tls-secret-name` annotation, which tells the Otterize
    credentials operator to generate mTLS credentials, and to store them in a Kubernetes secret
    whose name is the value of this annotation.
@@ -96,6 +100,7 @@ spec:
               readOnly: true
             # highlight-end
 ```
+
 </details>
 
 <details>
@@ -105,7 +110,7 @@ spec:
 <TabItem value="namespace.yaml" label="namespace.yaml" default>
 
 ```yaml
-{@include: ../../static/code-examples/kafka-mtls/namespace.yaml}
+{@include: ../../../static/code-examples/kafka-mtls/namespace.yaml}
 ```
 
 </TabItem>
@@ -113,7 +118,7 @@ spec:
 <TabItem value="client-deployment.yaml" label="client-deployment.yaml">
 
 ```yaml
-{@include: ../../static/code-examples/kafka-mtls/client-deployment.yaml}
+{@include: ../../../static/code-examples/kafka-mtls/client-deployment.yaml}
 ```
 
 </TabItem>
@@ -121,34 +126,31 @@ spec:
 <TabItem value="client-configmap.yaml" label="client-configmap.yaml">
 
 ```yaml
-{@include: ../../static/code-examples/kafka-mtls/client-configmap.yaml}
+{@include: ../../../static/code-examples/kafka-mtls/client-configmap.yaml}
 ```
 
 </TabItem>
 <TabItem value="client.js" label="client.js" default>
 
 ```js
-const fs = require('fs');
-const https = require('https');
+const fs = require("fs");
+const https = require("https");
 
 const options = {
-    hostname: 'server.otterize-tutorial-mtls',
-    port: 443,
-    path: '/hello',
-    method: 'GET',
-    cert: fs.readFileSync('/var/otterize/credentials/cert.pem'),
-    key: fs.readFileSync('/var/otterize/credentials/key.pem'),
-    ca: fs.readFileSync('/var/otterize/credentials/ca.pem')
-}
+  hostname: "server.otterize-tutorial-mtls",
+  port: 443,
+  path: "/hello",
+  method: "GET",
+  cert: fs.readFileSync("/var/otterize/credentials/cert.pem"),
+  key: fs.readFileSync("/var/otterize/credentials/key.pem"),
+  ca: fs.readFileSync("/var/otterize/credentials/ca.pem"),
+};
 
-const req = https.request(
-    options,
-    res => {
-        res.on('data', function (data) {
-            console.log(data.toString())
-        });
-    }
-);
+const req = https.request(options, (res) => {
+  res.on("data", function (data) {
+    console.log(data.toString());
+  });
+});
 
 req.end();
 ```
@@ -161,26 +163,31 @@ const https = require(`https`);
 const fs = require(`fs`);
 
 const options = {
-  key: fs.readFileSync('/var/otterize/credentials/key.pem'),
-  cert: fs.readFileSync('/var/otterize/credentials/cert.pem'),
-  ca: fs.readFileSync('/var/otterize/credentials/ca.pem'),
-  requestCert: true
+  key: fs.readFileSync("/var/otterize/credentials/key.pem"),
+  cert: fs.readFileSync("/var/otterize/credentials/cert.pem"),
+  ca: fs.readFileSync("/var/otterize/credentials/ca.pem"),
+  requestCert: true,
 };
 
-https.createServer(
-    options,
-    (req, res) => {
-        const peerCert = req.connection.getPeerCertificate();
-        const ownCert = req.connection.getCertificate();
-        console.log("Received request:");
-        console.log(peerCert.subject.CN + ":\t" + req.method + " " + req.url);
-        if (req.url === '/hello') {
-            res.writeHead(200);
-            res.end('mTLS hello world\nfrom: ' + ownCert.subject.CN + '\nto client: ' + peerCert.subject.CN);
-        } else {
-            res.end();
-        }
-    }).listen(443);
+https
+  .createServer(options, (req, res) => {
+    const peerCert = req.connection.getPeerCertificate();
+    const ownCert = req.connection.getCertificate();
+    console.log("Received request:");
+    console.log(peerCert.subject.CN + ":\t" + req.method + " " + req.url);
+    if (req.url === "/hello") {
+      res.writeHead(200);
+      res.end(
+        "mTLS hello world\nfrom: " +
+          ownCert.subject.CN +
+          "\nto client: " +
+          peerCert.subject.CN
+      );
+    } else {
+      res.end();
+    }
+  })
+  .listen(443);
 ```
 
 </TabItem>
@@ -188,6 +195,7 @@ https.createServer(
 </details>
 
 Deploy the client and server using `kubectl`:
+
 ```bash
 kubectl apply -f ${ABSOLUTE_URL}/code-examples/mtls/all.yaml
 ```
@@ -198,12 +206,15 @@ kubectl apply -f ${ABSOLUTE_URL}/code-examples/mtls/all.yaml
 ```bash
 kubectl get pods -n otterize-tutorial-mtls
 ```
+
 You should see
+
 ```
 NAME                      READY   STATUS    RESTARTS   AGE
 client-5689997b5c-grlnt   1/1     Running   0          35s
 server-6698c58cbc-v9n9b   1/1     Running   0          34s
 ```
+
 </details>
 
 ## Watch it in action
@@ -222,7 +233,9 @@ server-6698c58cbc-v9n9b   1/1     Running   0          34s
    from: server.otterize-tutorial-mtls          # server's common name in the certificate
    to client: client.otterize-tutorial-mtls     # client's common name in the certificate
    ```
+
 2. You can also confirm on the server side that it sees requests from this authenticated client:
+
    ```bash
    kubectl logs --tail 1 -n otterize-tutorial-mtls deploy/server
    ```
@@ -268,7 +281,9 @@ and are then mounted as a file into the container.
    ```shell
    openssl x509 -in cert.pem -text | head -n 15
    ```
+
    You should see output similar to:
+
    ```x509
    Certificate:
        Data:
@@ -296,8 +311,8 @@ and are then mounted as a file into the container.
 
 1. We annotated the pods to let Otterize know it should generate mTLS credentials.
 2. The Otterize credentials operator:
-    1. Generated matching mTLS credentials.
-    2. Stored the mTLS credentials into Kubernetes secrets.
+   1. Generated matching mTLS credentials.
+   2. Stored the mTLS credentials into Kubernetes secrets.
 3. The secrets were mounted (separately) into each pod's container.
 4. The pods communicated with each other using mutual TLS-authenticated HTTPS.
 
@@ -313,8 +328,8 @@ For more information, see [the documentation for the credentials operator](/refe
 
 ## What's next
 
-- Learn how to manage and [automatically provision mTLS](/quick-tutorials/k8s-mtls) credentials within a Kubernetes cluster.
-- Enforce [secure Kafka access](/quick-tutorials/k8s-kafka-mtls) with mTLS.
+- Learn how to manage and [automatically provision mTLS](/quickstart/access-control/k8s-mtls) credentials within a Kubernetes cluster.
+- Enforce [secure Kafka access](/quickstart/access-control/k8s-kafka-mtls) with mTLS.
 - Learn more about how the [Otterize credentials operator](/reference/configuration/credentials-operator) works.
 
 ## Teardown

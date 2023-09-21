@@ -1,19 +1,20 @@
 ---
-sidebar_position: 9
+sidebar_position: 2
 title: Network policies on AWS EKS with the VPC CNI
 ---
+
 import CodeBlock from "@theme/CodeBlock";
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
 
 This tutorial will walk you through deploying an AWS EKS cluster with the AWS VPC CNI add-on, while enabling the new network policy support on EKS with Otterize.
 
 ## Prerequisites
 
-* An EKS cluster with the AWS VPC CNI add-on installed and with the new built-in network policy support enabled. See [Installing the AWS VPC CNI add-on](https://docs.aws.amazon.com/eks/latest/userguide/pod-networking.html) for more information, or follow the instructions below.
-* The [Otterize CLI](https://docs.otterize.com/installation#install-the-otterize-cli).
-* The [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html).
-* The [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) command-line tool.
+- An EKS cluster with the AWS VPC CNI add-on installed and with the new built-in network policy support enabled. See [Installing the AWS VPC CNI add-on](https://docs.aws.amazon.com/eks/latest/userguide/pod-networking.html) for more information, or follow the instructions below.
+- The [Otterize CLI](https://docs.otterize.com/installation#install-the-otterize-cli).
+- The [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html).
+- The [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) command-line tool.
 
 ## Step one: Create an AWS EKS cluster with the AWS VPC CNI plugin
 
@@ -84,7 +85,7 @@ So either forego browser visualization and:
 <details>
 <summary>Install Otterize in your cluster, <b>without</b> Otterize Cloud</summary>
 
-{@include: ../_common/install-otterize.md}
+{@include: ../../_common/install-otterize.md}
 
 </details>
 
@@ -93,13 +94,13 @@ Or choose to include browser visualization and:
 <details>
 <summary>Install Otterize in your cluster, <b>with</b> Otterize Cloud</summary>
 
-####  Create an Otterize Cloud account
+#### Create an Otterize Cloud account
 
-{@include: ../_common/create-account.md}
+{@include: ../../_common/create-account.md}
 
 #### Install Otterize OSS, connected to Otterize Cloud
 
-{@include: ../_common/install-otterize-from-cloud.md}
+{@include: ../../_common/install-otterize-from-cloud.md}
 
 </details>
 
@@ -108,7 +109,7 @@ Finally, you'll need to install the Otterize CLI (if you haven't already) to int
 <details>
 <summary>Install the Otterize CLI</summary>
 
-{@include: ../_common/install-otterize-cli.md}
+{@include: ../../_common/install-otterize-cli.md}
 
 </details>
 
@@ -133,6 +134,7 @@ otterize network-mapper export --server server.otterize-tutorial-eks | kubectl a
 ```
 
 Running this command will generate the following `ClientIntents` for each client connected to `server` and apply it to your cluster. You could also place it in a Helm chart or apply it some other way, instead of piping it directly to kubectl.
+
 ```yaml
 apiVersion: k8s.otterize.com/v1alpha2
 kind: ClientIntents
@@ -164,7 +166,7 @@ At which point you should see that the `server` service is ready to be protected
 And you can then protect the `server` service by applying the following `yaml` file:
 
 ```yaml
-{@include: ../../static/code-examples/aws-eks-mini/protect-server.yaml}
+{@include: ../../../static/code-examples/aws-eks-mini/protect-server.yaml}
 ```
 
 Protect the server by applying the resource:
@@ -172,7 +174,6 @@ Protect the server by applying the resource:
 ```bash
 kubectl apply -f ${ABSOLUTE_URL}/code-examples/aws-eks-mini/protect-server.yaml
 ```
-
 And you should see your access graph showing the service as protected:
 
 ![Protected Service](/img/quick-tutorials/aws-eks-mini/protected.png)
@@ -184,6 +185,7 @@ Have a look at the [guide on how to deploy protection to a larger, more complex 
 ## Teardown
 
 To remove the deployed examples run:
+
 ```bash
 kubectl delete -f protect-server.yaml
 otterize network-mapper export --server server.otterize-tutorial-eks | kubectl delete -f -

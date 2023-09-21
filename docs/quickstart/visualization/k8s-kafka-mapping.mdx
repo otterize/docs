@@ -1,10 +1,11 @@
 ---
-sidebar_position: 5
+sidebar_position: 3
 title: Kafka topic-level access mapping
 ---
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
-import styles from '/src/css/styles.module.css';
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+import styles from "/src/css/styles.module.css";
 
 With its Kafka watcher enabled, the network mapper allows you to map topic-level access to Kafka servers within your Kubernetes cluster.
 This provides a clear picture of which Kafka topics are being accessed and with which operations.
@@ -22,7 +23,8 @@ We will **not** be doing any access control in this demo, just purely mapping cl
 
 Before you start, you'll need a Kubernetes cluster. Having a cluster with a [CNI](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/) that supports [NetworkPolicies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) isn't required for this tutorial, but is recommended so that your cluster works with other tutorials.
 
-{@include: ../_common/cluster-setup.md}
+{@include: ../../_common/cluster-setup.md}
+
 </details>
 
 You can now install Otterize in your cluster, and optionally connect to Otterize Cloud. Connecting to Cloud lets you
@@ -48,13 +50,13 @@ Or choose to include browser visualization and:
 <details>
 <summary>Install Otterize in your cluster, <b>with</b> Otterize Cloud</summary>
 
-####  Create an Otterize Cloud account
+#### Create an Otterize Cloud account
 
-{@include: ../_common/create-account.md}
+{@include: ../../_common/create-account.md}
 
 #### Install Otterize OSS, connected to Otterize Cloud
 
-{@include: ../_common/install-otterize-from-cloud-with-enforcement-and-kafka-watcher.md}
+{@include: ../../_common/install-otterize-from-cloud-with-enforcement-and-kafka-watcher.md}
 
 </details>
 
@@ -63,7 +65,7 @@ Finally, you'll need to install the Otterize CLI (if you haven't already) to int
 <details>
 <summary>Install the Otterize CLI</summary>
 
-{@include: ../_common/install-otterize-cli.md}
+{@include: ../../_common/install-otterize-cli.md}
 
 </details>
 
@@ -71,6 +73,7 @@ Finally, you'll need to install the Otterize CLI (if you haven't already) to int
 
 We will deploy a Kafka broker using Bitnami's [Helm chart](https://github.com/bitnami/charts/tree/master/bitnami/kafka).
 In the chart we will configure Kafka to:
+
 - Recognize the Otterize intents operator as a super user so it can configure ACLs.
 - Turn on Kafka debug logging to allow the Kafka watcher to feed topic-level client access information to the network mapper.
 
@@ -78,25 +81,29 @@ In the chart we will configure Kafka to:
 <summary>Expand to see the Helm values.yaml used with the Bitnami chart</summary>
 
 ```yaml
-{@include: ../../static/code-examples/kafka-mapping/helm/values.yaml}
+{@include: ../../../static/code-examples/kafka-mapping/helm/values.yaml}
 ```
+
 </details>
 
 The following command will deploy a Kafka broker with this chart:
- ```bash
- helm repo add bitnami https://charts.bitnami.com/bitnami
- helm repo update
- helm install --create-namespace -n kafka \
-   -f ${ABSOLUTE_URL}/code-examples/kafka-mapping/helm/values.yaml kafka bitnami/kafka --version 21.4.4
- ```
+
+```bash
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+helm install --create-namespace -n kafka \
+  -f ${ABSOLUTE_URL}/code-examples/kafka-mapping/helm/values.yaml kafka bitnami/kafka --version 21.4.4
+```
 
 ## Deploy demo to simulate traffic
 
 Let's add a few services that will access our Kafka server, and see how the network mapper builds the access map:
+
 - One service named "**client**".
 - One service named "**client-2**".
 
 To deploy these services, use:
+
 ```shell
 kubectl apply -n otterize-tutorial-kafka-mapping -f ${ABSOLUTE_URL}/code-examples/kafka-mapping/all.yaml
 ```
@@ -108,10 +115,12 @@ otterize network-mapper list -n otterize-tutorial-kafka-mapping
 ```
 
 We expect to see:
+
 - `client` consuming from `mytopic`.
 - `client-2` producing to `mytopic`.
 
 And indeed:
+
 ```shell
 client in namespace otterize-tutorial-kafka-mapping calls:
   - kafka in namespace kafka
@@ -133,22 +142,23 @@ Only the arrows between the clients and the Kafka are green, because we've selec
 Clicking on a specific arrow between a client and the broker reveals which topic and operations are being accessed.
 
 ## What did we accomplish?
+
 Enabling the Kafka watcher component of the network mapper shows which clients connect to running Kafka servers, the topics they access, and the operations they undertake on those topics.
 
 You can consume this information in various ways:
-* Visually via the access graph, where shadow mode shows you what would in enforcement mode before actually turning on enforcement, and auto-generating client intents to bootstrap rolling out IBAC.
-* [Via the CLI](/reference/cli): from the network mapper directly or the cloud.
-* [Via the API](https://app.otterize.com/api/rest/v1beta).
 
+- Visually via the access graph, where shadow mode shows you what would in enforcement mode before actually turning on enforcement, and auto-generating client intents to bootstrap rolling out IBAC.
+- [Via the CLI](/reference/cli): from the network mapper directly or the cloud.
+- [Via the API](https://app.otterize.com/api/rest/v1beta).
 
 ## What's next
-- Try our [secure access for Kafka](/quick-tutorials/k8s-kafka-mtls) tutorial
-- Follow [a more visual tutorial](/quick-visual-tutorials/visual-ibac-kafka-k8s) for securing Kafka with IBAC in a demo ecommerce application.
-- Learn how to easily secure pod-to-pod access with IBAC using Kubernetes network policies, in [a hands-on tutorial](/quick-tutorials/k8s-network-policies) or [a more visual tutorial](/quick-visual-tutorials/visual-ibac-network-policies).
+
+- Try our [secure access for Kafka](/quickstart/access-control/k8s-kafka-mtls) tutorial
 
 ## Teardown
 
 To remove the deployed examples run:
+
 ```bash
 helm uninstall otterize -n otterize-system
 helm uninstall kafka -n kafka

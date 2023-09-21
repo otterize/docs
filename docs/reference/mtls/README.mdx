@@ -7,7 +7,7 @@ import TabItem from '@theme/TabItem';
 
 Otterize can automatically provision mTLS credentials using Kubernetes pod identities
 and integrating with [SPIFFE/SPIRE](https://spiffe.io/docs/latest/spire-about/spire-concepts/).
-You can see a simple example in the tutorial: [deploy mTLS between pods](/quick-tutorials/k8s-mtls).
+You can see a simple example in the tutorial: [deploy mTLS between pods](/quickstart/access-control/k8s-mtls).
 Here we document how to generate mTLS credentials, how to consume them in a variety of languages,
 and how to verify them if needed.
 
@@ -205,5 +205,5 @@ The certificate belongs to a chain of trust rooted at the SPIRE server.
 
 ## What's next
 
-- Configure secure access between pods and Kafka running within the same Kubernetes cluster with this [guide](/quick-tutorials/k8s-kafka-mtls).
+- Configure secure access between pods and Kafka running within the same Kubernetes cluster with this [guide](/quickstart/access-control/k8s-kafka-mtls).
 - Read more about the [Otterize credentials operator](/reference/configuration/credentials-operator/)
