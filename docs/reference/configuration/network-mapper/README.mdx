@@ -59,6 +59,9 @@ The Istio watcher periodically queries for all pods with the `security.istio.io/
 ## Deploying the network mapper
 To deploy the network mapper, [use the Helm chart](/reference/configuration/network-mapper/helm-chart).
 
+## Monitoring the network mapper
+All network mapper pods expose a Prometheus metrics endpoint on port 2112, on `/metrics`.
+
 ## Pod annotations
 You can override the service name the network mapper uses when it computes the service name using a pod annotation.
 
@@ -66,3 +69,4 @@ You can override the service name the network mapper uses when it computes the s
 | Annotation                          | Description                                     |
 |-------------------------------------|-------------------------------------------------|
 | `intents.otterize.com/service-name` | Used for [service identity resolution](/reference/service-identities#kubernetes-service-identity-resolution). |
+
