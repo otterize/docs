@@ -62,6 +62,14 @@ const config = {
           from: '/quick-tutorials/k8s-mtls',
           to: '/quickstart/access-control/k8s-mtls',
         },
+        {
+          from: '/quick-tutorials/k8s-network-mapper',
+          to: 'quickstart/visualization/k8s-network-mapper',
+        },
+        {
+          from: '/quick-tutorials/k8s-istio-watcher',
+          to: 'quickstart/visualization/k8s-istio-watcher',
+        },
         // Redirect from multiple old paths to the new path
         // {
         //   to: '/docs/newDoc2',
