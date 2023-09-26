@@ -7,10 +7,10 @@ const darkCodeTheme = require("prism-react-renderer/themes/oceanicNext");
 // /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: "Otterize",
-  url: "https://docs.otterize.com",
+  url: process.env.NODE_ENV === "production" ? "https://docs.otterize.com" : "http://localhost:3003/",
   baseUrl: "/",
-  onBrokenLinks: "warn",
-  onBrokenMarkdownLinks: "warn",
+  onBrokenLinks: "throw",
+  onBrokenMarkdownLinks: "throw",
   favicon: "img/favicon.svg",
   trailingSlash: false,
 
@@ -37,6 +37,54 @@ const config = {
         {
           from: '/getting-started/oss-installation',
           to: '/installation',
+        },
+        {
+          from: '/quick-tutorials/k8s-network-policies',
+          to: '/quickstart/access-control/k8s-network-policies',
+        },
+        {
+          from: '/quick-tutorials/k8s-istio-authorization-policies',
+          to: '/quickstart/access-control/k8s-istio-authorization-policies',
+        },
+        {
+          from: '/quick-tutorials/k8s-kafka-mtls',
+          to: '/quickstart/access-control/k8s-kafka-mtls',
+        },
+        {
+          from: '/quick-tutorials/aws-eks-cni-mini',
+          to: '/quickstart/access-control/aws-eks-cni-mini',
+        },
+        {
+          from: '/quick-tutorials/k8s-kafka-mtls-cert-manager',
+          to: '/quickstart/access-control/k8s-kafka-mtls-cert-manager',
+        },
+        {
+          from: '/quick-tutorials/k8s-mtls',
+          to: '/quickstart/access-control/k8s-mtls',
+        },
+        {
+          from: '/quick-tutorials/k8s-network-mapper',
+          to: '/quickstart/visualization/k8s-network-mapper',
+        },
+        {
+          from: '/quick-tutorials/k8s-istio-watcher',
+          to: '/quickstart/visualization/k8s-istio-watcher',
+        },
+        {
+          from: '/quick-visual-tutorials/visual-ibac-istio-authorization-policies',
+          to: '/quickstart/access-control/k8s-istio-authorization-policies',
+        },
+        {
+          from: '/quick-visual-tutorials/visual-ibac-kafka-k8s',
+          to: '/quickstart/access-control/k8s-kafka-mtls',
+        },
+        {
+          from: '/quick-visual-tutorials/visual-ibac-network-policies',
+          to: '/quickstart/access-control/k8s-network-policies',
+        },
+        {
+          from: '/quick-visual-tutorials/visual-k8s-cluster-mapping',
+          to: '/quickstart/visualization/k8s-network-mapper',
         },
         // Redirect from multiple old paths to the new path
         // {

@@ -263,3 +263,7 @@ pre.prism-code {
     height: max-content;
   }
 }
+
+.hidden {
+  display: none !important;
+}

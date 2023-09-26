@@ -22,9 +22,9 @@ spec:
   addr: ecommevents.namespace:9092 # the address the intents operator will connect to in order to apply ACLs to this broker
   noAutoCreateIntentsForOperator: false # By default, the operator automatically creates a ClientIntent for itself to this server, so that it's able to connect. To disable, set to "true".
   tls: # this section informs the operator where to find the credentials to authenticate with the broker via mTLS. The values here are the defaults set by the otterize-kubernetes chart.
-    certFile: /etc/otterize-spire/svid.pem
+    certFile: /etc/otterize-spire/cert.pem
     keyFile: /etc/otterize-spire/key.pem
-    rootCAFile: /etc/otterize-spire/bundle.pem
+    rootCAFile: /etc/otterize-spire/ca.pem
   topics: # configuration for topic scope - how ACLs should be applied to each topic or set of topics.
     - topic: "*" # A specific topic or a prefix. Can be "*" for all.
       pattern: literal # Prefix or literal. Use literal for "*".

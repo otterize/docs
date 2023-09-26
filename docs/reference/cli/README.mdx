@@ -4,7 +4,7 @@ title: CLI
 ---
 
 The Otterize command line interface (CLI) offers the following capabilities:
-- [Interact with](#network-mapper) the [Otterize network mapper](/quick-tutorials/k8s-network-mapper) running in a Kubernetes cluster.
+- [Interact with](#network-mapper) the [Otterize network mapper](/quickstart/visualization/k8s-network-mapper) running in a Kubernetes cluster.
 - [Transform](#otterize-intents-convert--f-path) [intents files](/reference/intents-and-intents-files/#intents-file-formats) from plain YAML format to Kubernetes custom resource YAML format.
 - Interact with the Otterize Cloud, through its REST API.
 
@@ -652,95 +652,6 @@ Returns confirmation of the deletion.
 
 ```shell
 Deleted integration int_nx2twtcqwt
-```
-
-## Intents
-
-### `otterize intents convert -f <path>`
-
-Convert client intents files in plain YAML format to Kubernetes ClientIntents resource format.
-
-#### Options
-
-| Name | Default | Description |
-| --- | --- | --- |
-| `-f` or `--filename` | `'.'` | The client intents filename, or a directory containing client intents files. |
-
-#### Returns
-
-Here's the result of converting a directory containing two client intents file in plain YAML format.
-The result is YAML describing two Kubernetes resources separated with the YAML `---` separator.
-
-```shell
-apiVersion: k8s.otterize.com/v1alpha2
-kind: ClientIntents
-metadata:
-  name: cartservice
-  namespace: otterize-ecom-demo
-spec:
-  service:
-    name: cartservice
-  calls:
-    - name: redis-cart
-      type: http
----
-apiVersion: k8s.otterize.com/v1alpha2
-kind: ClientIntents
-metadata:
-  name: checkoutservice
-  namespace: otterize-ecom-demo
-spec:
-  service:
-    name: checkoutservice
-  calls:
-    - name: cartservice
-      type: http
-    - name: currencyservice
-      type: http
-```
-
-### `otterize intents list [--client-service-id <id>] [--server-service-id <id>] [--env-id <id>]`
-
-Returns the list of (declared) intents, optionally filtered by client, server, or environment.
-
-#### Options
-
-| Name | Default | Description |
-| --- | --- | --- |
-| `--client-service-id` |  | Return only intents from the specified client service. |
-| `--server-service-id` |  | Return only intents to the specified server service. |
-| `--env-id` |  | Return only intents where either the client or the server belong to the specified environment. |
-
-#### Returns
-
-A table of information about the intents.
-
-- When `type` is `HTTP`, the `object` and `action` columns will show the resource paths and methods, respectively.
-- When `type` is `KAFKA`, the `object` and `action` columns will show the topic names and operations, respectively.
-
-```shell
-id                client service id server service id type object action
-───────────────── ───────────────── ───────────────── ──── ────── ──────
-intent_ah8dix4uxv svc_dt7k4ay3bd    svc_kqkallmwsq    HTTP
-intent_6rhxnyngnh svc_p7qh7hhtmu    svc_r8fm2oiyvs    HTTP
-intent_5uzyy3q7aj svc_gji52kfake    svc_p7qh7hhtmu    HTTP
-intent_4ekwmaf2n2 svc_o5bg2me9h5    svc_nqhgkxlbwe    HTTP
-intent_2lnzhzn49a svc_lkb2omplkk    svc_lkyww4s6ad    HTTP
-intent_tz9e5buzcn svc_nqhgkxlbwe    svc_lkyww4s6ad    HTTP
-```
-
-### `otterize intents get <intent-id>`
-
-Returns information about a single (declared) intent, specified by its id.
-
-#### Returns
-
-Returns a table of information about the intent.
-
-```shell
-id                client service id server service id type object action
-───────────────── ───────────────── ───────────────── ──── ────── ──────
-intent_ah8dix4uxv svc_dt7k4ay3bd    svc_kqkallmwsq    HTTP
 ```
 
 ## Invites

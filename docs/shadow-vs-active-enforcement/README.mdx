@@ -31,8 +31,7 @@ In general, of course, this will immediately block access from services that hav
 
 Whether this is a good thing or a problem depends on your situation. There are multiple ways of rolling out IBAC across the many services that may be running in some environment or Kubernetes cluster.
 - For example, you can insist that all services are protected by default from unauthorized access, with a global default-deny network policy. All clients must then declare and apply intents in order to reach their intended servers. It's a bit of a "big bang" approach, though.
-- You can also generate all the client intents files by putting load on the services in the cluster (so they make all the calls they should), and use the Otterize network mapper to build a network map and export it as client intents (see [this quick visual tutorial](/quick-visual-tutorials/visual-ibac-network-policies#protect-everything-easily)). You can then hand them over to the client developer teams to own and update as their code evolves, or manage them yourself &mdash; much more easily than managing network policies directly.
-- Or you can gradually roll out IBAC, service by service. This will often be the most appropriate when you're just starting with IBAC and want to build experience and get value with little risk of breaking anything. It's probably **the easiest way to start**, too. See the next section, on shadow mode.
+- You can also gradually roll out IBAC, service by service. This will often be the most appropriate when you're just starting with IBAC and want to build experience and get value with little risk of breaking anything. It's probably **the easiest way to start**, too. See the next section, on shadow mode.
 
 To help you manage the rollout of IBAC, consider starting with shadow enforcement.
 
