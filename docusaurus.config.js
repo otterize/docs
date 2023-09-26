@@ -70,6 +70,22 @@ const config = {
           from: '/quick-tutorials/k8s-istio-watcher',
           to: '/quickstart/visualization/k8s-istio-watcher',
         },
+        {
+          from: '/quick-visual-tutorials/visual-ibac-istio-authorization-policies',
+          to: '/quickstart/access-control/k8s-istio-authorization-policies',
+        },
+        {
+          from: '/quick-visual-tutorials/visual-ibac-kafka-k8s',
+          to: '/quickstart/access-control/k8s-kafka-mtls',
+        },
+        {
+          from: '/quick-visual-tutorials/visual-ibac-network-policies',
+          to: '/quickstart/access-control/k8s-network-policies',
+        },
+        {
+          from: '/quick-visual-tutorials/visual-k8s-cluster-mapping',
+          to: '/quickstart/visualization/k8s-network-mapper',
+        },
         // Redirect from multiple old paths to the new path
         // {
         //   to: '/docs/newDoc2',
