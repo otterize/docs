@@ -169,7 +169,7 @@ Zoom the access graph a bit to enlarge it around the `productcatalogservice`:
 
 Click on the `productcatalogservice` to show more details about it:
 
-<img src="/img/guides/protect-1-service-network-policies/productcatalogservice-no-intents.png" alt="Clicked on productcatalogservice" width="600"/>
+<img src="/img/guides/protect-1-service-network-policies/productcatalogservice-no-intents.png" alt="Clicked on productcatalogservice" />
 
 We can see that:
 - As a server, it's currently **unprotected** (specifically, by network policies); that's expected, as we haven't yet turned on protection.
@@ -277,7 +277,7 @@ otterize network-mapper export --server productcatalogservice.otterize-ecom-demo
 | kubectl apply -f -
 ```
 
-If we now look at the access graph, lo and behold: the lines and arrows from all 3 clients to `productcatalogservice` are now **solid** green: all the necessary intents have been declared. (And a lot of other lines are now green too, since these clients also call many other servers; these other servers may soon be ready to protect too.)
+If we now look at the access graph, lo and behold: the lines and arrows from all 3 clients to `productcatalogservice` are now green: all the necessary intents have been declared. (And a lot of other lines are now green too, since these clients also call many other servers; these other servers may soon be ready to protect too.)
 
 ![3 intents declared](/img/guides/protect-1-service-network-policies/3-intents-unprotected.png)
 
