@@ -3,6 +3,7 @@
 
 const lightCodeTheme = require("prism-react-renderer/themes/oceanicNext");
 const darkCodeTheme = require("prism-react-renderer/themes/oceanicNext");
+const path = require("path");
 
 // /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -31,6 +32,7 @@ const config = {
     { src: "/pixels.js", async: true },
   ],
   plugins: [
+    path.resolve(__dirname, 'plugins', 'verify-includes'),
     ['@docusaurus/plugin-client-redirects',
     {
       redirects: [
@@ -57,10 +59,6 @@ const config = {
         {
           from: '/quick-tutorials/k8s-kafka-mtls-cert-manager',
           to: '/quickstart/access-control/k8s-kafka-mtls-cert-manager',
-        },
-        {
-          from: '/quick-tutorials/k8s-mtls',
-          to: '/quickstart/access-control/k8s-mtls',
         },
         {
           from: '/quick-tutorials/k8s-network-mapper',
