@@ -23,7 +23,7 @@ module.exports = function (context, options) {
       if (child.status !== 1) {
         console.error("Found missing includes in these files:")
         console.error(child.stdout);
-        process.exit(child.status);
+        throw new Error("Found missing includes");
       }
     },
   };
