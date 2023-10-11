@@ -60,10 +60,6 @@ const config = {
           from: '/quick-tutorials/k8s-kafka-mtls-cert-manager',
           to: '/quickstart/access-control/k8s-kafka-mtls-cert-manager',
         },
-        {
-          from: '/quick-tutorials/k8s-mtls',
-          to: '/quickstart/access-control/k8s-mtls',
-        },
         // Redirect from multiple old paths to the new path
         // {
         //   to: '/docs/newDoc2',
