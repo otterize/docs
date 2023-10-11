@@ -7,8 +7,8 @@ module.exports = function (context, options) {
       const child = spawnSync('grep',
           // -l - only print filenames
           // -R - recursive
-          ['-lR',
-            'include file not found',
+          ['-wRoE',
+            'include file not found: (.*) \-\-',
             outDir], {
         encoding: 'utf-8',
         stdio: [process.stdin, 'pipe', process.stderr]
