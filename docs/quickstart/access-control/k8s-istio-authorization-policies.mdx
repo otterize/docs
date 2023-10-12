@@ -106,6 +106,12 @@ When the intents YAML is applied, creating a custom resource of type `ClientInte
 Otterize will add an Istio authorization policy to allow the intended call
 (**client** &rarr; **server** with the declared path and method) and block all unintended calls (e.g., **client-other** &rarr; **server**).
 
+:::tip
+
+You can click on the services or the lines connecting them to see which ClientIntents you need to apply to make the connection go green!
+
+:::
+
 1. Here is the `intents.yaml` declaration of the client, which we will apply below:
 
 ```yaml
