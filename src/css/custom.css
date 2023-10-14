@@ -110,15 +110,25 @@ pre.prism-code {
 }
 
 .navbar_external_logo_first {
-  width: 2rem;
+  width: 1.75rem;
   margin-right: 0.5rem;
   margin-left: 5rem;
 }
 
 .navbar_external_logo {
-  width: 2rem;
+  width: 1.75rem;
   margin-right: 0.5rem;
   margin-left: 0.5rem;
+}
+
+.navbar_external_logo:hover{
+  filter: opacity(75%);
+  transition: all ease-in-out 0.1s;
+}
+
+.navbar_external_logo_first:hover{
+  filter: opacity(75%);
+  transition: all ease-in-out 0.1s;
 }
 
 .launch_app {
@@ -129,7 +139,21 @@ pre.prism-code {
   box-sizing: border-box;
   font-weight: 600;
   font-size: 16px;
+  position: relative;
+  border: none;
+  text-align: center;
+  transition-duration: 0.4s;
+  overflow: hidden;
+  /* box-shadow: 0 5px 15px 1px #193047; */
 }
+
+.launch_app:hover {
+  background: rgba(129, 174, 217, 0.85);
+  transition: all ease-in-out 0.1s;
+}
+
+.launch_app:focus { outline:0; }
+
 @media screen and (max-width: 720px) {
   .launch_app {
     display: none;
@@ -148,18 +172,20 @@ pre.prism-code {
 }
 
 .footer_privacy-policy {
-  padding-right: 70px;
   font-size: 1.05rem;
   float: left;
 }
 
 .footer_privacy-policy a {
-  color: white;
+  color: rgba(255, 255, 255, 0.75);
 }
 
 .footer_left {
   margin-top: 25px;
   margin-bottom: -0.9rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   float: left;
 }
 
@@ -167,6 +193,9 @@ pre.prism-code {
   margin-top: 32px;
   margin-bottom: -0.9rem;
   float: right;
+  display: flex;
+  flex-direction: column;
+  align-content:flex-start;
 }
 
 .footer_copyright {
@@ -177,7 +206,9 @@ pre.prism-code {
   color: white;
 }
 
-.footer_right-links {
+.footer_right-links a:hover {
+  filter: opacity(85%);
+  transition: all ease-in-out 0.1s;
 }
 
 .footer_right-links img {
@@ -185,11 +216,12 @@ pre.prism-code {
 }
 
 .footer_left-links {
+  margin-top: 0.5rem;
 }
 
 .footer_signup {
-  text-align: left;
   font-size: 1.3rem;
+  letter-spacing: 1.7px;
   font-weight: 500;
   color: white;
   z-index: 10;

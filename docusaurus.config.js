@@ -224,13 +224,13 @@ const config = {
           },
           {
             html: `<div class="footer_right">
-                            <div class="footer_privacy-policy">
-                                <a href="https://otterize.com/privacy">privacy policy</a>
-                            </div>
                             <div class="footer_right-links">
                                 <a href="https://github.com/otterize/"><img src="/img/github-icon.svg" /></a>
                                 <a href="https://www.linkedin.com/company/otterize"><img src="/img/linkedin-icon.svg" /></a>
                                 <a href="https://joinslack.otterize.com/"><img src="/img/slack-icon.svg" /></a>
+                            </div>
+                            <div class="footer_privacy-policy">
+                                <a href="https://otterize.com/privacy">Privacy policy</a>
                             </div>
                          </div>`,
           },
