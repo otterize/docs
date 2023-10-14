@@ -183,6 +183,9 @@ pre.prism-code {
 .footer_left {
   margin-top: 25px;
   margin-bottom: -0.9rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   float: left;
 }
 
@@ -192,7 +195,7 @@ pre.prism-code {
   float: right;
   display: flex;
   flex-direction: column;
-  align-content: center;
+  align-content:flex-start;
 }
 
 .footer_copyright {
@@ -213,11 +216,12 @@ pre.prism-code {
 }
 
 .footer_left-links {
+  margin-top: 0.5rem;
 }
 
 .footer_signup {
-  text-align: left;
   font-size: 1.3rem;
+  letter-spacing: 1.7px;
   font-weight: 500;
   color: white;
   z-index: 10;
