@@ -8,6 +8,6 @@ spec:
   calls:
     - name: kafka
       type: kafka
-      topics:
+      kafkaTopics:
         - name: payments
           operations: [ produce ]

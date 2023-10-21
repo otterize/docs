@@ -9,7 +9,7 @@ spec:
   calls:
     - name: kafka.kafka
       type: kafka
-      topics:
+      kafkaTopics:
         - name: mytopic
           operations: [ produce,describe,consume ]
         - name: transactions

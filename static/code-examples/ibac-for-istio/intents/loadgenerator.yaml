@@ -9,7 +9,7 @@ spec:
   calls:
     - name: frontend
       type: http
-      resources:
+      httpResources:
         - path: /
           methods:
             - GET

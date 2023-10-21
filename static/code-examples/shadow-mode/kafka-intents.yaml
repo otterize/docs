@@ -8,7 +8,7 @@ spec:
   calls:
     - name: kafka
       type: kafka
-      topics:
+      kafkaTopics:
         - name: payments
           operations: [ all ]
 ---
@@ -22,7 +22,7 @@ spec:
   calls:
     - name: kafka
       type: kafka
-      topics:
+      kafkaTopics:
         - name: orders
           operations: [ produce ]
     - name: cartservice
@@ -42,7 +42,7 @@ spec:
   calls:
     - name: kafka
       type: kafka
-      topics:
+      kafkaTopics:
         - name: orders
           operations: [ consume ]
     - name: emailservice

@@ -8,7 +8,7 @@ spec:
   calls:
     - name: kafka
       type: kafka
-      topics:
+      kafkaTopics:
         - name: orders
           operations: [ consume ]
     - name: emailservice

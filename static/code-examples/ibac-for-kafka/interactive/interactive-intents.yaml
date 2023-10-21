@@ -9,6 +9,6 @@ spec:
   calls:
     - name: kafka.kafka
       type: kafka
-      topics:
+      kafkaTopics:
         - name: my-topic-intended
           operations: [ all ]
