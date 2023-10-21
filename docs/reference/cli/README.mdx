@@ -160,7 +160,7 @@ as YAML [client intents file(s)](/reference/intents-and-intents-files/#intents-f
 Here's a partial output from `otterize network-mapper export -n otterize-ecom-demo`:
 
 ```shell
-apiVersion: k8s.otterize.com/v1alpha2
+apiVersion: k8s.otterize.com/v1alpha3
 kind: ClientIntents
 metadata:
   name: cartservice
@@ -172,7 +172,7 @@ spec:
     - name: redis-cart
       type: http
 ---
-apiVersion: k8s.otterize.com/v1alpha2
+apiVersion: k8s.otterize.com/v1alpha3
 kind: ClientIntents
 metadata:
   name: checkoutservice

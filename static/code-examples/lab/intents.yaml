@@ -1,4 +1,4 @@
-apiVersion: k8s.otterize.com/v1alpha2
+apiVersion: k8s.otterize.com/v1alpha3
 kind: ClientIntents
 metadata:
   name: cartservice
@@ -10,7 +10,7 @@ spec:
     - name: redis-cart
       type: http
 ---
-apiVersion: k8s.otterize.com/v1alpha2
+apiVersion: k8s.otterize.com/v1alpha3
 kind: ClientIntents
 metadata:
   name: checkoutservice
@@ -32,7 +32,7 @@ spec:
     - name: shippingservice
       type: http
 ---
-apiVersion: k8s.otterize.com/v1alpha2
+apiVersion: k8s.otterize.com/v1alpha3
 kind: ClientIntents
 metadata:
   name: frontend
@@ -56,7 +56,7 @@ spec:
     - name: shippingservice
       type: http
 ---
-apiVersion: k8s.otterize.com/v1alpha2
+apiVersion: k8s.otterize.com/v1alpha3
 kind: ClientIntents
 metadata:
   name: loadgenerator
@@ -68,7 +68,7 @@ spec:
     - name: frontend
       type: http
 ---
-apiVersion: k8s.otterize.com/v1alpha2
+apiVersion: k8s.otterize.com/v1alpha3
 kind: ClientIntents
 metadata:
   name: recommendationservice
