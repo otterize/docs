@@ -5,7 +5,7 @@ Follow the connection guide that opens to connect your cluster, and make the fol
 2. Note that enforcement is disabled, we will enable it later. The configuration tab should look like this:
 ![Cluster connection guide](/img/configure-cluster/connect-cluster-kafka-mtls-with-otterize-cloud-cert-manager.png)
 
-3. Copy the Helm command and <b>add</b> the following flags to the Helm command:
+3. Copy the Helm command and <b>add</b> the following flags:
    ```
    --set intentsOperator.operator.enableNetworkPolicyCreation=false \
    --set networkMapper.kafkawatcher.enable=true \
