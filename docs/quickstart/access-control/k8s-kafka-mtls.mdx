@@ -35,12 +35,11 @@ Before you start, you'll need a Kubernetes cluster.
 
 You can now install Otterize in your cluster, and connect to Otterize Cloud. Connecting to Cloud lets you:
 
-1. See what's happening visually in your browser, through the "access graph";
+1. See what's happening visually in your browser, through the "access graph".
 2. Generate certificates using the Otterize Cloud hosted service. If you prefer to generate certificates in-cluster, you can [follow the tutorial for cert-manager](/quickstart/access-control/k8s-kafka-mtls-cert-manager).
 
 #### Install Otterize OSS, connected to Otterize Cloud
-
-{@include: ../../_common/install-otterize-from-cloud-with-enforcement-and-kafka-watcher.md}
+{@include: ../../_common/install-otterize-from-cloud-with-shadow-mode-and-kafka-watcher.md}
 
 #### Configure the access graph in Otterize Cloud to only show Kafka authorization status
 
@@ -286,17 +285,16 @@ At this point, we haven't actually protected our Kafka broker. From everything w
 
 Let's see that in action. Our clients that have not declared intents will be blocked from accessing the broker.
 
-We need to turn enforcement on in our cluster by updating our Otterize Helm configuration.
+We need to turn protection on in for this Kafka broker by declaring it as a protected service:
 
-```bash
-helm upgrade --install otterize otterize/otterize-kubernetes -n otterize-system --create-namespace \
-    --set global.otterizeCloud.credentials.clientId=<your_id> \
-    --set global.otterizeCloud.credentials.clientSecret=<your_secret> \
-    --set intentsOperator.operator.mode=defaultActive \
-    --set global.otterizeCloud.useCloudToGenerateTLSCredentials=true \
-    --set intentsOperator.operator.enableNetworkPolicyCreation=false
-    --set networkMapper.kafkawatcher.enable=true \
-    --set networkMapper.kafkawatcher.kafkaServers={"kafka-0.kafka"}
+```yaml
+{@include: ../../../static/code-examples/kafka-mtls/protectedservice.yaml}
+```
+
+Apply this `ProtectedService` resource:
+
+```shell
+kubectl apply -f ${ABSOLUTE_URL}/code-examples/kafka-mtls-cert-manager/protectedservice.yaml
 ```
 
 If you once again tail the logs for `client-other` you'll see that it is no longer authorized to access this topic:
