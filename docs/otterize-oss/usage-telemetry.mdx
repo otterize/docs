@@ -20,26 +20,35 @@ The information reported by Otterize OSS is defined in the [GraphQL schema of th
 
 ### Events
 
-| Event type                        | Meaning                                                                                              |
-|:----------------------------------|:-----------------------------------------------------------------------------------------------------|
-| `INTENTS_DELETED`                 | How many intents were deleted.                                                                       |
-| `INTENTS_APPLIED`                 | How many declared intents were applied.                                                              |
-| `INTENTS_DISCOVERED`              | How many intents were discovered by the network mapper.                                              |
-| `INTENTS_DISCOVERED_SOCKET_SCAN`  | How many intents were discovered by the network watcher ("sniffer") via scanning for open sockets.   |
-| `INTENTS_DISCOVERED_DNS`          | How many intents were discovered by the network watcher ("sniffer") via reading DNS query responses. |
-| `INTENTS_DISCOVERED_KAFKA`        | How many intents were discovered by the Kafka watcher.                                               |
-| `INTENTS_DISCOVERED_ISTIO`        | How many intents were discovered by the Istio watcher.                                               |
-| `MAPPER_EXPORT `                  | How many intents from the network mapper were exported by the CLI: `otterize mapper export...`.      |
-| `MAPPER_VISUALIZE`                | How many intents from the network mapper were visualized by the CLI: `otterize mapper visualize...`. |
-| `KAFKA_SERVER_CONFIG_APPLIED`     | A Kafka Server Config was applied (i.e. the intents operator will recognize it as a Kafka broker).   |
-| `KAFKA_SERVER_CONFIG_DELETED`     | A Kafka Server Config was deleted.                                                                   |
-| `NETWORK_POLICIES_CREATED`          | How many network policies were created by the intents operator.                                      |
-| `NETWORK_POLICIES_DELETED`          | How many network policies were deleted by the intents operator.                                      |
-| `KAFKA_ACLS_CREATED`               | How many Kafka ACLs were created by the intents operator.                                            |
-| `KAFKA_ACLS_DELETED`               | How many Kafka ACLs were deleted by the intents operator.                                            |
-| `ISTIO_POLICIES_CREATED`            | How many Istio authorization policies were created by the intents operator.                          |
-| `ISTIO_POLICIES_DELETED`            | How many Istio authorization policies were deleted by the intents operator.                          |
-| `STARTED`                         | The operator was started.                                                                            |
+| Event type                       | Meaning                                                                                              |
+|:---------------------------------|:-----------------------------------------------------------------------------------------------------|
+| `INTENTS_DELETED`                | How many intents were deleted.                                                                       |
+| `INTENTS_APPLIED`                | How many declared intents were applied.                                                              |
+| `INTENTS_APPLIED_KAFKA`          | How many intents were applied with Kafka type.                                                       |
+| `INTENTS_APPLIED_HTTP`           | How many intents were applied with HTTP type.                                                        |
+| `INTENTS_APPLIED_DATABASE`       | How many intents were applied with Database type.                                                    |
+| `INTENTS_DISCOVERED`             | How many intents were discovered by the network mapper.                                              |
+| `INTENTS_DISCOVERED_SOCKET_SCAN` | How many intents were discovered by the network watcher ("sniffer") via scanning for open sockets.   |
+| `INTENTS_DISCOVERED_CAPTURE`     | How many intents were discovered by the network watcher ("sniffer") via reading DNS query responses. |
+| `INTENTS_DISCOVERED_KAFKA`       | How many intents were discovered by the Kafka watcher.                                               |
+| `INTENTS_DISCOVERED_ISTIO`       | How many intents were discovered by the Istio watcher.                                               |
+| `MAPPER_EXPORT `                 | How many intents from the network mapper were exported by the CLI: `otterize mapper export...`.      |
+| `MAPPER_VISUALIZE`               | How many intents from the network mapper were visualized by the CLI: `otterize mapper visualize...`. |
+| `KAFKA_SERVER_CONFIG_APPLIED`    | A Kafka Server Config was applied (i.e. the intents operator will recognize it as a Kafka broker).   |
+| `KAFKA_SERVER_CONFIG_DELETED`    | A Kafka Server Config was deleted.                                                                   |
+| `NETWORK_POLICIES_CREATED`       | How many network policies were created by the intents operator.                                      |
+| `NETWORK_POLICIES_DELETED`       | How many network policies were deleted by the intents operator.                                      |
+| `KAFKA_ACLS_CREATED`             | How many Kafka ACLs were created by the intents operator.                                            |
+| `KAFKA_ACLS_DELETED`             | How many Kafka ACLs were deleted by the intents operator.                                            |
+| `ISTIO_POLICIES_CREATED`         | How many Istio authorization policies were created by the intents operator.                          |
+| `ISTIO_POLICIES_DELETED`         | How many Istio authorization policies were deleted by the intents operator.                          |
+| `STARTED`                        | The operator was started.                                                                            |
+| `ACTIVE`                         | The operator is active.                                                                              |
+| `SERVICE_DISCOVERED`             | How many services were discovered by the network mapper.                                             |
+| `NAMESPACE_DISCOVERED`           | How many namespaces were discovered by the network mapper.                                           |
+| `PROTECTED_SERVICE_APPLIED`      | How many protected services were applied.                                                            |
+| `PROTECTED_SERVICE_DELETED`      | How many protected services were deleted.                                                            |
+
 
 ### CLI Commands
 
