@@ -1,4 +1,4 @@
-apiVersion: k8s.otterize.com/v1alpha2
+apiVersion: k8s.otterize.com/v1alpha3
 kind: ClientIntents
 metadata:
   name: myclient
@@ -9,6 +9,6 @@ spec:
   calls:
     - name: kafka.kafka
       type: kafka
-      topics:
+      kafkaTopics:
         - name: my-topic
           operations: [ all ]

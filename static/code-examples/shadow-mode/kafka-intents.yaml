@@ -1,4 +1,4 @@
-apiVersion: k8s.otterize.com/v1alpha2
+apiVersion: k8s.otterize.com/v1alpha3
 kind: ClientIntents
 metadata:
   name: paymentservice
@@ -8,11 +8,11 @@ spec:
   calls:
     - name: kafka
       type: kafka
-      topics:
+      kafkaTopics:
         - name: payments
           operations: [ all ]
 ---
-apiVersion: k8s.otterize.com/v1alpha2
+apiVersion: k8s.otterize.com/v1alpha3
 kind: ClientIntents
 metadata:
   name: checkoutservice
@@ -22,7 +22,7 @@ spec:
   calls:
     - name: kafka
       type: kafka
-      topics:
+      kafkaTopics:
         - name: orders
           operations: [ produce ]
     - name: cartservice
@@ -32,7 +32,7 @@ spec:
     - name: productcatalogservice
     - name: shippingservice
 ---
-apiVersion: k8s.otterize.com/v1alpha2
+apiVersion: k8s.otterize.com/v1alpha3
 kind: ClientIntents
 metadata:
   name: orderservice
@@ -42,7 +42,7 @@ spec:
   calls:
     - name: kafka
       type: kafka
-      topics:
+      kafkaTopics:
         - name: orders
           operations: [ consume ]
     - name: emailservice

@@ -1,4 +1,4 @@
-apiVersion: k8s.otterize.com/v1alpha2
+apiVersion: k8s.otterize.com/v1alpha3
 kind: ClientIntents
 metadata:
   name: frontend
@@ -9,44 +9,44 @@ spec:
   calls:
     - name: adservice
       type: http
-      resources:
+      httpResources:
         - path: /ads
           methods:
             - GET
     - name: cartservice
       type: http
-      resources:
+      httpResources:
         - path: /items
           methods:
             - POST
             - GET
     - name: checkoutservice
       type: http
-      resources:
+      httpResources:
         - path: /checkout
           methods:
             - POST
     - name: currencyservice
       type: http
-      resources:
+      httpResources:
         - path: /currency
           methods:
             - GET
     - name: productcatalogservice
       type: http
-      resources:
+      httpResources:
         - path: /products
           methods:
             - GET
     - name: recommendationservice
       type: http
-      resources:
+      httpResources:
         - path: /recommendations
           methods:
             - GET
     - name: shippingservice
       type: http
-      resources:
+      httpResources:
         - path: /shipping
           methods:
             - POST

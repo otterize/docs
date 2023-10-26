@@ -73,7 +73,7 @@ otterize network-mapper export --server <SERVICE_NAME>.<SERVICE_NAMESPACE> > cli
 The result, when there happens to be a single client, `frontend`, calling the `checkoutservice` as well as other services, would look like:
 
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha2
+apiVersion: k8s.otterize.com/v1alpha3
 kind: ClientIntents
 metadata:
   name: frontend
@@ -100,7 +100,7 @@ When you `kubectl apply` these client intents declarations, there is still no en
 
 Now, knowing authorized clients won't be blocked, you can override shadow mode for just this service and protect it with a `ProtectedService` resource:
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha2
+apiVersion: k8s.otterize.com/v1alpha3
 kind: ProtectedService
 metadata:
   name: <SERVICE_NAME> # This can actually be any name you want to give to this resource

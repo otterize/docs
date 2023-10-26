@@ -1,4 +1,4 @@
-apiVersion: k8s.otterize.com/v1alpha2
+apiVersion: k8s.otterize.com/v1alpha3
 kind: ClientIntents
 metadata:
   name: cartservice
@@ -9,13 +9,13 @@ spec:
   calls:
     - name: redis-cart
       type: http
-      resources:
+      httpResources:
         - path: /items
           methods:
             - GET
             - POST
 ---
-apiVersion: k8s.otterize.com/v1alpha2
+apiVersion: k8s.otterize.com/v1alpha3
 kind: ClientIntents
 metadata:
   name: checkoutservice
@@ -26,12 +26,12 @@ spec:
   calls:
     - name: productcatalogservice
       type: http
-      resources:
+      httpResources:
         - path: /products
           methods:
             - POST
 ---
-apiVersion: k8s.otterize.com/v1alpha2
+apiVersion: k8s.otterize.com/v1alpha3
 kind: ClientIntents
 metadata:
   name: frontend
@@ -42,49 +42,49 @@ spec:
   calls:
     - name: adservice
       type: http
-      resources:
+      httpResources:
         - path: /ads
           methods:
             - GET
     - name: cartservice
       type: http
-      resources:
+      httpResources:
         - path: /items
           methods:
             - GET
             - POST
     - name: checkoutservice
       type: http
-      resources:
+      httpResources:
         - path: /checkout
           methods:
             - POST
     - name: currencyservice
       type: http
-      resources:
+      httpResources:
         - path: /currency
           methods:
             - GET
     - name: productcatalogservice
       type: http
-      resources:
+      httpResources:
         - path: /products
           methods:
             - GET
     - name: recommendationservice
       type: http
-      resources:
+      httpResources:
         - path: /recommendations
           methods:
             - GET
     - name: shippingservice
       type: http
-      resources:
+      httpResources:
         - path: /shipping
           methods:
             - POST
 ---
-apiVersion: k8s.otterize.com/v1alpha2
+apiVersion: k8s.otterize.com/v1alpha3
 kind: ClientIntents
 metadata:
   name: loadgenerator
@@ -95,12 +95,12 @@ spec:
   calls:
     - name: frontend
       type: http
-      resources:
+      httpResources:
         - path: /
           methods:
             - GET
 ---
-apiVersion: k8s.otterize.com/v1alpha2
+apiVersion: k8s.otterize.com/v1alpha3
 kind: ClientIntents
 metadata:
   name: recommendationservice
@@ -111,7 +111,7 @@ spec:
   calls:
     - name: productcatalogservice
       type: http
-      resources:
+      httpResources:
         - path: /similar-products
           methods:
             - GET
