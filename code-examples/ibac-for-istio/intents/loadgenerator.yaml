@@ -1,4 +1,4 @@
-apiVersion: k8s.otterize.com/v1alpha2
+apiVersion: k8s.otterize.com/v1alpha3
 kind: ClientIntents
 metadata:
   name: loadgenerator
@@ -9,7 +9,7 @@ spec:
   calls:
     - name: frontend
       type: http
-      resources:
+      httpResources:
         - path: /
           methods:
             - GET

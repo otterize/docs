@@ -1,4 +1,4 @@
-apiVersion: k8s.otterize.com/v1alpha2
+apiVersion: k8s.otterize.com/v1alpha3
 kind: ClientIntents
 metadata:
   name: paymentservice
@@ -8,6 +8,6 @@ spec:
   calls:
     - name: kafka
       type: kafka
-      topics:
+      kafkaTopics:
         - name: payments
           operations: [ produce ]

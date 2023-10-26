@@ -1,4 +1,4 @@
-apiVersion: k8s.otterize.com/v1alpha2
+apiVersion: k8s.otterize.com/v1alpha3
 kind: ClientIntents
 metadata:
   name: cartservice
@@ -9,7 +9,7 @@ spec:
   calls:
     - name: redis-cart
       type: http
-      resources:
+      httpResources:
         - path: /items
           methods:
             - GET
