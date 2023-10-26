@@ -8,13 +8,13 @@ spec:
   calls:
     - name: recommendationservice
       type: http
-      httpResources:
+      HTTPResources:
         - path: /recommendations
           methods:
             - GET
     - name: productcatalogservice
       type: http
-      httpResources:
+      HTTPResources:
         - path: /products
           methods:
             - GET

@@ -9,7 +9,7 @@ spec:
   calls:
     - name: redis-cart
       type: http
-      httpResources:
+      HTTPResources:
         - path: /items
           methods:
             - GET
@@ -26,7 +26,7 @@ spec:
   calls:
     - name: productcatalogservice
       type: http
-      httpResources:
+      HTTPResources:
         - path: /products
           methods:
             - POST
@@ -42,44 +42,44 @@ spec:
   calls:
     - name: adservice
       type: http
-      httpResources:
+      HTTPResources:
         - path: /ads
           methods:
             - GET
     - name: cartservice
       type: http
-      httpResources:
+      HTTPResources:
         - path: /items
           methods:
             - GET
             - POST
     - name: checkoutservice
       type: http
-      httpResources:
+      HTTPResources:
         - path: /checkout
           methods:
             - POST
     - name: currencyservice
       type: http
-      httpResources:
+      HTTPResources:
         - path: /currency
           methods:
             - GET
     - name: productcatalogservice
       type: http
-      httpResources:
+      HTTPResources:
         - path: /products
           methods:
             - GET
     - name: recommendationservice
       type: http
-      httpResources:
+      HTTPResources:
         - path: /recommendations
           methods:
             - GET
     - name: shippingservice
       type: http
-      httpResources:
+      HTTPResources:
         - path: /shipping
           methods:
             - POST
@@ -95,7 +95,7 @@ spec:
   calls:
     - name: frontend
       type: http
-      httpResources:
+      HTTPResources:
         - path: /
           methods:
             - GET
@@ -111,7 +111,7 @@ spec:
   calls:
     - name: productcatalogservice
       type: http
-      httpResources:
+      HTTPResources:
         - path: /similar-products
           methods:
             - GET
