@@ -9,7 +9,7 @@ spec:
   calls:
     - name: redis-cart
       type: http
-      httpResources:
+      HTTPResources:
         - path: /items
           methods:
             - GET

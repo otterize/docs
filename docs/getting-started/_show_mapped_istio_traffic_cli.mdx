@@ -59,7 +59,7 @@ Note the HTTP-level details in the `list` and `export` results. For example, the
      calls:
        - name: nginx
          type: http
-         httpResources:
+         HTTPResources:
             - path: /client-path
               methods: [GET]
    ---
@@ -74,7 +74,7 @@ Note the HTTP-level details in the `list` and `export` results. For example, the
      calls:
        - name: nginx
          type: http
-         httpResources:
+         HTTPResources:
            - path: /client2-path
              methods: [POST]
    ```
@@ -106,7 +106,7 @@ Note the HTTP-level details in the `list` and `export` results. For example, the
             {
               "name": "nginx",
               "type": "http",
-              "httpResources": [
+              "HTTPResources": [
                 {
                   "path": "/client-path",
                   "methods": ["GET"]
@@ -131,7 +131,7 @@ Note the HTTP-level details in the `list` and `export` results. For example, the
             {
               "name": "nginx",
               "type": "http",
-              "httpResources": [
+              "HTTPResources": [
                 {
                   "path": "/client2-path",
                   "methods": ["POST"]

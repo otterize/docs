@@ -8,7 +8,7 @@ spec:
   calls:
     - name: recommendationservice
       type: http
-      httpResources:
+      HTTPResources:
         - path: /recommendations
           methods:
             - GET

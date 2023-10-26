@@ -8,7 +8,7 @@ spec:
   calls:
     - name: productcatalogservice
       type: http
-      httpResources:
+      HTTPResources:
         - path: /similar-products
           methods:
             - GET

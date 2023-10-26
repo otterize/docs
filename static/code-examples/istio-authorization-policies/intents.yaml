@@ -9,6 +9,6 @@ spec:
   calls:
     - name: nginx
       type: http
-      httpResources:
+      HTTPResources:
         - path: /client-path
           methods: [ GET ]

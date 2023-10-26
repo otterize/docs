@@ -9,44 +9,44 @@ spec:
   calls:
     - name: adservice
       type: http
-      httpResources:
+      HTTPResources:
         - path: /ads
           methods:
             - GET
     - name: cartservice
       type: http
-      httpResources:
+      HTTPResources:
         - path: /items
           methods:
             - POST
             - GET
     - name: checkoutservice
       type: http
-      httpResources:
+      HTTPResources:
         - path: /checkout
           methods:
             - POST
     - name: currencyservice
       type: http
-      httpResources:
+      HTTPResources:
         - path: /currency
           methods:
             - GET
     - name: productcatalogservice
       type: http
-      httpResources:
+      HTTPResources:
         - path: /products
           methods:
             - GET
     - name: recommendationservice
       type: http
-      httpResources:
+      HTTPResources:
         - path: /recommendations
           methods:
             - GET
     - name: shippingservice
       type: http
-      httpResources:
+      HTTPResources:
         - path: /shipping
           methods:
             - POST
