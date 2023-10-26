@@ -10,7 +10,7 @@ spec:
       type: http
     - name: orderservice
       type: http
-      httpResources:
+      HTTPResources:
         - path: /orders/*
           methods: [ get, post ]
     - name: ecomm-events

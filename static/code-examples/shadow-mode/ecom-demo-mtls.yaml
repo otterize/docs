@@ -450,7 +450,7 @@ spec:
           value: "1"
         # - name: JAEGER_SERVICE_ADDR
         #   value: "jaeger-collector:14268"
-        httpResources:
+        HTTPResources:
           requests:
             cpu: 30m
             memory: 50Mi
@@ -505,7 +505,7 @@ spec:
         env:
         - name: REDIS_ADDR
           value: "redis-cart:6379"
-        httpResources:
+        HTTPResources:
           requests:
             cpu: 30m
             memory: 50Mi
@@ -606,7 +606,7 @@ spec:
             value: "1"
           # - name: JAEGER_SERVICE_ADDR
           #   value: "jaeger-collector:14268"
-          httpResources:
+          HTTPResources:
             requests:
               cpu: 30m
               memory: 50Mi
@@ -674,7 +674,7 @@ spec:
         livenessProbe:
           exec:
             command: ["/bin/grpc_health_probe", "-addr=:7000"]
-        httpResources:
+        HTTPResources:
           requests:
             cpu: 30m
             memory: 50Mi
@@ -735,7 +735,7 @@ spec:
           periodSeconds: 5
           exec:
             command: ["/bin/grpc_health_probe", "-addr=:8080"]
-        httpResources:
+        HTTPResources:
           requests:
             cpu: 30m
             memory: 50Mi
@@ -831,7 +831,7 @@ spec:
           #   value: "jaeger-collector:14268"
           # - name: CYMBAL_BRANDING
           #   value: "true"
-          httpResources:
+          HTTPResources:
             requests:
               cpu: 30m
               memory: 50Mi
@@ -898,7 +898,7 @@ spec:
           value: "frontend:80"
         - name: USERS
           value: "10"
-        httpResources:
+        HTTPResources:
           requests:
             cpu: 30m
             memory: 50Mi
@@ -956,7 +956,7 @@ spec:
             value: "1"
           # - name: JAEGER_SERVICE_ADDR
           #   value: "jaeger-collector:14268"
-          httpResources:
+          HTTPResources:
             requests:
               cpu: 30m
               memory: 50Mi
@@ -1037,7 +1037,7 @@ spec:
           - name: otterize-credentials
             mountPath: /var/otterize/credentials
             readOnly: true
-        httpResources:
+        HTTPResources:
           requests:
             cpu: 30m
             memory: 50Mi
@@ -1098,7 +1098,7 @@ spec:
         livenessProbe:
           exec:
             command: ["/bin/grpc_health_probe", "-addr=:3550"]
-        httpResources:
+        HTTPResources:
           requests:
             cpu: 30m
             memory: 50Mi
@@ -1161,7 +1161,7 @@ spec:
           value: "1"
         - name: DISABLE_DEBUGGER
           value: "1"
-        httpResources:
+        HTTPResources:
           requests:
             cpu: 30m
             memory: 50Mi
@@ -1214,7 +1214,7 @@ spec:
         volumeMounts:
         - mountPath: /data
           name: redis-data
-        httpResources:
+        HTTPResources:
           requests:
             cpu: 30m
             memory: 50Mi
@@ -1282,7 +1282,7 @@ spec:
         livenessProbe:
           exec:
             command: ["/bin/grpc_health_probe", "-addr=:50051"]
-        httpResources:
+        HTTPResources:
           requests:
             cpu: 30m
             memory: 50Mi
@@ -1352,7 +1352,7 @@ spec:
             runAsUser: 1001
           command:
             - /scripts/setup.sh
-          httpResources:
+          HTTPResources:
             limits: {}
             requests:
               cpu: 250m
@@ -1443,7 +1443,7 @@ spec:
       spec:
         accessModes:
           - "ReadWriteOnce"
-        httpResources:
+        HTTPResources:
           requests:
             storage: "8Gi"
 ---
@@ -1627,7 +1627,7 @@ spec:
             timeoutSeconds: 5
             tcpSocket:
               port: kafka-client
-          httpResources:
+          HTTPResources:
             limits: {}
             requests:
               cpu: 50m
@@ -1660,7 +1660,7 @@ spec:
       spec:
         accessModes:
           - "ReadWriteOnce"
-        httpResources:
+        HTTPResources:
           requests:
             storage: "8Gi"
 ---
@@ -1670,7 +1670,7 @@ metadata:
   name: statefulset-reader
 rules:
   - apiGroups: ["apps"]
-    httpResources: ["statefulsets"]
+    HTTPResources: ["statefulsets"]
     verbs: ["get", "watch", "list"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
