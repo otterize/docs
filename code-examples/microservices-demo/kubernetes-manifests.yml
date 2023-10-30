@@ -65,7 +65,7 @@ spec:
             periodSeconds: 5
             exec:
               command: ["/bin/grpc_health_probe", "-addr=:8080"]
-          HTTPResources:
+          resources:
             requests:
               cpu: 50m
               memory: 50Mi
@@ -143,7 +143,7 @@ spec:
               value: "1"
           # - name: JAEGER_SERVICE_ADDR
           #   value: "jaeger-collector:14268"
-          HTTPResources:
+          resources:
             requests:
               cpu: 50m
               memory: 50Mi
@@ -212,7 +212,7 @@ spec:
               value: "1"
             - name: DISABLE_DEBUGGER
               value: "1"
-          HTTPResources:
+          resources:
             requests:
               cpu: 50m
               memory: 50Mi
@@ -308,7 +308,7 @@ spec:
           #   value: "jaeger-collector:14268"
           # - name: CYMBAL_BRANDING
           #   value: "true"
-          HTTPResources:
+          resources:
             requests:
               cpu: 50m
               memory: 50Mi
@@ -386,7 +386,7 @@ spec:
           livenessProbe:
             exec:
               command: ["/bin/grpc_health_probe", "-addr=:50051"]
-          HTTPResources:
+          resources:
             requests:
               cpu: 50m
               memory: 50Mi
@@ -453,7 +453,7 @@ spec:
           livenessProbe:
             exec:
               command: ["/bin/grpc_health_probe", "-addr=:3550"]
-          HTTPResources:
+          resources:
             requests:
               cpu: 50m
               memory: 50Mi
@@ -506,7 +506,7 @@ spec:
           env:
             - name: REDIS_ADDR
               value: "redis-cart:6379"
-          HTTPResources:
+          resources:
             requests:
               cpu: 50m
               memory: 50Mi
@@ -588,7 +588,7 @@ spec:
               value: "frontend:80"
             - name: USERS
               value: "10"
-          HTTPResources:
+          resources:
             requests:
               cpu: 50m
               memory: 50Mi
@@ -641,7 +641,7 @@ spec:
           livenessProbe:
             exec:
               command: ["/bin/grpc_health_probe", "-addr=:7000"]
-          HTTPResources:
+          resources:
             requests:
               cpu: 50m
               memory: 50Mi
@@ -708,7 +708,7 @@ spec:
           livenessProbe:
             exec:
               command: ["/bin/grpc_health_probe", "-addr=:50051"]
-          HTTPResources:
+          resources:
             requests:
               cpu: 50m
               memory: 50Mi
@@ -767,7 +767,7 @@ spec:
           volumeMounts:
             - mountPath: /data
               name: redis-data
-          HTTPResources:
+          resources:
             requests:
               cpu: 50m
               memory: 50Mi
@@ -829,7 +829,7 @@ spec:
               value: "1"
           # - name: JAEGER_SERVICE_ADDR
           #   value: "jaeger-collector:14268"
-          HTTPResources:
+          resources:
             requests:
               cpu: 50m
               memory: 50Mi
