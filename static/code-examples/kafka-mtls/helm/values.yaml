@@ -28,7 +28,7 @@ auth:
     jksKeystoreSAN: keystore.jks
 authorizerClassName: kafka.security.authorizer.AclAuthorizer
 # Allocate resources
-HTTPResources:
+resources:
   requests:
     cpu: 50m
     memory: 256Mi

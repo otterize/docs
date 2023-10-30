@@ -7,7 +7,7 @@ advertisedListeners:
 # For a gradual rollout scenario we will want to keep the default permission for topics as allowed, unless an ACL was set
 allowEveryoneIfNoAclFound: true
 # Allocate resources
-HTTPResources:
+resources:
   requests:
     cpu: 50m
     memory: 256Mi
