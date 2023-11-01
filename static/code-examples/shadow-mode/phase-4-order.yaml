@@ -1,4 +1,4 @@
-apiVersion: k8s.otterize.com/v1alpha2
+apiVersion: k8s.otterize.com/v1alpha3
 kind: ClientIntents
 metadata:
   name: orderservice
@@ -8,7 +8,7 @@ spec:
   calls:
     - name: kafka
       type: kafka
-      topics:
+      kafkaTopics:
         - name: orders
           operations: [ consume ]
     - name: emailservice

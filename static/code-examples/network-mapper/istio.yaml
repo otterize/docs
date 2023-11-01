@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client
+  namespace: otterize-tutorial-istio-mapping
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: client
+  template:
+    metadata:
+      labels:
+        app: client
+    spec:
+      serviceAccountName: client-service-account
+      containers:
+        - name: client
+          image: alpine/curl
+          command: [ "/bin/sh", "-c", "--" ]
+          args: [ "while true; do curl -si nginx-service:8080/client-path; sleep 2; done" ]
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: client-service-account
+  namespace: otterize-tutorial-istio-mapping
+  labels:
+    app: client
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client2
+  namespace: otterize-tutorial-istio-mapping
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: client2
+  template:
+    metadata:
+      labels:
+        app: client2
+    spec:
+      serviceAccountName: client2-service-account
+      containers:
+        - name: client2
+          image: alpine/curl
+          command: [ "/bin/sh", "-c", "--" ]
+          args: [ "while true; do curl -X POST -si nginx-service:8080/client2-path; sleep 2; done" ]
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: client2-service-account
+  namespace: otterize-tutorial-istio-mapping
+  labels:
+    app: client2
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  namespace: otterize-tutorial-istio-mapping
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.14.2
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  namespace: otterize-tutorial-istio-mapping
+spec:
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 80
+---

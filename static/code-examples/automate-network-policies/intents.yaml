@@ -1,4 +1,4 @@
-apiVersion: k8s.otterize.com/v1alpha2
+apiVersion: k8s.otterize.com/v1alpha3
 kind: ClientIntents
 metadata:
   name: client
@@ -8,4 +8,3 @@ spec:
     name: client
   calls:
     - name: server
-      type: http

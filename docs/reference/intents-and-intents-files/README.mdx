@@ -73,13 +73,13 @@ The core of a client intents file has 2 root-level fields (keys, in YAML):
     If present, the values can currently be `http` or `kafka`.  <br />
     The Otterize intents operator will manage network policies for all intents, regardless of type (including if no type is specified); it will *also* manage Kafka ACLs if the `type` is `kafka`; and in the future it will *also* manage HTTP access controls if the `type` is `http`.
 
-  - `topics` (optional; only allowed if `type` is `kafka`): Specifies the list of Kafka topics to be called. <br />
+  - `kafkaTopics` (optional; only allowed if `type` is `kafka`): Specifies the list of Kafka topics to be called. <br />
     Each item in the list has the following fields:
     - `name` (required): specifies the name of the topic.
     - `operations` (required): specifies the list of intended operations on that topic. <br />
       Allowed values are: `consume`, `produce`, `create`, `alter`, `delete`, `describe`, `cluster_action`, `describe_configs`, `alter_configs`, `idempotent_write`, and `all`.
 
-  - `resources` (optional; only allowed if `type` is `http`): Specifies the list of HTTP resources to be called. <br />
+  - `HTTPResources` (optional; only allowed if `type` is `http`): Specifies the list of HTTP resources to be called. <br />
     Each item in the list has the following fields:
     - `path` (required): specifies the HTTP path of the resource.
     - `methods` (required): specifies the list of intended operations on that topic. <br />

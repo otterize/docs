@@ -1,0 +1,14 @@
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: recommendationservice
+spec:
+  service:
+    name: recommendationservice
+  calls:
+    - name: productcatalogservice
+      type: http
+      HTTPResources:
+        - path: /similar-products
+          methods:
+            - GET

@@ -1,0 +1,117 @@
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: cartservice
+  namespace: otterize-visual-tutorial-istio
+spec:
+  service:
+    name: cartservice
+  calls:
+    - name: redis-cart
+      type: http
+      HTTPResources:
+        - path: /items
+          methods:
+            - GET
+            - POST
+---
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: checkoutservice
+  namespace: otterize-visual-tutorial-istio
+spec:
+  service:
+    name: checkoutservice
+  calls:
+    - name: productcatalogservice
+      type: http
+      HTTPResources:
+        - path: /products
+          methods:
+            - POST
+---
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: frontend
+  namespace: otterize-visual-tutorial-istio
+spec:
+  service:
+    name: frontend
+  calls:
+    - name: adservice
+      type: http
+      HTTPResources:
+        - path: /ads
+          methods:
+            - GET
+    - name: cartservice
+      type: http
+      HTTPResources:
+        - path: /items
+          methods:
+            - GET
+            - POST
+    - name: checkoutservice
+      type: http
+      HTTPResources:
+        - path: /checkout
+          methods:
+            - POST
+    - name: currencyservice
+      type: http
+      HTTPResources:
+        - path: /currency
+          methods:
+            - GET
+    - name: productcatalogservice
+      type: http
+      HTTPResources:
+        - path: /products
+          methods:
+            - GET
+    - name: recommendationservice
+      type: http
+      HTTPResources:
+        - path: /recommendations
+          methods:
+            - GET
+    - name: shippingservice
+      type: http
+      HTTPResources:
+        - path: /shipping
+          methods:
+            - POST
+---
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: loadgenerator
+  namespace: otterize-visual-tutorial-istio
+spec:
+  service:
+    name: loadgenerator
+  calls:
+    - name: frontend
+      type: http
+      HTTPResources:
+        - path: /
+          methods:
+            - GET
+---
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: recommendationservice
+  namespace: otterize-visual-tutorial-istio
+spec:
+  service:
+    name: recommendationservice
+  calls:
+    - name: productcatalogservice
+      type: http
+      HTTPResources:
+        - path: /similar-products
+          methods:
+            - GET

@@ -3,14 +3,15 @@
 
 const lightCodeTheme = require("prism-react-renderer/themes/oceanicNext");
 const darkCodeTheme = require("prism-react-renderer/themes/oceanicNext");
+const path = require("path");
 
 // /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: "Otterize",
-  url: "https://docs.otterize.com",
+  url: process.env.NODE_ENV === "production" ? "https://docs.otterize.com" : "http://localhost:3003/",
   baseUrl: "/",
-  onBrokenLinks: "warn",
-  onBrokenMarkdownLinks: "warn",
+  onBrokenLinks: "throw",
+  onBrokenMarkdownLinks: "throw",
   favicon: "img/favicon.svg",
   trailingSlash: false,
 
@@ -31,8 +32,66 @@ const config = {
     { src: "/pixels.js", async: true },
   ],
   plugins: [
+    path.resolve(__dirname, 'plugins', 'verify-includes'),
+    ['@docusaurus/plugin-client-redirects',
+    {
+      redirects: [
+        {
+          from: '/getting-started/oss-installation',
+          to: '/installation',
+        },
+        {
+          from: '/quick-tutorials/k8s-network-policies',
+          to: '/quickstart/access-control/k8s-network-policies',
+        },
+        {
+          from: '/quick-tutorials/k8s-istio-authorization-policies',
+          to: '/quickstart/access-control/k8s-istio-authorization-policies',
+        },
+        {
+          from: '/quick-tutorials/k8s-kafka-mtls',
+          to: '/quickstart/access-control/k8s-kafka-mtls',
+        },
+        {
+          from: '/quick-tutorials/aws-eks-cni-mini',
+          to: '/quickstart/access-control/aws-eks-cni-mini',
+        },
+        {
+          from: '/quick-tutorials/k8s-kafka-mtls-cert-manager',
+          to: '/quickstart/access-control/k8s-kafka-mtls-cert-manager',
+        },
+        {
+          from: '/quick-tutorials/k8s-network-mapper',
+          to: '/quickstart/visualization/k8s-network-mapper',
+        },
+        {
+          from: '/quick-tutorials/k8s-istio-watcher',
+          to: '/quickstart/visualization/k8s-istio-watcher',
+        },
+        {
+          from: '/quick-visual-tutorials/visual-ibac-istio-authorization-policies',
+          to: '/quickstart/access-control/k8s-istio-authorization-policies',
+        },
+        {
+          from: '/quick-visual-tutorials/visual-ibac-kafka-k8s',
+          to: '/quickstart/access-control/k8s-kafka-mtls',
+        },
+        {
+          from: '/quick-visual-tutorials/visual-ibac-network-policies',
+          to: '/quickstart/access-control/k8s-network-policies',
+        },
+        {
+          from: '/quick-visual-tutorials/visual-k8s-cluster-mapping',
+          to: '/quickstart/visualization/k8s-network-mapper',
+        },
+        // Redirect from multiple old paths to the new path
+        // {
+        //   to: '/docs/newDoc2',
+        //   from: ['/docs/oldDocFrom2019', '/docs/legacyDocFrom2016'],
+        // },
+      ],
+    }],
     ["docusaurus-plugin-includes", {}],
-    ["docusaurus-plugin-hotjar", {}],
     [
       "@docusaurus/plugin-google-gtag",
       {
@@ -165,13 +224,13 @@ const config = {
           },
           {
             html: `<div class="footer_right">
-                            <div class="footer_privacy-policy">
-                                <a href="https://otterize.com/privacy">privacy policy</a>
-                            </div>
                             <div class="footer_right-links">
                                 <a href="https://github.com/otterize/"><img src="/img/github-icon.svg" /></a>
                                 <a href="https://www.linkedin.com/company/otterize"><img src="/img/linkedin-icon.svg" /></a>
                                 <a href="https://joinslack.otterize.com/"><img src="/img/slack-icon.svg" /></a>
+                            </div>
+                            <div class="footer_privacy-policy">
+                                <a href="https://otterize.com/privacy">Privacy policy</a>
                             </div>
                          </div>`,
           },

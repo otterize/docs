@@ -8,8 +8,10 @@ The Otterize network mapper creates a map of in-cluster traffic by (1) capturing
 You can then use the Otterize CLI to list the traffic by client, reset the traffic the mapper remembers, or export it as JSON or YAML, which serves as ClientIntents Kubernetes resources). ClientIntents can be consumed by the [Otterize intents operator](/reference/configuration/intents-operator) to apply network policies
 or Kafka ACLs to your cluster, implementing [intent-based access control](/intent-based-access-control).
 
-To get started, follow the [quick hands-on tutorial](/quick-tutorials/k8s-network-mapper)
-or the [quick, more visual tutorial](/quick-visual-tutorials/visual-k8s-cluster-mapping). Here's an example output for running the network mapper following the example:
+To get started, follow the [quick hands-on tutorial](/quickstart/visualization/k8s-network-mapper).
+
+The network mapper also supports exporting Grafana Tempo-style metrics, contributed by the community. See the [Helm chart documentation's OpenTelemetry section](/reference/configuration/network-mapper/helm-chart#opentelemetry-exporter-parameters) to learn how to enable this feature.
+
 ```shell
 cartservice in namespace otterize-ecom-demo calls:
  - redis-cart
@@ -39,8 +41,8 @@ recommendationservice in namespace otterize-ecom-demo calls:
 ### Components
 - Mapper - the mapper is deployed once per cluster, and receives traffic information from the sniffer and watchers, and resolves the information to communications between (service identities)[/service-identities].
 - Sniffer - the sniffer is deployed to each node using a DaemonSet, and is responsible for capturing node-local DNS traffic and inspecting open connections.
-- Kafka watcher (**experimental**) - the Kafka watcher is deployed once per cluster and is responsible for detecting accesses to Kafka topics, which services perform those accesses and which operations they use.
-- Istio watcher (**experimental**) - the Istio watcher is deployed once per cluster and queries Istio Envoy sidecars for HTTP traffic statistics, which are used to detect HTTP traffic with paths.
+- Kafka watcher (**beta**) - the Kafka watcher is deployed once per cluster and is responsible for detecting accesses to Kafka topics, which services perform those accesses and which operations they use.
+- Istio watcher (**beta**) - the Istio watcher is deployed once per cluster and queries Istio Envoy sidecars for HTTP traffic statistics, which are used to detect HTTP traffic with paths. Currently, the Istio watcher has a limitation where it reports all HTTP traffic seen by the sidecar since it was started, regardless of when it was seen.
 
 ### DNS responses
 DNS is a common network protocol used for service discovery. When a pod (`checkoutservice`) tries to connect to a Kubernetes service
@@ -54,15 +56,19 @@ The Kafka watcher periodically examines logs of Kafka servers provided by the us
 The watcher is only able to parse Kafka logs when Kafka servers' Authorizer logger is configured to output logs to `stdout` with `DEBUG` level.
 
 ### Istio sidecar metrics
-the Istio watcher periodically queries for all pods with the `security.istio.io/tlsMode` label, queries each pod's Istio sidecar for metrics about connections, and deduces connections with HTTP paths between pods covered by the Istio service mesh.
+The Istio watcher periodically queries for all pods with the `security.istio.io/tlsMode` label, queries each pod's Istio sidecar for metrics about connections, and deduces connections with HTTP paths between pods covered by the Istio service mesh.
 
 ## Deploying the network mapper
 To deploy the network mapper, [use the Helm chart](/reference/configuration/network-mapper/helm-chart).
+
+## Monitoring the network mapper
+All network mapper pods expose a Prometheus metrics endpoint on port 2112, on `/metrics`.
 
 ## Pod annotations
 You can override the service name the network mapper uses when it computes the service name using a pod annotation.
 
 
-| Annotation                          | Description                                     | Default                                       |
-|-------------------------------------|-------------------------------------------------|-----------------------------------------------|
-| `intents.otterize.com/service-name` | Otterize-wide override for this service's name. | See [Service identities](/reference/service-identities) |
+| Annotation                          | Description                                     |
+|-------------------------------------|-------------------------------------------------|
+| `intents.otterize.com/service-name` | Used for [service identity resolution](/reference/service-identities#kubernetes-service-identity-resolution). |
+

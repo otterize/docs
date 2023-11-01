@@ -5,11 +5,11 @@ calls:
     type: http
   - name: orderservice
     type: http
-    resources:
+    HTTPResources:
       - path: /orders/*
         methods: [ get, post ]
   - name: ecomm-events
     type: kafka
-    topics:
+    kafkaTopics:
       - name: orders
         operations: [ produce ]

@@ -1,0 +1,8 @@
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ProtectedService
+metadata:
+  name: server
+  namespace: otterize-tutorial-eks
+
+spec:
+  name: server

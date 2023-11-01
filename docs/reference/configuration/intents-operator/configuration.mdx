@@ -12,7 +12,7 @@ Here is an annotated example of a `KafkaServerConfig`, followed by an in-depth e
 
 ## Full annotated example
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha2
+apiVersion: k8s.otterize.com/v1alpha3
 kind: KafkaServerConfig
 metadata:
   name: kafkabroker  # the name of the KafkaServerConfig resource
@@ -22,9 +22,9 @@ spec:
   addr: ecommevents.namespace:9092 # the address the intents operator will connect to in order to apply ACLs to this broker
   noAutoCreateIntentsForOperator: false # By default, the operator automatically creates a ClientIntent for itself to this server, so that it's able to connect. To disable, set to "true".
   tls: # this section informs the operator where to find the credentials to authenticate with the broker via mTLS. The values here are the defaults set by the otterize-kubernetes chart.
-    certFile: /etc/otterize-spire/svid.pem
+    certFile: /etc/otterize-spire/cert.pem
     keyFile: /etc/otterize-spire/key.pem
-    rootCAFile: /etc/otterize-spire/bundle.pem
+    rootCAFile: /etc/otterize-spire/ca.pem
   topics: # configuration for topic scope - how ACLs should be applied to each topic or set of topics.
     - topic: "*" # A specific topic or a prefix. Can be "*" for all.
       pattern: literal # Prefix or literal. Use literal for "*".
@@ -36,7 +36,7 @@ spec:
 The name of the service as it appears in ClientIntents.
 For example:
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha2
+apiVersion: k8s.otterize.com/v1alpha3
 kind: ClientIntents
 [...]
 spec:
@@ -126,7 +126,7 @@ Set(User:ANONYMOUS has DENY permission for operations: ALL from hosts: *)
 And when you declare and apply this intent:
 
 ```yaml title="Intent"
-apiVersion: k8s.otterize.com/v1alpha2
+apiVersion: k8s.otterize.com/v1alpha3
 kind: ClientIntents
 [...]
 spec:
@@ -135,7 +135,7 @@ spec:
   calls:
     - name: kafka.kafka
       type: kafka
-      topics:
+      kafkaTopics:
         - name: mytopic-intended
           operations: [ all ]
 ```
@@ -148,4 +148,4 @@ Set(User:ANONYMOUS has DENY permission for operations: ALL from hosts: *,
     User:CN=interactive.ibac-for-kafka,O=SPIRE,C=US has ALLOW permission for operations: ALL from hosts: *)
 ```
 
-Together, these ACLs will ensure that only clients that have applied intents will be able to access the specific topic.
+Together, these ACLs will ensure that only clients that have declared intents will be able to access the specific topic.
