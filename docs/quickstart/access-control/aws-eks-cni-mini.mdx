@@ -129,6 +129,12 @@ Once you have that installed and running your Otterize access graph should look 
 
 Now that you have Otterize installed, the next step is to create an intent which will enable access to the server from the client. If you enable protection on the server without declaring an intent, the client will be blocked.
 
+:::tip
+
+You can click on the services or the lines connecting them to see which ClientIntents you need to apply to make the connection go green!
+
+:::
+
 ```shell
 otterize network-mapper export --server server.otterize-tutorial-eks | kubectl apply -f -
 ```

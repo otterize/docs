@@ -4,6 +4,10 @@
  * work well for content-centric websites.
  */
 
+ @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@100;200;300;400;500;600;700&display=swap');
+
+
+
 /* You can override the default Infima variables here. */
 :root {
   --ifm-color-primary: #306e96;
@@ -19,7 +23,7 @@
 
   --ifm-navbar-height: 5rem;
 
-  --ifm-footer-background-color: black;
+  --ifm-footer-background-color: white;
   --ifm-footer-color: white;
   --ifm-footer-link-color: white;
   --ifm-footer-padding-vertical: 11px;
@@ -28,6 +32,10 @@
 
 .navbar__title {
   color: #2186e6;
+}
+
+.navbar__item {
+  margin-left: 10px;
 }
 
 .navbar__item:hover {
@@ -299,3 +307,20 @@ pre.prism-code {
 .hidden {
   display: none !important;
 }
+
+.container-fluid {
+  max-width: 100%;
+}
+
+.dropdown__menu {
+  padding: 12px;
+}
+
+.dropdown__link {
+  border-radius: 10px;
+}
+
+/* Removes the dropdown arrow (uncomment in case we want to use svg) */
+/* .dropdown > .navbar__link:after {
+  display: none;
+} */
