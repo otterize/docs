@@ -36,12 +36,34 @@
 
 .navbar__item {
   margin-left: 10px;
+  white-space: nowrap;
 }
-@media screen and (max-width: 1280px) {
+
+@media screen and (max-width: 1400px) {
   .navbar__item {
     margin-left: 0px;
   }
+  .navbar__items--right {
+    flex: 0 0 auto !important;
+  }
+
+  .navbar__logo {
+    height: fit-content;
+  }
+
+  .navbar__logo img {
+    height: 20px;
+  }
+
 }
+/* @media screen and (max-width: 1280px) {
+   .navbar__toggle {
+    display: block;
+  }
+  .navbar__item {
+    display: none;
+  }
+} */
 
 .navbar__item:hover {
   color: rgb(183 183 183);
@@ -313,7 +335,7 @@ pre.prism-code {
   display: none !important;
 }
 
-.container-fluid {
+footer .container-fluid {
   max-width: 100%;
 }
 
@@ -324,6 +346,7 @@ pre.prism-code {
 .dropdown__link {
   border-radius: 10px;
 }
+
 
 /* Removes the dropdown arrow (uncomment in case we want to use svg) */
 /* .dropdown > .navbar__link:after {
