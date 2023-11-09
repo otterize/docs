@@ -319,8 +319,8 @@ const config = {
                     <div id="mailchimp_title" class="tw-w-96 tw-text-gray-700 tw-text-xl tw-font-normal tw-font-sans tw-text-left">Join our newsletter to stay up to date on features and releases.</div>
                     <div class="tw-h-28 tw-flex-col tw-justify-start tw-items-start tw-gap-1.5 tw-flex">
                       <div class="tw-self-stretch tw-h-14 tw-flex-col tw-justify-start tw-items-start tw-gap-1.5 tw-flex">
-                        <form name="embedded-subscribe-form" id="mailchimp_form" class="tw-self-stretch tw-pl-3 tw-pr-1.5 tw-py-1.5 tw-bg-gray-200 tw-rounded-2xl tw-shadow tw-justify-start tw-items-center tw-gap-2 tw-inline-flex">
-                          <input id="mailchimp_email_input" type="email" name="EMAIL" placeholder="Enter your email" required="" class="tw-w-full tw-text-gray-600 tw-text-base tw-font-normal tw-leading-normal tw-bg-gray-200 tw-border-none tw-h-12 tw-justify-start tw-items-center tw-gap-2 tw-flex tw-focus:outline-none tw-rounded-none tw-shadow-none tw-px-0 focus:tw-outline-none"/>
+                        <form name="embedded-subscribe-form" id="mailchimp_form" class="tw-self-stretch tw-pl-3 tw-pr-1.5 tw-py-1.5 tw-bg-gray-50 tw-rounded-2xl tw-shadow tw-justify-start tw-items-center tw-gap-2 tw-inline-flex">
+                          <input id="mailchimp_email_input" type="email" name="EMAIL" placeholder="Enter your email" required="" class="tw-w-full tw-text-gray-600 tw-text-base tw-font-normal tw-leading-normal tw-bg-gray-50 tw-border-none tw-h-12 tw-justify-start tw-items-center tw-gap-2 tw-flex tw-focus:outline-none tw-rounded-none tw-shadow-none tw-px-0 focus:tw-outline-none"/>
                           <button id="mailchimp_cta" type="submit" class="tw-w-auto tw-text-base tw-font-medium tw-leading-normal tw-px-6 tw-py-3 tw-rounded-xl tw-border tw-justify-center tw-items-center tw-gap-2 tw-flex tw:max-h-12 tw-text-white tw-cursor-pointer" style="background: linear-gradient(180deg, #635DFF 0%, #4D3DF7 100%), #7069FB;">Subscribe</button>
                         </form>
                       </div>
