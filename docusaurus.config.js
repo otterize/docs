@@ -93,9 +93,9 @@ const footerSocialLinks = `
 const getNavDropdownItem = ({label, icon, description}) => `
 <div class="tw-flex tw-px-3 tw-items-start tw-gap-4 tw-self-stretch tw-rounded-xl">
 <img class="tw-h-6" src="/img/menu/${icon}.svg"/>
-<div class="tw-flex tw-flex-col tw-items-start tw-gap-2 tw-max-w-[270px] tw-pr-3">
+<div class="tw-flex tw-flex-col tw-items-start tw-gap-2 lg:tw-max-w-[270px] tw-pr-3">
   <div class="tw-text-gray-900 tw-font-semibold tw-text-base">${label}</div>
-  <p class="tw-text-gray-600 tw-whitespace-pre-wrap	tw-w-[225px] tw-mb-0">${description}</p>
+  <p class="tw-text-gray-600 tw-whitespace-pre-wrap	tw-min-w-[225px] tw-mb-0">${description}</p>
 </div>
 </div>
 `
@@ -292,17 +292,17 @@ const config = {
           },
           {
             href: "https://app.otterize.com/",
-            html: "<div className='tw-inline-flex tw-h-11 tw-w-24 tw-items-center tw-justify-center tw-gap-2 tw-rounded-lg tw-px-4 tw-py-2.5 tw-text-sm lg:tw-text-base tw-font-semibold tw-leading-normal tw-text-gray-600 tw-no-underline -tw-mr-10'>Log in</div>",
+            html: "<div id='login-link' className='tw-inline-flex tw-h-11 tw-w-24 tw-items-center tw-justify-center tw-gap-2 tw-rounded-lg tw-px-4 tw-py-2.5 tw-text-sm lg:tw-text-base tw-font-semibold tw-leading-normal tw-text-gray-600 tw-no-underline -tw-mr-10'>Log in</div>",
             position: "right",
           },
           {
             href: "https://app.otterize.com",
-            html: "<button class='tw-cursor-pointer tw-inline-flex tw-items-center tw-justify-center tw-gap-2 tw-rounded-xl tw-bg-gradient-to-b tw-px-3 tw-py-2.5 tw-text-sm lg:tw-text-base tw-font-semibold tw-leading-normal tw-no-underline tw-shadow tw-font-sans -tw-mr-2 tw-from-indigo-500 tw-bg-indigo-500 tw-to-indigo-600 tw-h-11 tw-border-none  tw-text-white  tw-max-w-[190px] tw-w-fit'><img src='img/menu/cloud.svg' />Signup <span class='tw-hidden lg:tw-inline'>for free<span></button>",
+            html: "<button class='tw-cursor-pointer tw-inline-flex tw-items-center tw-justify-center tw-gap-2 tw-rounded-xl tw-bg-gradient-to-b tw-px-3 tw-py-2.5 tw-text-sm lg:tw-text-base tw-font-semibold tw-leading-normal tw-no-underline tw-shadow tw-font-sans -tw-mr-2 tw-from-indigo-500 tw-bg-indigo-500 tw-to-indigo-600 tw-h-11 tw-border-none  tw-text-white tw-w-full'><img src='img/menu/cloud.svg' />Signup <span id='sign-extended-text'>for free<span></button>",
             position: "right",
           },
           {
             href: "https://calendly.com/otterize-team/kubecon-na",
-            html: "<div class='tw-cursor-pointer tw-font-sans tw-flex tw-items-center tw-rounded-xl tw-h-11 tw-border tw-border-solid tw-border-gray-300 tw-bg-white tw-px-3 tw-text-gray-900 tw-shadow tw-font-medium tw-text-sm lg:tw-text-base'><span class='tw-hidden lg:tw-inline'>Request a demo</span><span class='lg:tw-hidden'>Demo</span> <img class='tw-ml-2' src='img/menu/right-arrow.svg' /></div>",
+            html: "<div class='tw-cursor-pointer tw-font-sans tw-flex tw-items-center tw-rounded-xl tw-h-11 tw-border tw-border-solid tw-border-gray-300 tw-bg-white tw-px-3 tw-text-gray-900 tw-shadow tw-font-medium tw-text-sm lg:tw-text-base tw-w-full tw-justify-center'><span id='request-demo-full-text'>Request a demo</span><span id='request-demo-partial-text'>Demo</span><img class='tw-ml-2' src='img/menu/right-arrow.svg' /></div>",
             position: "right",
           },
         ],

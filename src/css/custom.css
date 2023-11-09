@@ -339,8 +339,31 @@ footer .container-fluid {
   border-radius: 10px;
 }
 
-
-/* Removes the dropdown arrow (uncomment in case we want to use svg) */
-/* .dropdown > .navbar__link:after {
+#request-demo-partial-text {
   display: none;
-} */
+}
+
+
+@media screen and (min-width: 996px) and (max-width: 1080px) {
+  #request-demo-partial-text {
+    display: inline;
+  }
+
+  #request-demo-full-text {
+    display: none;
+  }
+
+}
+@media screen and (min-width: 996px) and (max-width: 1140px) {
+  #sign-extended-text {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 996px) {
+  a:has(> #login-link) {
+    justify-content: center;
+    margin-top: 60px;
+  }
+
+}
