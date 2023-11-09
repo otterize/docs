@@ -56,6 +56,11 @@
   }
 
 }
+@media screen and (max-width: 1280px) {
+  .navbar__item {
+    margin-left: 0px;
+  }
+}
 
 .navbar__item:hover {
   color: rgb(183 183 183);
