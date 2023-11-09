@@ -3,7 +3,6 @@ module.exports = {
   content: ['./src/**/*.{js,jsx,ts,tsx}', './docusaurus.config.js'],
   prefix: 'tw-', // This is important to avoid conflicts with Docusaurus styles.
   theme: {
-    theme: {
       screens: {
         xs: '375px',
         md: '834px',
@@ -114,6 +113,6 @@ module.exports = {
         },
       },
     },
-  },
+
   plugins: [],
 }
