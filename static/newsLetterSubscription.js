@@ -1,5 +1,6 @@
 window.addEventListener("load", () => {
   const form = document.getElementById("mailchimp_form");
+
   const Statuses = Object.freeze({
     AlreadySubscribed: "alreadySubscribed",
     Success: "success",

@@ -5,6 +5,103 @@ const lightCodeTheme = require("prism-react-renderer/themes/oceanicNext");
 const darkCodeTheme = require("prism-react-renderer/themes/oceanicNext");
 const path = require("path");
 
+const platformLinks = `
+<div class="tw-self-stretch tw-h-20 tw-flex-col tw-justify-start tw-items-start tw-flex tw-text-left">
+  <div class="tw-self-stretch tw-py-2 tw-justify-start tw-items-start tw-inline-flex">
+    <a href="https://www.otterize.com/open-source" class="tw-grow tw-shrink tw-basis-0 tw-text-sky-950 tw-text-base tw-font-medium tw-font-sans tw-leading-normal !tw-no-underline">Open Source</a>
+  </div>
+  <div class="tw-self-stretch tw-py-2 tw-justify-start tw-items-start tw-inline-flex">
+    <a  href="https://www.otterize.com/cloud" class="tw-grow tw-shrink tw-basis-0 tw-text-sky-950 tw-text-base tw-font-medium tw-font-sans tw-leading-normal !tw-no-underline">Otterize Cloud</a>
+  </div>
+</div>
+`
+
+
+const resourcesLinks = `
+<div class="tw-self-stretch tw-h-40 tw-flex-col tw-justify-start tw-items-start tw-flex tw-text-left">
+  <div class="tw-self-stretch tw-py-2 tw-justify-start tw-items-start tw-inline-flex">
+    <a href="/" class="tw-grow tw-shrink tw-basis-0 tw-text-sky-950 tw-text-base tw-font-medium tw-font-sans tw-leading-normal tw-cursor-pointer !tw-no-underline">Documentation</a>
+  </div>
+  <div class="tw-self-stretch tw-py-2 tw-justify-start tw-items-start tw-inline-flex">
+    <a href="https://www.otterize.com/resources" class="tw-grow tw-shrink tw-basis-0 tw-text-sky-950 tw-text-base tw-font-medium tw-font-sans tw-leading-normal tw-cursor-pointer !tw-no-underline">Resource Hub</a>
+  </div>
+  <div class="tw-self-stretch tw-py-2 tw-justify-start tw-items-start tw-inline-flex">
+    <a href="https://www.otterize.com/team" class="tw-grow tw-shrink tw-basis-0 tw-text-sky-950 tw-text-base tw-font-medium tw-font-sans tw-leading-normal tw-cursor-pointer !tw-no-underline">About Us</a>
+  </div>
+  <div class="tw-self-stretch tw-py-2 tw-justify-start tw-items-start tw-inline-flex">
+    <a href="https://www.otterize.com/pricing" class="tw-grow tw-shrink tw-basis-0 tw-text-sky-950 tw-text-base tw-font-medium tw-font-sans tw-leading-normal tw-cursor-pointer !tw-no-underline">Pricing</a>
+  </div>
+</div>
+`
+
+
+/** Components */
+
+const footerSocialLinks = `
+<a href="https://github.com/otterize?view_as=public">
+  <img
+  width='30'
+  height='30'
+  loading='lazy'
+  src="img/footer/github.svg"
+  alt="GitHub logo"
+  className='w-5 h-5 relative'
+  />
+</a>
+<a href="https://www.linkedin.com/company/otterize">
+  <img
+  width='30'
+  height='30'
+  loading='lazy'
+  src="img/footer/linkedin.svg"
+  alt="LinkedIn logo"
+  className='w-5 h-5 relative'
+  />
+</a>
+<a href="https://x.com/TheOtterize">
+  <img
+  width='30'
+  height='30'
+  loading='lazy'
+  src="img/footer/x.svg"
+  alt="X logo"
+  className='w-5 h-5 relative'
+  />
+</a>
+<a href="https://joinslack.otterize.com/">
+  <img
+  width='30'
+  height='30'
+  loading='lazy'
+  src="img/footer/slack.svg"
+  alt="Slack logo"
+  className='w-5 h-5 relative'
+  />
+</a>
+<a href="https://www.youtube.com/@the-otterize/featured">
+  <img
+  width='30'
+  height='30'
+  loading='lazy'
+  src="img/footer/youtube.svg"
+  alt="YouTube logo"
+  className='w-5 h-5 relative'
+  />
+</a>
+`
+
+const getNavDropdownItem = ({label, icon, description}) => `
+<div class="tw-flex tw-px-3 tw-items-start tw-gap-4 tw-self-stretch tw-rounded-xl">
+<img class="tw-h-6" src="/img/menu/${icon}.svg"/>
+<div class="tw-flex tw-flex-col tw-items-start tw-gap-2 tw-max-w-[270px] tw-pr-3">
+  <div class="tw-text-gray-900 tw-font-semibold tw-text-base">${label}</div>
+  <p class="tw-text-gray-600 tw-whitespace-pre-wrap	tw-w-[225px] tw-mb-0">${description}</p>
+</div>
+</div>
+`
+/** Components - End */
+
+
 // /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: "Otterize",
@@ -113,10 +210,11 @@ const config = {
         },
         blog: false,
         theme: {
-          customCss: require.resolve("./src/css/custom.css"),
+          customCss: [require.resolve("./src/css/custom.css"), require.resolve('./src/css/tailwind.css')],
         },
       }),
     ],
+
   ],
 
   themeConfig:
@@ -142,62 +240,64 @@ const config = {
         },
         items: [
           {
-            href: "https://otterize.com/open-source",
-            label: "Open source",
-            position: "right",
+            type: "dropdown",
+            position: "left",
+            html: "<div class='tw-inline tw-font-normal'>Platform</div>",
+            items: [
+              {
+                href: "https://otterize.com/open-source",
+                target: "_self",
+                html: getNavDropdownItem({label: 'Open Source', icon: "open-source-menu", description: "Explore, contribute, and strengthen security with Otterize OSS."})
+              },
+              {
+                href: "https://otterize.com/cloud",
+                target: "_self",
+                html: getNavDropdownItem({label: 'Otterize Cloud', icon: "cloud-menu", description: "Secure your infrastructure, your way! Eliminate the need to struggle with network policies, Kafka ACLs, certificates, and IAM."}),
+              }
+            ],
+          },
+          {
+            position: "left",
             target: "_self",
+            href:'https://docs.otterize.com/',
+            html: "<div class='tw-inline tw-font-normal'>Documentation</div>",
           },
           {
-            href: "https://otterize.com/product",
-            label: "Product",
-            position: "right",
+            position: "left",
             target: "_self",
+            href:'https://docs.otterize.com/pricing',
+            html: "<div class='tw-inline tw-font-normal'>Pricing</div>",
           },
           {
-            href: "https://otterize.com/ibac",
-            label: "IBAC",
-            position: "right",
-            target: "_self",
+            type: "dropdown",
+            position: "left",
+            html: "<div class='tw-inline tw-font-normal'>Learn</div>",
+            items: [
+              {
+                href: "https://otterize.com/blog",
+                html: getNavDropdownItem({label: 'Blog', icon: "blog-menu", description: ""}),
+                target: "_self",
+              },
+              {
+                href: "https://otterize.com/team",
+                html: getNavDropdownItem({label: 'Our Story', icon: "resources-menu", description: "Dive into our company’s mission, our philosophy, and the team that makes it all possible."}),
+                target: "_self",
+              },
+            ],
           },
           {
-            type: "doc",
-            docId: "getting-started/README",
+            href: "https://app.otterize.com/",
+            html: "<div className='tw-inline-flex tw-h-11 tw-w-24 tw-items-center tw-justify-center tw-gap-2 tw-rounded-lg tw-px-4 tw-py-2.5 tw-text-base tw-font-semibold tw-leading-normal tw-text-gray-600 tw-no-underline -tw-mr-10'>Log in</div>",
             position: "right",
-            label: "Docs",
-          },
-          {
-            href: "https://otterize.com/pricing",
-            label: "Pricing",
-            position: "right",
-            target: "_self",
-          },
-          {
-            href: "https://otterize.com/team",
-            label: "Team",
-            position: "right",
-            target: "_self",
-          },
-          {
-            href: "https://otterize.com/blog",
-            label: "Blog",
-            position: "right",
-            target: "_self",
-          },
-          {
-            href: "https://github.com/otterize",
-            html: '<img src="/img/github-round-logo.svg" />',
-            position: "right",
-            class: "navbar_external_logo_first",
-          },
-          {
-            href: "https://joinslack.otterize.com/",
-            html: '<img src="/img/slack-logo-no-border.svg" />',
-            position: "right",
-            class: "navbar_external_logo",
           },
           {
             href: "https://app.otterize.com",
-            html: "<span class='launch_app'>Launch App</span>",
+            html: "<button class='tw-cursor-pointer tw-inline-flex tw-items-center tw-justify-center tw-gap-2 tw-rounded-xl tw-bg-gradient-to-b tw-px-4 tw-py-2.5 tw-text-base tw-font-semibold tw-leading-normal tw-no-underline tw-shadow tw-font-sans -tw-mr-2 tw-from-indigo-500 tw-bg-indigo-500 tw-to-indigo-600 tw-h-11 tw-border-none  tw-text-white  tw-max-w-[190px] tw-w-fit'><img src='img/menu/cloud.svg' />Signup for free</button>",
+            position: "right",
+          },
+          {
+            href: "https://calendly.com/otterize-team/kubecon-na",
+            html: "<div class='tw-cursor-pointer tw-font-sans tw-flex tw-items-center tw-rounded-xl tw-h-11 tw-border tw-border-solid tw-border-gray-300 tw-bg-white tw-px-6 tw-text-gray-900 tw-shadow tw-font-medium tw-text-base'>Request a demo <img class='tw-ml-2' src='img/menu/right-arrow.svg' /></div>",
             position: "right",
           },
         ],
@@ -207,39 +307,60 @@ const config = {
           {
             html: `
                 <div class="footer_left">
-
-                    <div id="mailchimp_title" class="footer_signup">
-                        Sign up for updates
+                  <div class="tw-w-96 tw-h-60 tw-flex-col tw-justify-start tw-items-start tw-gap-6 tw-inline-flex">
+                    <div class="tw-w-36 tw-h-8 tw-justify-start tw-items-start tw-inline-flex">
+                      <img class="tw-w-40 tw-h-16 tw-relative tw-rounded-lg" src="/img/logo.svg"/>
                     </div>
-                    <div class="footer_left-links">
-                        <form id="mailchimp_form" class="footer_signup-form" name="embedded-subscribe-form">
-                            <input id="mailchimp_email_input" style="color: white"  type="email" name="EMAIL" class="footer_signup-input" placeholder="Email address" required="">
-                            <button id="mailchimp_cta" type="submit" class="footer_signup-button">
-                                <img src="/img/arrow_right_alt.svg" alt="Right arrow icon" class="footer_signup-img">
-                            </button>
+                    <div id="mailchimp_title" class="tw-w-96 tw-text-gray-700 tw-text-xl tw-font-normal tw-font-sans tw-text-left">Join our newsletter to stay up to date on features and releases.</div>
+                    <div class="tw-h-28 tw-flex-col tw-justify-start tw-items-start tw-gap-1.5 tw-flex">
+                      <div class="tw-self-stretch tw-h-14 tw-flex-col tw-justify-start tw-items-start tw-gap-1.5 tw-flex">
+                        <form name="embedded-subscribe-form" id="mailchimp_form" class="tw-self-stretch tw-pl-3 tw-pr-1.5 tw-py-1.5 tw-bg-gray-200 tw-rounded-2xl tw-shadow tw-justify-start tw-items-center tw-gap-2 tw-inline-flex">
+                          <input id="mailchimp_email_input" type="email" name="EMAIL" placeholder="Enter your email" required="" class="tw-w-full tw-text-gray-600 tw-text-base tw-font-normal tw-leading-normal tw-bg-gray-200 tw-border-none tw-h-12 tw-justify-start tw-items-center tw-gap-2 tw-flex tw-focus:outline-none tw-rounded-none tw-shadow-none tw-px-0 focus:tw-outline-none"/>
+                          <button id="mailchimp_cta" type="submit" class="tw-w-auto tw-text-base tw-font-medium tw-leading-normal tw-px-6 tw-py-3 tw-rounded-xl tw-border tw-justify-center tw-items-center tw-gap-2 tw-flex tw:max-h-12 tw-text-white tw-cursor-pointer" style="background: linear-gradient(180deg, #635DFF 0%, #4D3DF7 100%), #7069FB;">Subscribe</button>
                         </form>
+                      </div>
+                      <div class="tw-text-left tw-self-stretch tw-text-gray-600 tw-text-sm tw-font-normal tw-font-sans tw-leading-tight tw-mt-1">By subscribing you agree to with our Privacy Policy and to receive updates from us.</div>
                     </div>
+                  </div>
                 </div>
                 `,
           },
           {
-            html: `<div class="footer_right">
-                            <div class="footer_right-links">
-                                <a href="https://github.com/otterize/"><img src="/img/github-icon.svg" /></a>
-                                <a href="https://www.linkedin.com/company/otterize"><img src="/img/linkedin-icon.svg" /></a>
-                                <a href="https://joinslack.otterize.com/"><img src="/img/slack-icon.svg" /></a>
-                            </div>
-                            <div class="footer_privacy-policy">
-                                <a href="https://otterize.com/privacy">Privacy policy</a>
-                            </div>
-                         </div>`,
+            html: `<div class="footer_right tw-w-auto">
+                    <div class="tw-w-full tw-h-60 tw-justify-start tw-items-start tw-inline-flex tw-gap-32">
+                      <div class="tw-grow tw-shrink tw-basis-0 tw-flex-col tw-justify-start tw-items-start tw-gap-4 tw-inline-flex tw-w-[120px] tw-max-w-[240px]">
+                        <div class="tw-self-stretch tw-text-gray-500 tw-text-sm tw-font-semibold tw-font-sans tw-uppercase tw-leading-none tw-tracking-widest tw-text-left">Platform</div>
+                          ${platformLinks}
+                      </div>
+                      <div class="tw-grow tw-shrink tw-basis-0 tw-flex-col tw-justify-start tw-items-start tw-gap-4 tw-inline-flex tw-w-[120px] tw-max-w-[240px]">
+                        <div class="tw-self-stretch tw-text-gray-500 tw-text-sm tw-font-semibold tw-font-sans tw-uppercase tw-leading-none tw-tracking-widest tw-text-left">resources</div>
+                        ${resourcesLinks}
+                      </div>
+                      <div class="tw-grow tw-shrink tw-basis-0 tw-flex-col tw-justify-start tw-items-start tw-gap-4 tw-inline-flex tw-w-[120px] tw-max-w-[240px]">
+                        <div class="tw-self-stretch tw-text-gray-500 tw-text-sm tw-font-semibold tw-font-sans tw-uppercase tw-leading-none tw-tracking-widest tw-text-left">Follow Us</div>
+                        <ul class='tw-h-48 tw-flex-col tw-justify-between tw-items-start tw-flex tw-gap-4 tw-w-full tw-mt-2 tw-text-left'>
+                        ${footerSocialLinks}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>`,
           },
           {
-            html: `<div class="footer_copyright">
-                            Built with Docusaurus
-                            <p />
-                            © ${new Date().getFullYear()} Otterize, Inc. All rights reserved.
-                        </div>`,
+            html: `<div class="footer_copyright tw-w-full">
+                    <img src="img/footer/cloud-native.svg" class="tw-mr-[2000px]" />
+                    <div class="tw-w-full tw-h-14 tw-flex-col tw-justify-start tw-items-start tw-gap-8 tw-inline-flex">
+                    <div class="tw-self-stretch tw-h-px tw-bg-gray-300"></div>
+                    <div class="tw-self-stretch tw-justify-between tw-items-start tw-inline-flex">
+                      <div class="tw-text-gray-500 tw-text-sm tw-font-normal tw-font-sans tw-leading-tight">© ${new Date().getFullYear()} Otterize. All rights reserved.</div>
+                      <div class="tw-justify-start tw-items-start tw-gap-6 tw-flex">
+                        <a href="https://status.otterize.com/" class="tw-text-gray-500 tw-text-sm tw-font-medium tw-font-sans tw-leading-tight !tw-no-underline">Service Status</a >
+                        <a href="https://otterize.com/privacy" class="tw-text-gray-500 tw-text-sm tw-font-medium tw-font-sans tw-leading-tight !tw-no-underline">Privacy Policy</a >
+                        <a href="https://otterize.com/terms" class="tw-text-gray-500 tw-text-sm tw-font-medium tw-font-sans tw-leading-tight !tw-no-underline">Terms of Service</a >
+                        <a href="" class="tw-text-gray-500 tw-text-sm tw-font-medium tw-font-sans tw-leading-tight !tw-no-underline">Cookies Settings</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>`,
           },
         ],
       },
