@@ -279,6 +279,11 @@ const config = {
                 target: "_self",
               },
               {
+                href: "https://otterize.com/resources",
+                html: getNavDropdownItem({label: "The Otter's Den", icon: "resources-menu", description: "Your go-to resource hub for Kubernetes security and tech know-how."}),
+                target: "_self",
+              },
+              {
                 href: "https://otterize.com/team",
                 html: getNavDropdownItem({label: 'Our Story', icon: "resources-menu", description: "Dive into our company’s mission, our philosophy, and the team that makes it all possible."}),
                 target: "_self",
