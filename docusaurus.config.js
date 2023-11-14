@@ -265,7 +265,7 @@ const config = {
           {
             position: "left",
             target: "_self",
-            href:'https://docs.otterize.com/pricing',
+            href:'https://www.otterize.com/pricing',
             html: "<div class='tw-inline tw-font-normal tw-text-base'>Pricing</div>",
           },
           {
