@@ -99,6 +99,8 @@ const getNavDropdownItem = ({label, icon, description}) => `
 </div>
 </div>
 `
+
+const dropdownChevron = `<div class='tw-flex'><img src='/img/menu/chevron-down.svg' class='group-hover:tw-hidden'/><img src='/img/menu/chevron-up.svg' class='tw-hidden group-hover:tw-block'/></div>`
 /** Components - End */
 
 
@@ -126,6 +128,7 @@ const config = {
   },
   scripts: [
     { src: "/newsLetterSubscription.js", async: true },
+    { src: "/ui.js", async: true },
     { src: "/pixels.js", async: true },
   ],
   plugins: [
@@ -242,7 +245,7 @@ const config = {
           {
             type: "dropdown",
             position: "left",
-            html: "<div class='tw-inline tw-font-normal tw-text-base'>Platform</div>",
+            html: `<div id='platform-navbar-item' class='tw-flex tw-font-normal tw-text-base tw-group'>Platform${dropdownChevron}</div>`,
             items: [
               {
                 href: "https://otterize.com/open-source",
@@ -271,7 +274,7 @@ const config = {
           {
             type: "dropdown",
             position: "left",
-            html: "<div class='tw-inline tw-font-normal tw-text-base'>Learn</div>",
+            html: `<div id='learn-navbar-item' class='tw-flex tw-font-normal tw-text-base tw-group'>Learn${dropdownChevron}</div>`,
             items: [
               {
                 href: "https://otterize.com/blog",
@@ -285,7 +288,7 @@ const config = {
               },
               {
                 href: "https://otterize.com/team",
-                html: getNavDropdownItem({label: 'Our Story', icon: "resources-menu", description: "Dive into our company’s mission, our philosophy, and the team that makes it all possible."}),
+                html: getNavDropdownItem({label: 'Our Story', icon: "philosophy-menu", description: "Dive into our company’s mission, our philosophy, and the team that makes it all possible."}),
                 target: "_self",
               },
             ],
