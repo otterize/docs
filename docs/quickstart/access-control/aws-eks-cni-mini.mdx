@@ -51,9 +51,9 @@ addons:
   - name: kube-proxy
 
 managedNodeGroups:
-  - name: x86-al2-on-demand
+  - name: small-on-demand
     amiFamily: AmazonLinux2
-    instanceTypes: [ "m6i.xlarge", "m6a.xlarge" ]
+    instanceTypes: [ "t3.large" ]
     minSize: 0
     desiredCapacity: 2
     maxSize: 6
@@ -66,7 +66,7 @@ managedNodeGroups:
       team: "eks"
 ```
 
-Then run the following command to create your AWS cluster:
+Then run the following command to create your AWS cluster. [Don't have eksctl? Install it now.](https://eksctl.io/installation/)
 
 ```shell
 eksctl create cluster -f cluster-config.yaml
