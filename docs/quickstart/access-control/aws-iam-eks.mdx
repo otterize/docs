@@ -149,6 +149,8 @@ They should grant access to all `iam` permissions in the account, and a subset o
         - "organizations:ListRoots"
         - "organizations:ListPolicies"
         - "organizations:ListTargetsForPolicy"
+        - "ec2:DescribeInstances"
+        - "eks:DescribeCluster"
     Resource: "*"
 ```
 
@@ -201,13 +203,13 @@ Here's why: operation error S3: PutObject, https response error StatusCode: 403,
 api error AccessDenied: Access Denied
 ```
 
-### Annotate the server pod to create an AWS IAM role
-Annotate the server `Pod` so that the Otterize credentials operator creates an AWS IAM role for it and binds its Kubernetes ServiceAccount to the newly created role.
+### Label the server pod to create an AWS IAM role
+Label the server `Pod` so that the Otterize credentials operator creates an AWS IAM role for it and binds its Kubernetes ServiceAccount to the newly created role.
 
 To do this, we won't be annotating the `Pod` directly, but instead patching the `Deployment` we created earlier so that it updates the `Pod`.
 
 ```bash
-kubectl patch deployment -n otterize-tutorial-iam server -p '{"spec": {"template":{"metadata":{"annotations":{"credentials-operator.otterize.com/create-aws-role":"true"}}}} }'
+kubectl patch deployment -n otterize-tutorial-iam server -p '{"spec": {"template":{"metadata":{"labels":{"credentials-operator.otterize.com/create-aws-role":"true"}}}} }'
 ```
 
 #### An AWS IAM role was created
@@ -286,13 +288,16 @@ kubectl apply -n otterize-tutorial-iam -f ${ABSOLUTE_URL}/code-examples/aws-iam-
 
 ### The server can now upload files to S3!
 
-But first, let's restart the server. This is necessary so that [AWS IRSA](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html) will be able to inject the AWS access key and secret as environment variables.
-
-```bash
-kubectl rollout restart -n otterize-tutorial-iam deployment/server
-```
-
 Let's look at the server logs again to see that no more errors are being reported:
+```json
+{
+  # highlight-next-line
+  "status":200,
+  "host":"server",
+  "method":"POST",
+  "uri":"/upload"
+}
+```
 
 Let's list the contents of the S3 bucket:
 ```bash
