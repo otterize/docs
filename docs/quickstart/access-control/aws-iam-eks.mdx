@@ -86,16 +86,18 @@ aws eks update-kubeconfig --region us-west-2 --name otterize-iam-eks-tutorial
 ```
 
 #### 2. Deploy Otterize for AWS IAM
-To deploy Otterize, head over to [Otterize Cloud](https://app.otterize.com) and create a Kubernetes cluster on the [Clusters page](https://app.otterize.com/clusters), and follow the instructions. *Make sure to enable enforcement mode for this tutorial.*
+To deploy Otterize, head over to [Otterize Cloud](https://app.otterize.com) and:
 
-Once you have Otterize deployed, create an AWS IAM integration on the [Integrations page](https://app.otterize.com/integrations). Under "AWS EKS cluster name", fill in the name of your cluster on AWS EKS. In "AWS EKS cluster region", fill in the cluster's region.
+1. Create a Kubernetes cluster on the [Clusters page](https://app.otterize.com/clusters), and follow the instructions. *Make sure to enable enforcement mode for this tutorial.* If you already have a Kubernetes cluster connected, skip this step.
+
+2. Create an AWS IAM integration on the [Integrations page](https://app.otterize.com/integrations).
 
 If you are using the cluster from the previous step, the cluster name is `otterize-iam-eks-tutorial` and the region is `us-west-2`.
 
-Once the AWS integration is configured, you'll be presented with a dialog to launch a CloudFormation template to configure the IAM roles for the Otterize operators. This enables them to manage IAM for the pods in your cluster.
+Once the AWS integration is configured, you'll be presented with a dialog to launch a CloudFormation template to configure the IAM roles for the Otterize operators. This enables the operators to manage IAM for the pods in your cluster.
 This setup is required once per-cluster, and configures AWS IRSA on your cluster, if it is not yet configured. [This template can be found on GitHub as well](https://github.com/otterize/setup/blob/main/aws-iam-operator-setup-template.yaml).
 
-After CloudFormation has configured your cluster, redeploy Otterize with the new Helm configuration provided by Otterize Cloud. Since you now have the AWS integration enabled, you need to redeploy Otterize with the credentials operator enabled, and with configuration telling the operators which AWS roles they will AssumeRole to in order to operate.
+After CloudFormation has configured your cluster, click Next and you'll be presented with the configuration for deploying Otterize. Since you now have the AWS integration enabled, you need to redeploy Otterize with the credentials operator enabled, and with configuration telling the operators which AWS roles they will AssumeRole to in order to operate.
 
 <details>
 <summary>See how to manually configure AWS IRSA on your cluster for Otterize</summary>
@@ -206,7 +208,7 @@ api error AccessDenied: Access Denied
 ### Label the server pod to create an AWS IAM role
 Label the server `Pod` so that the Otterize credentials operator creates an AWS IAM role for it and binds its Kubernetes ServiceAccount to the newly created role.
 
-To do this, we won't be annotating the `Pod` directly, but instead patching the `Deployment` we created earlier so that it updates the `Pod`.
+To do this, we won't be annotating the `Pod` directly, but instead patching the `template` attribute of the `Deployment` we created earlier so that it updates the `Pod`.
 
 ```bash
 kubectl patch deployment -n otterize-tutorial-iam server -p '{"spec": {"template":{"metadata":{"labels":{"credentials-operator.otterize.com/create-aws-role":"true"}}}} }'
