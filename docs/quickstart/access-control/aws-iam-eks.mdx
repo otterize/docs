@@ -131,11 +131,11 @@ You may also manually configure your cluster.
     ```
 
 In this example, `C90DC306FCDDFFD362B58B0D28D844CB` is your OpenIDConnect provider ID.
-For the `credentials-operator`, substitute `system:serviceaccount:otterize-system:intents-operator-controller-manager` with `system:serviceaccount:otterize-system:credentials-operator-controller-manager.
+For the `credentials-operator`, substitute `system:serviceaccount:otterize-system:intents-operator-controller-manager` with `system:serviceaccount:otterize-system:credentials-operator-controller-manager`.
 
 
 3. Create IAM policies for these two roles.
-They should grant access to all `iam` permissions in the account, and a subset of `organizations` permissions. Here's an example:
+They should grant access to all `iam` permissions in the account, and a subset of `organizations` and `ec2` and `eks` permissions. Here's an example:
 ```yaml
     Statement:
         - Effect: Allow
