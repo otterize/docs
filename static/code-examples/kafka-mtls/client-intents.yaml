@@ -1,8 +1,20 @@
 apiVersion: k8s.otterize.com/v1alpha3
 kind: ClientIntents
 metadata:
-  name: client
-  namespace:  otterize-tutorial-kafka-mtls
+  name: client-intents-for-kafka
+  namespace: kafka
+spec:
+  service:
+    name: kafka
+  calls:
+    - name: kafka
+    - name: kafka-zookeeper
+---
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: client-intents-for-client
+  namespace: otterize-tutorial-kafka-mtls
 spec:
   service:
     name: client
