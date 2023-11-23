@@ -1,18 +1,6 @@
 apiVersion: k8s.otterize.com/v1alpha3
 kind: ClientIntents
 metadata:
-  name: client-intents-for-kafka
-  namespace: kafka
-spec:
-  service:
-    name: kafka
-  calls:
-    - name: kafka
-    - name: kafka-zookeeper
----
-apiVersion: k8s.otterize.com/v1alpha3
-kind: ClientIntents
-metadata:
   name: client-intents-for-client
   namespace: otterize-tutorial-kafka-mtls
 spec:
@@ -26,3 +14,16 @@ spec:
           operations: [ produce,describe,consume ]
         - name: transactions
           operations: [ produce,describe,consume ]
+---
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: client-intents-for-kafka
+  namespace: kafka
+spec:
+  service:
+    name: kafka
+  calls:
+    - name: kafka
+    - name: kafka-zookeeper
+
