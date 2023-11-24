@@ -217,38 +217,39 @@ kubectl patch deployment -n otterize-tutorial-iam server -p '{"spec": {"template
 #### An AWS IAM role was created
 Let's inspect the created role:
 ```bash
-aws iam get-role --role-name otterize-sa-otterize-tutorial-iam-server
+aws iam list-roles --query 'Roles[?starts_with(RoleName, `otr-`) == `true`]'
 ```
 
 In the output, you should see that a role was created, with an `AssumeRolePolicyDocument` that enables the server's ServiceAccount to AssumeRole.
 ```json
-{
-    "Role": {
+    {
         "Path": "/",
-        "RoleName": "otterize-sa-otterize-tutorial-iam-server",
-        "Arn": "arn:aws:iam::353146681200:role/otterize-sa-otterize-tutorial-iam-server",
+        "RoleName": "otr-otterize-tutorial-iam.server@otterize-iam-eks-tutoria-ef91a7",
+        "RoleId": "AROAVEOJOW5YM2CXSB4FJ",
+        "Arn": "arn:aws:iam::353146681200:role/otr-otterize-tutorial-iam.server@otterize-iam-eks-tutoria-ef91a7",
+        "CreateDate": "2023-11-21T12:03:42+00:00",
         "AssumeRolePolicyDocument": {
+            "Version": "2012-10-17",
             "Statement": [
                 {
-                  // [...]
+                    "Effect": "Allow",
                     "Principal": {
-                        "Federated": "arn:aws:iam::353146681200:oidc-provider/oidc.eks.us-west-2.amazonaws.com/id/3EF68E9F04B82DB73FC1A6563AC423A6"
+                        "Federated": "arn:aws:iam::353146681200:oidc-provider/oidc.eks.us-west-2.amazonaws.com/id/84E95D704D69DB40F4E4B6B6A6777CA3"
                     },
                     "Action": "sts:AssumeRoleWithWebIdentity",
                     "Condition": {
                         "StringEquals": {
-                        # highlight-next-line
-                            "oidc.eks.us-west-2.amazonaws.com/id/[...]:sub":
-                        # highlight-next-line
-                               "system:serviceaccount:default:service1",
-                            "oidc.eks.us-west-2.amazonaws.com/id/[...]:aud": "sts.amazonaws.com"
+                            # highlight-next-line
+                            "oidc.eks.us-west-2.amazonaws.com/id/84E95D704D69DB40F4E4B6B6A6777CA3:aud": "sts.amazonaws.com",
+                            # highlight-next-line
+                            "oidc.eks.us-west-2.amazonaws.com/id/84E95D704D69DB40F4E4B6B6A6777CA3:sub": "system:serviceaccount:otterize-tutorial-iam:server"
                         }
                     }
                 }
             ]
         },
-      // [...]
-    }
+    [...]
+}
 }
 ```
 
@@ -268,7 +269,7 @@ metadata:
     # highlight-next-line
     eks.amazonaws.com/role-arn:
     # highlight-next-line
-      arn:aws:iam::353146681200:role/otterize-sa-otterize-tutorial-iam-server
+      arn:aws:iam::353146681200:role/otr-otterize-tutorial-iam.server@otterize-iam-eks-tutoria-ef91a7
   name: server
   namespace: otterize-tutorial-iam
 ```
