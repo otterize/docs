@@ -292,6 +292,10 @@ kubectl apply -n otterize-tutorial-iam -f ${ABSOLUTE_URL}/code-examples/aws-iam-
 ### The server can now upload files to S3!
 
 Let's look at the server logs again to see that no more errors are being reported:
+```bash
+kubectl logs -f -n otterize-tutorial-iam deploy/server
+```
+
 ```json
 {
   # highlight-next-line
