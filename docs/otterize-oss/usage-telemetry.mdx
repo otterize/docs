@@ -66,7 +66,12 @@ Most CLI commands are of the form `otterize <noun> <verb>` where the `<noun>` is
 
 To configure whether to report usage information to the Otterize team, use the `telemetry` flag in the installation/configuration of Otterize OSS. By default, telemetry is enabled.
 
-To **disable** sending usage information:
+To **disable** only the sending of usage information:
+  - Via the Otterize OSS Helm chart: `--set global.telemetry.usage.enabled=false`.
+  - Via an environment variable: `OTTERIZE_TELEMETRY_USAGE_ENABLED=false`.
+  - If running an operator directly: `telemetry-usage-enabled=false`.
+
+To **disable** sending any telemetry information, including both usage information and error information:
   - Via the Otterize OSS Helm chart: `--set global.telemetry.enabled=false`.
   - Via an environment variable: `OTTERIZE_TELEMETRY_ENABLED=false`.
   - If running an operator directly: `telemetry-enabled=false`.
