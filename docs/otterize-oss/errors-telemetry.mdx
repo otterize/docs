@@ -1,12 +1,12 @@
 ---
-title: Errors telemetry
+title: Error telemetry
 ---
 
-Otterize OSS components report anonymous errors telemetry that allows us to proactively identify and address issues. No personal or organizational identifying information is transmitted in these metrics: The information reported is limited to essential details necessary for effective issue resolution. You may opt out at any time through a single configuration flag.
+Otterize OSS components report anonymous error telemetry that allows us to proactively identify and address issues. No personal or organizational identifying information is transmitted in these metrics: The information reported is limited to essential details necessary for effective issue resolution. You may opt out at any time through a single configuration flag.
 
 ## What information is collected?
 
-Each error event includes error type, relevant code lines from the stack trace, and metadata on the OSS component instance identifiers, detailed in the table below. The error reporting is implemented using Bugsnag error handling SDK. For a comprehensive understanding of the schema used for Bugsnag error reporting, please refer to the following link: [Bugsnag Error Reporting API](https://bugsnagerrorreportingapi.docs.apiary.io/#reference/0/notify/send-error-reports).
+Each error event includes error type, relevant code lines from the stack trace, and metadata on the OSS component instance identifiers, detailed in the table below. The error reporting is implemented using the Bugsnag error handling SDK. For a comprehensive understanding of the schema used for Bugsnag error reporting, please refer to the following link: [Bugsnag Error Reporting API](https://bugsnagerrorreportingapi.docs.apiary.io/#reference/0/notify/send-error-reports).
 
 
 ### Identifiers
@@ -19,11 +19,11 @@ Each error event includes error type, relevant code lines from the stack trace, 
 | `version`             | The version of the Otterize OSS component.                                                                                           |
 | `cloudClientId`       | If connected to Otterize Cloud: the client id used to connect with Otterize Cloud, to allow correlating events with Cloud usage info. |
 
-## Configuring whether to report errors information
+## Configuring whether to report error information
 
-To configure whether to report errors information to the Otterize team, use the `telemetry.errors` flag in the installation/configuration of Otterize OSS. By default, telemetry is enabled.
+To configure whether to report error information to the Otterize team, use the `telemetry.errors` flag in the installation/configuration of Otterize OSS. By default, telemetry is enabled.
 
-To **disable** only the sending of errors information:
+To **disable** only the sending of error information:
   - Via the Otterize OSS Helm chart: `--set global.telemetry.errors.enabled=false`.
   - Via an environment variable: `OTTERIZE_TELEMETRY_ERRORS_ENABLED=false`.
   - If running an operator directly: `telemetry-errors-enabled=false`.
@@ -33,5 +33,5 @@ To **disable** sending any telemetry information, including both usage informati
   - Via an environment variable: `OTTERIZE_TELEMETRY_ENABLED=false`.
   - If running an operator directly: `telemetry-enabled=false`.
 
-If the `telemetry` flag is omitted or set to `true`, telemetry will be enabled: errors information will be reported.
+If the `telemetry` flag is omitted or set to `true`, telemetry will be enabled: error information will be reported.
 
