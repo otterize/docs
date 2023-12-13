@@ -1,0 +1,20 @@
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: psql-client
+  namespace:  otterize-tutorial-psql
+spec:
+  service:
+    name: psql-client
+  calls:
+    - name: postgresql-db
+      type: database
+      databaseResources:
+        - table: users
+          databaseName: otterize-demo
+          operations:
+            - SELECT
+        - table: products
+          databaseName: otterize-demo
+          operations:
+            - ALL

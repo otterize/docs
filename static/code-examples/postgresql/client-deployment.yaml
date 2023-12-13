@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: otterize-tutorial-psql
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: psql-client
+  namespace: otterize-tutorial-psql
+spec:
+  selector:
+    matchLabels:
+      app: psql-client
+  template:
+    metadata:
+      annotations:
+        credentials-operator.otterize.com/user-password-secret-name: psql-client-secret
+      labels:
+        app: psql-client
+    spec:
+      containers:
+        - name: psql-client
+          image: postgres
+          command: [ "/bin/sh", "-c", "--" ]
+          args: [ "while true; do psql -h $DB_HOST_NAME -d otterize-demo -c \"select * from $TABLE_NAME;\"; sleep 2; done" ]
+          env:
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: psql-client-secret
+                  key: username
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: psql-client-secret
+                  key: password
+            - name: DB_HOST_NAME
+              value: PLEASE_SET_ENV_VAR:DB_HOST_NAME
+            - name: TABLE_NAME
+              value: users
