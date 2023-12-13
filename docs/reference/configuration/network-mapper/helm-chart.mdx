@@ -23,6 +23,12 @@ Checkout the network mapper [tutorial](/quickstart/visualization/k8s-network-map
 | `mapper.uploadIntervalSeconds` | Interval for uploading data to cloud                                                            | `60`             |
 | `mapper.extraEnvVars`          | List of extra env vars for the mapper, formatted as in the Kubernetes PodSpec (name and value). | `(none)`         |
 
+## Internet-facing traffic reporting
+| Key                                    | Description                                                                                                                 | Default |
+|----------------------------------------|-----------------------------------------------------------------------------------------------------------------------------|---------|
+| `enableInternetFacingTrafficReporting` | Whether to report internet-facing traffic to Otterize Cloud. This is a temporary flag that will soon be enabled by default. | `false` |
+
+
 ## OpenTelemetry exporter parameters
 | Key                        | Description                                                                                                                                                                                                     | Default                              |
 |----------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------|
