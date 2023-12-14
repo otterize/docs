@@ -1,245 +1,69 @@
 ---
 sidebar_position: 2
-title: Automate PostgreSQL
+title: Just-in-time PostgreSQL users & access
 ---
 
 import CodeBlock from "@theme/CodeBlock";
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 
-:::danger Write intro
-:::
+Otterize automates PostgreSQL access management and secrets for your workloads, all in Kubernetes.
 
-## Prerequisites
 
-### Prepare a Kubernetes cluster
+![](/code-examples/postgresql/cloud.png)
 
-<details>
-<summary>Expand for cluster setup instructions</summary>
+Connect to [Otterize Cloud](https://app.otterize.com) to get started!
 
-Before you start, you'll need a Kubernetes cluster.
 
-{@include: ../../_common/cluster-setup.md}
+## Deploy Otterize for PostgreSQL
 
-</details>
+### Install Otterize
 
-### Deploy Otterize for Databases 
-
-<details>
-<summary>Expand for deployment instructions</summary>
 {@include: ../../_common/install-otterize-from-cloud-with-enforcement-postgresql.md}
 
-</details>
 
-:::note
-Make sure to set the following flag in your helm command
-
---set intentsOperator.operator.enableDatabaseReconciler=true
-:::
-
-
-
-## Configure Otterize to manage PostgreSQL access
+### Create database integration
 Create a _Database_ integration of type _PostgreSQL_ on the [Integrations page](https://app.otterize.com/integrations).
 
+## Configure your workloads
 
-1. Fill in the connection details for your database.
-2. :::info Remember the integration name
-We will use the integration name when applying intents.
-This tutorial assumes the integration name is `postgresql-db`.
-:::
-3. Use the `Test Connection` button to verify the connection details.
+### Pod annotaion
+Annotate a pod, requesting a user and a password to be provisioned and bound to the pod.
 
+Annotate the pod with this annotation:
 
+`credentials-operator.otterize.com/user-password-secret-name: booking-service-secret`
 
-![Access Graph](/img/quick-tutorials/postgresql/cloud-integration.png)
+Otterize then provisions credentials for this specific workload in this namespace in this cluster, that is not shared with other workloads.
 
-:::note
-Make sure your database is accessible from the internet.
-:::
-
-
-## Explanation
-Our simple example consists of a single client pod configured to connect to your PostgreSQL database and run the following query:
-```sql
-select * from users;
-```
-
-The client is configured to use the credentials provisioned by Otterize with these two changes:
-
-1. **Provision credentials**: add the `credentials-operator.otterize.com/user-password-secret-name` annotation, which tells Otterize to provision a user/password key pair and store them in a Kubernetes Secret whose name is the value of this annotation.
-2. **Mount the credentials**: mount the credentials as environment variables.
-
-<details>
-<summary>Expand to see how to configure a Pod to mount the secret</summary>
-
-```yaml
-spec:
-  template:
-    metadata:
-      annotations:
-        # highlight-next-line
-        # 1. Provision credentials as a secret called "psql-client-secret":
-        credentials-operator.otterize.com/user-password-secret-name: psql-client-secret
-      labels:
-        app: psql-client
-    spec:
-      containers:
-        - name: psql-client
-          env:
-            # highlight-start
-            # 2. Mount the secret as environment variables
-            - name: PGUSER
-              valueFrom:
-                secretKeyRef:
-                  name: psql-client-secret
-                  key: username
-            - name: PGPASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: psql-client-secret
-                  key: password
-            # highlight-end
-```
-
-</details>
-
-<details>
-<summary>Expand to see the YAML for the pods used in this example</summary>
-<Tabs>
-
-<TabItem value="client-deployment.yaml" label="client-deployment.yaml">
-
-```yaml
-{@include: ../../../static/code-examples/postgresql/client-deployment.yaml}
-```
-
-</TabItem>
-
-</Tabs>
-</details>
-
-## Deploy client
-1. Deploy the client clients into a namespace called `otterize-tutorial-psql` using `kubectl`:
-
-```bash
-kubectl apply -f ${ABSOLUTE_URL}/code-examples/postgresql/client-deployment.yaml
-```
-
-Set an environment variable called `DB_HOST_NAME` with the name of your PostgreSQL host address.
-
-```bash
-export DB_HOST_NAME=YOUR_HOST_NAME
-```
-Updated the client deployment using the following command.
-```bash
-kubectl patch deployment -n otterize-tutorial-psql psql-client --patch '{
-    "spec": { "template": { "spec": { "containers": [{ "name": "psql-client",
-    "env": [ {
-                "name": "DB_HOST_NAME",
-                "value": "'${DB_HOST_NAME}'"
-    }]}]}}}}'
-```
-
-<details>
-<summary>Optional: populate the database</summary>
-Populate your database with sample rows by running the following command:
-
-```bash
-psql -h $DB_HOST_NAME -f ${ABSOLUTE_URL}/code-examples/postgresql/populatedb.sql
-```
-</details>
-
-<details>
-<summary>Optional: query a different table</summary>
-Set an environment variable called `TABLE_NAME` to the desired table name you would like to query.
-
-```bash
-export TABLE_NAME=products
-```
-Update the deployment
-```bash
-
-kubectl patch deployment -n otterize-tutorial-psql psql-client --patch '{
-    "spec": { "template": { "spec": { "containers": [{ "name": "psql-client",
-    "env": [ {
-                "name": "TABLE_NAME",
-                "value": "'${TABLE_NAME}'"
-    }]}]}}}}'
-```
-</details>
-
-2. Check that the client pod can access the database and is getting a permissions denied error:
-
-```bash
-kubectl logs -f --tail 0 -n otterize-tutorial-psql deploy/psql-client | head -n 2
-```
-
-You should see:
-
-```
-ERROR:  permission denied for table users
-ERROR:  permission denied for table users
-```
-
-## Apply intents
-Declares your client intents to access the PostgreSQL databse with the following intents file:
+### ClientIntents
+Declare your workload’s ClientIntents, specifying desired permissions.
 
 ```yaml
 apiVersion: k8s.otterize.com/v1alpha3
 kind: ClientIntents
 metadata:
-  name: psql-client
-  namespace:  otterize-tutorial-psql
+  name: booking-service
+  namespace: flight-search
 spec:
   service:
-    name: psql-client
+    name: booking-service
   calls:
-    # highlight-next-line
-    # This name should match the name of the database integration in Otterize Cloud
-    # highlight-next-line
-    - name: postgresql-db
+    - name: bookings
       type: database
       databaseResources:
         - table: users
-          databaseName: otterize-demo
+          databaseName: bookings-db
           operations:
             - SELECT
         - table: products
-          databaseName: otterize-demo
+          databaseName: bookings-db
           operations:
             - ALL
 ```
 
-We can apply intents for the `client` by applying the `client-intents.yaml` file:
+Otterize then creates a user and matching grants on the target database.
 
-```bash
-kubectl apply -f ${ABSOLUTE_URL}/code-examples/postgresql/client-intents.yaml
-```
-
-You can now tail the client logs again and verify it has access to run the SQL query.
-
-```bash
-kubectl logs -f --tail 0 -n otterize-tutorial-psql deploy/psql-client | head -n 5
-```
-
-You should see:
-
-```
- user_id | username |       email       |         created_at         
----------+----------+-------------------+----------------------------
-       1 | user1    | user1@example.com | 2023-12-13 10:48:01.223677
-       2 | user2    | user2@example.com | 2023-12-13 10:48:01.382553
-(2 rows)
-```
-
-## What did we accomplish?
-* Controlling PostgreSQL database access no longer means running manual commands for creating users, issuing, managing and distributing credentials, and configuring database grants.
-* Clients simply declare with their intents to access databases and tables and access is granted automatically.
-
-You can now browse to your account at [https://app.otterize.com](https://app.otterize.com) and see the access graph for your cluster, including applied intents:
-
-![Access graph](/img/quick-tutorials/postgresql/access-graph.png)
 
 ### Can I also map SQL calls?
 
@@ -248,11 +72,3 @@ Capture SQL calls for pods in your cluster, automatically generating the require
 :::
 
 If you want to learn more, and meet other Otterize users, please [Join our Community](https://joinslack.otterize.com/) and chat with us!
-
-## Teardown
-To remove the deployed example run:
-```bash
-kubectl delete -f ${ABSOLUTE_URL}/code-examples/postgresql/client-intents.yaml
-kubectl delete -f ${ABSOLUTE_URL}/code-examples/postgresql/client-deployment.yaml
-```
-
