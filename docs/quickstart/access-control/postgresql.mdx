@@ -1,0 +1,74 @@
+---
+sidebar_position: 2
+title: Just-in-time PostgreSQL users & access
+---
+
+import CodeBlock from "@theme/CodeBlock";
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Otterize automates PostgreSQL access management and secrets for your workloads, all in Kubernetes.
+
+
+![](/code-examples/postgresql/cloud.png)
+
+Connect to [Otterize Cloud](https://app.otterize.com) to get started!
+
+
+## Deploy Otterize for PostgreSQL
+
+### Install Otterize
+
+{@include: ../../_common/install-otterize-from-cloud-with-enforcement-postgresql.md}
+
+
+### Create database integration
+Create a _Database_ integration of type _PostgreSQL_ on the [Integrations page](https://app.otterize.com/integrations).
+
+## Configure your workloads
+
+### Pod annotaion
+Annotate a pod, requesting a user and a password to be provisioned and bound to the pod.
+
+Annotate the pod with this annotation:
+
+`credentials-operator.otterize.com/user-password-secret-name: booking-service-secret`
+
+Otterize then provisions credentials for this specific workload in this namespace in this cluster, that is not shared with other workloads.
+
+### ClientIntents
+Declare your workload’s ClientIntents, specifying desired permissions.
+
+```yaml
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: booking-service
+  namespace: flight-search
+spec:
+  service:
+    name: booking-service
+  calls:
+    - name: bookings
+      type: database
+      databaseResources:
+        - table: users
+          databaseName: bookings-db
+          operations:
+            - SELECT
+        - table: products
+          databaseName: bookings-db
+          operations:
+            - ALL
+```
+
+Otterize then creates a user and matching grants on the target database.
+
+
+### Can I also map SQL calls?
+
+:::info Coming soon
+Capture SQL calls for pods in your cluster, automatically generating the required least-privilege permissions, or ClientIntents, for each workload. Zero-friction in development, zero-trust in production. It’s coming.
+:::
+
+If you want to learn more, and meet other Otterize users, please [Join our Community](https://joinslack.otterize.com/) and chat with us!
