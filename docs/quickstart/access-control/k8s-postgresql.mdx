@@ -189,9 +189,11 @@ kubectl logs -f --tail 0 -n otterize-tutorial-psql deploy/psql-client | head -n 
 You should see:
 
 ```
-ERROR:  permission denied for table users
-ERROR:  permission denied for table users
+psql: error: connection to server at ... failed: FATAL:  password authentication failed for user "psql_client_otterize-tutorial-psql_svc_k3ied92kzu"
+connection to server at ... failed: FATAL:  no pg_hba.conf entry for host ..., user "psql_client_otterize-tutorial-psql_svc_k3ied92kzu", database "otterize-demo", no encryption
 ```
+
+This is expected because we have not yet configured access to the client.
 
 ## Apply intents
 
