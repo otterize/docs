@@ -7,8 +7,14 @@ import CodeBlock from "@theme/CodeBlock";
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 
-:::danger Write intro
-:::
+Otterize automates PostgreSQL access management and secrets for your workloads, all in Kubernetes.
+
+In this tutorial, we will:
+
+- Connect Otterize manage your PostgreSQL database.
+- Deploy a client connecting to that database, querying it using a `select` query.
+- Create a `ClientIntents` resource allowing the client pod to `select` a table in your PostgreSQL database.
+- See that the client pod can successfully query the table.
 
 ## Prerequisites
 
@@ -23,7 +29,7 @@ Before you start, you'll need a Kubernetes cluster.
 
 </details>
 
-### Deploy Otterize for Databases 
+### Deploy Otterize for Databases
 
 <details>
 <summary>Expand for deployment instructions</summary>
@@ -37,37 +43,33 @@ Make sure to set the following flag in your helm command
 --set intentsOperator.operator.enableDatabaseReconciler=true
 :::
 
-
-
 ## Configure Otterize to manage PostgreSQL access
-Create a _Database_ integration of type _PostgreSQL_ on the [Integrations page](https://app.otterize.com/integrations).
 
+Create a _Database_ integration of type _PostgreSQL_ on the [Integrations page](https://app.otterize.com/integrations).
 
 1. Fill in the connection details for your database.
 2. :::info Remember the integration name
-We will use the integration name when applying intents.
-This tutorial assumes the integration name is `postgresql-db`.
-:::
+   We will use the integration name when applying intents.
+   This tutorial assumes the integration name is `postgresql-db`.
+   :::
 3. Use the `Test Connection` button to verify the connection details.
-
-
 
 ![Access Graph](/img/quick-tutorials/postgresql/cloud-integration.png)
 
-:::note
-Make sure your database is accessible from the internet.
-:::
-
-
 ## Explanation
-Our simple example consists of a single client pod configured to connect to your PostgreSQL database and run the following query:
+
+Our simple example consists of a single client pod configured to connect to your PostgreSQL database and run the
+following query:
+
 ```sql
-select * from users;
+select * from users limit 2;
 ```
 
 The client is configured to use the credentials provisioned by Otterize with these two changes:
 
-1. **Provision credentials**: add the `credentials-operator.otterize.com/user-password-secret-name` annotation, which tells Otterize to provision a user/password key pair and store them in a Kubernetes Secret whose name is the value of this annotation.
+1. **Provision credentials**: add the `credentials-operator.otterize.com/user-password-secret-name` annotation, which
+   tells Otterize to provision a user/password key pair and store them in a Kubernetes Secret whose name is the value of
+   this annotation.
 2. **Mount the credentials**: mount the credentials as environment variables.
 
 <details>
@@ -120,18 +122,23 @@ spec:
 </details>
 
 ## Deploy client
-1. Deploy the client clients into a namespace called `otterize-tutorial-psql` using `kubectl`:
+
+1. Deploy the client into a namespace called `otterize-tutorial-psql` using `kubectl`:
 
 ```bash
 kubectl apply -f ${ABSOLUTE_URL}/code-examples/postgresql/client-deployment.yaml
 ```
 
-Set an environment variable called `DB_HOST_NAME` with the name of your PostgreSQL host address.
+We need to configure the client to query your PostgreSQL database.
+
+Set an environment variable called `DB_HOST_NAME` with the name of your PostgreSQL `host address`.
 
 ```bash
 export DB_HOST_NAME=YOUR_HOST_NAME
 ```
+
 Updated the client deployment using the following command.
+
 ```bash
 kubectl patch deployment -n otterize-tutorial-psql psql-client --patch '{
     "spec": { "template": { "spec": { "containers": [{ "name": "psql-client",
@@ -148,6 +155,7 @@ Populate your database with sample rows by running the following command:
 ```bash
 psql -h $DB_HOST_NAME -f ${ABSOLUTE_URL}/code-examples/postgresql/populatedb.sql
 ```
+
 </details>
 
 <details>
@@ -157,7 +165,9 @@ Set an environment variable called `TABLE_NAME` to the desired table name you wo
 ```bash
 export TABLE_NAME=products
 ```
+
 Update the deployment
+
 ```bash
 
 kubectl patch deployment -n otterize-tutorial-psql psql-client --patch '{
@@ -167,6 +177,7 @@ kubectl patch deployment -n otterize-tutorial-psql psql-client --patch '{
                 "value": "'${TABLE_NAME}'"
     }]}]}}}}'
 ```
+
 </details>
 
 2. Check that the client pod can access the database and is getting a permissions denied error:
@@ -183,6 +194,7 @@ ERROR:  permission denied for table users
 ```
 
 ## Apply intents
+
 Declares your client intents to access the PostgreSQL databse with the following intents file:
 
 ```yaml
@@ -190,7 +202,7 @@ apiVersion: k8s.otterize.com/v1alpha3
 kind: ClientIntents
 metadata:
   name: psql-client
-  namespace:  otterize-tutorial-psql
+  namespace: otterize-tutorial-psql
 spec:
   service:
     name: psql-client
@@ -234,23 +246,30 @@ You should see:
 ```
 
 ## What did we accomplish?
-* Controlling PostgreSQL database access no longer means running manual commands for creating users, issuing, managing and distributing credentials, and configuring database grants.
+
+* Controlling PostgreSQL database access no longer means running manual commands for creating users, issuing, managing
+  and distributing credentials, and configuring database grants.
 * Clients simply declare with their intents to access databases and tables and access is granted automatically.
 
-You can now browse to your account at [https://app.otterize.com](https://app.otterize.com) and see the access graph for your cluster, including applied intents:
+You can now browse to your account at [app.otterize.com](https://app.otterize.com) and see the access graph for
+your cluster, including applied intents:
 
 ![Access graph](/img/quick-tutorials/postgresql/access-graph.png)
 
 ### Can I also map SQL calls?
 
 :::info Coming soon
-Capture SQL calls for pods in your cluster, automatically generating the required least-privilege permissions, or ClientIntents, for each workload. Zero-friction in development, zero-trust in production. It’s coming.
+Capture SQL calls for pods in your cluster, automatically generating the required least-privilege permissions, or
+ClientIntents, for each workload.
 :::
 
-If you want to learn more, and meet other Otterize users, please [Join our Community](https://joinslack.otterize.com/) and chat with us!
+If you want to learn more, and meet other Otterize users, please [Join our Community](https://joinslack.otterize.com/)
+and chat with us!
 
 ## Teardown
+
 To remove the deployed example run:
+
 ```bash
 kubectl delete -f ${ABSOLUTE_URL}/code-examples/postgresql/client-intents.yaml
 kubectl delete -f ${ABSOLUTE_URL}/code-examples/postgresql/client-deployment.yaml

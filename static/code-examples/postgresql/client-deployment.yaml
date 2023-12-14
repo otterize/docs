@@ -23,7 +23,7 @@ spec:
         - name: psql-client
           image: postgres
           command: [ "/bin/sh", "-c", "--" ]
-          args: [ "while true; do psql -h $DB_HOST_NAME -d otterize-demo -c \"select * from $TABLE_NAME;\"; sleep 2; done" ]
+          args: [ "while true; do psql -h $DB_HOST_NAME -d otterize-demo -c \"select * from $TABLE_NAME limit 2;\"; sleep 2; done" ]
           env:
             - name: PGUSER
               valueFrom:
