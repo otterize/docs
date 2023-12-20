@@ -213,7 +213,7 @@ metadata:
     credentials-operator.otterize.com/create-aws-role: "true"
 ```
 
-To do this, we won't be annotating the `Pod` directly, but instead patching the `template` attribute of the `Deployment` we created earlier so that it updates the `Pod`.
+To do this, we won't be labeling the `Pod` directly, but instead patching the `template` attribute of the `Deployment` we created earlier so that it updates the `Pod`.
 
 ```bash
 kubectl patch deployment -n otterize-tutorial-iam server -p '{"spec": {"template":{"metadata":{"labels":{"credentials-operator.otterize.com/create-aws-role":"true"}}}} }'
