@@ -28,9 +28,9 @@ In this tutorial, we will:
 
 # Prerequisites
 
-1. **~[MiniKube](https://minikube.sigs.k8s.io/docs/start/)~** - We will be running our cluster locally. We will be focused on Postgres for this tutorial, but if you start your Minikube cluster with Calico, we can enforce network policies as well. ```shell
+1. **~[MiniKube](https://minikube.sigs.k8s.io/docs/start/)~** - We will be running our cluster locally.```shell
 ```shell
-minikube start --cni=calico
+minikube start
 ```
 2. **ngrok** - We will be using it to create a proxy to connect our database to Otterize Cloud. Once you have [ngrok account](https://dashboard.ngrok.com/signup). , you’ll want to install it in your terminal using the instructions found here: [ngrok install](https://ngrok.com/download)
 3. We will also be using [kubectl](https://kubernetes.io/docs/tasks/tools/) and [Helm](https://helm.sh/docs/intro/install/#through-package-managers)
@@ -119,13 +119,14 @@ spec:
         - databaseName: otterize-tutorial
           table: public.example
           operations:
-            - ALL
+            - SELECT
+            - INSERT
 ```
 
 We can now apply our intents. Behind the scenes, Otterize Cloud creates the appropriate user and access, making our `SELECT` and `INSERT` errors disappear.
 
 ```shell
-kubectl apply -f intents.yaml`
+kubectl apply -f intents.yaml
 ```
 
 That’s it! If your service’s functionality changes, adding or removing access is as simple as updating your ClientIntents definitions. For fun, try altering the `operations` to just `SELECT` or `INSERT`.
