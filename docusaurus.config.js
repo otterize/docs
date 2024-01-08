@@ -137,6 +137,14 @@ const config = {
     {
       redirects: [
         {
+          from: '/quick-tutorials',
+          to: '/',
+        },
+        {
+          from: '/quick-tutorials/k8s-mtls',
+          to: '/quickstart/access-control/k8s-kafka-mtls-cert-manager',
+        },
+        {
           from: '/getting-started/oss-installation',
           to: '/installation',
         },
