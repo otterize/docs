@@ -1,0 +1,26 @@
+---
+title: "GitHub integration"
+---
+
+The Otterize GitHub integration watches a Kubernetes cluster for access that will be blocked because ClientIntents are missing, and automatically creates pull requests with updated ClientIntents.
+
+## How to use
+To add a GitHub integration, head to [Otterize Cloud](https://app.otterize.com), create a GitHub integration and follow the instructions.
+When you add an integration, Otterize will check it periodically for blocked services and create pull requests with updated ClientIntents.
+
+## Example
+For example, let's say we have a cluster with the services from the NetworkPolicy automation tutorial:
+
+![Access graph](/img/quick-tutorials/network-policies/protected.png)
+
+Once we set up the GitHub integration and install the Otterize GitHub app on our repository, it will open a pull request with the correct ClientIntents:
+
+![Pull request](/img/github-pullrequest.png)
+
+After we review the pull request, let's merge it:
+
+![Merged pull request](/img/github-merged.png)
+
+And now the service is unblocked and its connection becomes green in the access graph:
+
+![Green access graph](/img/github-pr-success.png)
