@@ -102,7 +102,7 @@ kubectl apply -f ${ABSOLUTE_URL}/code-examples/postgresql-visibility/psql-client
 Otterize utilizes PostgreSQL audit logs generated using the [pgAudit extension](https://www.pgaudit.org/).
 
 Follow the [instructions on GCP docs](https://cloud.google.com/sql/docs/postgres/pg-audit#setting-up-database-auditing) to configure audit for PostgreSQL using pgAudit on your Cloud SQL instance.
-- If you are using a GCP Cloud SQL instance set specifically for this tutorial, select the <b>pgaudit.log=all</b> log level.
+- For the <b>pgaudit.log</b> flag, select the <b>pgaudit.log=all</b> log level.
 - After completing the setup, open the [GCP Logs Explorer](https://console.cloud.google.com/logs/query) application, and apply the following filter to see audit logs collected from your Cloud SQL instance:
   ```shell
   resource.type="cloudsql_database"
