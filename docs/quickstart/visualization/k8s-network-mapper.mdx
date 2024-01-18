@@ -8,7 +8,7 @@ import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 import styles from "/src/css/styles.module.css";
 
-The network mapper allows you to map network traffic for your K8s cluster.
+The network mapper allows you to map network traffic for your K8s cluster. Once mapped you can export it as an image, json, list, or view it within Otterize Cloud.
 
 In this tutorial, we will:
 
@@ -29,7 +29,7 @@ Before you start, you'll need a Kubernetes cluster. Having a cluster with a [CNI
 You can now install Otterize in your cluster (if it's not already installed), and optionally connect to Otterize Cloud. Connecting to Cloud lets you:
 
 1. See what's happening visually in your browser, through the "access graph";
-2. Allow you to view pod egress traffic.
+2. Allow you to view pod public internet egress traffic.
 3. Avoid using SPIRE (which can be installed with Otterize) for issuing certificates, as Otterize Cloud provides a certificate service.
 
 So either forego browser visualization and:
@@ -74,6 +74,15 @@ Deploy the following simple example &mdash; `client`, `client2` and `server`, co
 kubectl apply -n otterize-tutorial-mapper -f ${ABSOLUTE_URL}/code-examples/network-mapper/all.yaml
 ```
 
+<details>
+<summary>Expand to see the deployment YAML</summary>
+
+```yaml
+{@include: ../../../static/code-examples/network-mapper/all.yaml}
+```
+
+</details>
+
 ## Map the cluster
 
 The network mapper starts to sniff traffic and build an in-memory network map as soon as it's installed.
@@ -95,7 +104,7 @@ If you've attached Otterize OSS to Otterize Cloud, you can now also see the [acc
 The access graph reveals several types of information and insights, such as:
 
 1. Seeing the network map for different clusters, seeing the subset of the map for a given namespace, or even &mdash; according to how you've mapped namespaces to environments &mdash; seeing the subset of the map for a specific environment.
-2. Viewing the egress traffic for each pod, including the DNS name and the IPs associated with each outbound request.
+2. Viewing the public internet egress traffic for each pod, including the DNS name and the IPs associated with each outbound request.
 3. Filtering the map to include recently-seen traffic, since some date in the past. That way you can eliminate calls that are no longer relevant, without having to reset the network mapper and start building a new map.
 4. If the intents operator is also connected, the access graph now reveals more specifics about access: understand which services are protected or would be protected, and which client calls are being blocked or would be blocked. We'll see more of that in the next couple of tutorials
 
