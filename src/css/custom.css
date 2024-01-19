@@ -10,18 +10,22 @@
 
 /* You can override the default Infima variables here. */
 :root {
-  --ifm-color-primary: #306e96;
+  --ifm-color-primary: #4d3df7;
   --ifm-color-primary-dark: #2b6387;
   --ifm-color-primary-darker: #295e80;
   --ifm-color-primary-darkest: #224d69;
   --ifm-color-primary-light: #3579a5;
   --ifm-color-primary-lighter: #377fad;
   --ifm-color-primary-lightest: #408fc2;
-  --ifm-code-font-size: 95%;
+  --ifm-code-font-size: 85%;
+  --ifm-font-size-base: 0.9rem;
+  --ifm-font-weight-base: 400;
+  --ifm-h1-font-size: 2.5rem;
   --ifm-code-border-radius: 5px;
   --docusaurus-highlighted-code-line-bg: rgba(255, 255, 255, 0.2);
 
   --ifm-navbar-height: 5rem;
+  --ifm-menu-color: #333;
 
   --ifm-footer-background-color: white;
   --ifm-footer-color: white;
@@ -31,11 +35,12 @@
 }
 
 .navbar__title {
-  color: #2186e6;
+  color: #4d3df7;
 }
 
 .navbar__item {
   margin-left: 10px;
+  font-size: 12px;
   white-space: nowrap;
 }
 
