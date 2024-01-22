@@ -8,6 +8,21 @@ import CodeBlock from "@theme/CodeBlock";
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 
+export const Terminal = ({children}) => (
+    <div
+        style={{
+            backgroundColor: '#eee',
+            borderRadius: '5px',
+            fontSize: '12px',
+            fontWeight: '600',
+            color: 'darkgreen',
+            padding: '1rem',
+            fontFamily: 'monospace, monospace'
+        }}>
+        {children}
+    </div>
+);
+
 
 Otterize Simplifies PostgreSQL Least Privilege Service Access
 
@@ -28,7 +43,7 @@ In this tutorial, we will:
 
 # Prerequisites
 
-1. **~[MiniKube](https://minikube.sigs.k8s.io/docs/start/)~** - We will be running our cluster locally.
+1. **[MiniKube](https://minikube.sigs.k8s.io/docs/start/)** - We will be running our cluster locally.
 ```shell
 minikube start
 ```
@@ -98,6 +113,12 @@ After the client, server, and database are up and running, we can see that the s
 kubectl logs -f -n otterize-tutorial-postgres deploy/server
 ```
 
+
+Example Log:
+<Terminal>
+    pq: password authentication failed for user "svc_9cigb2qemv_otterize_tutorial_postgres_server"
+</Terminal>
+
 ### Define our access intents
 
 ClientIntents are Otterize’s way of defining access through unique relationships, which lead to perfectly scoped access. In this example, we provide our `server` service the ability to insert select records to allow it to access the database.
@@ -128,6 +149,12 @@ We can now apply our intents. Behind the scenes, Otterize Cloud creates the appr
 ```shell
 kubectl apply -f intents.yaml
 ```
+
+Example Log:
+<Terminal>
+    Successfully INSERTED into our table
+    Successfully SELECTED, most recent value:  2024-01-22T18:48:43Z
+</Terminal>
 
 That’s it! If your service’s functionality changes, adding or removing access is as simple as updating your ClientIntents definitions. For fun, try altering the `operations` to just `SELECT` or `INSERT`.
 # Teardown
