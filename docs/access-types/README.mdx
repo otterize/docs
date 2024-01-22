@@ -1,4 +1,84 @@
 ---
 sidebar_position: 1
 title: Access Types
+hide_title: true
 ---
+
+export const types = [
+    {
+        name: 'Networking',
+        role: 'Admin',
+        url: '/access-types/Networking/Overview',
+        imageUrl: '/img/icons/networking.png',
+    },
+    {
+        name: 'AWS IAM',
+        role: 'Admin',
+        url: '/access-types/aws-iam/Overview',
+        imageUrl: '/img/icons/aws.png',
+    },
+    {
+        name: 'Kafka',
+        role: 'Admin',
+        url: '/access-types/Kafka/Overview',
+        imageUrl: '/img/icons/kafka.png',
+    },
+    {
+        name: 'Istio',
+        role: 'Admin',
+        url: '/access-types/Istio/Overview',
+        imageUrl: '/img/icons/istio.png',
+    },
+    {
+        name: 'PostgreSQL',
+        role: 'Cloud',
+        url: '/access-types/Postgres/Overview',
+        imageUrl: '/img/icons/postgresql.png',
+    },
+    // More types...
+]
+
+export default function AccessTypesCards() {
+    return (
+        <div className="tw-m-8">
+            <h1 className="tw-text-xl tw-font-medium">Access Types</h1>
+            <p className="tw-">
+                Otterize makes it easy to create authorization for your Kubernetes clusters across a variety of
+                different types of access. Explore each below.
+            </p>
+            <ul role="list" className="tw-grid tw-grid-cols-1 tw-gap-6 tw-grid-cols-3">
+                {types.map((type) => (
+                    <a href={type.url}>
+                        <li
+                            key={type.name}
+                            className="tw-col-span-1 tw-flex tw-flex-col tw-divide-y tw-divide-gray-200 tw-rounded-lg tw-bg-white tw-text-center tw-shadow tw-hover:border-8"
+                        >
+                            <div className="tw-flex tw-flex-1 tw-flex-col tw-p-8">
+                                <div className=" tw-flex tw-max-h-16 tw-h-16 tw-w-full text-center tw-justify-center ">
+                                    <img className="justify-self-center tw-max-h-16"
+                                         src={type.imageUrl}
+                                         alt=""/>
+                                </div>
+                                <h3 className="tw-mt-6 tw-text-lg tw-font-semibold tw-text-gray-black">{type.name}</h3>
+                                <dl className="tw-mt-1 tw-flex tw-flex-col tw-justify-between">
+                                    <div className="tw-mt-3">
+                <span
+                    className="tw-inline-flex tw-items-center tw-rounded-full tw-bg-green-50 tw-px-2 tw-py-1 tw-text-xs tw-font-medium tw-text-green-700 tw-ring-1 tw-ring-inset tw-ring-green-600/20">
+                  {type.role}
+                </span>
+                                    </div>
+                                </dl>
+                            </div>
+                        </li>
+                    </a>
+                ))}
+            </ul>
+        </div>
+    )
+}
+
+
+
+
+
+

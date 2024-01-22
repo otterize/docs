@@ -34,6 +34,12 @@
   --ifm-footer-padding-horizontal: 20px;
 }
 
+article {
+  max-width: 800px;
+  margin-left: 2rem;
+  margin-right: auto;
+}
+
 .navbar__title {
   color: #4d3df7;
 }
