@@ -107,7 +107,7 @@ The access graph reveals several types of information and insights, such as:
 3. Filtering the map to include recently-seen traffic, since some date in the past. That way you can eliminate calls that are no longer relevant, without having to reset the network mapper and start building a new map.
 4. If the intents operator is also connected, the access graph now reveals more specifics about access: understand which services are protected or would be protected, and which client calls are being blocked or would be blocked. We'll see more of that in the next couple of tutorials.
 
-Note, for example, that the `client` &rightarrow; `server` arrow is yellow. Clicking on it shows the automatically generated intents for both the client pod to the server pod and the egress of the client to the public internet. If we take a closer look, the ClientIntent YAML specifies that the `client` can call the `server` on the internal network, and it can reach the IP Address￼`142.250.189.174`. We can see from the comment that this IP belongs to google.com.
+Note, for example, that the `client` &rightarrow; `server` arrow is yellow. Clicking on it shows the automatically generated intents for both the client pod to the server pod and the egress of the client to the public internet. If we take a closer look, the ClientIntent YAML specifies that the `client` can call the `server` on the internal network, and it can reach the IP Address `142.250.189.174`. We can see from the comment that this IP belongs to google.com.
 <img
   src="/img/quick-tutorials/network-mapper/otterize-tutorial-access-graph-edge-info-modal.png"
   alt="Client to server edge info"
