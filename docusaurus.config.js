@@ -365,7 +365,9 @@ const config = {
             html: `<div class="footer_copyright tw-w-full">
                     <div style="display:flex;">
                       <img src="img/footer/cloud-native.svg" style="margin-right:20px;"/>
-                      <img src="img/footer/soc.png" style="width:100px;"/>
+                      <a href="https://otterize.com/soc2-request" target="_blank">
+                        <img src="img/footer/soc.png" style="width:100px;"/>
+                      </a>
                     </div>
                     <div class="tw-w-full tw-h-14 tw-flex-col tw-justify-start tw-items-start tw-gap-8 tw-inline-flex">
                     <div class="tw-self-stretch tw-h-px tw-bg-gray-300"></div>
