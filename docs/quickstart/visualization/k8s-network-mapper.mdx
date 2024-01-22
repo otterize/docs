@@ -29,8 +29,7 @@ Before you start, you'll need a Kubernetes cluster. Having a cluster with a [CNI
 You can now install Otterize in your cluster (if it's not already installed), and optionally connect to Otterize Cloud. Connecting to Cloud lets you:
 
 1. See what's happening visually in your browser, through the "access graph";
-2. Allow you to view pod public internet egress traffic.
-3. Avoid using SPIRE (which can be installed with Otterize) for issuing certificates, as Otterize Cloud provides a certificate service.
+2. View pod public internet egress traffic.
 
 So either forego browser visualization and:
 
@@ -106,10 +105,9 @@ The access graph reveals several types of information and insights, such as:
 1. Seeing the network map for different clusters, seeing the subset of the map for a given namespace, or even &mdash; according to how you've mapped namespaces to environments &mdash; seeing the subset of the map for a specific environment.
 2. Viewing the public internet egress traffic for each pod, including the DNS name and the IPs associated with each outbound request.
 3. Filtering the map to include recently-seen traffic, since some date in the past. That way you can eliminate calls that are no longer relevant, without having to reset the network mapper and start building a new map.
-4. If the intents operator is also connected, the access graph now reveals more specifics about access: understand which services are protected or would be protected, and which client calls are being blocked or would be blocked. We'll see more of that in the next couple of tutorials
+4. If the intents operator is also connected, the access graph now reveals more specifics about access: understand which services are protected or would be protected, and which client calls are being blocked or would be blocked. We'll see more of that in the next couple of tutorials.
 
-Note, for example, that the `client` &rightarrow; `server` arrow is yellow. Clicking on it shows the automatically generated Intents for both the client pod to the server pod and the egress of the client to the public internet.
-
+Note, for example, that the `client` &rightarrow; `server` arrow is yellow. Clicking on it shows the automatically generated intents for both the client pod to the server pod and the egress of the client to the public internet. If we take a closer look, the ClientIntent YAML specifies that the `client` can call the `server` on the internal network, and it can reach the IP Address￼`142.250.189.174`. We can see from the comment that this IP belongs to google.com.
 <img
   src="/img/quick-tutorials/network-mapper/otterize-tutorial-access-graph-edge-info-modal.png"
   alt="Client to server edge info"
