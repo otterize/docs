@@ -18,7 +18,7 @@ spec:
       containers:
         - name: server
           imagePullPolicy: Always
-          image: 'brianglynn/postgres-tutorial-server'
+          image: 'otterize/postgres-tutorial-server'
           ports:
             - containerPort: 80
           env:
@@ -68,7 +68,7 @@ spec:
       containers:
         - name: client
           imagePullPolicy: Always
-          image: 'brianglynn/postgres-tutorial-client'
+          image: 'otterize/postgres-tutorial-client'
           ports:
             - containerPort: 80
 ---
@@ -89,7 +89,7 @@ spec:
       containers:
         - name: database
           imagePullPolicy: Always
-          image: 'brianglynn/postgres-tutorial-database'
+          image: 'otterize/postgres-tutorial-database'
           ports:
             - containerPort: 5432
 ---
