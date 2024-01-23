@@ -40,11 +40,25 @@ In this tutorial, we will:
 
 # Prerequisites
 
-1. **[Minikube](https://minikube.sigs.k8s.io/docs/start/)** - We will be running our cluster locally.
+#### 1. Minikube Cluster
+<details>
+    <summary>Prepare a Kubernetes cluster with Minikube</summary>
+
+For this tutorial you'll need a local Kubernetes cluster. Having a cluster with a [CNI](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/) that supports [NetworkPolicies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) isn't required for this tutorial, but is recommended so that your cluster works with other tutorials.
+
+If you don't have the Minikube CLI, first [install it](https://minikube.sigs.k8s.io/docs/start/).
+
+Then start your Minikube cluster with Calico, in order to enforce network policies.
+
 ```shell
-minikube start
+minikube start --cpus=4 --memory 4096 --disk-size 32g --cni=calico
 ```
-2. **ngrok** - We will be using it to create a proxy to connect our locally running database to Otterize Cloud, for the tutorial's purposes. Once you have an [ngrok account](https://dashboard.ngrok.com/signup), you’ll want to install it in your terminal using the instructions found here: [ngrok install](https://ngrok.com/download)
+
+</details>
+
+
+#### 2. ngrok
+We will be using it to create a proxy to connect our locally running database to Otterize Cloud, for the tutorial's purposes. Once you have a [ngrok account](https://dashboard.ngrok.com/signup), you’ll want to install it in your terminal using the instructions found here: [ngrok install](https://ngrok.com/download)
 
 # Tutorial
 
