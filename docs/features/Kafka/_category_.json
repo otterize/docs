@@ -1,0 +1,9 @@
+{
+  "label": "Kafka",
+  "position": 3,
+  "collapsed": true,
+  "customProps": {
+    "image": "/img/icons/kafka.png",
+    "cloud-only": "true"
+  }
+}

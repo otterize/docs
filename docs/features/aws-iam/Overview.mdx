@@ -15,12 +15,12 @@ In many workloads, EKS clusters must access external cloud resources such as dat
 
 ### How does it work
 
-To follow along with a full example, take a look at [Automate AWS IAM for EKS](/access-types/aws-iam/Examples/aws-iam-eks)
+To follow along with a full example, take a look at [Automate AWS IAM for EKS](/features/aws-iam/Examples/aws-iam-eks)
 
 1. First, the EKS cluster must have [Otterize installed](/overview/installation).
 2. We must label the pod with `credentials-operator.otterize.com/create-aws-role: "true"`
 3. Once that is complete, Otterize’s credential operator will create a role and an `AssumeRolePolicy` bound to ServiceAccount.
-4. At this point, the role does not have the ability to perform any actions. We will need to create a ClientIntents YAML for the access the service requires and apply it to our cluster. Below is an example of a ClientIntents file for accessing an S3 bucket. View the [reference](/access-types/aws-iam/Reference) to learn more about the AWS IAM Client Intent syntax.
+4. At this point, the role does not have the ability to perform any actions. We will need to create a ClientIntents YAML for the access the service requires and apply it to our cluster. Below is an example of a ClientIntents file for accessing an S3 bucket. View the [reference](/features/aws-iam/Reference) to learn more about the AWS IAM Client Intent syntax.
 5. Once the intent is applied, a new policy will be attached to the service’s role with the appropriate access.
 
 ```yaml

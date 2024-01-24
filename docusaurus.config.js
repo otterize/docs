@@ -150,7 +150,7 @@ const config = {
         },
         {
           from: ['/reference/access-controls/network-policies'],
-          to: '/access-types/Networking/Reference/Network-Policies-Deep-Dive'
+          to: '/features/Networking/Reference/Network-Policies-Deep-Dive'
         },
         {
           from: ['/shadow-vs-active-enforcement'],
@@ -184,39 +184,39 @@ const config = {
         },
         {
           from: ['/guides/protect-1-service-network-policies'],
-          to: '/access-types/Networking/Examples/protect-1-service-network-policies'
+          to: '/features/Networking/Examples/protect-1-service-network-policies'
         },
         {
           from: ['/quick-tutorials/k8s-kafka-mtls', '/quickstart/access-control/k8s-kafka-mtls'],
-          to: '/access-types/Kafka/Examples/k8s-kafka-mtls',
+          to: '/features/Kafka/Examples/k8s-kafka-mtls',
         },
         {
           from: ['/quick-tutorials/aws-eks-cni-mini','/quickstart/access-control/aws-eks-cni-mini'],
-          to: '/access-types/Networking/Examples/aws-eks-cni-mini',
+          to: '/features/Networking/Examples/aws-eks-cni-mini',
         },
         {
           from: ['/quick-tutorials/k8s-kafka-mtls-cert-manager', '/quickstart/access-control/k8s-kafka-mtls-cert-manager'],
-          to: '/access-types/Kafka/Examples/k8s-kafka-mtls-cert-manager',
+          to: '/features/Kafka/Examples/k8s-kafka-mtls-cert-manager',
         },
         {
           from: ['/quick-tutorials/k8s-istio-watcher', '/quickstart/visualization/k8s-istio-watcher'],
-          to: '/access-types/Istio/Examples/k8s-istio-watcher',
+          to: '/features/Istio/Examples/k8s-istio-watcher',
         },
         {
           from: ['/quick-visual-tutorials/visual-ibac-istio-authorization-policies','/quickstart/access-control/k8s-istio-authorization-policies', '/quickstart/k8s-istio-authorization-policies'],
-          to: '/access-types/Istio/Examples/k8s-istio-authorization-policies',
+          to: '/features/Istio/Examples/k8s-istio-authorization-policies',
         },
         {
           from: ['/quick-visual-tutorials/visual-ibac-kafka-k8s'],
-          to: '/access-types/Kafka/Examples/k8s-kafka-mapping',
+          to: '/features/Kafka/Examples/k8s-kafka-mapping',
         },
         {
           from: ['/quick-visual-tutorials/visual-ibac-network-policies', '/quick-tutorials/k8s-network-policies', '/quickstart/access-control/k8s-network-policies'],
-          to: '/access-types/Networking/Examples/k8s-network-policies',
+          to: '/features/Networking/Examples/k8s-network-policies',
         },
         {
           from: ['/quick-visual-tutorials/visual-k8s-cluster-mapping', '/quickstart/visualization/k8s-network-mapper', '/quick-tutorials/k8s-network-mapper'],
-          to: '/access-types/Networking/Examples/k8s-network-mapper',
+          to: '/features/Networking/Examples/k8s-network-mapper',
         },
         // Redirect from multiple old paths to the new path
         // {

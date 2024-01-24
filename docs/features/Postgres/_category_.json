@@ -1,0 +1,8 @@
+{
+  "label": "PostgreSQL",
+  "position": 5,
+  "collapsed": true,
+  "customProps": {
+    "image": "/img/icons/postgresql.png"
+  }
+}
