@@ -415,6 +415,11 @@ const config = {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
       },
+      docs: {
+        sidebar: {
+          autoCollapseCategories: true,
+        },
+      },
       colorMode: {
         defaultMode: "light",
         disableSwitch: true,
