@@ -18,7 +18,7 @@
   --ifm-color-primary-lighter: #377fad;
   --ifm-color-primary-lightest: #408fc2;
   --ifm-code-font-size: 85%;
-  --ifm-font-size-base: 0.9rem;
+  --ifm-font-size-base: 0.85rem;
   --ifm-font-weight-base: 400;
   --ifm-h1-font-size: 2.5rem;
   --ifm-code-border-radius: 5px;
@@ -33,7 +33,8 @@
   --ifm-alert-border-radius: 2px;
 
   --ifm-navbar-height: 5rem;
-  --ifm-menu-color: #333;
+  --ifm-menu-color: rgb(28, 30, 33);
+
 
   --ifm-footer-background-color: white;
   --ifm-footer-color: white;

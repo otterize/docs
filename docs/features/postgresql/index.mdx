@@ -1,4 +1,98 @@
 ---
 sidebar_position: 1
-title: Overview
+title: PostgreSQL
+hide_title: true
 ---
+
+import DocsLinkCard from "@site/src/components/LinkCard";
+
+export const postgres_tutorials = [
+    {
+        title: 'Just-in-time PostgreSQL Access',
+        description: 'Provide least privilege service access to databases and tables',
+        url: '/features/postgresql/examples/posgres'
+    }
+];
+
+# PostgreSQL
+
+### About
+
+Once integrated into your cluster, PostgreSQL support for Otterize provides intent-based access control ([IBAC](/overview/intent-based-access-control/)) from your services to your database. Making it easy to provide just in time least privilege access without having to write a lot of complex `GRANT` statements. You can provide access to all the tables in a database or limit access to just a select number of tables. Similarly, access can be limited to ￼`ALL`￼ operations or just to those that are needed by the service, such as `SELECT.` PostgreSQL support is a feature of Otterize Cloud.
+
+### How does it work
+
+Once a service is annotated, Otterize Cloud will create a unique PostgreSQL credential for its exclusive use.  The service will use these credentials to connect to the database. IBAC policies will define the access to that service. As the policies are applied, Otterize Cloud will update the service’s credentials in the database to have the defined access.
+
+1. To get started, your cluster must have Otterized Cloud installed.
+2. You’ll need to [integrate](https://app.otterize.com/integrations) your database by providing a connection URL and admin-level credentials to manage permissions in your database.
+3. Each service included in access controls will need to have Otterize managed credentials by annotating the service’s deployment with `credentials-operator.otterize.com/user-password-secret-name` below is an example of that annotation and passing the generated credentials into a container with environmental variables.
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: server
+  template:
+    metadata:
+      annotations:
+        credentials-operator.otterize.com/user-password-secret-name: server-creds
+      labels:
+        app: server
+    spec:
+      serviceAccountName: server
+      containers:
+        - name: server
+          imagePullPolicy: Always
+          image: 'supercool/my-example-container'
+          ports:
+            - containerPort: 80
+          env:
+            - name: DB_SERVER_USER
+              valueFrom:
+                secretKeyRef:
+                  name: server-creds
+                  key: username
+            - name: DB_SERVER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: server-creds
+                  key: password
+```
+
+
+4. Once the cluster and the database are available in Otterize Cloud, IBAC policies can be applied to create unique credentials for each service scoped to the defined access.
+
+
+```yaml
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: client-intents-for-server
+  namespace: otterize-tutorial-postgres
+spec:
+  service:
+    name: server
+  calls:
+    - name: otterize-tutorial-postgres # Same name as our integration
+      type: database
+      databaseResources:
+        - databaseName: otterize-tutorial
+          table: public.example
+          operations:
+            - SELECT
+            - INSERT
+```
+
+
+### Tutorials
+
+For further details, view the tutorial below:
+
+<DocsLinkCard items={postgres_tutorials} colSize={"sm"}/>
+

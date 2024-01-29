@@ -2,3 +2,51 @@
 sidebar_position: 3
 title: Reference
 ---
+
+### KafkaServerConfig (YAML)
+
+```yaml
+apiVersion: k8s.otterize.com/v1alpha3
+kind: KafkaServerConfig
+metadata:
+  name: kafkaserverconfig
+  namespace: kafka
+spec:
+  service:
+    name: kafka #name of the Kafka service broker
+  addr: kafka.kafka:9092
+```
+
+### ClientIntents (YAML)
+
+```yaml
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: client
+  namespace: otterize-tutorial-kafka-mtls
+spec:
+  service:
+    name: client # The service requiring access to a topic
+  calls:
+    - name: kafka.kafka # name of the Kafka service broker
+      type: kafka
+      kafkaTopics:
+        - name: mytopic # Topic name
+          operations: [ produce,describe,consume ] # ACL Operations like alter, delete, all, etc
+        - name: transactions # Multiple topics can be added
+          operations: [ produce,describe,consume ]
+```
+
+### Helm Chart Options
+
+| Key                             | Description                                                 | Default                        |
+|---------------------------------|-------------------------------------------------------------|--------------------------------|
+| `kafkawatcher.enable`           | Enable Kafka watcher deployment (beta).                     | `false`                        |
+| `kafkawatcher.image.repository` | Kafka watcher image repository.                             | `otterize`                     |
+| `kafkawatcher.image.image`      | Kafka watcher image.                                        | `network-mapper-kafka-watcher` |
+| `kafkawatcher.image.tag`        | Kafka watcher image tag.                                    | `latest`                       |
+| `kafkawatcher.pullPolicy`       | Kafka watcher pull policy.                                  | `(none)`                       |
+| `kafkawatcher.pullSecrets`      | Kafka watcher pull secrets.                                 | `(none)`                       |
+| `kafkawatcher.resources`        | Resources override.                                         | `(none)`                       |
+| `kafkawatcher.kafkaServers`     | Kafka servers to watch, specified as `pod.namespace` items. | `(none)`                       |

@@ -2,22 +2,8 @@
 sidebar_position: 3
 title: Reference
 ---
-**Metadata/Labels**
 
-| label                                             | type    | Description                                                  |
-|---------------------------------------------------|---------|--------------------------------------------------------------|
-| credentials-operator.otterize.com/create-aws-role | boolean | By setting to **true** the credential operator will create an unique AWS Role for the associated pod |
-**ClientIntents** (YAML)
-
-| key         | sub-key    | type  | type   | Description                                                  |
-|-------------|------------|-------|--------|--------------------------------------------------------------|
-| **service** | name       | value | string | The name of the pod that will be granted access              |
-| **calls**   | name       | list  | ARN    | The AWS ARN or ARN wildcard that references the resource(s) for the authorization. See [ARN Formats - Amazon QuickSight](https://docs.aws.amazon.com/quicksight/latest/APIReference/qs-arn-format.html) for more information |
-| **calls**   | type       | value | string | a value of “aws” to indicate the type of calls being authorized and specified.  |
-| **calls**   | awsActions | list  | Action | The [AWS Actions](https://docs.aws.amazon.com/service-authorization/latest/reference/reference_policies_actions-resources-contextkeys.html) or action wildcards that will be provided to the specified resources.  |
-Multiple call definitions can be defined for a single service.
-
-**Example YAML**
+### ClientIntents Example (YAML)
 
 ```yaml
 apiVersion: k8s.otterize.com/v1alpha3
@@ -26,15 +12,34 @@ metadata:
   name: server
 spec:
   service:
+    # The name of the pod that will be granted access
     name: server
   calls:
+      # The AWS ARN or ARN wildcard that references the resource(s) for the authorization
     - name: arn:aws:s3:::example-bucket-*/*
       type: aws
+      # one or more AWS Actions or Action wildcards that will be provided to the specified resources
       awsActions:
         - "s3:PutObject"
         - "s3:GetObject"
+      # Multiple call definitions can be defined for a single service.
 	- name: arn:aws:s3:::read-only-bucket-*/*
       type: aws
       awsActions:
         - "s3:GetObject"
 ```
+
+### Annotations
+
+| Key                                                        | Description                                                                                                                                                                                  | Default  |
+|------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
+| `credentials-operator.otterize.com/create-aws-role` | By setting to **true** the credential operator will create an unique AWS Role for the associated pod | `false` |
+
+
+### Helm Chart Options
+
+| Key                                                        | Description                                                                                                                                                                                  | Default  |
+|------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
+| `global.aws.enabled`                                       | Enable or disable AWS integration                                                                                                                                                            | `false`  |
+| `global.aws.eksClusterNameOverride`                        | EKS cluster name (overrides auto-detection)                                                                                                                                                  | `(none)` |
+| `aws.roleARN` | ARN of the AWS role the operator will use to access AWS. By defeault, Otterize will create a unique role for each service an annotate the service with the role's ARN. | `(none)` |

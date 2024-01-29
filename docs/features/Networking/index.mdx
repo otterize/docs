@@ -1,6 +1,7 @@
 ---
 sidebar_position: 1
 title: Networking
+hide_title: true
 ---
 import DocsLinkCard from "@site/src/components/LinkCard";
 
@@ -22,8 +23,9 @@ export const network_access_tutorials = [
     }
 ];
 
-### Overview
+# Networking
 
+### About
 You can use Otterize to understand, visualize, and manage access for Kubernetes networks. Upon installation, Otterize inspects network traffic and builds an in-memory network map of connections. The network map can then be exported or viewed in various ways to understand the connections within your networks. With IBAC-based policies, Otterize becomes a control plane for your K8s networks. Mapped network traffic can autogenerate declarative intent-based access policies to create least privileged pod-to-pod access easily.
 
 ### Visualizing
@@ -39,6 +41,27 @@ By default, Kubernetes pods allow all egress and ingress traffic. Kubernetes [Ne
 
 Further details are available within the [Network Policies Deep Dive](/features/Networking/Reference/Network-Policies-Deep-Dive)
 
-View the tutorials below to learn more about how to get started
+```yaml
 
-<DocsLinkCard items={network_access_tutorials}/>
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: client
+  namespace: otterize-tutorial-istio
+spec:
+  service:
+    name: client
+  calls:
+    - name: nginx
+      type: http
+      HTTPResources:
+        - path: /client-path
+          methods: [ GET ]
+
+```
+
+### Tutorials
+
+View the tutorials below to learn more about how to get started:
+
+<DocsLinkCard items={network_access_tutorials} colSize={"sm"}/>

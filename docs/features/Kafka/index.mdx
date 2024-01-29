@@ -1,4 +1,130 @@
 ---
 sidebar_position: 1
-title: Overview
+title: Kafka
+hide_table_of_contents: true
+hide_title: true
 ---
+
+import DocsLinkCard from "@site/src/components/LinkCard";
+
+export const kafka_tutorials = [
+    {
+        title: 'Kafka topic-level access mapping',
+        description: 'View Kafka network connections',
+        url: '/features/Kafka/Examples/k8s-kafka-mapping'
+    },
+    {
+        title: 'Kafka access automation using Otterize Cloud mTLS',
+        description: 'Manage access to Kafka topics with Otterize Cloud mTLS',
+        url: '/features/Kafka/Examples/k8s-kafka-mtls'
+    },
+    {
+        title: 'Kafka access automation using cert-manager mTLS',
+        description: 'Manage access to Kafka topics with a cert-manager',
+        url: '/features/Kafka/Examples/k8s-kafka-mtls-cert-manager'
+    }
+];
+
+# Kafka
+
+Otterize can map and secure access to Kafka Topics from your Kubernetes clusters.
+
+### About
+
+By enabling Kafka support, Otterize's network mapping tool can determine which Kubernetes services are connecting to topics and the determine their access privileges. This graph of connections can then be leveraged to automate IBAC based access policies that result in Kakfa ACLs.
+
+### How does it work
+
+1. First, the cluster must have [Otterize installed](/overview/installation). With Kakfa support enabled by setting the following flags:
+
+```bash
+--set kafkawatcher.enable=true \
+--set kafkawatcher.kafkaServers={"kafka-0.kafka"}
+```
+
+Once installed, Otterize will map Kafka connections allowing you to view those relationships, but to manage access we need to:
+
+2. Configure Otterize to manage Kafka access with a `KafkaServerConfig`. See the example yaml below.
+
+```bash
+kubectl apply -f ${ABSOLUTE_URL}/code-examples/kafka-mtls/kafkaserverconfig.yaml
+```
+
+```yaml
+apiVersion: k8s.otterize.com/v1alpha3
+kind: KafkaServerConfig
+metadata:
+  name: kafkaserverconfig
+  namespace: kafka
+spec:
+  service:
+    name: kafka #name of the Kafka service broker
+  addr: kafka.kafka:9092
+```
+
+
+3. Once that is complete, the Kafka broker and it's clients require mTLS credentials, which they can receive from Otterize or through a [cert-manager](/features/Kafka/Examples/k8s-kafka-mtls-cert-manager). This requires a annotation to inform Otterize to generate the credentials and volume mount to store them. To orchestrate this, see the example deployment below:
+
+```yaml
+spec:
+  template:
+    metadata:
+      annotations:
+        # 1. Generate credentials as a secret called "client-credentials-secret":
+        credentials-operator.otterize.com/tls-secret-name: client-credentials-secret
+        ...
+    spec:
+      volumes:
+        # 2. Create a volume containing this secret:
+        - name: otterize-credentials
+          secret:
+            secretName: client-credentials-secret
+        ...
+      containers:
+        - name: client
+          ...
+          volumeMounts:
+            # 3. Mount volume into container
+            - name: otterize-credentials
+              mountPath: /var/otterize/credentials
+              readOnly: true
+```
+
+4. Once the Kafka clients are deployed with the mTLS credentials they should be able to access their associated topics as there's no active enforcement enabled. By applying IBAC ClientIntents we can declare access for our Services. See an example of a Kafka policy.
+
+```yaml
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: client
+  namespace: otterize-tutorial-kafka-mtls
+spec:
+  service:
+    name: client
+  calls:
+    - name: kafka.kafka
+      type: kafka
+      kafkaTopics:
+        - name: mytopic
+          operations: [ produce,describe,consume ]
+        - name: transactions
+          operations: [ produce,describe,consume ]
+---
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: kafka
+  namespace: kafka
+spec:
+  service:
+    name: kafka
+  calls:
+    - name: kafka
+    - name: kafka-zookeeper
+```
+### Tutorials
+
+For further details about mapping, or access automation, view the tutorials below:
+
+<DocsLinkCard items={kafka_tutorials} colSize={"sm"}/>
+

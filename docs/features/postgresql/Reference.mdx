@@ -2,3 +2,31 @@
 sidebar_position: 3
 title: Reference
 ---
+
+### ClientIntents Example (YAML)
+
+```yaml
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: client-intents-for-server
+  namespace: otterize-tutorial-postgres
+spec:
+  service:
+    # Service requiring access to PostgreSQL
+    name: server
+  calls:
+      # This name will need to match the provided integration name
+    - name: otterize-tutorial-postgres
+      type: database
+      databaseResources:
+        - databaseName: otterize-tutorial
+          # Optional table name, if omitted all tables will be granted access
+          table: public.example
+          # Operations being granted, options include SELECT, INSERT, UPDATE, DELETE, ALL
+          operations:
+            - SELECT
+            - INSERT
+```
+
+

@@ -1,4 +1,99 @@
 ---
 sidebar_position: 1
-title: Overview
+title: Istio | Overview
+hide_title: true
 ---
+
+import DocsLinkCard from "@site/src/components/LinkCard";
+
+export const istio_tutorials = [
+    {
+        title: 'Istio AuthorizationPolicy automation',
+        description: 'Generate AuthorizationPolicy docs from existing connections',
+        url: '/features/istio/examples/k8s-istio-authorization-policies'
+    },
+    {
+        title: 'Istio HTTP-level access mapping',
+        description: 'View the HTTP methods being used across services',
+        url: '/features/istio/examples/k8s-istio-water'
+    }
+];
+
+
+
+# Istio
+
+Otterize can map and secure access with Istio HTTP connections across your Kubernetes services.
+
+### About
+
+When enabling Istio support, Otterize's network mapping tool can determine which Kubernetes services are connected and which HTTP methods are being used. This graph of connections can then be leveraged to automate IBAC based access policies that result in Istio AuthorizationPolicy(s).
+
+### How does it work
+
+1. First, the cluster must have [Otterize installed](/overview/installation). With Istio support enabled by setting the following flag:
+
+```bash
+--set networkMapper.istiowatcher.enable=true
+```
+
+2. To monitor connections and HTTP methods, we need to enable connection telemetry data within Istio. This can be enabled with the following YAML:
+
+```yaml
+apiVersion: telemetry.istio.io/v1alpha1
+kind: Telemetry
+metadata:
+  name: mesh-default
+  namespace: istio-system
+spec:
+  # Configure access logging for Istio services
+  accessLogging:
+    # Define the access logging provider, in this case, Envoy
+    - providers:
+        - name: envoy
+  metrics:
+    # Configure metrics collection for Istio services using Prometheus
+    - providers:
+        - name: prometheus
+      # Customize metric tag overrides
+      overrides:
+        - tagOverrides:
+            # Map the "request_method" metric tag to "request.method" value
+            request_method:
+              value: request.method
+            # Map the "request_path" metric tag to "request.path" value
+            request_path:
+              value: request.path
+
+```
+
+Once installed, Otterize will query Envoy sidecars for known connections and building an in-memory map of the relationships. After the map is built your can then view those relationships.
+
+**To Manage Access**
+
+You simply need to define and apply your intent based access control ([IBAC](/overview/intent-based-access-control)) policies for your services.
+
+```yaml
+
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: client
+  namespace: otterize-tutorial-istio
+spec:
+  service:
+    name: client
+  calls:
+    - name: server-abc
+      type: http
+      HTTPResources:
+        - path: /client-path
+          methods: [ GET ]
+
+```
+
+### Tutorials
+
+For further details about mapping, or access automation, view the tutorials below:
+
+<DocsLinkCard items={istio_tutorials} colSize={"sm"}/>
