@@ -307,7 +307,7 @@ const config = {
             position: "right",
           },
           {
-            href: "https://app.otterize.com/signup",
+            href: "https://otterize.com/signup",
             html: "<button class='tw-cursor-pointer tw-inline-flex tw-items-center tw-justify-center tw-gap-2 tw-rounded-xl tw-bg-gradient-to-b tw-px-3 tw-py-2.5 tw-text-sm lg:tw-text-base tw-font-semibold tw-leading-normal tw-no-underline tw-shadow tw-font-sans -tw-mr-2 tw-from-indigo-500 tw-bg-indigo-500 tw-to-indigo-600 tw-h-11 tw-border-none  tw-text-white tw-w-full'><img src='/img/menu/cloud.svg' />Signup <span id='sign-extended-text'>for free<span></button>",
             position: "right",
           },
