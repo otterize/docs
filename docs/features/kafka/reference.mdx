@@ -3,7 +3,7 @@ sidebar_position: 3
 title: Reference
 ---
 
-### KafkaServerConfig (YAML)
+### KafkaServerConfig example (YAML)
 
 ```yaml
 apiVersion: k8s.otterize.com/v1alpha3
@@ -13,11 +13,12 @@ metadata:
   namespace: kafka
 spec:
   service:
-    name: kafka #name of the Kafka service broker
+    # name of the Kafka service broker
+    name: kafka
   addr: kafka.kafka:9092
 ```
 
-### ClientIntents (YAML)
+### ClientIntents example (YAML)
 
 ```yaml
 apiVersion: k8s.otterize.com/v1alpha3
@@ -27,18 +28,23 @@ metadata:
   namespace: otterize-tutorial-kafka-mtls
 spec:
   service:
-    name: client # The service requiring access to a topic
+    # The service requiring access to a topic
+    name: client
   calls:
-    - name: kafka.kafka # name of the Kafka service broker
+      # name of the Kafka service broker
+    - name: kafka.kafka
       type: kafka
       kafkaTopics:
-        - name: mytopic # Topic name
-          operations: [ produce,describe,consume ] # ACL Operations like alter, delete, all, etc
-        - name: transactions # Multiple topics can be added
+          # Topic name
+        - name: mytopic
+          # ACL Operations including alter, delete, all, etc
+          operations: [ produce,describe,consume ]
+          # Multiple topics can be added
+        - name: transactions
           operations: [ produce,describe,consume ]
 ```
 
-### Helm Chart Options
+### Helm Chart options
 
 | Key                             | Description                                                 | Default                        |
 |---------------------------------|-------------------------------------------------------------|--------------------------------|
@@ -50,3 +56,5 @@ spec:
 | `kafkawatcher.pullSecrets`      | Kafka watcher pull secrets.                                 | `(none)`                       |
 | `kafkawatcher.resources`        | Resources override.                                         | `(none)`                       |
 | `kafkawatcher.kafkaServers`     | Kafka servers to watch, specified as `pod.namespace` items. | `(none)`                       |
+
+View the [helm chart reference](/reference/configuration/otterize-chart) for all other options

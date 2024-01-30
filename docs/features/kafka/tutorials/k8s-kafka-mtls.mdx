@@ -21,36 +21,23 @@ In this tutorial, we will:
 
 ## Prerequisites
 
-### Prepare a Kubernetes cluster
+Already have Otterize & a Kafka broker deployed on your cluster? Skip to the [tutorial](#tutorial).
 
-<details>
-<summary>Expand for cluster setup instructions</summary>
+### 1. Deploy Otterize
+To deploy Otterize, head over to [Otterize Cloud](https://app.otterize.com) and create a Kubernetes cluster on the [Clusters page](https://app.otterize.com/clusters), and follow the instructions. If you already have a Kubernetes cluster connected, skip this step.
 
-Before you start, you'll need a Kubernetes cluster.
+##### Note:
+* Under mTLS and Kafka support choose **Otterize Cloud**.
+* Copy the Helm command and add the following flags:
+```bash
+--set intentsOperator.operator.enableNetworkPolicyCreation=false \
+--set networkMapper.kafkawatcher.enable=true \
+--set networkMapper.kafkawatcher.kafkaServers={"kafka-0.kafka"}
+```
 
-{@include: ../../../_common/cluster-setup.md}
+Note that enforcement is disabled, we will enable it later. The configuration tab should look like this:
 
-</details>
-
-### Install Otterize
-
-You can now install Otterize in your cluster, and connect to Otterize Cloud. Connecting to Cloud lets you:
-
-1. See what's happening visually in your browser, through the "access graph".
-2. Generate certificates using the Otterize Cloud hosted service. If you prefer to generate certificates in-cluster, you can [follow the tutorial for cert-manager](/quickstart/access-control/k8s-kafka-mtls-cert-manager).
-
-#### Install Otterize OSS, connected to Otterize Cloud
-{@include: ../../../_common/install-otterize-from-cloud-with-shadow-mode-and-kafka-watcher.md}
-
-#### Configure the access graph in Otterize Cloud to only show Kafka authorization status
-
-You want to make sure that under **Istio Policies** _Use in access graph_ is turned off and that under **Network Policies** _Use in access graph_ is also turned off.
-
-Keep _Use in access graph_ **on** under **Kafka ACLs** so that the access graph only shows the authorization status for Kafka ACLs.
-
-![Make sure access graph is configured correctly](/img/quick-tutorials/k8s-kafka-mtls//cloud-settings.png)
-
-## Install Kafka
+### 2. Install Kafka
 
 We will deploy a Kafka broker using Bitnami's [Helm chart](https://github.com/bitnami/charts/tree/master/bitnami/kafka).
 In the chart we will configure Kafka to:
@@ -81,7 +68,7 @@ helm install --create-namespace -n kafka \
 
 You can watch for all pods to be `Ready` using `kubectl get pods -n kafka -w`.
 
-## Configure Otterize to manage Kafka access
+### 3. Configure Otterize to manage Kafka access
 
 In our simple example, we'll call the Kafka broker service simply "kafka".
 Let's tell Otterize how to connect to the Kafka broker by applying an Otterize `KafkaServerConfig`, naming it `kafka`. The name will be the name we later use to declare `ClientIntents`.
@@ -93,8 +80,9 @@ kubectl apply -f ${ABSOLUTE_URL}/code-examples/kafka-mtls/kafkaserverconfig.yaml
 ```yaml
 {@include: ../../../../static/code-examples/kafka-mtls/kafkaserverconfig.yaml}
 ```
+## Tutorial
 
-## Deploy clients
+### Deploy clients
 
 Our simple example consists of two client pods:
 
@@ -248,7 +236,7 @@ You can now browse to your account at [https://app.otterize.com](https://app.ott
 
 The access graph shows, through its green and orange lines linking the services, that no clients are currently blocked because we haven't enabled any sort of enforcement yet. The orange lines indicate that, since we have not declared any intents for these clients, they _would_ be blocked if we were to turn enforcement on.
 
-## Apply intents
+### Apply intents
 
 :::tip
 
@@ -286,7 +274,7 @@ We can see what happened:
 
 Also, the access graph shows information about the mTLS certificates (credentials) distributed to the various services, as long as [Cloud-managed credentials](/security#cryptographic-credentials) are being used.
 
-## Turn on protection
+### Turn on protection
 
 At this point, we haven't actually protected our Kafka broker. From everything we've done so far, we can see, however, that if we were to turn on protection, the `client-other` would lose access to the broker.
 
@@ -321,7 +309,7 @@ And if you look back at your access graph, you'll see that the Kafka broker is n
 
 ![Clients blocked](/img/quick-tutorials/k8s-kafka-mtls/clients-blocked.png)
 
-## What did we accomplish?
+### What did we accomplish?
 
 - Controlling Kafka access no longer means touching ACLs, issuing and managing and distributing certs, establishing trust,
   etc.

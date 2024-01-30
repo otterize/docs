@@ -150,7 +150,7 @@ const config = {
         },
         {
           from: ['/reference/access-controls/network-policies'],
-          to: '/features/networking/Reference/Network-Policies-Deep-Dive'
+          to: '/features/networking/reference/Network-Policies-Deep-Dive'
         },
         {
           from: ['/shadow-vs-active-enforcement'],
@@ -180,7 +180,7 @@ const config = {
         },
         {
           from: ['/otterize-cloud/object-model'],
-          to: '/overview/otterize-cloud/object-model'
+          to: '/reference/terminology'
         },
         {
           from: ['/guides/protect-1-service-network-policies'],

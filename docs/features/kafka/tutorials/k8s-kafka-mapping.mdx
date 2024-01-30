@@ -19,58 +19,12 @@ We will **not** be doing any access control in this demo, just purely mapping cl
 
 ## Prerequisites
 
-<details>
-<summary>Prepare a Kubernetes cluster</summary>
+Already have Otterize & a Kafka broker deployed on your cluster? Skip to the [tutorial](#tutorial).
 
-Before you start, you'll need a Kubernetes cluster. Having a cluster with a [CNI](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/) that supports [NetworkPolicies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) isn't required for this tutorial, but is recommended so that your cluster works with other tutorials.
+### 1. Deploy Otterize
+To deploy Otterize, head over to [Otterize Cloud](https://app.otterize.com) and create a Kubernetes cluster on the [Clusters page](https://app.otterize.com/clusters), and follow the instructions. If you already have a Kubernetes cluster connected, skip this step.
 
-{@include: ../../../_common/cluster-setup.md}
-
-</details>
-
-You can now install Otterize in your cluster, and optionally connect to Otterize Cloud. Connecting to Cloud lets you
-see what's happening visually in your browser, through the "access graph".
-
-So either forego browser visualization and:
-
-<details>
-<summary>Install Otterize in your cluster with the Kafka watcher component enabled, <b>without</b> Otterize Cloud</summary>
-
-```
-helm repo add otterize https://helm.otterize.com
-helm repo update
-helm install otterize otterize/network-mapper -n otterize-system --create-namespace \
---set kafkawatcher.enable=true \
---set kafkawatcher.kafkaServers={"kafka-0.kafka"}
-```
-
-</details>
-
-Or choose to include browser visualization and:
-
-<details>
-<summary>Install Otterize in your cluster, <b>with</b> Otterize Cloud</summary>
-
-#### Create an Otterize Cloud account
-
-{@include: ../../../_common/create-account.md}
-
-#### Install Otterize OSS, connected to Otterize Cloud
-
-{@include: ../../../_common/install-otterize-from-cloud-with-shadow-mode-and-kafka-watcher.md}
-
-</details>
-
-Finally, you'll need to install the Otterize CLI (if you haven't already) to interact with the network mapper:
-
-<details>
-<summary>Install the Otterize CLI</summary>
-
-{@include: ../../../_common/install-otterize-cli.md}
-
-</details>
-
-## Install Kafka
+### 2. Install Kafka
 
 We will deploy a Kafka broker using Bitnami's [Helm chart](https://github.com/bitnami/charts/tree/master/bitnami/kafka).
 In the chart we will configure Kafka to:
@@ -96,7 +50,9 @@ helm install --create-namespace -n kafka \
   -f ${ABSOLUTE_URL}/code-examples/kafka-mapping/helm/values.yaml kafka bitnami/kafka --version 21.4.4
 ```
 
-## Deploy demo to simulate traffic
+## Tutorial
+
+### Deploy demo to simulate traffic
 
 Let's add a few services that will access our Kafka server, and see how the network mapper builds the access map:
 
@@ -142,7 +98,7 @@ Only the arrows between the clients and the Kafka are green, because we've selec
 
 Clicking on a specific arrow between a client and the broker reveals which topic and operations are being accessed.
 
-## What did we accomplish?
+### What did we accomplish?
 
 Enabling the Kafka watcher component of the network mapper shows which clients connect to running Kafka servers, the topics they access, and the operations they undertake on those topics.
 
@@ -152,7 +108,7 @@ You can consume this information in various ways:
 - [Via the CLI](/reference/cli): from the network mapper directly or the cloud.
 - [Via the API](https://app.otterize.com/api/rest/v1beta).
 
-## What's next
+### What's next
 
 - Try our [secure access for Kafka](/quickstart/access-control/k8s-kafka-mtls) tutorial
 

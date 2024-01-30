@@ -3,7 +3,7 @@ sidebar_position: 3
 title: Reference
 ---
 
-### ClientIntents Example (YAML)
+### ClientIntents example (YAML)
 
 ```yaml
 apiVersion: k8s.otterize.com/v1alpha3
@@ -36,10 +36,12 @@ spec:
 | `credentials-operator.otterize.com/create-aws-role` | By setting to **true** the credential operator will create an unique AWS Role for the associated pod | `false` |
 
 
-### Helm Chart Options
+### Helm Chart options
 
 | Key                                                        | Description                                                                                                                                                                                  | Default  |
 |------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
 | `global.aws.enabled`                                       | Enable or disable AWS integration                                                                                                                                                            | `false`  |
 | `global.aws.eksClusterNameOverride`                        | EKS cluster name (overrides auto-detection)                                                                                                                                                  | `(none)` |
 | `aws.roleARN` | ARN of the AWS role the operator will use to access AWS. By defeault, Otterize will create a unique role for each service an annotate the service with the role's ARN. | `(none)` |
+
+View the [helm chart reference](/reference/configuration/otterize-chart) for all other options

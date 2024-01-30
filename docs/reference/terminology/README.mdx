@@ -17,6 +17,9 @@ The [Otterize CLI](/reference/cli) is a command-line utility used to control and
 ### Intent (or client intent)
 Otterize intents are a way to declare that one service intends to call another service. Otterize uses them to apply authorization rules to enable the calls to go through, and block any unintended calls. An *intent* refers to a client declaring a particular call to a server; *all* a given client's intents to the servers it intends to call are collected in a single *client intents file*. [Learn more about intents](/reference/intents-and-intents-files).
 
+### Integrations
+Otterize Cloud supports two types of integrations: Kubernetes integrations and generic integrations. Kubernetes integrations connect a Kubernetes cluster to Otterize Cloud, allowing communication with the Otterize operators. Generic integrations connect external systems to Otterize Cloud, providing API/CLI access credentials. These integrations are named based on their usage and must have unique names within an organization.
+
 ## Identity
 
 ### PKI
@@ -57,3 +60,12 @@ A Kubernetes custom resource refers to a resource that is not present in the bas
 ### CNI (Container Network Interface)
 CNI is a CNCF project that provides libraries for implementing plugins for configuring network interfaces in Linux containers, and is used by Kubernetes to provide pods running in a cluster with network connectivity.
 Examples of CNI plugins are Calico, Cilium, the AWS VPC CNI plugin. [Read more about Kubernetes CNI plugins here](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/).
+
+### Services
+Services represent the nodes in the access graph. They can be client services, server services, or both, and they are associated with specific namespaces within a Kubernetes cluster. Otterize Cloud infers services from reported intents and provides additional information for Kafka services and certificates. Service names must be unique within a namespace, but not necessarily across the entire cluster or multiple clusters.
+
+### Namespaces and Environments
+Namespaces are used to group related services within a Kubernetes cluster and can be mapped to different environments (e.g., dev, staging, production). Intents can be cross-namespace and cross-environment, and Otterize Cloud associates namespaces with their respective environments. Environment names must be unique within an organization.
+
+### Clusters
+A Kubernetes cluster connected to Otterize Cloud is represented by a cluster object in the cloud. This object contains information about the cluster's intents, services, credentials, and configuration. Multiple clusters and namespaces can belong to a single environment, or environments can span multiple clusters, depending on the organization's needs. Cluster names must be unique within an organization.

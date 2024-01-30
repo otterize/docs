@@ -26,16 +26,13 @@ Note: all the capabilities of IBAC are within Otterize OSS, while the access gra
 
 ## Prerequisites
 
-<details>
-<summary>Prepare a cluster</summary>
+### Install Otterize on your cluster
+To deploy Otterize, head over to [Otterize Cloud](https://app.otterize.com) and create a Kubernetes cluster on the [Clusters page](https://app.otterize.com/clusters), and follow the instructions.
 
-Before you start, you'll need a Kubernetes cluster.
+We will also need the [Otterize CLI](/overview/installation#install-the-otterize-cli).
 
-{@include: ../../../_common/cluster-setup.md}
-</details>
-
-<details>
-<summary>Deploy the demo set of services</summary>
+## Tutorial
+### Deploy the demo set of services
 
 To deploy these into your cluster:
 ```bash
@@ -43,88 +40,64 @@ kubectl create namespace otterize-ecom-demo
 kubectl apply -n otterize-ecom-demo -f ${ABSOLUTE_URL}/code-examples/shadow-mode/ecom-demo.yaml
 ```
 <details>
-<summary><em>Optional: check that the demo was deployed.</em></summary>
+    <summary><em>Optional: check that the demo was deployed.</em></summary>
 
-To see all the pods in the demo:
-```bash
-kubectl get pods -n otterize-ecom-demo
-```
-The pods should all be ready and running:
-```bash
-NAME                                     READY   STATUS    RESTARTS      AGE
-adservice-65494cbb9d-5lrv6               1/1     Running   0             115s
-cartservice-6d84fc45bb-hdtwn             1/1     Running   0             115s
-checkoutservice-5599486df-dvj9n          1/1     Running   3 (79s ago)   115s
-currencyservice-6d64686d74-lxb7x         1/1     Running   0             115s
-emailservice-7c6cbfbbd7-xjxlt            1/1     Running   0             115s
-frontend-f9448d7d4-6dmnr                 1/1     Running   0             115s
-kafka-0                                  1/1     Running   2 (83s ago)   115s
-loadgenerator-7f6987f59-bchgm            1/1     Running   0             114s
-orderservice-7ffdbf6df-wzzfd             1/1     Running   0             115s
-otterize-ecom-demo-zookeeper-0           1/1     Running   0             115s
-paymentservice-86855d78db-zjjfn          1/1     Running   0             115s
-productcatalogservice-5944c7f666-2rjc6   1/1     Running   0             115s
-recommendationservice-6c8d848498-zm2rm   1/1     Running   0             114s
-redis-cart-6b79c5b497-xpms2              1/1     Running   0             115s
-shippingservice-85694cb9bd-v54xp         1/1     Running   0             114s
-```
+    To see all the pods in the demo:
+    ```bash
+    kubectl get pods -n otterize-ecom-demo
+    ```
+    The pods should all be ready and running:
+    ```bash
+    NAME                                     READY   STATUS    RESTARTS      AGE
+    adservice-65494cbb9d-5lrv6               1/1     Running   0             115s
+    cartservice-6d84fc45bb-hdtwn             1/1     Running   0             115s
+    checkoutservice-5599486df-dvj9n          1/1     Running   3 (79s ago)   115s
+    currencyservice-6d64686d74-lxb7x         1/1     Running   0             115s
+    emailservice-7c6cbfbbd7-xjxlt            1/1     Running   0             115s
+    frontend-f9448d7d4-6dmnr                 1/1     Running   0             115s
+    kafka-0                                  1/1     Running   2 (83s ago)   115s
+    loadgenerator-7f6987f59-bchgm            1/1     Running   0             114s
+    orderservice-7ffdbf6df-wzzfd             1/1     Running   0             115s
+    otterize-ecom-demo-zookeeper-0           1/1     Running   0             115s
+    paymentservice-86855d78db-zjjfn          1/1     Running   0             115s
+    productcatalogservice-5944c7f666-2rjc6   1/1     Running   0             115s
+    recommendationservice-6c8d848498-zm2rm   1/1     Running   0             114s
+    redis-cart-6b79c5b497-xpms2              1/1     Running   0             115s
+    shippingservice-85694cb9bd-v54xp         1/1     Running   0             114s
+    ```
 
-You can now browse the web app of this demo, if you wish:
+    You can now browse the web app of this demo, if you wish:
 
-<Tabs groupId="frontend-addr">
-<TabItem value="k8s" label="K8s">
+    <Tabs groupId="frontend-addr">
+        <TabItem value="k8s" label="K8s">
 
-To get the externally-accessible URL where your demo front end is available, run:
-```bash
-kubectl get service -n otterize-ecom-demo frontend-external | awk '{print $4}'
-```
-The result should be similar to (if running on AWS EKS):
-```
-a11843075fd254f8099a986467098647-1889474685.us-east-1.elb.amazonaws.com
-```
-Go ahead and browse to the URL above to "shop" and get a feel for the demo's behavior.
-(The URL might take some time to populate across DNS servers. Note that we are accessing an HTTP and not an HTTPS website.)
-</TabItem>
-<TabItem value="minikube" label="Minikube">
+            To get the externally-accessible URL where your demo front end is available, run:
+            ```bash
+            kubectl get service -n otterize-ecom-demo frontend-external | awk '{print $4}'
+            ```
+            The result should be similar to (if running on AWS EKS):
+            ```
+            a11843075fd254f8099a986467098647-1889474685.us-east-1.elb.amazonaws.com
+            ```
+            Go ahead and browse to the URL above to "shop" and get a feel for the demo's behavior.
+            (The URL might take some time to populate across DNS servers. Note that we are accessing an HTTP and not an HTTPS website.)
+        </TabItem>
+        <TabItem value="minikube" label="Minikube">
 
-To get the externally-accessible URL where your demo front end is available, run:
-```
-kubectl port-forward -n otterize-ecom-demo service/frontend-external 8080:80 &
-```
-The demo is now accessible at:
-```
-http://localhost:8080
-```
-Go ahead and browse to the URL above to "shop" and get a feel for the demo's behavior.
-</TabItem>
-</Tabs>
+            To get the externally-accessible URL where your demo front end is available, run:
+            ```
+            kubectl port-forward -n otterize-ecom-demo service/frontend-external 8080:80 &
+            ```
+            The demo is now accessible at:
+            ```
+            http://localhost:8080
+            ```
+            Go ahead and browse to the URL above to "shop" and get a feel for the demo's behavior.
+        </TabItem>
+    </Tabs>
 </details>
 
-</details>
-
-<details>
-<summary>Create an Otterize Cloud account</summary>
-
-{@include: ../../../_common/create-account.md}
-
-</details>
-
-<details>
-<summary>Install Otterize OSS</summary>
-
-{@include: ../../../_common/install-otterize-from-cloud.md}
-
-</details>
-
-<details>
-<summary>Install the Otterize CLI</summary>
-
-{@include: ../../../_common/install-otterize-cli.md}
-
-</details>
-
-
-## Seeing the access graph
+### Seeing the access graph
 
 In the Otterize Cloud UI, your [cluster](https://app.otterize.com/clusters) should now show all 3 Otterize OSS operators &mdash; the network mapper, intents operator, and credentials operator &mdash; as connected, with a green status.
 
@@ -159,7 +132,7 @@ Otterize can configure several access control mechanisms, such as Istio authoriz
 
 <img src="/img/guides/protect-1-service-network-policies/access-graph-panel.png" alt="Access graph - access controls panel" width="800"/>
 
-## Choose one service to protect
+### Choose one service to protect
 
 Now let's prepare to protect just one service, but remain in shadow mode: no actual network policies, yet. We'll verify no intended access would be blocked before turning on the network policy protection.
 
@@ -199,7 +172,7 @@ We see that:
 
 </details>
 
-## Declare client intents
+### Declare client intents
 
 The graph visually tells us we'll need to declare all 3 of those clients' intents:
 1. `frontend` &rarr; `productcatalogservice`.
@@ -297,7 +270,7 @@ And you can verify the `productcatalogservice` would not block *any* of its disc
 
 The server is still <span style={{color:"#F3AF3D", fontWeight:"bold"}}>yellow</span> because it's unprotected &mdash; let's fix that.
 
-## Protect the `productcatalogservice`
+### Protect the `productcatalogservice`
 
 Now that we've verified no intended clients would be blocked, we can safely protect the server.
 
@@ -325,22 +298,22 @@ Sure enough, the `productcatalogservice` is <span style={{color:"#238C32", fontW
 
 <img src="/img/guides/protect-1-service-network-policies/productcatalogservice-with-intents-protected.png" alt="Clicked on productcatalogservice" width="600"/>
 
-## Ready for production
+### Ready for production
 
-### Will load balancers, ingress, and other external traffic be affected?
+#### Will load balancers, ingress, and other external traffic be affected?
 The intents operator automatically detects resources of kind `Service` (with type `LoadBalancer` or `NodePort`), or of kind `Ingress`, and creates network policies to allow external traffic to relevant pods.
 
 You do not need to configure anything to get this to work. [Learn more here.](/reference/configuration/intents-operator#handling-external-traffic)
 
-### Will admission webhook controllers, e.g. policy validators like Kyverno, be affected?
+#### Will admission webhook controllers, e.g. policy validators like Kyverno, be affected?
 Since you are not placing a global default-deny policy that would affect controllers in your cluster, only default-deny network policies on individual pods, Otterize will not affect calls to admission webhook controllers and they will continue functioning as before.
 
-### Working with Otterize in CI/CD
+#### Working with Otterize in CI/CD
 We recommend placing the `ClientIntents` and `ProtectedService` resource YAMLs alongside the services that own them, in their respective Git repositories:
 - The `ProtectedService` YAMLs alongside the servers they are protecting, e.g. in the Helm chart belonging to the server.
 - `ClientIntents` YAMLs, whether they were generated from the network mapper or created and maintained by the client developer teams, alongside each client, e.g. in the Helm chart belonging to the client.
 
-## In summary
+### In summary
 
 So what have we learned? You can gradually roll out IBAC and drive towards zero trust, service by service, in a safe, predictable, and quick way, by following 4 simple steps:
 

@@ -4,7 +4,7 @@ title: Reference
 hide_table_of_contents: true
 ---
 
-### Client Intents (YAML)
+### ClientIntents example (YAML)
 
 ```yaml
 apiVersion: k8s.otterize.com/v1alpha3
@@ -14,19 +14,30 @@ metadata:
   namespace:  otterize-example
 spec:
   service:
-    name: client #The name of the service initiating the connection
+    # The name of the service initiating the connection
+    name: client
   calls:
-    - name: server #The name of the service recieving the connection. Multiple names can be provided
+    # The name of the service receiving the connection. Multiple names can be provided
+    - name: server
+    # multiple services can be added
+    - name: orderservice
+      # Optional granular rules can be added like the HTTPResources options below.
+      type: http
+      HTTPResources:
+        - path: /orders/*
+          methods: [ get, post ]
 ```
 
 
-### Helm Chart Options
+### Helm Chart options
 
 | Key                                     | Description                                                                                                                           | Default |
 |-----------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|---------|
 | `global.deployment.networkMapper`       | Whether or not to deploy network-mapper.                                                                                              | `true`  |
 | `operator.autoCreateNetworkPoliciesForExternalTraffic`                          | (deprecated, use `allowExternalTraffic` instead) Automatically allow external traffic, if a new ClientIntents resource would result in blocking external (internet) traffic and there is an Ingress/Service resource indicating external traffic is expected.                                                                                                                                                                                                                                                                                | `true`                |
 | `operator.autoCreateNetworkPoliciesForExternalTrafficDisableIntentsRequirement` | (deprecated, use `allowExternalTraffic` instead) **experimental** - If `autoCreateNetworkPoliciesForExternalTraffic` is enabled, do not require ClientIntents resources - simply create network policies based off of the existence of an Ingress/Service resource.                                                                                                                                                                                                                                                                          | `false`               |
+
+View the [helm chart reference](/reference/configuration/otterize-chart) for all other options
 
 ### Network mapper parameters
 All configurable parameters of the network mapper can be configured under the alias `networkMapper`.

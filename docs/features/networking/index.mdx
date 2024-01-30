@@ -33,14 +33,14 @@ export const network_access_tutorials = [
 ### About
 You can use Otterize to understand, visualize, and manage access for Kubernetes networks. Upon installation, Otterize inspects network traffic and builds an in-memory network map of connections. The network map can then be exported or viewed in various ways to understand the connections within your networks. With IBAC-based policies, Otterize becomes a control plane for your K8s networks. Mapped network traffic can autogenerate declarative intent-based access policies to create least privileged pod-to-pod access easily.
 
-### Visualizing
+### Mapping & visualizing
 
 After installation, Otterize collects network traffic data in memory, creating a graph of relationships between pod-to-pod and pod-to-public internet traffic. Once the graph is in place, the data can be exported or viewed in various ways. Otterize Cloud users can see and interact with the graph structures within the Otterize application. OSS users can use the CLI tool to export the data into JSON, list the relationship, or generate IBAC policies reflecting the existing traffic.
 
 To learn more about Visualizing, check out [Visualizing a Kubernetes Network](/features/Networking/tutorials/k8s-network-mapper)
 
 
-### Access Control
+### Access control
 
 By default, Kubernetes pods allow all egress and ingress traffic. Kubernetes [NetworkPolicies](/reference/terminology#network-policies) provide `policyTypes` to restrict egress or ingress traffic, providing a more secure and compliant environment. Utilizing the in-memory tariff map, Otterize can automatically generate IBAC policies to reflect the current traffic flow within a cluster. Once the IBAC policies are submitted, Otterize will generate and apply the corresponding NetworkPolicies to your namespaces.
 

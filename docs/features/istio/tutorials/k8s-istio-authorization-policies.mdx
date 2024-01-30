@@ -24,44 +24,13 @@ In this tutorial, we will:
 
 ## Prerequisites
 
-<details>
-<summary>Prepare a Kubernetes cluster</summary>
+Already have Otterize deployed with Istio configured on your cluster? Skip to the [tutorial](#tutorial).
 
-Before you start, you'll need a Kubernetes cluster. Having a cluster with a [CNI](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/) that supports [NetworkPolicies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) isn't required for this tutorial, but is recommended so that your cluster works with other tutorials.
+### 1. Deploy Otterize
+To deploy Otterize, head over to [Otterize Cloud](https://app.otterize.com) and create a Kubernetes cluster on the [Clusters page](https://app.otterize.com/clusters), and follow the instructions. If you already have a Kubernetes cluster connected, skip this step.
 
-{@include: ../../../_common/cluster-setup.md}
 
-</details>
-
-You can now install (or reinstall) Otterize in your cluster, and optionally connect to Otterize Cloud. Connecting to Cloud lets you:
-
-1. See what's happening visually in your browser, through the "access graph";
-
-So either forego browser visualization and:
-
-<details>
-<summary>Install Otterize in your cluster, <b>without</b> Otterize Cloud</summary>
-
-{@include: ../../../_common/install-otterize-istio-enabled.md}
-
-</details>
-
-Or choose to include browser visualization and:
-
-<details>
-<summary>Install Otterize in your cluster, <b>with</b> Otterize Cloud</summary>
-
-#### Create an Otterize Cloud account
-
-{@include: ../../../_common/create-account.md}
-
-#### Install Otterize OSS, connected to Otterize Cloud
-
-{@include: ../../../_common/install-otterize-from-cloud-with-istio-enforcement.md}
-
-</details>
-
-## Install and configure Istio
+### 2. Install and configure Istio
 
 <details>
 <summary>Install Istio in the cluster via Helm</summary>
@@ -91,7 +60,9 @@ e.g. in the access graph, but we can also use that information to automatically 
 enforce them with Istio authorization policies.
 :::
 
-## Deploy the two clients and the server
+## Tutorial
+
+### Deploy the two clients and the server
 
 Deploy a simple example consisting of `client` and `other-client` calling `nginx` over HTTP:
 
@@ -99,7 +70,7 @@ Deploy a simple example consisting of `client` and `other-client` calling `nginx
 kubectl apply -n otterize-tutorial-istio -f ${ABSOLUTE_URL}/code-examples/istio-authorization-policies/all.yaml
 ```
 
-## Apply intents
+### Apply intents
 
 We will now declare that the **client** intends to call the **server** at a particular HTTP path using a specific HTTP method.
 
@@ -250,7 +221,7 @@ It's now clear what happened:
 Otterize did its job of both protecting the server _and_ allowing intended access.
 :::
 
-## What did we accomplish?
+### What did we accomplish?
 
 - Controlling access through Istio authorization policies no longer means touching authorization policies at all.
 
@@ -284,7 +255,7 @@ all the appropriate configuration was managed automatically behind the scenes.
 Try to create an intents file yourself for **client-other**, and apply it to allow this other client to call the server.
 :::
 
-## What's next
+### What's next
 
 - Get started with the [Otterize network mapper for Istio](/quickstart/visualization/k8s-istio-watcher) to help you bootstrap intents files with HTTP resources
   for use in [intent-based access control (IBAC)](/intent-based-access-control).
