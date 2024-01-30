@@ -1,25 +1,30 @@
 ---
 sidebar_position: 1
-title: Networking
+title: Networking | Overview
 hide_title: true
 ---
 import DocsLinkCard from "@site/src/components/LinkCard";
 
 export const network_access_tutorials = [
     {
+        title: 'Visualizing a Kubernetes Network',
+        description: 'Map network traffic in a cluster and view the connections',
+        url: '/features/Networking/tutorials/k8s-network-mapper'
+    },
+{
         title: 'Create and manage network policies',
         description: 'Create Kubernetes network policies using IBAC',
-        url: '/features/Networking/Examples/k8s-network-policies'
+        url: '/features/Networking/tutorials/k8s-network-policies'
     },
     {
         title: 'Protecting a service with network policies',
         description: 'An example on how to secure a single service',
-        url: '/features/Networking/Examples/protect-1-service-network-policies'
+        url: '/features/Networking/tutorials/protect-1-service-network-policies'
     },
     {
         title: 'AWS EKS network policies with the VPC CNI',
         description: 'Leverage AWS VPC CNI to apply network policies in EKS',
-        url: '/features/Networking/Examples/aws-eks-cni-mini'
+        url: '/features/Networking/tutorials/aws-eks-cni-mini'
     }
 ];
 
@@ -32,7 +37,7 @@ You can use Otterize to understand, visualize, and manage access for Kubernetes 
 
 After installation, Otterize collects network traffic data in memory, creating a graph of relationships between pod-to-pod and pod-to-public internet traffic. Once the graph is in place, the data can be exported or viewed in various ways. Otterize Cloud users can see and interact with the graph structures within the Otterize application. OSS users can use the CLI tool to export the data into JSON, list the relationship, or generate IBAC policies reflecting the existing traffic.
 
-To learn more about Visualizing, check out [Visualizing a Kubernetes Network](/features/Networking/Examples/k8s-network-mapper)
+To learn more about Visualizing, check out [Visualizing a Kubernetes Network](/features/Networking/tutorials/k8s-network-mapper)
 
 
 ### Access Control

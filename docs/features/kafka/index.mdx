@@ -1,6 +1,6 @@
 ---
 sidebar_position: 1
-title: Kafka
+title: Kafka | Overview
 hide_table_of_contents: true
 hide_title: true
 ---
@@ -11,17 +11,17 @@ export const kafka_tutorials = [
     {
         title: 'Kafka topic-level access mapping',
         description: 'View Kafka network connections',
-        url: '/features/Kafka/Examples/k8s-kafka-mapping'
+        url: '/features/Kafka/tutorials/k8s-kafka-mapping'
     },
     {
         title: 'Kafka access automation using Otterize Cloud mTLS',
         description: 'Manage access to Kafka topics with Otterize Cloud mTLS',
-        url: '/features/Kafka/Examples/k8s-kafka-mtls'
+        url: '/features/Kafka/tutorials/k8s-kafka-mtls'
     },
     {
         title: 'Kafka access automation using cert-manager mTLS',
         description: 'Manage access to Kafka topics with a cert-manager',
-        url: '/features/Kafka/Examples/k8s-kafka-mtls-cert-manager'
+        url: '/features/Kafka/tutorials/k8s-kafka-mtls-cert-manager'
     }
 ];
 
@@ -63,7 +63,7 @@ spec:
 ```
 
 
-3. Once that is complete, the Kafka broker and it's clients require mTLS credentials, which they can receive from Otterize or through a [cert-manager](/features/Kafka/Examples/k8s-kafka-mtls-cert-manager). This requires a annotation to inform Otterize to generate the credentials and volume mount to store them. To orchestrate this, see the example deployment below:
+3. Once that is complete, the Kafka broker and it's clients require mTLS credentials, which they can receive from Otterize or through a [cert-manager](/features/Kafka/tutorials/k8s-kafka-mtls-cert-manager). This requires a annotation to inform Otterize to generate the credentials and volume mount to store them. To orchestrate this, see the example deployment below:
 
 ```yaml
 spec:
