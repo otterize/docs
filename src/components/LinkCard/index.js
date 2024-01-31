@@ -16,7 +16,7 @@ export default function DocsLinkCard({items, colSize}) {
                 >
                     {item.icon &&
                         <div className="tw-flex-shrink-0">
-                            <img width="100%" className="tw-max-h-10 tw-max-w-10" src={item.icon} alt=""/>
+                            <img width="40px" className="tw-max-h-10 tw-max-w-10" src={item.icon} alt=""/>
                         </div>
                     }
                     <div className="tw-min-w-0 tw-flex-1">

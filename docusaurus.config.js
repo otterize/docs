@@ -159,16 +159,10 @@ const config = {
         {
           from: ['/otterize-cloud'],
           to: '/overview/otterize-cloud'
+        },
+        {
           from: '/quick-tutorials',
           to: '/',
-        },
-        {
-          from: '/quick-tutorials/k8s-mtls',
-          to: '/quickstart/access-control/k8s-kafka-mtls-cert-manager',
-        },
-        {
-          from: '/getting-started/oss-installation',
-          to: '/installation',
         },
         {
           from: ['/otterize-oss/usage-telemetry'],
@@ -195,7 +189,7 @@ const config = {
           to: '/features/networking/tutorials/aws-eks-cni-mini',
         },
         {
-          from: ['/quick-tutorials/k8s-kafka-mtls-cert-manager', '/quickstart/access-control/k8s-kafka-mtls-cert-manager'],
+          from: ['/quick-tutorials/k8s-kafka-mtls-cert-manager', '/quickstart/access-control/k8s-kafka-mtls-cert-manager', '/quick-tutorials/k8s-mtls'],
           to: '/features/kafka/tutorials/k8s-kafka-mtls-cert-manager',
         },
         {
