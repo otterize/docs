@@ -137,6 +137,14 @@ const config = {
     {
       redirects: [
         {
+          from: '/quick-tutorials',
+          to: '/',
+        },
+        {
+          from: '/quick-tutorials/k8s-mtls',
+          to: '/quickstart/access-control/k8s-kafka-mtls-cert-manager',
+        },
+        {
           from: '/getting-started/oss-installation',
           to: '/installation',
         },
@@ -300,12 +308,12 @@ const config = {
           },
           {
             href: "https://app.otterize.com/signup",
-            html: "<button class='tw-cursor-pointer tw-inline-flex tw-items-center tw-justify-center tw-gap-2 tw-rounded-xl tw-bg-gradient-to-b tw-px-3 tw-py-2.5 tw-text-sm lg:tw-text-base tw-font-semibold tw-leading-normal tw-no-underline tw-shadow tw-font-sans -tw-mr-2 tw-from-indigo-500 tw-bg-indigo-500 tw-to-indigo-600 tw-h-11 tw-border-none  tw-text-white tw-w-full'><img src='img/menu/cloud.svg' />Signup <span id='sign-extended-text'>for free<span></button>",
+            html: "<button class='tw-cursor-pointer tw-inline-flex tw-items-center tw-justify-center tw-gap-2 tw-rounded-xl tw-bg-gradient-to-b tw-px-3 tw-py-2.5 tw-text-sm lg:tw-text-base tw-font-semibold tw-leading-normal tw-no-underline tw-shadow tw-font-sans -tw-mr-2 tw-from-indigo-500 tw-bg-indigo-500 tw-to-indigo-600 tw-h-11 tw-border-none  tw-text-white tw-w-full'><img src='/img/menu/cloud.svg' />Signup <span id='sign-extended-text'>for free<span></button>",
             position: "right",
           },
           {
             href: "https://calendly.com/otterize-team/kubecon-na",
-            html: "<div class='tw-cursor-pointer tw-font-sans tw-flex tw-items-center tw-rounded-xl tw-h-11 tw-border tw-border-solid tw-border-gray-300 tw-bg-white tw-px-3 tw-text-gray-900 tw-shadow tw-font-medium tw-text-sm lg:tw-text-base tw-w-full tw-justify-center'><span id='request-demo-full-text'>Request a demo</span><span id='request-demo-partial-text'>Demo</span><img class='tw-ml-2' src='img/menu/right-arrow.svg' /></div>",
+            html: "<div class='tw-cursor-pointer tw-font-sans tw-flex tw-items-center tw-rounded-xl tw-h-11 tw-border tw-border-solid tw-border-gray-300 tw-bg-white tw-px-3 tw-text-gray-900 tw-shadow tw-font-medium tw-text-sm lg:tw-text-base tw-w-full tw-justify-center'><span id='request-demo-full-text'>Request a demo</span><span id='request-demo-partial-text'>Demo</span><img class='tw-ml-2' src='/img/menu/right-arrow.svg' /></div>",
             position: "right",
           },
         ],
@@ -355,7 +363,12 @@ const config = {
           },
           {
             html: `<div class="footer_copyright tw-w-full">
-                    <img src="img/footer/cloud-native.svg" class="tw-mr-[2000px]" />
+                    <div style="display:flex;">
+                      <img src="img/footer/cloud-native.svg" style="margin-right:20px;"/>
+                      <a href="https://otterize.com/soc2-request" target="_blank" style="height:50px;">
+                        <img src="img/footer/soc.png" style="width:50px;"/>
+                      </a>
+                    </div>
                     <div class="tw-w-full tw-h-14 tw-flex-col tw-justify-start tw-items-start tw-gap-8 tw-inline-flex">
                     <div class="tw-self-stretch tw-h-px tw-bg-gray-300"></div>
                     <div class="tw-self-stretch tw-justify-between tw-items-start tw-inline-flex">
