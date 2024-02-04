@@ -95,8 +95,9 @@ To deploy Otterize, head over to [Otterize Cloud](https://app.otterize.com) and:
 
 If you are using the cluster from the previous step, the cluster name is `otterize-iam-eks-tutorial` and the region is `us-west-2`.
 
-Once the AWS integration is configured, you'll be presented with a dialog to launch a CloudFormation template to configure the IAM roles for the Otterize operators. This enables the operators to manage IAM for the pods in your cluster.
-This setup is required once per-cluster, and configures AWS IRSA on your cluster, if it is not yet configured. [This template can be found on GitHub as well](https://github.com/otterize/setup/blob/main/aws-iam-operator-setup-template.yaml).
+Once the AWS integration is configured, you'll be presented with a dialog to launch a CloudFormation template to configure the IAM roles for the Otterize operators.
+This enables the operators to manage IAM for the pods in your cluster, and configures AWS IRSA on your cluster, if it is not yet configured.
+This setup is required once per-cluster. [This template can be found on GitHub as well](https://github.com/otterize/setup/blob/main/aws-iam-operator-setup-template.yaml).
 
 After CloudFormation has configured your cluster, click Next and you'll be presented with the configuration for deploying Otterize. Since you now have the AWS integration enabled, you need to redeploy Otterize with the credentials operator enabled, and with configuration telling the operators which AWS roles they will AssumeRole to in order to operate.
 

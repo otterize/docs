@@ -1,0 +1,14 @@
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: psql-client
+spec:
+  service:
+    name: psql-client
+  calls:
+    - name: otterize-tutorial-cloudsql # note: this name should be the same as your database integration's name
+      type: database
+      databaseResources:
+        - databaseName: otterize_tutorial
+          table:
+          operations:
