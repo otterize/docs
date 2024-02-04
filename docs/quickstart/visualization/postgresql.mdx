@@ -154,12 +154,12 @@ and view them in the [Access graph](https://app.otterize.com/access-graph).
 If you deployed the dummy postgres application used earlier in this tutorial,
 you should start seeing connections from the psql-client app to your Cloud SQL server after about one minute.
 
-:::danger
-(TODO: Better screenshots + update with latest unknown node design)
-:::
+![Access Graph with unknown PostgreSQL client](/img/visualization/postgresql-visibility/access-graph-unknown-node.png)
 
-![Access Graph with Unknown Node](/img/visualization/postgresql-visibility/access-graph-unknown-node.png)
-![Client Node for Unknown Service](/img/visualization/postgresql-visibility/access-graph-unknown-client-node.png)
+Click on the node titled <b>postgres</b> to view additional information about the discovered traffic from the psql-client app:
+
+![Discovered intents for unknown PostgreSQL client](/img/visualization/postgresql-visibility/access-graph-unknown-node-discovered-intents.png)
+![Access table for unknown PostgreSQL client](/img/visualization/postgresql-visibility/access-graph-unknown-node-access-table.png)
 
 
 ### Create a ClientIntents resource allowing access from the PostgreSQL client pod to the Cloud SQL server
@@ -187,18 +187,14 @@ kubectl apply -f ${ABSOLUTE_URL}/code-examples/postgresql-visibility/psql-client
 ```
 
 You should now see the access graph updated with an edge connecting the psql-client app to your Cloud SQL server:
-:::danger
-Please update with new screenshots (that don't include your name, but look like official Otterize)
-:::
 
-![Access Graph with Known Node](/img/visualization/postgresql-visibility/access-graph-known-node.png)
+![Access Graph with known PostgreSQL client](/img/visualization/postgresql-visibility/access-graph-known-node.png)
 
-Click on the psql-client node to see Otterize's suggestion about applying least privilege ClientIntents for it, based on
+Click on the node titled <b>psql-client</b> to see Otterize's suggestion about applying least privilege ClientIntents for it, based on
 the discovered traffic seen from your audit logs:
-:::danger
-Please update with new screenshots (that don't include your name, but look like official Otterize)
-:::
-![Client Node for Known Service](/img/visualization/postgresql-visibility/access-graph-known-client-node.png)
+
+![Discovered intents for unknown PostgreSQL client](/img/visualization/postgresql-visibility/access-graph-known-node-discovered-intents.png)
+
 
 
 ## Teardown
