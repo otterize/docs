@@ -10,22 +10,45 @@ Otterize is a declarative and zero-trust approach to access management that empo
 
 ## How does Otterize work?
 
-Otterize integrates into your Kubernetes clusters using a Helm chart that deploys some core [open-source components](https://github.com/otterize/), including the network mapper, intents-operator, and credential-operator. These components work in tandem to identify and secure access. Learn more about these components below.
+Otterize is deployed to Kubernetes using a Helm chart that deploys the core open-source components: the [network mapper](https://github.com/otterize/network-mapper), [intents-operator](https://github.com/otterize/intents-operator), and [credentials-operator](https://github.com/otterize/credentials-operator). These components each have a stand-alone function (mapping access, provisioning policies and provisioning credentials, respectively), but together they can automate workload IAM.
 
 ### Network mapper
 
-The network mapper is a zero-config open-source tool that provides insights into your network traffic without modifying your code or adding additional layers. Once Otterize is installed, the network monitor will automatically inspect pod traffic, including tariff from pod-to-pod, pod-to-public internet egress, Istio Envoy sidecar, pod-to-Kafka topics, and more to follow. This data is then collected in an in-memory database for various uses, including exporting and viewing.
+The network mapper is a zero-config open-source tool that provides insights into your workload traffic without modifying your code or adding additional layers. Once Otterize is installed, the network monitor will automatically inspect pod traffic metadata to create a map of accesses, including:
+* Pod-to-pod traffic
+* Internet egress traffic
+* Pod-to-pod traffic including the URL and HTTP method, when an Istio sidecar is available
+* Kafka topics
+* PostgreSQL databases and tables
+* AWS resources
 
-For more information, visit the [network mapper repository](https://github.com/otterize/network-mapper#about)
+Out of the box, only pod-to-pod, Internet egress traffic and Istio traffic is collected. To enable the rest, see the tutorials.
 
-### Credential operator
+This information can then be viewed as a graph, exported textually, or used to automatically generate ClientIntents, a resource used with the intents operator.
 
-Once Otterize is installed into a cluster, it [resolves a service name](https://github.com/otterize/credentials-operator#service-name-resolution-and-automatic-pod-labeling) for each pod and registers it with either Otterize Cloud or a SPIRE server. Once registered, pods can use the credential operator to generate various secrets/credentials for mTLS or credential-based access to services like PostgreSQL, Kafka, or other connections.
+:::danger
+TODO
+Let's keep people in the docs if they're here, don't send them away to the repo. The repo should be standalone for some basic explanations, then refer to the docs.
+:::
+For more information, visit the [network mapper reference page](/reference/configuration/network-mapper).
 
+### Credentials operator
+
+The credentials operator handles the provisioning just-in-time credentials for workloads to authenticate. It can issue mTLS credentials or database username + passwords as Kubernetes Secrets, or create AWS IAM roles. To learn about each of these, check the respective tutorials.
+
+:::danger
+TODO
+Let's keep people in the docs if they're here, don't send them away to the repo. The repo should be standalone for some basic explanations, then refer to the docs. (see network mapper)
+:::
 For more information, visit the [credential operator repository](https://github.com/otterize/credentials-operator#about)
 
 ### Intents operator
 
-The Otterize intents operator is a tool to network and service access policy creation straightforward. The intents operator uses a declarative policy syntax called Intent-Based Access Control (IBAC) to connect services. IBAC policies allow you to specify a caller and the type of access they should be provided. The intents operator then generates and applies the appropriate service-specific policy (IAM, ACL, NetworkPolicy, etc) to enable that defined access.
+The intents operator handles the provisioning of just-in-time policies based on the declared ClientIntents of workloads within a cluster. It can manage network policies, Istio authorization policies, AWS IAM policies, PostgreSQL GRANTs, and Kafka ACLs. To learn about each of these, visit the respective tutorial.
+The intents operator does not implement its own policies, but instead configures your existing infrastructure's policies to allow the access required by each workload. This means that it does not ever see your data.
 
+:::danger
+TODO
+Let's keep people in the docs if they're here, don't send them away to the repo. The repo should be standalone for some basic explanations, then refer to the docs. (see network mapper)
+:::
 For more information, visit the [intents operator repository](https://github.com/otterize/intents-operator#about)

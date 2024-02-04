@@ -8,21 +8,21 @@ hide_title: true
 export const introduction = [
     {
         title: 'What is Otterize',
-        description: 'Learn how Otterize helps visualize and manages your authorization',
-        url: `/overview/intro`
+        description: 'Learn about how Otterize works and the function of the different Kubernetes operators',
+        url: `/overview`
     },
     {
         title: 'Intent-Based Access Control',
-        description: 'Dive into declarative access.',
+        description: 'Learn how to use IBAC, with YAML examples.',
         url: '/overview/intent-based-access-control'
     },
 ];
 
 export const features = [
     {
-        title: 'Network mapping & access control',
+        title: 'Network mapping & network policies',
         icon: '/img/icons/networking.png',
-        url: '/features/networking/'
+        url: '/features/network-mapping-network-policies/'
     },
     {
         title: 'AWS IAM',
@@ -87,115 +87,38 @@ export const tutorials_visualization = [
     }
 ];
 
-export const editions = [
-    {
-        title: 'Open Source',
-        description: 'Our open source edition focuses on a single Kubernetes cluster. ',
-        url: '/overview/otterize-oss'
-    },
-    {
-        title: 'Cloud',
-        description: 'Visualize all your clusters, automate policies, and more',
-        url: '/overview/otterize-cloud'
-    }
-];
-
-
 import DocsLinkCard from "@site/src/components/LinkCard";
 
 <img className="tw-w-48 tw-mt-12 tw-mb-8" src="/img/otterize-logo-light.svg"/>
 
-Otterize is a platform that allows you to visualize, and build secure access for Kubernetes workloads.
-Secure access is managed through declarative intent-based access control ([IBAC](/intent-based-access-control)) providing an easy understood and centralized approach to auth.
+Otterize is a platform for automating workload IAM (access control) for workloads on Kubernetes.
+Each workload declares what it needs in order to function, and a Kubernetes operator figures out the policies that need to be created. This concept is called [Intent-Based Access Control (IBAC)](/overview/intent-based-access-control).
 
-The platform is composed of **Otterize OSS**, which is tailored for a single Kubernetes cluster, and **Otterize Cloud**, which adds visibility and operationalization across Kubernetes clusters and non-Kubernetes infrastructures.
+For each kind of supported IAM mechanism (such as Kubernetes Network Policies, AWS IAM policies), Otterize can automatically learn the required ClientIntents.
 
+Otterize is composed of [three open-source and standalone components (the intents operator, credentials operator and network mapper)](/overview) you deploy on your cluster, as part of a single Helm chart, which handle enforcement, and Otterize Cloud, which supplements them with additional features.
+
+Learn about how Otterize works by reading below, or jump into one of the tutorials below to see how it works hand-on.
 ### Introduction
 
 <DocsLinkCard items={introduction}/>
 
-### Features
+### Features & tutorials
 
-Otterize makes it easy to create and visualize authorization for your Kubernetes clusters across a variety of services. Explore each below.
+Otterize makes it easy to automate and visualize workload IAM for your Kubernetes clusters across a variety of platforms. Explore each to learn how it works, and see its quickstart tutorials.
 
 <DocsLinkCard items={features} colSize={"md"}/>
 
 ### Tutorials
 
-#### How to manage access control
+#### Automating workload IAM
+:::danger
+TODO
+Add icons to the tutorials, same as the icons we have above.
+:::
 <DocsLinkCard items={tutorials_access}/>
 
 
-#### How to visualize access
+#### Visualizing network traffic and data access
 <DocsLinkCard items={tutorials_visualization}/>
 
-
-### Editions
-
-<DocsLinkCard items={editions}/>
-
-
-[//]: # ()
-[//]: # (## Let's go! 🚀)
-
-[//]: # (Dive right in with simple demos to manage access control:)
-
-[//]: # (* [Create and manage network policies]&#40;/quickstart/access-control/k8s-network-policies&#41;.)
-
-[//]: # (* [Network policies on AWS EKS with the VPC CNI]&#40;/quickstart/access-control/aws-eks-cni-mini&#41;.)
-
-[//]: # (* [Create and manage Istio authorization policies]&#40;/quickstart/access-control/k8s-istio-authorization-policies&#41;.)
-
-[//]: # (* [Configure secure access for Kafka using Otterize Cloud mTLS]&#40;/quickstart/access-control/k8s-kafka-mtls&#41;, or [using cert-manager mTLS]&#40;/quickstart/access-control/k8s-kafka-mtls-cert-manager&#41;.)
-
-[//]: # ()
-[//]: # (Or visualize communication in your cluster:)
-
-[//]: # (* [Network mapping a Kubernetes cluster]&#40;/quickstart/visualization/k8s-network-mapper&#41;.)
-
-[//]: # (* [Istio HTTP-level access mapping]&#40;/quickstart/visualization/k8s-istio-watcher&#41;.)
-
-[//]: # (* [Kafka topic-level access mapping]&#40;/quickstart/visualization/k8s-network-mapper&#41;.)
-
-[//]: # ()
-[//]: # (## Components)
-
-[//]: # ()
-[//]: # (### Otterize OSS)
-
-[//]: # (The Otterize OSS components are standalone open-source projects that implement intent-based access control &#40;IBAC&#41; for a single Kubernetes cluster. This same set of components is used to integrate with Otterize Cloud.)
-
-[//]: # (- The [Otterize intents operator]&#40;/reference/configuration/intents-operator&#41; translates ClientIntents resources to access controls: currently, network policies for pod-to-pod access, and ACLs for in-cluster Kafka client access. [See it in GitHub]&#40;https://github.com/otterize/intents-operator&#41;)
-
-[//]: # (- The [Otterize credentials operator]&#40;/reference/configuration/credentials-operator&#41; integrates with SPIFFE/SPIRE to handle pod identities and manage certificates. [See it in GitHub]&#40;https://github.com/otterize/credentials-operator&#41;)
-
-[//]: # (- The [Otterize network mapper]&#40;/reference/configuration/network-mapper&#41; sniffs pod-to-pod traffic and builds a network map, which is useful on its own and may also be exported as client intents files for bootstrapping IBAC. [See it in GitHub]&#40;https://github.com/otterize/network-mapper&#41;)
-
-[//]: # ()
-[//]: # ()
-[//]: # (### Otterize CLI)
-
-[//]: # ()
-[//]: # (The [Otterize CLI]&#40;/reference/cli&#41; is used to control the network mapper or output its data, convert non-Kubernetes client)
-
-[//]: # (intents files &#40;if needed&#41; to Kubernetes custom resource YAMLs, interface with the Otterize Cloud.)
-
-[//]: # ()
-[//]: # (## Open source and Cloud)
-
-[//]: # ()
-[//]: # (### Otterize OSS)
-
-[//]: # ()
-[//]: # (Otterize OSS is a standalone open-source implementation of intent-based access control &#40;IBAC&#41; for a single Kubernetes cluster. As well as being open source, Otterize OSS is completely free, licensed under the Apache 2.0 license and does not require Otterize Cloud.)
-
-[//]: # ()
-[//]: # (### Otterize Cloud)
-
-[//]: # ()
-[//]: # (Otterize Cloud adds unified visibility and operationalization,)
-
-[//]: # (and spans multiple Kubernetes clusters as well as &#40;coming soon&#41; non-Kubernetes infrastructures.)
-
-[//]: # ()
-[//]: # (Read more in our [product page]&#40;https://otterize.com/product&#41;.)
