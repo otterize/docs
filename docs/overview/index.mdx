@@ -26,29 +26,17 @@ Out of the box, only pod-to-pod, Internet egress traffic and Istio traffic is co
 
 This information can then be viewed as a graph, exported textually, or used to automatically generate ClientIntents, a resource used with the intents operator.
 
-:::danger
-TODO
-Let's keep people in the docs if they're here, don't send them away to the repo. The repo should be standalone for some basic explanations, then refer to the docs.
-:::
 For more information, visit the [network mapper reference page](/reference/configuration/network-mapper).
 
 ### Credentials operator
 
 The credentials operator handles the provisioning just-in-time credentials for workloads to authenticate. It can issue mTLS credentials or database username + passwords as Kubernetes Secrets, or create AWS IAM roles. To learn about each of these, check the respective tutorials.
 
-:::danger
-TODO
-Let's keep people in the docs if they're here, don't send them away to the repo. The repo should be standalone for some basic explanations, then refer to the docs. (see network mapper)
-:::
-For more information, visit the [credential operator repository](https://github.com/otterize/credentials-operator#about)
+For more information, visit the [credential operator reference page](/reference/configuration/credentials-operator)
 
 ### Intents operator
 
 The intents operator handles the provisioning of just-in-time policies based on the declared ClientIntents of workloads within a cluster. It can manage network policies, Istio authorization policies, AWS IAM policies, PostgreSQL GRANTs, and Kafka ACLs. To learn about each of these, visit the respective tutorial.
 The intents operator does not implement its own policies, but instead configures your existing infrastructure's policies to allow the access required by each workload. This means that it does not ever see your data.
 
-:::danger
-TODO
-Let's keep people in the docs if they're here, don't send them away to the repo. The repo should be standalone for some basic explanations, then refer to the docs. (see network mapper)
-:::
-For more information, visit the [intents operator repository](https://github.com/otterize/intents-operator#about)
+For more information, visit the [intents operator reference page](reference/configuration/intents-operator)
