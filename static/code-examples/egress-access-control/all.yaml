@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: otterize-tutorial-egress-access
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace:  otterize-tutorial-egress-access
+spec:
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          imagePullPolicy: Always
+          image: 'brianglynn/frontend'
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace:  otterize-tutorial-egress-access
+spec:
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          imagePullPolicy: Always
+          image: 'brianglynn/backend'
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace:  otterize-tutorial-egress-access
+spec:
+  selector:
+    app: backend
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
