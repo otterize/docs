@@ -28,18 +28,19 @@ export const network_access_tutorials = [
 ];
 
 ### About
-You can use Otterize to understand, visualize, and manage access for Kubernetes networks. Upon installation, Otterize inspects network traffic and builds an in-memory network map of connections. The network map can then be exported or viewed in various ways to understand the connections within your networks. With IBAC-based policies, Otterize becomes a control plane for your K8s networks. Mapped network traffic can autogenerate declarative intent-based access policies to create least privileged pod-to-pod access easily.
+
+Otterize empowers you to comprehend, visualize, and oversee access across Kubernetes networks. Once installed, it analyzes network traffic to construct an in-memory map detailing the connections. This map can be explored or exported through multiple formats, offering insights into your network's interconnectivity. Leveraging Intent-Based Access Control (IBAC) policies, Otterize acts as a sophisticated control plane for Kubernetes networks. It enables the automatic generation of declarative, intent-based access policies, facilitating the establishment of minimal privilege access between pods with ease.
 
 ### Mapping & visualizing
 
-After installation, Otterize collects network traffic data in memory, creating a graph of relationships between pod-to-pod and pod-to-public internet traffic. Once the graph is in place, the data can be exported or viewed in various ways. Otterize Cloud users can see and interact with the graph structures within the Otterize application. OSS users can use the CLI tool to export the data into JSON, list the relationship, or generate IBAC policies reflecting the existing traffic.
+Following installation, Otterize begins to gather network traffic data, assembling it into a comprehensive graph that illustrates the connections between pod-to-pod and pod-to-public internet traffic. This graph serves as a dynamic blueprint of network interactions, which can be exported or visualized through multiple methods. Users of Otterize Cloud have the advantage of directly interacting with these graph structures within the Otterize application interface, offering an intuitive and interactive experience. For open-source software (OSS) users, Otterize provides a command-line interface (CLI) tool. This tool enables users to export the network data into JSON format, list the relationships captured in the graph, or even generate Intent-Based Access Control (IBAC) policies that mirror the observed traffic patterns, facilitating a tailored and secure network environment.
 
 To learn more about Visualizing, check out [Visualizing a Kubernetes Network](/features/Networking/tutorials/k8s-network-mapper)
 
 
 ### Access control
 
-By default, Kubernetes pods allow all egress and ingress traffic. Kubernetes [NetworkPolicies](/reference/terminology#network-policies) provide `policyTypes` to restrict egress or ingress traffic, providing a more secure and compliant environment. Utilizing the in-memory tariff map, Otterize can automatically generate IBAC policies to reflect the current traffic flow within a cluster. Once the IBAC policies are submitted, Otterize will generate and apply the corresponding NetworkPolicies to your namespaces.
+By default, Kubernetes pods permit all outgoing and incoming traffic, posing potential security risks. Kubernetes [NetworkPolicies](/reference/terminology#network-policies) offer `policyTypes` that can be employed to limit either egress or ingress traffic, thereby enhancing security and compliance. Leveraging its in-memory traffic map, Otterize is capable of automatically crafting Intent-Based Access Control (IBAC) policies that accurately represent the existing traffic patterns within a cluster. Upon the submission of these IBAC policies, Otterize proceeds to create and implement the appropriate NetworkPolicies for your namespaces, ensuring a secure network configuration that aligns with your traffic's actual flow.
 
 Further details are available within the [Network Policies Deep Dive](/features/Networking/Reference/Network-Policies-Deep-Dive)
 
