@@ -8,22 +8,22 @@ export const network_access_tutorials = [
     {
         title: 'Visualizing a Kubernetes Network',
         description: 'Map network traffic in a cluster and view the connections',
-        url: '/features/Networking/tutorials/k8s-network-mapper'
+        url: '/features/network-mapping-network-policies/tutorials/k8s-network-mapper'
     },
 {
         title: 'Create and manage network policies',
         description: 'Create Kubernetes network policies using IBAC',
-        url: '/features/Networking/tutorials/k8s-network-policies'
+        url: '/features/network-mapping-network-policies/tutorials/k8s-network-policies'
     },
     {
         title: 'Protecting a service with network policies',
         description: 'An example on how to secure a single service',
-        url: '/features/Networking/tutorials/protect-1-service-network-policies'
+        url: '/features/network-mapping-network-policies/tutorials/protect-1-service-network-policies'
     },
     {
         title: 'AWS EKS network policies with the VPC CNI',
         description: 'Leverage AWS VPC CNI to apply network policies in EKS',
-        url: '/features/Networking/tutorials/aws-eks-cni-mini'
+        url: '/features/network-mapping-network-policies/tutorials/aws-eks-cni-mini'
     }
 ];
 
@@ -35,14 +35,14 @@ Otterize empowers you to comprehend, visualize, and oversee access across Kubern
 
 Following installation, Otterize begins to gather network traffic data, assembling it into a comprehensive graph that illustrates the connections between pod-to-pod and pod-to-public internet traffic. This graph serves as a dynamic blueprint of network interactions, which can be exported or visualized through multiple methods. Users of Otterize Cloud have the advantage of directly interacting with these graph structures within the Otterize application interface, offering an intuitive and interactive experience. For open-source software (OSS) users, Otterize provides a command-line interface (CLI) tool. This tool enables users to export the network data into JSON format, list the relationships captured in the graph, or even generate Intent-Based Access Control (IBAC) policies that mirror the observed traffic patterns, facilitating a tailored and secure network environment.
 
-To learn more about Visualizing, check out [Visualizing a Kubernetes Network](/features/Networking/tutorials/k8s-network-mapper)
+To learn more about Visualizing, check out [Visualizing a Kubernetes Network](/features/network-mapping-network-policies/tutorials/k8s-network-mapper)
 
 
 ### Access control
 
 By default, Kubernetes pods permit all outgoing and incoming traffic, posing potential security risks. Kubernetes [NetworkPolicies](/reference/terminology#network-policies) offer `policyTypes` that can be employed to limit either egress or ingress traffic, thereby enhancing security and compliance. Leveraging its in-memory traffic map, Otterize is capable of automatically crafting Intent-Based Access Control (IBAC) policies that accurately represent the existing traffic patterns within a cluster. Upon the submission of these IBAC policies, Otterize proceeds to create and implement the appropriate NetworkPolicies for your namespaces, ensuring a secure network configuration that aligns with your traffic's actual flow.
 
-Further details are available within the [Network Policies Deep Dive](/features/Networking/Reference/Network-Policies-Deep-Dive)
+Further details are available within the [Network Policies Deep Dive](/features/network-mapping-network-policies/Reference/Network-Policies-Deep-Dive)
 
 ```yaml
 

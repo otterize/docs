@@ -150,7 +150,7 @@ const config = {
         },
         {
           from: ['/reference/access-controls/network-policies'],
-          to: '/features/networking/reference/Network-Policies-Deep-Dive'
+          to: '/features/network-mapping-network-policies/reference/Network-Policies-Deep-Dive'
         },
         {
           from: ['/shadow-vs-active-enforcement'],
@@ -178,7 +178,7 @@ const config = {
         },
         {
           from: ['/guides/protect-1-service-network-policies'],
-          to: '/features/networking/tutorials/protect-1-service-network-policies'
+          to: '/features/network-mapping-network-policies/tutorials/protect-1-service-network-policies'
         },
         {
           from: ['/quick-tutorials/k8s-kafka-mtls', '/quickstart/access-control/k8s-kafka-mtls'],
@@ -186,7 +186,7 @@ const config = {
         },
         {
           from: ['/quick-tutorials/aws-eks-cni-mini','/quickstart/access-control/aws-eks-cni-mini'],
-          to: '/features/networking/tutorials/aws-eks-cni-mini',
+          to: '/features/network-mapping-network-policies/tutorials/aws-eks-cni-mini',
         },
         {
           from: ['/quick-tutorials/k8s-kafka-mtls-cert-manager', '/quickstart/access-control/k8s-kafka-mtls-cert-manager', '/quick-tutorials/k8s-mtls'],
@@ -206,11 +206,11 @@ const config = {
         },
         {
           from: ['/quick-visual-tutorials/visual-ibac-network-policies', '/quick-tutorials/k8s-network-policies', '/quickstart/access-control/k8s-network-policies'],
-          to: '/features/networking/tutorials/k8s-network-policies',
+          to: '/features/network-mapping-network-policies/tutorials/k8s-network-policies',
         },
         {
           from: ['/quick-visual-tutorials/visual-k8s-cluster-mapping', '/quickstart/visualization/k8s-network-mapper', '/quick-tutorials/k8s-network-mapper'],
-          to: '/features/networking/tutorials/k8s-network-mapper',
+          to: '/features/network-mapping-network-policies/tutorials/k8s-network-mapper',
         },
         // Redirect from multiple old paths to the new path
         // {
