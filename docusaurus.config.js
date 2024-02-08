@@ -312,7 +312,7 @@ const config = {
             position: "right",
           },
           {
-            href: "https://calendly.com/otterize-team/kubecon-na",
+            href: "https://otterize.com/book-demo",
             html: "<div class='tw-cursor-pointer tw-font-sans tw-flex tw-items-center tw-rounded-xl tw-h-11 tw-border tw-border-solid tw-border-gray-300 tw-bg-white tw-px-3 tw-text-gray-900 tw-shadow tw-font-medium tw-text-sm lg:tw-text-base tw-w-full tw-justify-center'><span id='request-demo-full-text'>Request a demo</span><span id='request-demo-partial-text'>Demo</span><img class='tw-ml-2' src='/img/menu/right-arrow.svg' /></div>",
             position: "right",
           },
