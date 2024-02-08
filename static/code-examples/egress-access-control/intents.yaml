@@ -21,5 +21,5 @@ spec:
     - type: internet
       internet:
         ips:
-          - 173.236.198.186 # IP address of our external aPI
+          - 185.53.57.80 # IP address of our external aPI
     - name: frontend
