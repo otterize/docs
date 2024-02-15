@@ -1,0 +1,68 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: psql-client
+spec:
+  schedule: "* * * * *"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      template:
+        metadata:
+          # Un-comment to generate postgres credentials using the Otterize credentials operator
+#          annotations:
+#            credentials-operator.otterize.com/user-password-secret-name: psql-credentials
+          labels:
+            app: psql-client
+        spec:
+          containers:
+            - name: psql-client
+              image: andreswebs/postgresql-client
+              imagePullPolicy: IfNotPresent
+              command:
+                - psql
+                - -c
+                - "select count(*) from $(PGTABLE);"
+              env:
+                - name: PGHOST
+                  valueFrom:
+                    configMapKeyRef:
+                      name: psql-host
+                      key: pghost
+                - name: PGPORT
+                  valueFrom:
+                    configMapKeyRef:
+                      name: psql-host
+                      key: pgport
+                - name: PGDATABASE
+                  valueFrom:
+                    configMapKeyRef:
+                      name: psql-host
+                      key: pgdatabase
+                - name: PGTABLE
+                  valueFrom:
+                    configMapKeyRef:
+                      name: psql-host
+                      key: pgtable
+                - name: PGUSER
+                  valueFrom:
+                    secretKeyRef:
+                      name: psql-credentials
+                      key: username
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: psql-credentials
+                      key: password
+          volumes:
+            - name: psql-credentials
+              secret:
+                secretName: psql-credentials
+                items:
+                  - key: username
+                    path: username
+                  - key: password
+                    path: password
+          restartPolicy: Never

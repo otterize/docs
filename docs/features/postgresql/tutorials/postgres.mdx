@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 title: Just-in-time PostgreSQL access
-image: /img/quick-tutorials/aws-iam-eks/social.png
+image: /img/quick-tutorials/postgres/social.png
 ---
 
 import CodeBlock from "@theme/CodeBlock";
@@ -62,9 +62,18 @@ We will be using it to create a proxy to connect our locally running database to
 
 # Tutorial
 
-### Deploy the cluster
+### Deploy tutorial services and request database credentials
+This will set up the namespace we will use for our tutorial and deploy the client, server, and database.
 
-This will set up the namespace we will use for our tutorial and deploy the cluster with our client, server, and database.
+Our server's Deployment spec will specify an annotation on the Pod, which requests that the credentials operator will provision a username and password for the server.
+```yaml
+  template:
+    metadata:
+      annotations:
+        credentials-operator.otterize.com/user-password-secret-name: server-creds
+```
+This specifies that the secret `server-creds` will have keys with the username and password to connect to the database.
+The secret will only be created once the database is integrated with Otterize Cloud.
 
 ``` shell
 kubectl create namespace otterize-tutorial-postgres
@@ -104,14 +113,15 @@ To add the database, we head over to the [Integrations page](https://app.otteriz
 8. Hit the Add button to complete the integration
 
 ### Integrate the cluster to Otterize Cloud
-Create a Kubernetes cluster on the [Clusters page](https://app.otterize.com/clusters), and follow the instructions.
+Create a Kubernetes integration on the [Integrations page](https://app.otterize.com/integrations), and follow the instructions.
 
-After providing a cluster name and environment. For this tutorial, choose:
+In the second step, after providing an integration name and environment, choose:
 
 1. mTLS and Kafka Support: None
 2. Enforcement mode: Enabled.
 3. Copy and run the Helm upgrade command.
 4. You should see the Connection status change.
+
 
 ### View logs for the server
 After the client, server, and database are up and running, we can see that the server does not have the appropriate access to the database by inspecting the logs with the following command.

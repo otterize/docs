@@ -1,7 +1,8 @@
-If no Kubernetes clusters are connected to your account, click the "connect your cluster" button to:
-1. Create a Cloud cluster object, specifying its name and the name of an environment to which all namespaces in that cluster will belong, by default.
-2. Connect it with your actual Kubernetes cluster, by clicking on the "Connection guide &rarr;" link and running the Helm commands shown there.
-    1. Follow the instructions to install Otterize <b>with enforcement on</b> (use the toggle to make `Enforcement mode: active`)
+If no Kubernetes clusters are connected to your account, click the "Create integration" button and then click the "Add integration" button to:
+
+1. Create a Kubernetes integration, specifying its name and the name of an environment to which all namespaces in that cluster will belong, by default.
+2. Connect it with your actual Kubernetes cluster, by running the Helm commands shown on the screen after creating the integration.
+   1. Follow the instructions to install Otterize <b>with enforcement on</b> (use the toggle to make `Enforcement mode: active`)
 
 <details>
 <summary>More details, if you're curious</summary>
@@ -12,4 +13,5 @@ The credentials will already be inlined into the Helm command shown in the Cloud
 If you don't give it the Cloud credentials, Otterize OSS will run fully standalone in your cluster &mdash; you just won't have the visualization in Otterize Cloud.
 
 The Helm command shown in the Cloud UI also includes flags to turn off enforcement: Otterize OSS will be running in "shadow mode," meaning that it will show you what **would** happen if it were to create/update your access controls (Kubernetes network policies, Kafka ACLs, Istio authorization policies, etc.). While that's useful for gradually rolling out IBAC, for this tutorial we go straight to active enforcement.
+
 </details>
