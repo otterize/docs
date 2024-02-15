@@ -25,20 +25,16 @@ In Otterize Cloud, services are _inferred_ from the intents reported to the Clou
 A service name is unique within a namespace in a cluster, but not in general unique across the cluster or across clusters.
 
 {@include: _environments_and_namespaces.mdx}
-## Clusters
-
-When a Kubernetes cluster is connected to Otterize Cloud, it is represented in the Cloud by a **cluster** object. You'll name it when you add it in the UI or through the API/CLI, or when you create the integration directly (in the UI or API/CLI).
-
-The Otterize operators -- intents operator, network mapper, and/or credentials operator -- running in your cluster will inform the Cloud about the intents, services, and credentials within this cluster, and will also convey their configuration (e.g. shadow or enforcement mode) within this cluster. Thus the cluster object in Otterize Cloud contains a lot of useful information about your Kubernetes cluster -- information used to deliver insights when you view your cluster in through the lens of the access graph.
-
-Note that, while a cluster and its namespaces and services could be in a single environment, and an environment could contain multiple clusters, many other combinations are possible. For example, a cluster could contain namespaces in multiple environments. Or, environments may contain some namespaces in one cluster and other namespaces in another cluster. Use whatever mappings make sense for your situation.
-
-Cluster names must be unique within an organization.
-
 ## Integrations
 
 Otterize Cloud currently supports two types of integrations: **Kubernetes integrations** and **generic integrations**. In the future, many other types of integrations will be added, allowing Otterize Cloud to work seamlessly with all your infrastructures and systems.
 
-A Kubernetes integration is used to connect a Kubernetes cluster with Otterize Cloud via any or all of the Otterize operators: the intents operator, the network mapper, and the credentials operator. When a Kubernetes-type integration is created, it is always linked to an Otterize Cloud cluster object. It contains the credentials needed by the operators running in the Kubernetes cluster to communicate with the Cloud on behalf of that cluster, i.e., it ties together the physical Kubernetes cluster with its representation in Otterize Cloud. The integration also determines the environment to which namespaces in that clusters will be associated by default. The name of a Kubernetes integration is derived from the name of the cluster; since cluster names are unique per organization, so are Kubernetes-type integration names.
+A Kubernetes integration is used to connect a Kubernetes cluster with Otterize Cloud via any or all of the Otterize operators: the intents operator, the network mapper, and the credentials operator. It contains the credentials needed by the operators running in the Kubernetes cluster to communicate with the Cloud on behalf of that cluster, i.e., it ties together the physical Kubernetes cluster with its representation in Otterize Cloud. The integration also determines the environment to which namespaces in that clusters will be associated by default. The names of Kubernetes-type integrations must be unique within an organization.
 
 A generic integration is used to connect generically an external system to Otterize Cloud. It provides that system credentials to access the Otterize API/CLI, in a way that doesn't involve any specific Otterize user. That makes it ideal for building automations on top of the Otterize API. For example, new clusters provisioned for the development team could be automatically connected to Otterize Cloud, or a CI/CD system could automatically look in the access graph for services that would be blocked or intents that were not declared and applied and fail the build. The name of the integration should reflect the way it will be used. The names of generic-type integrations must be unique within an organization.
+
+When a Kubernetes cluster is connected to Otterize Cloud, it is represented in the Cloud by an **Kubernetes integration** object. You'll name it when you add a Kubernetes integration in the UI or through the API/CLI.
+
+The Otterize operators -- intents operator, network mapper, and/or credentials operator -- running in your cluster will inform the Cloud about the intents, services, and credentials within this cluster, and will also convey their configuration (e.g. shadow or enforcement mode) within this cluster.
+
+Note that, while a cluster and its namespaces and services could be in a single environment, and an environment could contain multiple clusters, many other combinations are possible. For example, a cluster could contain namespaces in multiple environments. Or, environments may contain some namespaces in one cluster and other namespaces in another cluster. Use whatever mappings make sense for your situation.

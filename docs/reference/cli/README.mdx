@@ -17,7 +17,7 @@ The following are the commands offered by the Otterize CLI.
 
 ## Command structure
 
-Most CLI commands are of the form `otterize NOUN VERB` where the `NOUN` is the type of object (e.g. `intents`, `clusters`) and the `VERB` is the operation being performed.
+Most CLI commands are of the form `otterize NOUN VERB` where the `NOUN` is the type of object (e.g. `intents`, `integrations`) and the `VERB` is the operation being performed.
 Putting the `NOUN` first makes the auto-completion and documentation built into the CLI easier to consume: you first choose the type of object you are interested in,
 then the built-in auto-completion or documentation shows you the options on that type of object.
 
@@ -254,109 +254,6 @@ Some Cloud CLI commands may fail.
 Upgrade your CLI to the latest build to resolve this issue.
 ```
 
-## Clusters
-
-### `otterize clusters list [-n <cluster-name>]`
-
-List all clusters, optionally filtered by name.
-
-Clusters in Otterize Cloud represent Kubernetes clusters that are integrated with Otterize Cloud. The list also includes clusters that were not integrated or are no longer integrated, as long as they were not deleted.
-
-#### Options
-
-| Name | Default | Description |
-| --- | --- | --- |
-| `-n` or `--name` |  | Filter the list by cluster name. Since cluster names are unique, this will always return at most one cluster. |
-
-#### Returns
-
-Returns a table of information about the clusters.
-
-```shell
-id                 name        status       namespace count service count configuration.globalDefaultDeny
-────────────────── ─────────── ──────────── ─────────────── ───────────── ───────────────────────────────
-cluster_64fetu3i2t my-cluster1 CONNECTED    4               50            false
-cluster_7g4tre319g my-cluster2 DISCONNECTED 12              127           true
-
-```
-
-### `otterize clusters get <cluster-id>`
-
-Returns information about a single cluster, specified by its id.
-
-#### Returns
-
-Returns a table of information about the cluster.
-
-```shell
-id                 name        status       namespace count service count configuration.globalDefaultDeny
-────────────────── ─────────── ──────────── ─────────────── ───────────── ───────────────────────────────
-cluster_64fetu3i2t my-cluster1 CONNECTED    4               50            false
-```
-
-### `otterize clusters create -n <cluster-name>`
-
-Creates a cluster in Otterize Cloud with the given name.
-
-To connect it to a Kubernetes cluster, i.e. to the Otterize OSS operators in that cluster:
-- You'll need an environment to which all namespaces in the cluster are assigned by default. If needed, create an environment with `otterize environments create -n <env-name>`.
-- Create an integration with `otterize integrations create kubernetes --cluster-id <cluster-id> --env-id <env-id>`.
-- Follow [the guide to installing or upgrading Otterize OSS](/installation) and use the integration's credentials.
-
-#### Options
-
-| Name | Default | Description |
-| --- | --- | --- |
-| `-n` or `--name` |  | The name to give the cluster, in Otterize Cloud. |
-
-#### Returns
-
-Returns a table of information about the newly-created cluster.
-
-```shell
-id                 name     default environment id integration id namespace count service count configuration                                                        intents operator                  credentials operator              network mapper
-────────────────── ──────── ────────────────────── ────────────── ─────────────── ───────────── ──────────────────────────────────────────────────────────────────── ───────────────────────────────── ───────────────────────────────── ─────────────────────────────────
-cluster_kbw9ex7dfa cluster1                                       8               0             {GlobalDefaultDeny:false UseNetworkPoliciesInAccessGraphStates:true} NOT_INTEGRATED (last seen: never) NOT_INTEGRATED (last seen: never) NOT_INTEGRATED (last seen: never)
-
-```
-
-### `otterize clusters update <cluster-id> --global-default-deny=[true|false]`
-
-Updates the user-settable properties of the cluster in Otterize Cloud.
-
-#### Options
-
-| Name | Default | Description |
-| --- | --- | --- |
-| `--global-default-deny` | false | Whether a global default deny network policy is in effect. |
-| `use-network-policies-in-access-graph-states` | true | If false, the access graph will not take network policies into account when calculating service and intents states. |
-
-#### Returns
-
-Returns a confirmation and a table of information about the updated cluster.
-
-```shell
-Cluster updated
-id                 name     default environment id integration id namespace count service count configuration                                                         intents operator                  credentials operator              network mapper
-────────────────── ──────── ────────────────────── ────────────── ─────────────── ───────────── ───────────────────────────────────────────────────────────────────── ───────────────────────────────── ───────────────────────────────── ─────────────────────────────────
-cluster_kbw9ex7dfa cluster1                                       8               0             {GlobalDefaultDeny:false UseNetworkPoliciesInAccessGraphStates:false} NOT_INTEGRATED (last seen: never) NOT_INTEGRATED (last seen: never) NOT_INTEGRATED (last seen: never)
-
-```
-
-### `otterize clusters delete <cluster-id>`
-
-Deletes the given cluster, if it doesn't have an integration.
-
-To delete a cluster with an integration, first delete its integration.
-
-#### Returns
-
-Returns a confirmation of the deletion.
-
-```shell
-Deleted cluster cluster_kbw9ex7dfa
-```
-
 ## Environments
 
 ### `otterize environments list [-l label1,label2] [-n name]`
@@ -577,7 +474,7 @@ id             type    name   cluster id default environment id intents operator
 int_nx2twtcqwt GENERIC my-bot                                                                                        cli_csn8mb55b3 7adba16e331bdf9fe9d2c1ec7d2d78a1c7e56df34sc2c5ff98e4dec4aa232c3c
 ```
 
-### `otterize integrations create kubernetes --cluster-id=<cluster-id> --env-id=<env-id>`
+### `otterize integrations create kubernetes --name=<integration-name> --env-id=<env-id>`
 
 Creates a new Kubernetes-type integration for the specified cluster and with the specified default environment.
 
@@ -589,7 +486,7 @@ The default environment must also have already been created. All namespaces in t
 
 | Name | Default | Description |
 | --- | --- | --- |
-| `--cluster-id` |  | The id of the cluster to use with this integration. |
+| `-n` or `--name` |  | Specify the name of the new integration. |
 | `--env-id` |  | The id of the environment to use as the default environment for this integration. |
 
 #### Returns
@@ -622,7 +519,7 @@ id             type    name    cluster id default environment id intents operato
 int_nx2twtcqwt GENERIC my-bot2                                                                                        cli_csn8mb55b3 7adba16e331bdf9fe9d2c1ec7d2d78a1c7e56df34sc2c5ff98e4dec4aa232c3c
 ```
 
-### `otterize integrations update kubernetes <integration-id> [--env-id <env-id>]`
+### `otterize integrations update kubernetes <integration-id> [--env-id <env-id>] [--name=<integration-name>]`
 
 Updates the specified Kubernetes-type integration with a new environment to use as the default environment for new namespaces.
 
@@ -630,6 +527,7 @@ Updates the specified Kubernetes-type integration with a new environment to use 
 
 | Name | Default | Description |
 | --- | --- | --- |
+| `-n` or `--name` |  | The new name to use for the integration. |
 | `--env-id` |  | The id of the environment to use as the default for this integration. |
 
 #### Returns
