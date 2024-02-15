@@ -1,0 +1,104 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >-
+  Stack creates two Lambda functions for dad jokes and feedback, plus the user and related policies
+
+Resources:
+  DadJokeLambdaExecutionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: 'sts:AssumeRole'
+      Policies:
+        - PolicyName: 'DadJokeLambdaExecutionPolicy'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                Resource: 'arn:aws:logs:*:*:*'
+              - Effect: Allow
+                Action:
+                  - 'execute-api:Invoke'
+                Resource: '*'
+
+  DadJokeLambda:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Handler: 'index.handler'
+      Role: !GetAtt DadJokeLambdaExecutionRole.Arn
+      Runtime: 'nodejs14.x'
+      Code:
+        ZipFile: |
+          const https = require('https');
+          exports.handler = async (event) => {
+            return new Promise((resolve, reject) => {
+              const options = {
+                hostname: 'icanhazdadjoke.com',
+                method: 'GET',
+                headers: { 'Accept': 'application/json' }
+              };
+              const req = https.request(options, (res) => {
+                let data = '';
+                res.on('data', (chunk) => {
+                  data += chunk;
+                });
+                res.on('end', () => {
+                  resolve({
+                    statusCode: 200,
+                    body: data,
+                    headers: { 'Content-Type': 'application/json' },
+                  });
+                });
+              });
+              req.on('error', (e) => {
+                reject({
+                  statusCode: 500,
+                  body: 'Error fetching dad joke',
+                });
+              });
+              req.end();
+            });
+          };
+      Timeout: 10
+
+  FeedbackLambda:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Handler: 'index.handler'
+      Role: !GetAtt DadJokeLambdaExecutionRole.Arn
+      Runtime: 'nodejs14.x'
+      Code:
+        ZipFile: |
+          exports.handler = async (event) => {
+              const payload = JSON.parse(event.body);
+
+              const joke = payload.joke;
+              const isFunny = payload.funny;
+
+              console.log("Joke:", joke);
+              console.log("Is it funny?", isFunny);
+
+              return {
+                  statusCode: 200,
+                  body: JSON.stringify({ message: "Feedback received, Adding To Training Set" }),
+              };
+          };
+      Timeout: 10
+
+Outputs:
+  DadJokeLambdaFunction:
+    Description: "Dad Joke Lambda Function ARN"
+    Value: !GetAtt DadJokeLambda.Arn
+
+  FeedbackLambdaFunction:
+    Description: "Feedback Lambda Function ARN"
+    Value: !GetAtt FeedbackLambda.Arn
+

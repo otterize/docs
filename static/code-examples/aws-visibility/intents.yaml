@@ -1,0 +1,12 @@
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: server
+spec:
+  service:
+    name: joketrainer
+  calls:
+    - name: arn:aws:lambda:us-west-2:*:function:OtterizeTutorialJokeTrainingStack-*
+      type: aws
+      awsActions:
+        - "lambda:InvokeFunction"
