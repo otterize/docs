@@ -205,6 +205,14 @@ const config = {
           to: '/features/kafka/tutorials/k8s-kafka-mapping',
         },
         {
+          from: ['/quickstart/visualization/postgresql'],
+          to: '/features/postgresql/tutorials/postgres-mapping'
+        },
+        {
+          from: ['/quickstart/access-control/postgresql'],
+          to: '/features/postgresql/tutorials/postgres'
+        },
+        {
           from: ['/quick-visual-tutorials/visual-ibac-network-policies', '/quick-tutorials/k8s-network-policies', '/quickstart/access-control/k8s-network-policies'],
           to: '/features/network-mapping-network-policies/tutorials/k8s-network-policies',
         },
