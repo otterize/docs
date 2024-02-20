@@ -1,0 +1,32 @@
+---
+sidebar_position: 7
+title: Otterize OSS
+---
+
+Otterize OSS implements intent-based access control (IBAC) in a single Kubernetes cluster.
+It is a fully standalone, free and open-source software implementation of IBAC built for cloud-native
+teams that use Kubernetes at the core of their infrastructure.
+
+## Components
+
+Otterize OSS consists of several components, which work together to provide IBAC capabilities.
+
+- The [Otterize intents operator](/reference/configuration/intents-operator) that translates ClientIntents resources to
+access controls using plugins, which currently include:
+  - A network policies manager to control pod-to-pod access.
+  - An ACL configurator for in-Kubernetes Kafka clusters to control client access.
+- The [Otterize credentials operator](/reference/configuration/credentials-operator) that integrates with SPIFFE/SPIRE or the Otterize Cloud-managed credentials service
+to handle pod identities and manage certificates.
+- The [Otterize network mapper](/reference/configuration/network-mapper) that sniffs pod-to-pod traffic and builds a network map,
+which is useful on its own and may also be exported as client intents files for bootstrapping IBAC.
+
+This list will grow over time, as more capabilities are added, in particular support for more access controls, credentials managers, and integrations with useful tooling.
+
+The Otterize OSS code base and issues are managed [on GitHub](https://github.com/otterize).
+
+To get started with Otterize OSS, see the tutorials for [network policies](/quickstart/access-control/k8s-network-policies), [Kafka](/quickstart/access-control/k8s-kafka-mtls), [network mapping](/quickstart/visualization/k8s-network-mapper), and [Istio service mesh](/quickstart/access-control/k8s-istio-authorization-policies).
+
+## Usage metrics
+
+Components in Otterize OSS collect usage information &mdash; counts of events like `INTENTS_APPLIED`, `NETWORK_POLICY_CREATED`, `KAFKA_ACL_DELETED`, etc. &mdash; and can report those back to the Otterize team. This is entirely optional and does not affect the functionality of Otterize OSS, but it does help the team at Otterize understand what the community finds useful and hence how to improve it. (Of course, direct feedback through the [Otterize Community Slack](https://joinslack.otterize.com/) is very much appreciated too.) For more information, including what is sent and how to turn it off or on, see [the usage telemetry documentation](/otterize-oss/usage-telemetry).
+

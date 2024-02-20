@@ -1,0 +1,42 @@
+---
+sidebar_position: 2
+title: Intent-Based Access Control (IBAC)
+---
+
+## Why intent based access?
+
+We developers are working hard to make the world’s services functional, reliable, performant, and of course secure, all while maximizing velocity. In practice, achieving successful zero-trust security requires enabling stringent access policies on the service we are developing and within the other technologies and services we utilize.
+
+Services may need network access, database access, cloud resource access, and more to achieve the desired functionality. In a zero-trust environment, access must be granted by the data teams, cloud teams, and other teams managing dependent services. This results in a large degree of friction and a lack of a cohesive picture of the access rights needed for each service to function properly.
+
+We believe that each service should define the access it needs to function. This intent-based access control (IBAC) should be easily understood, easily reviewed, and capable of being statically analyzed.
+
+## Enter client intents
+
+A client intents file is simply a list of calls to servers a client intends to make. Coupled with a mechanism for resolving service names, the list of client intents can be translated to different authorization mechanisms, such as network policies, cloud IAM, databases, etc.
+
+In other words, developers declare what their service intends to access, and that can then be converted to a network policy and the associated set of pod labels.
+
+Here’s an example of a client intents file (as a Kubernetes custom resource YAML) for a service named **client** that has network access to another service named **auth-server** and has access to **production-db’s** **metrics** database:
+```yaml
+
+apiVersion: k8s.otterize.com/v1alpha2
+kind: ClientIntents
+metadata:
+  name: client-intents
+
+spec:
+  service:
+    name: client
+  calls:
+    - name: auth-server
+    - name: production-db
+      type: database
+      databaseResources:
+        - databaseName: metrics
+```
+
+## How do intents work?
+When intents are created for a client, the intents operator automatically creates, updates, and deletes the corresponding policies and automatically labels client and server pods to reflect precisely the client-to-server calls declared in client intents files. For instance, for a NetworkPolicy, a single policy is created per server, and pod labels are dynamically updated for clients when their intents are updated
+
+Service names are resolved by recursively getting the owner of a pod until the original owner is found, usually a Deployment, StatefulSet, or other such resource. The name of that resource is used unless the pod has a service-name annotation, in which case the value of that annotation is used instead.

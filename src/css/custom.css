@@ -10,18 +10,31 @@
 
 /* You can override the default Infima variables here. */
 :root {
-  --ifm-color-primary: #306e96;
+  --ifm-color-primary: #4d3df7;
   --ifm-color-primary-dark: #2b6387;
   --ifm-color-primary-darker: #295e80;
   --ifm-color-primary-darkest: #224d69;
   --ifm-color-primary-light: #3579a5;
   --ifm-color-primary-lighter: #377fad;
   --ifm-color-primary-lightest: #408fc2;
-  --ifm-code-font-size: 95%;
+  --ifm-code-font-size: 85%;
+  --ifm-font-size-base: 0.85rem;
+  --ifm-font-weight-base: 400;
+  --ifm-h1-font-size: 2.5rem;
   --ifm-code-border-radius: 5px;
   --docusaurus-highlighted-code-line-bg: rgba(255, 255, 255, 0.2);
+  --docusaurus-details-decoration-color: #4d3df7;
+  --ifm-alert-border-color: #4d3df7;
+  --ifm-alert-background-color-highlight: #4d3df7;
+  --ifm-alert-background-color: #e9e9ec;
+  --ifm-color-info-contrast-background: #f5f5f8;
+  --ifm-alert-padding-vertical: 8px;
+  --ifm-color-info-dark: #4d3df7;
+  --ifm-alert-border-radius: 2px;
 
   --ifm-navbar-height: 5rem;
+  --ifm-menu-color: rgb(28, 30, 33);
+
 
   --ifm-footer-background-color: white;
   --ifm-footer-color: white;
@@ -30,12 +43,19 @@
   --ifm-footer-padding-horizontal: 20px;
 }
 
+article {
+  max-width: 800px;
+  margin-left: 2rem;
+  margin-right: auto;
+}
+
 .navbar__title {
-  color: #2186e6;
+  color: #4d3df7;
 }
 
 .navbar__item {
   margin-left: 10px;
+  font-size: 12px;
   white-space: nowrap;
 }
 

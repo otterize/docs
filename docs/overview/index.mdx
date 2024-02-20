@@ -1,0 +1,42 @@
+---
+sidebar_position: 1
+title: Intro
+hide_title: true
+---
+
+# Overview
+
+Otterize is a declarative and zero-trust approach to access management that empowers you to streamline workload IAM while ensuring maximum security.
+
+## How does Otterize work?
+
+Otterize is deployed to Kubernetes using a Helm chart that deploys the core open-source components: the [network mapper](https://github.com/otterize/network-mapper), [intents-operator](https://github.com/otterize/intents-operator), and [credentials-operator](https://github.com/otterize/credentials-operator). These components each have a stand-alone function (mapping access, provisioning policies and provisioning credentials, respectively), but together they can automate workload IAM.
+
+### Network mapper
+
+The network mapper is a zero-config open-source tool that provides insights into your workload traffic without modifying your code or adding additional layers. Once Otterize is installed, the network monitor will automatically inspect pod traffic metadata to create a map of accesses, including:
+* Pod-to-pod traffic
+* Internet egress traffic
+* Pod-to-pod traffic including the URL and HTTP method, when an Istio sidecar is available
+* Kafka topics
+* PostgreSQL databases and tables
+* AWS resources
+
+Out of the box, only pod-to-pod, Internet egress traffic and Istio traffic is collected. To enable the rest, see the tutorials.
+
+This information can then be viewed as a graph, exported textually, or used to automatically generate ClientIntents, a resource used with the intents operator.
+
+For more information, visit the [network mapper reference page](/reference/configuration/network-mapper).
+
+### Credentials operator
+
+The credentials operator handles the provisioning just-in-time credentials for workloads to authenticate. It can issue mTLS credentials or database username + passwords as Kubernetes Secrets, or create AWS IAM roles. To learn about each of these, check the respective tutorials.
+
+For more information, visit the [credential operator reference page](/reference/configuration/credentials-operator)
+
+### Intents operator
+
+The intents operator handles the provisioning of just-in-time policies based on the declared ClientIntents of workloads within a cluster. It can manage network policies, Istio authorization policies, AWS IAM policies, PostgreSQL GRANTs, and Kafka ACLs. To learn about each of these, visit the respective tutorial.
+The intents operator does not implement its own policies, but instead configures your existing infrastructure's policies to allow the access required by each workload. This means that it does not ever see your data.
+
+For more information, visit the [intents operator reference page](reference/configuration/intents-operator)

@@ -1,0 +1,167 @@
+---
+sidebar_position: 3
+title: Reference
+hide_table_of_contents: true
+---
+
+### ClientIntents example (YAML)
+
+```yaml
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: client-server-access
+  namespace:  otterize-example
+spec:
+  service:
+    # The name of the service initiating the connection
+    name: client
+  calls:
+    # The name of the service receiving the connection. Multiple names can be provided
+    - name: server
+    # multiple services can be added
+    - name: orderservice
+      # Optional granular rules can be added like the HTTPResources options below.
+      type: http
+      HTTPResources:
+        - path: /orders/*
+          methods: [ get, post ]
+```
+
+
+### Helm Chart options
+
+| Key                                     | Description                                                                                                                           | Default |
+|-----------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|---------|
+| `global.deployment.networkMapper`       | Whether or not to deploy network-mapper.                                                                                              | `true`  |
+| `operator.autoCreateNetworkPoliciesForExternalTraffic`                          | (deprecated, use `allowExternalTraffic` instead) Automatically allow external traffic, if a new ClientIntents resource would result in blocking external (internet) traffic and there is an Ingress/Service resource indicating external traffic is expected.                                                                                                                                                                                                                                                                                | `true`                |
+| `operator.autoCreateNetworkPoliciesForExternalTrafficDisableIntentsRequirement` | (deprecated, use `allowExternalTraffic` instead) **experimental** - If `autoCreateNetworkPoliciesForExternalTraffic` is enabled, do not require ClientIntents resources - simply create network policies based off of the existence of an Ingress/Service resource.                                                                                                                                                                                                                                                                          | `false`               |
+
+View the [Helm chart reference](/reference/configuration/otterize-chart) for all other options
+
+### Network mapper parameters
+All configurable parameters of the network mapper can be configured under the alias `networkMapper`.
+Further information about network mapper parameters can be found [in the network mapper's chart](https://github.com/otterize/helm-charts/tree/main/network-mapper).
+
+
+### CLI: Network mapper commands
+
+All `otterize network-mapper` commands share a set of optional flags which will not be repeated in the documentation
+for each command.
+
+`otterize network-mapper reset`
+
+Resets the network mapper by deleting all map information built up so far in memory.
+
+---
+
+`otterize network-mapper list [-n <namespace1>,<namespace2>,...]`
+
+Return the network map built by the network mapper since it started, or since it was reset,
+as a list of clients and the servers they call.
+
+#### Options
+
+| Name                   | Default | Description                                                 |
+|------------------------|---------|-------------------------------------------------------------|
+| `-n` or `--namespaces` |         | Include only clients in these namespaces (comma-separated). |
+
+#### Returns
+
+Here's a partial output from `otterize network-mapper list -n otterize-ecom-demo`:
+
+```shell
+cartservice in namespace otterize-ecom-demo calls:
+  - redis-cart
+checkoutservice in namespace otterize-ecom-demo calls:
+  - cartservice
+  - currencyservice
+  - emailservice
+  - paymentservice
+  - productcatalogservice
+  - shippingservice
+frontend in namespace otterize-ecom-demo calls:
+  - adservice
+  - cartservice
+  - checkoutservice
+  - currencyservice
+  - productcatalogservice
+  - recommendationservice
+  - shippingservice
+loadgenerator in namespace otterize-ecom-demo calls:
+  - frontend
+recommendationservice in namespace otterize-ecom-demo calls:
+  - productcatalogservice
+```
+---
+`otterize network-mapper visualize [--format=png | --format=jpg] [-n <namespace1>,<namespace2>,...] -o <path>`
+Return the network map built by the network mapper since it started, or since it was reset,
+as an image.
+
+Uses GraphViz (specifically go-graphviz) to generate the image.
+
+#### Options
+
+| Name                    | Default | Description                                                                             |
+|-------------------------|---------|-----------------------------------------------------------------------------------------|
+| `--format`              | `png`   | Image output format: "png" or "jpg".                                                    |
+| `-n` or `--namespaces`  |         | Include only clients in these namespaces (comma-separated).                             |
+| `-o` or `--output-path` |         | Filename for the image.                                                                 |
+| `--exclude-labels`      |         | A list of labels that would exclude services from list/export. example: "include=false" |
+| `--exclude-services`    |         | A list of service to exclude from list/export. example: "service1,service2"             |
+
+#### Returns
+
+Here's the image generated by running `otterize network-mapper visualize -n otterize-ecom-demo -o otterize-ecom-demo.png`:
+![graph](https://user-images.githubusercontent.com/29180932/221423644-df8fbba2-dca1-4c56-baeb-f0d0afc55eb1.png)
+
+---
+
+`otterize network-mapper export [--format] [-n <namespace1>,<namespace2>,...] [-o <path>] [--output-type <output-type>]`
+
+Return the network map built by the network mapper since it started, or since it was reset,
+as YAML [client intents file(s)](/reference/intents-and-intents-files/#intents-file-formats) or as JSON file(s).
+
+#### Options
+
+| Name                   | Default       | Description                                                                                                                                                                 |
+|------------------------|---------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `--format`             | `yaml`        | Specifies the format for the export: either `yaml` or `json`.                                                                                                                      |
+| `-n` or `--namespaces` |               | Export only clients in these namespaces (comma-separated).                                                                                                                  |
+| `-o` or `--output`     | `STDOUT`      | Filename or directory for redirecting the output.                                                                                                                           |
+| `--output-type`        | `single-file` | Whether the output should be written as a single file (`single-file`) or as multiple files in a directory (`dir`). Requires the `-o` or `--output` to point to a directory. |
+| `--server`             |               | Export only intents for clients that call this server. The server name must be specified with both service name and namespace, in the format `<SERVERNAME>.<SERVER_NAMESPACE>`. Example: `cartservice.otterize-ecom-demo`.                                                       |
+| `--exclude-labels`     |               | A list of labels that would exclude services from list/export. Example: `include=false` would exclude any service labeled with `include=false` from being included in list/export. |
+| `--exclude-services`   |               | A list of services to exclude from list/export. Example: `service1,service2`.                                                                                                |
+
+#### Returns
+
+Here's a partial output from `otterize network-mapper export -n otterize-ecom-demo`:
+
+```shell
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: cartservice
+  namespace: otterize-ecom-demo
+spec:
+  service:
+    name: cartservice
+  calls:
+    - name: redis-cart
+      type: http
+---
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: checkoutservice
+  namespace: otterize-ecom-demo
+spec:
+  service:
+    name: checkoutservice
+  calls:
+    - name: cartservice
+      type: http
+    - name: currencyservice
+      type: http
+```

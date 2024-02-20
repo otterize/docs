@@ -1,0 +1,38 @@
+---
+sidebar_position: 3
+title: Reference
+---
+
+### ClientIntents example (YAML)
+
+```yaml
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: client
+  namespace: otterize-tutorial-istio
+spec:
+  service:
+    name: client
+  calls:
+    - name: nginx
+      type: http
+      HTTPResources:
+        - path: /client-path
+          methods: [ GET ]
+```
+
+
+### Helm Chart options
+
+| Key                             | Description                             | Default                        |
+|---------------------------------|-----------------------------------------|--------------------------------|
+| `istiowatcher.enable`           | Enable Istio watcher deployment (beta). | `false`                        |
+| `istiowatcher.image.repository` | Istio watcher image repository.         | `otterize`                     |
+| `istiowatcher.image.image`      | Istio watcher image.                    | `network-mapper-istio-watcher` |
+| `istiowatcher.image.tag`        | Istio watcher image tag.                | `latest`                       |
+| `istiowatcher.pullPolicy`       | Istio watcher pull policy.              | `(none)`                       |
+| `istiowatcher.pullSecrets`      | Istio watcher pull secrets.             | `(none)`                       |
+| `istiowatcher.resources`        | Resources override.                     | `(none)`                       |
+
+View the [Helm chart reference](/reference/configuration/otterize-chart) for all other options

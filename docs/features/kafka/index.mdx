@@ -1,0 +1,129 @@
+---
+sidebar_position: 1
+title: Kafka | Overview
+hide_table_of_contents: true
+hide_title: true
+---
+
+import DocsLinkCard from "@site/src/components/LinkCard";
+
+export const kafka_tutorials = [
+    {
+        title: 'Kafka topic-level access mapping',
+        description: 'View Kafka network connections',
+        url: '/features/kafka/tutorials/k8s-kafka-mapping'
+    },
+    {
+        title: 'Kafka access automation using Otterize Cloud mTLS',
+        description: 'Manage access to Kafka topics with Otterize Cloud mTLS',
+        url: '/features/kafka/tutorials/k8s-kafka-mtls'
+    },
+    {
+        title: 'Kafka access automation using cert-manager mTLS',
+        description: 'Manage access to Kafka topics with a cert-manager',
+        url: '/features/kafka/tutorials/k8s-kafka-mtls-cert-manager'
+    }
+];
+
+# Kafka
+
+Otterize can build a map of your cluster, and enforce access between services using Kafka ACLs. Otterize is also able to map access to the Kafka topic and operation level, by reading Kafka access logs.
+
+### Tutorials
+
+To learn how to use the Intents Operator and Credentials Operator to enforce access with Kafka ACLs, or how to map your cluster to the Kafka topic and operation level, try one of these quickstart tutorials.
+<DocsLinkCard items={kafka_tutorials} colSize={"sm"}/>
+
+
+### How does Otterize work with Kafka?
+
+1. First, the cluster must have [Otterize installed](/overview/installation).
+2. Configure the Otterize Intents Operator to manage a Kafka broker by declaring a `KafkaServerConfig`. See the example yaml below.
+
+```yaml
+apiVersion: k8s.otterize.com/v1alpha3
+kind: KafkaServerConfig
+metadata:
+  name: kafkaserverconfig
+  namespace: kafka
+spec:
+  service:
+    name: kafka #name of the Kafka service broker
+  addr: kafka.kafka:9092
+```
+
+Or, as a ready-to-paste command:
+```bash
+kubectl apply -f ${ABSOLUTE_URL}/code-examples/kafka-mtls/kafkaserverconfig.yaml
+```
+
+The Kafka broker must be configured with a superuser for the Intents Operator to be able to set ACLs, with the ACL authorizer enabled, and to use mTLS, which the Intents Operator and other clients will use to authenticate.
+Here's an example configuration based on the `values.yaml` of the Bitnami Kafka Helm chart. To see a working example, check out the tutorials for Kafka.
+
+```yaml
+superUsers: User:CN=intents-operator.otterize-system
+allowEveryoneIfNoAclFound: true
+podAnnotations:
+  credentials-operator.otterize.com/cert-type: jks
+  credentials-operator.otterize.com/tls-secret-name: kafka-tls-secret
+  credentials-operator.otterize.com/dns-names: "kafka-0.kafka-headless.kafka.svc.cluster.local,kafka.kafka.svc.cluster.local"
+# Authenticate clients using mTLS
+auth:
+  clientProtocol: mtls
+  interBrokerProtocol: mtls
+  tls:
+    type: jks
+    existingSecrets:
+      - kafka-tls-secret
+    password: password
+    jksTruststore: truststore.jks
+    jksKeystoreSAN: keystore.jks
+authorizerClassName: kafka.security.authorizer.AclAuthorizer
+```
+
+To acquire TLS credentials for another pod, specify a Pod annotation with the required TLS secret name.
+```yaml
+spec:
+  template:
+    metadata:
+      annotations:
+        # 1. Generate credentials as a secret called "client-credentials-secret":
+        credentials-operator.otterize.com/tls-secret-name: client-credentials-secret
+        ...
+    spec:
+      volumes:
+        # 2. Create a volume containing this secret:
+        - name: otterize-credentials
+          secret:
+            secretName: client-credentials-secret
+        ...
+      containers:
+        - name: client
+          ...
+          volumeMounts:
+            # 3. Mount volume into container
+            - name: otterize-credentials
+              mountPath: /var/otterize/credentials
+              readOnly: true
+```
+
+4. Once the Kafka clients are deployed with the mTLS credentials, they should be able to access topics as we have enabled `allowEveryoneIfNoAclFound`. To begin enforcing, declare ClientIntents, which will cause the Intents Operator to configure ACLs allowing this access.
+
+```yaml
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: client
+  namespace: otterize-tutorial-kafka-mtls
+spec:
+  service:
+    name: client
+  calls:
+    - name: kafka.kafka
+      type: kafka
+      kafkaTopics:
+        - name: mytopic
+          operations: [ produce,describe,consume ]
+        - name: transactions
+          operations: [ produce,describe,consume ]
+```

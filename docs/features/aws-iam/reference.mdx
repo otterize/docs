@@ -1,0 +1,47 @@
+---
+sidebar_position: 3
+title: Reference
+---
+
+### ClientIntents example (YAML)
+
+```yaml
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: server
+spec:
+  service:
+    # The name of the pod that will be granted access
+    name: server
+  calls:
+      # The AWS ARN or ARN wildcard that references the resource(s) for the authorization
+    - name: arn:aws:s3:::example-bucket-*/*
+      type: aws
+      # one or more AWS Actions or Action wildcards that will be provided to the specified resources
+      awsActions:
+        - "s3:PutObject"
+        - "s3:GetObject"
+      # Multiple call definitions can be defined for a single service.
+	- name: arn:aws:s3:::read-only-bucket-*/*
+      type: aws
+      awsActions:
+        - "s3:GetObject"
+```
+
+### Annotations
+
+| Key                                                        | Description                                                                                                                                                                                  | Default  |
+|------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
+| `credentials-operator.otterize.com/create-aws-role` | By setting to **true** the credential operator will create an unique AWS Role for the associated pod | `false` |
+
+
+### Helm Chart options
+
+| Key                                                        | Description                                                                                                                                                                                  | Default  |
+|------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
+| `global.aws.enabled`                                       | Enable or disable AWS integration                                                                                                                                                            | `false`  |
+| `global.aws.eksClusterNameOverride`                        | EKS cluster name (overrides auto-detection)                                                                                                                                                  | `(none)` |
+| `aws.roleARN` | ARN of the AWS role the operator will use to access AWS. By defeault, Otterize will create a unique role for each service an annotate the service with the role's ARN. | `(none)` |
+
+View the [Helm chart reference](/reference/configuration/otterize-chart) for all other options

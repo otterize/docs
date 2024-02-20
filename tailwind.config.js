@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ['./src/**/*.{js,jsx,ts,tsx}', './docusaurus.config.js'],
+  content: ['./src/**/*.{js,jsx,ts,tsx}', './docusaurus.config.js', './docs/**/*.mdx'],
   prefix: 'tw-', // This is important to avoid conflicts with Docusaurus styles.
   theme: {
       screens: {

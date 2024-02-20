@@ -1,0 +1,85 @@
+---
+sidebar_position: 1
+title: Mapping a Kubernetes network
+image: /img/visualization/k8s-network-mapper/social.png
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+import styles from "/src/css/styles.module.css";
+
+The network mapper allows you to map pod-to-pod traffic within your K8s cluster.
+
+In this tutorial, we will:
+
+- Deploy a server, and two clients calling it.
+- Map their communication using the network mapper.
+
+## Prerequisites
+
+### Install Otterize on your cluster
+To deploy Otterize, head over to [Otterize Cloud](https://app.otterize.com) and create a Kubernetes cluster on the [Clusters page](https://app.otterize.com/clusters), and follow the instructions.
+
+We will also need the [Otterize CLI](/overview/installation#install-the-otterize-cli).
+
+## Tutorial
+
+### Deploy demo to simulate traffic
+
+Let's add services and traffic to the cluster and see how the network mapper builds the map.
+Deploy the following simple example &mdash; `client`, `client2` and `server`, communicating over HTTP:
+
+```shell
+kubectl apply -n otterize-tutorial-mapper -f ${ABSOLUTE_URL}/code-examples/network-mapper/all.yaml
+```
+
+### Map the cluster
+
+The network mapper starts to sniff traffic and build an in-memory network map as soon as it's installed.
+The Otterize CLI allows you to interact with the network mapper to grab a snapshot of current mapped traffic,
+reset its state and more.
+
+For a complete list of the CLI capabilities read the [CLI command reference](/reference/cli/#network-mapper).
+
+### Extract and see the network map
+
+{@include: ../../../getting-started/_show_mapped_traffic_cli.mdx}
+
+### Show the access graph in Otterize Cloud
+
+If you've attached Otterize OSS to Otterize Cloud, you can now also see the [access graph in your browser](https://app.otterize.com):
+
+![Access graph](/img/quick-tutorials/network-mapper/otterize-tutorial-access-graph.png)
+
+The access graph reveals several types of information and insights, such as:
+
+1. Seeing the network map for different clusters, seeing the subset of the map for a given namespace, or even &mdash; according to how you've mapped namespaces to environments &mdash; seeing the subset of the map for a specific environment.
+2. Filtering the map to include recently-seen traffic, since some date in the past. That way you can eliminate calls that are no longer relevant, without having to reset the network mapper and start building a new map.
+3. If the intents operator is also connected, the access graph now reveals more specifics about access: understand which services are protected or would be protected, and which client calls are being blocked or would be blocked. We'll see more of that in the next couple of tutorials
+
+Note, for example, that the `client` &rightarrow; `server` arrow is yellow. Clicking on it shows:
+
+<img
+  src="/img/quick-tutorials/network-mapper/otterize-tutorial-access-graph-edge-info-modal.png"
+  alt="Client to server edge info"
+/>
+
+### What's next
+
+The network mapper is a great way to bootstrap IBAC. It generates client intents files that reflect
+the current topology of your services; those can then be used by each client team to grant them easy
+and _secure_ access to the services they need, and as their needs evolve, they need only evolve
+the intents files. We'll see more of that below.
+
+Where to go next?
+
+- If you haven't already, see the [automate network policies tutorial](/quickstart/access-control/k8s-network-policies).
+- Or go to the next tutorial to [automate secure access for Kafka](/quickstart/access-control/k8s-kafka-mtls).
+
+## Teardown
+
+To remove the deployed examples run:
+
+```bash
+kubectl delete namespace otterize-tutorial-mapper
+```

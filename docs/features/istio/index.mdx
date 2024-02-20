@@ -1,0 +1,96 @@
+---
+sidebar_position: 1
+title: Istio | Overview
+hide_title: true
+---
+
+import DocsLinkCard from "@site/src/components/LinkCard";
+
+export const istio_tutorials = [
+    {
+        title: 'Istio AuthorizationPolicy automation',
+        description: 'Generate AuthorizationPolicy docs from existing connections',
+        url: 'istio/tutorials/k8s-istio-authorization-policies'
+    },
+    {
+        title: 'Istio HTTP-level access mapping',
+        description: 'Map access between services including HTTP paths and methods',
+        url: 'istio/tutorials/k8s-istio-watcher'
+    }
+];
+
+
+
+# Istio
+
+Otterize can build a map of your cluster based on Istio Envoy metrics, and enforce access between services using Istio Authorization Policies.
+
+### Tutorials
+
+To learn how to use the Intents Operator to enforce access using Istio authorization policies, or map your cluster, try one of these quickstart tutorials.
+
+<DocsLinkCard items={istio_tutorials} colSize={"sm"}/>
+
+
+### How does Otterize work with Istio?
+
+1. First, the cluster must have [Otterize installed](/overview/installation).
+2. To have Otterize generate Istio authorization policies, declare and apply ([IBAC](/overview/intent-based-access-control)) ClientIntents for your services.
+Once you do so, Otterize will generate an Istio authorization policy allowing access from the client service, identified by its ServiceAccount, to the server, identified by its labels.
+The HTTP Resources section in the ClientIntents is optional: if you do not specify it, all pod-to-pod access is allowed.
+
+```yaml
+
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: client
+  namespace: otterize-tutorial-istio
+spec:
+  service:
+    name: client
+  calls:
+    - name: server-abc
+      type: http
+      HTTPResources:
+        - path: /client-path
+          methods: [ GET ]
+
+```
+
+3. If you would like Otterize to be able to autogenerate ClientIntents and map your network at the HTTP path and method level, we need to enable connection telemetry data within Istio. This can be enabled with the following YAML:
+
+```yaml
+apiVersion: telemetry.istio.io/v1alpha1
+kind: Telemetry
+metadata:
+  name: mesh-default
+  namespace: istio-system
+spec:
+  # Configure access logging for Istio services
+  accessLogging:
+    # Define the access logging provider, in this case, Envoy
+    - providers:
+        - name: envoy
+  metrics:
+    # Configure metrics collection for Istio services using Prometheus
+    - providers:
+        - name: prometheus
+      # Customize metric tag overrides
+      overrides:
+        - tagOverrides:
+            # Map the "request_method" metric tag to "request.method" value
+            request_method:
+              value: request.method
+            # Map the "request_path" metric tag to "request.path" value
+            request_path:
+              value: request.path
+```
+
+Or, as a ready-to-paste command:
+```
+kubectl apply -f ${ABSOLUTE_URL}/code-examples/network-mapper/istio-telemetry-enablement.yaml -n istio-system
+```
+
+Once installed, Otterize will query Envoy sidecars for known connections and build an in-memory map of the relationships. After the map is built you can then view those relationships.
+

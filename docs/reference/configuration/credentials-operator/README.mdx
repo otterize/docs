@@ -3,7 +3,7 @@ sidebar_position: 3
 title: Credentials operator
 ---
 
-The Otterize credentials operator automatically resolves pods to dev-friendly service names and provisions credentials (certificates) for the services from cert-manager, Otterize Cloud or SPIRE as Kubernetes Secrets.
+The credentials operator provisions just-in-time credentials for workloads running on Kubernetes. These credentials come in the form of Kubernetes Secrets (mTLS certificates, database username + passwords), or AWS IAM roles.
 
 ## Deploying the credentials operator
 To deploy the operator, [use the Helm chart](/reference/configuration/credentials-operator/helm-chart).
@@ -11,34 +11,41 @@ To deploy the operator, [use the Helm chart](/reference/configuration/credential
 To deploy with Otterize Cloud as the certificate provider, we recommend you [follow the instructions in Otterize Cloud](https://app.otterize.com/).
 To deploy with cert-manager as the certificate provider, you must also [configure the Issuer name and whether it should look for a ClusterIssuer or an Issuer (namespace-scoped)](/reference/configuration/credentials-operator/helm-chart#cert-manager-parameters).
 
-## Acquiring mTLS credentials using the credentials operator
-The credentials operator is controlled using annotations placed on pods. To have it provision credentials and place them in Secrets, you must specify `credentials-operator.otterize.com/tls-secret-name`.
+## Provisioning AWS IAM roles using the credentials operator
+The credentials operator is controlled using annotations placed on pods. To have it provision an AWS IAM role, you must specify the pod annotation `credentials-operator.otterize.com/create-aws-role`, with the value being `true`. Once you do so, the credentials operator will provision an AWS IAM role, and automatically bind it with the Kubernetes ServiceAccount of the pod by setting the EKS role ARN annotation on the ServiceAccount and the appropriate Trust Relationship on the AWS IAM role.
 
-## How does the credentials operator provision credentials?
+## Provisioning mTLS certificates using the credentials operator
+The credentials operator is controlled using annotations placed on pods. To have it provision certificates and place them in Secrets, you must specify the pod annotation `credentials-operator.otterize.com/tls-secret-name`, with the value being the name of the secret. Once you do so, the credentials operator will provision a certificate for the pod, using Otterize Cloud, cert-manager or SPIRE, depending how you've deployed it.
+
+## Provisioning database username + password using the credentials operator
+The credentials operator is controlled using annotations placed on pods. To have it provision database username + password and place them in Secrets, you must specify the pod annotation `credentials-operator.otterize.com/user-password-secret-name`, with the value being the name of the secret. Once you do so, the credentials operator will provision a username and password for the pod.
+
+
+### How does the credentials operator provision certificates?
 
 The credentials operator performs two steps in order to issue certificates.
 
-### Step 1: SPIRE entry registration
+#### Step 1: SPIRE entry registration
 This step only happens if the operator is configured to use SPIRE for certificate generation. Once the operator [resolves the service name](#service-name-resolution-and-automatic-pod-labeling) for a pod, it labels the pod so that SPIRE can find it, and registers an entry with the SPIRE server for that label.
 
-### Step 2: Certificate generation
+#### Step 2: Certificate generation
 The operator consults the annotation `credentials-operator.otterize.com/tls-secret-name`. If that annotation exists, the operator creates a secret named after the value of the label. That secret contains X.509 credentials within, provided by cert-manager, Otterize Cloud or SPIRE, depending on how the credentials operator is configured.
 
-#### cert-manager
+##### cert-manager
 The operator creates a cert-manager [`Certificate`](https://cert-manager.io/docs/usage/certificate/) resource, which will create a Kubernetes Secret with the name specified by the value of the annotation `credentials-operator.otterize.com/tls-secret-name`. The common name and DNS names in the certificate are values that represent the identity of the service, as resolved by the [service identity resolution algorithm](#3-service-name-resolution-and-automatic-pod-labeling), i.e. `servicename.namespace`.
 
 The operator will use a [`ClusterIssuer`](https://cert-manager.io/docs/concepts/issuer/) or an [`Issuer`](https://cert-manager.io/docs/concepts/issuer/) to create the Certificate resource, which it expects to find in the same namespace as the `Pod` with the annotation. The `Issuer` is configured at deploy time, using the [Helm chart](/reference/configuration/credentials-operator/helm-chart).
 
 In the event that the default approver controller in `cert-manager` is [disabled](https://cert-manager.io/docs/concepts/certificaterequest/#approver-controller), the credentials operator can auto-approve its own [`CertificateRequests`](https://cert-manager.io/docs/concepts/certificaterequest/). Enable this capability by [configuring the Helm chart `autoApprove` flag](/reference/configuration/credentials-operator/helm-chart#cert-manager-parameters).
 
-#### Otterize Cloud
+##### Otterize Cloud
 The operator requests certificates from Otterize Cloud, which internally manages them in Hashicorp Vault. The certificates are then placed within a Kubernetes Secret named with the value of the annotation `credentials-operator.otterize.com/tls-secret-name`.
 
-#### SPIRE
+##### SPIRE
 Once the operator has registered the pod with SPIRE, which happens automatically for a pod that has the `credentials-operator.otterize.com/tls-secret-name` annotation upon pod startup. The credentials operator then acquires the SVID and certificates for the CA chain and places them within a Kubernetes Secret. The SVID and DNS names in the certificate is the identity of the service, as resolved by the [service identity resolution algorithm](#3-service-name-resolution-and-automatic-pod-labeling), i.e. `servicename.namespace`.
 
 ## SPIRE workload registrar
-When using SPIRE, the operator registers every pod with the SPIRE server (even those without annotations).
+When deployed with a SPIRE server, the operator registers every pod with the SPIRE server (even those without annotations).
 Alongside the credentials operator, you could use SPIRE agents and the SPIRE SDK to work with the same SPIRE server.
 To learn more, check out the documentation for [SPIRE](https://spiffe.io/docs/latest/spire-about/spire-concepts/). Note that to use the credentials operator, you do not need to work directly with SPIRE or SPIRE agents, and can do everything completely using annotations and Kubernetes Secrets.
 

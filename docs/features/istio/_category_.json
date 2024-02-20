@@ -1,0 +1,8 @@
+{
+  "label": "Istio",
+  "position": 4,
+  "collapsed": true,
+  "customProps": {
+    "image": "/img/icons/istio-no-word-mark.svg"
+  }
+}
