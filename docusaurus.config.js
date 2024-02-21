@@ -220,6 +220,10 @@ const config = {
           from: ['/quick-visual-tutorials/visual-k8s-cluster-mapping', '/quickstart/visualization/k8s-network-mapper', '/quick-tutorials/k8s-network-mapper'],
           to: '/features/network-mapping-network-policies/tutorials/k8s-network-mapper',
         },
+        {
+          from: ['/quickstart/access-control/aws-iam-eks'],
+          to: '/features/aws-iam/tutorials/aws-iam-eks',
+        },
         // Redirect from multiple old paths to the new path
         // {
         //   to: '/docs/newDoc2',
