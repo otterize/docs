@@ -185,6 +185,10 @@ const config = {
           to: '/features/kafka/tutorials/k8s-kafka-mtls',
         },
         {
+          from: ['/quickstart/access-control/aws-iam-eks'],
+          to: '/features/aws-iam/tutorials/aws-iam-eks',
+        },
+        {
           from: ['/quick-tutorials/aws-eks-cni-mini','/quickstart/access-control/aws-eks-cni-mini'],
           to: '/features/network-mapping-network-policies/tutorials/aws-eks-cni-mini',
         },
