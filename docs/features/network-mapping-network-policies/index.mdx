@@ -8,43 +8,87 @@ export const network_access_tutorials = [
     {
         title: 'Visualizing a Kubernetes Network',
         description: 'Map network traffic in a cluster and view the connections',
-        url: '/features/Networking/tutorials/k8s-network-mapper'
+        url: '/features/network-mapping-network-policies/tutorials/k8s-network-mapper'
     },
 {
         title: 'Create and manage network policies',
         description: 'Create Kubernetes network policies using IBAC',
-        url: '/features/Networking/tutorials/k8s-network-policies'
+        url: '/features/network-mapping-network-policies/tutorials/k8s-network-policies'
     },
     {
         title: 'Protecting a service with network policies',
         description: 'An example on how to secure a single service',
-        url: '/features/Networking/tutorials/protect-1-service-network-policies'
+        url: '/features/network-mapping-network-policies/tutorials/protect-1-service-network-policies'
     },
     {
         title: 'AWS EKS network policies with the VPC CNI',
         description: 'Leverage AWS VPC CNI to apply network policies in EKS',
-        url: '/features/Networking/tutorials/aws-eks-cni-mini'
+        url: '/features/network-mapping-network-policies/tutorials/aws-eks-cni-mini'
     }
 ];
 
-### About
-You can use Otterize to understand, visualize, and manage access for Kubernetes networks. Upon installation, Otterize inspects network traffic and builds an in-memory network map of connections. The network map can then be exported or viewed in various ways to understand the connections within your networks. With IBAC-based policies, Otterize becomes a control plane for your K8s networks. Mapped network traffic can autogenerate declarative intent-based access policies to create least privileged pod-to-pod access easily.
+Otterize's open-source [Network Mapper](/reference/configuration/network-mapper) and [Intents Operator](/reference/configuration/intents-operator) can map your cluster, with zero configuration, low privileges and low resource usage, and automate the management of network policies.
+
+### Tutorials
+
+View the tutorials below to learn more about how to get started:
+
+<DocsLinkCard items={network_access_tutorials} colSize={"sm"}/>
+
 
 ### Mapping & visualizing
 
-After installation, Otterize collects network traffic data in memory, creating a graph of relationships between pod-to-pod and pod-to-public internet traffic. Once the graph is in place, the data can be exported or viewed in various ways. Otterize Cloud users can see and interact with the graph structures within the Otterize application. OSS users can use the CLI tool to export the data into JSON, list the relationship, or generate IBAC policies reflecting the existing traffic.
+Otterize's [Network Mapper](/reference/configuration/network-mapper) is a zero-config, open-source and non-invasive tool to map your cluster. Deploy it on your cluster to get a graphical, textual or JSON representation of your cluster, and optionally use it to generate ClientIntents, which are declarations of the access each service in your cluster requires.
 
-To learn more about Visualizing, check out [Visualizing a Kubernetes Network](/features/Networking/tutorials/k8s-network-mapper)
+By connecting your cluster to Otterize Cloud, you'll immediately be presented with an interactive, historic and filterable map of your cluster.
+You can access the same information in different formats by using the open-source Otterize CLI, with the commands `otterize mapper export`, `otterize mapper list` and `otterize mapper visualize`.
+
+**visualize example:**:
+![visualize example](/img/examples/example-visualize.png)
+
+**list example:**
+```
+client in namespace otterize-tutorial-npol calls:
+  - server in namespace otterize-tutorial-npol
+client-other in namespace otterize-tutorial-npol calls:
+  - server in namespace otterize-tutorial-npol
+```
+**export example:**
+```yaml
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: client
+  namespace: otterize-tutorial-npol
+spec:
+  service:
+    name: client
+  calls:
+    - name: server
+---
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: client-other
+  namespace: otterize-tutorial-npol
+spec:
+  service:
+    name: client-other
+  calls:
+    - name: server
+```
 
 
 ### Access control
 
-By default, Kubernetes pods allow all egress and ingress traffic. Kubernetes [NetworkPolicies](/reference/terminology#network-policies) provide `policyTypes` to restrict egress or ingress traffic, providing a more secure and compliant environment. Utilizing the in-memory tariff map, Otterize can automatically generate IBAC policies to reflect the current traffic flow within a cluster. Once the IBAC policies are submitted, Otterize will generate and apply the corresponding NetworkPolicies to your namespaces.
+By default, Kubernetes pods permit all outgoing and incoming traffic, posing potential security risks.
 
-Further details are available within the [Network Policies Deep Dive](/features/Networking/Reference/Network-Policies-Deep-Dive)
+Kubernetes [NetworkPolicies](/reference/terminology#network-policies) can be employed to limit either egress or ingress traffic, thereby enhancing security and compliance.
+Having deployed Otterize, you can then apply the [ClientIntents](/reference/IBAC-Overview) generated by the network mapper, or declared by you, to your cluster. The [Intents Operator](/reference/configuration/intents-operator) calculates which [Network Policies](/reference/terminology#network-policies) are required to allow the traffic declared by the ClientIntents, enforcing access on your cluster so that only intentional access is allowed.
+
+Read more in the [Network Policies Deep Dive](/features/network-mapping-network-policies/Reference/Network-Policies-Deep-Dive).
 
 ```yaml
-
 apiVersion: k8s.otterize.com/v1alpha3
 kind: ClientIntents
 metadata:
@@ -55,15 +99,4 @@ spec:
     name: client
   calls:
     - name: nginx
-      type: http
-      HTTPResources:
-        - path: /client-path
-          methods: [ GET ]
-
 ```
-
-### Tutorials
-
-View the tutorials below to learn more about how to get started:
-
-<DocsLinkCard items={network_access_tutorials} colSize={"sm"}/>

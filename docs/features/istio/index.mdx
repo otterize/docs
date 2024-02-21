@@ -10,12 +10,12 @@ export const istio_tutorials = [
     {
         title: 'Istio AuthorizationPolicy automation',
         description: 'Generate AuthorizationPolicy docs from existing connections',
-        url: '/features/istio/examples/k8s-istio-authorization-policies'
+        url: '/features/istio/tutorials/k8s-istio-authorization-policies'
     },
     {
         title: 'Istio HTTP-level access mapping',
-        description: 'View the HTTP methods being used across services',
-        url: '/features/istio/examples/k8s-istio-water'
+        description: 'Map access between services including HTTP paths and methods',
+        url: '/features/istio/tutorials/k8s-istio-watcher'
     }
 ];
 
@@ -23,21 +23,42 @@ export const istio_tutorials = [
 
 # Istio
 
-Otterize can map and secure access with Istio HTTP connections across your Kubernetes services.
+Otterize can build a map of your cluster based on Istio Envoy metrics, and enforce access between services using Istio Authorization Policies.
 
-### About
+### Tutorials
 
-When enabling Istio support, Otterize's network mapping tool can determine which Kubernetes services are connected and which HTTP methods are being used. This graph of connections can then be leveraged to automate IBAC based access policies that result in Istio AuthorizationPolicy(s).
+To learn how to use the Intents Operator to enforce access using Istio authorization policies, or map your cluster, try one of these quickstart tutorials.
 
-### How does it work
+<DocsLinkCard items={istio_tutorials} colSize={"sm"}/>
 
-1. First, the cluster must have [Otterize installed](/overview/installation). With Istio support enabled by setting the following flag:
 
-```bash
---set networkMapper.istiowatcher.enable=true
+### How does Otterize work with Istio?
+
+1. First, the cluster must have [Otterize installed](/overview/installation).
+2. To have Otterize generate Istio authorization policies, declare and apply ([IBAC](/overview/intent-based-access-control)) ClientIntents for your services.
+Once you do so, Otterize will generate an Istio authorization policy allowing access from the client service, identified by its ServiceAccount, to the server, identified by its labels.
+The HTTP Resources section in the ClientIntents is optional: if you do not specify it, all pod-to-pod access is allowed.
+
+```yaml
+
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: client
+  namespace: otterize-tutorial-istio
+spec:
+  service:
+    name: client
+  calls:
+    - name: server-abc
+      type: http
+      HTTPResources:
+        - path: /client-path
+          methods: [ GET ]
+
 ```
 
-2. To monitor connections and HTTP methods, we need to enable connection telemetry data within Istio. This can be enabled with the following YAML:
+3. If you would like Otterize to be able to autogenerate ClientIntents and map your network at the HTTP path and method level, we need to enable connection telemetry data within Istio. This can be enabled with the following YAML:
 
 ```yaml
 apiVersion: telemetry.istio.io/v1alpha1
@@ -64,36 +85,12 @@ spec:
             # Map the "request_path" metric tag to "request.path" value
             request_path:
               value: request.path
-
 ```
 
-Once installed, Otterize will query Envoy sidecars for known connections and building an in-memory map of the relationships. After the map is built your can then view those relationships.
-
-**To Manage Access**
-
-You simply need to define and apply your intent based access control ([IBAC](/overview/intent-based-access-control)) policies for your services.
-
-```yaml
-
-apiVersion: k8s.otterize.com/v1alpha3
-kind: ClientIntents
-metadata:
-  name: client
-  namespace: otterize-tutorial-istio
-spec:
-  service:
-    name: client
-  calls:
-    - name: server-abc
-      type: http
-      HTTPResources:
-        - path: /client-path
-          methods: [ GET ]
-
+Or, as a ready-to-paste command:
+```
+kubectl apply -f ${ABSOLUTE_URL}/code-examples/network-mapper/istio-telemetry-enablement.yaml -n istio-system
 ```
 
-### Tutorials
+Once installed, Otterize will query Envoy sidecars for known connections and build an in-memory map of the relationships. After the map is built you can then view those relationships.
 
-For further details about mapping, or access automation, view the tutorials below:
-
-<DocsLinkCard items={istio_tutorials} colSize={"sm"}/>

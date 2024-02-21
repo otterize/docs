@@ -43,7 +43,7 @@ const footerSocialLinks = `
   width='30'
   height='30'
   loading='lazy'
-  src="img/footer/github.svg"
+  src="/img/footer/github.svg"
   alt="GitHub logo"
   className='w-5 h-5 relative'
   />
@@ -53,7 +53,7 @@ const footerSocialLinks = `
   width='30'
   height='30'
   loading='lazy'
-  src="img/footer/linkedin.svg"
+  src="/img/footer/linkedin.svg"
   alt="LinkedIn logo"
   className='w-5 h-5 relative'
   />
@@ -63,7 +63,7 @@ const footerSocialLinks = `
   width='30'
   height='30'
   loading='lazy'
-  src="img/footer/x.svg"
+  src="/img/footer/x.svg"
   alt="X logo"
   className='w-5 h-5 relative'
   />
@@ -73,7 +73,7 @@ const footerSocialLinks = `
   width='30'
   height='30'
   loading='lazy'
-  src="img/footer/slack.svg"
+  src="/img/footer/slack.svg"
   alt="Slack logo"
   className='w-5 h-5 relative'
   />
@@ -83,7 +83,7 @@ const footerSocialLinks = `
   width='30'
   height='30'
   loading='lazy'
-  src="img/footer/youtube.svg"
+  src="/img/footer/youtube.svg"
   alt="YouTube logo"
   className='w-5 h-5 relative'
   />
@@ -150,7 +150,7 @@ const config = {
         },
         {
           from: ['/reference/access-controls/network-policies'],
-          to: '/features/networking/reference/Network-Policies-Deep-Dive'
+          to: '/features/network-mapping-network-policies/reference/Network-Policies-Deep-Dive'
         },
         {
           from: ['/shadow-vs-active-enforcement'],
@@ -178,15 +178,19 @@ const config = {
         },
         {
           from: ['/guides/protect-1-service-network-policies'],
-          to: '/features/networking/tutorials/protect-1-service-network-policies'
+          to: '/features/network-mapping-network-policies/tutorials/protect-1-service-network-policies'
         },
         {
           from: ['/quick-tutorials/k8s-kafka-mtls', '/quickstart/access-control/k8s-kafka-mtls'],
           to: '/features/kafka/tutorials/k8s-kafka-mtls',
         },
         {
+          from: ['/quickstart/access-control/aws-iam-eks'],
+          to: '/features/aws-iam/tutorials/aws-iam-eks',
+        },
+        {
           from: ['/quick-tutorials/aws-eks-cni-mini','/quickstart/access-control/aws-eks-cni-mini'],
-          to: '/features/networking/tutorials/aws-eks-cni-mini',
+          to: '/features/network-mapping-network-policies/tutorials/aws-eks-cni-mini',
         },
         {
           from: ['/quick-tutorials/k8s-kafka-mtls-cert-manager', '/quickstart/access-control/k8s-kafka-mtls-cert-manager', '/quick-tutorials/k8s-mtls'],
@@ -205,12 +209,20 @@ const config = {
           to: '/features/kafka/tutorials/k8s-kafka-mapping',
         },
         {
+          from: ['/quickstart/visualization/postgresql'],
+          to: '/features/postgresql/tutorials/postgres-mapping'
+        },
+        {
+          from: ['/quickstart/access-control/postgresql'],
+          to: '/features/postgresql/tutorials/postgres'
+        },
+        {
           from: ['/quick-visual-tutorials/visual-ibac-network-policies', '/quick-tutorials/k8s-network-policies', '/quickstart/access-control/k8s-network-policies'],
-          to: '/features/networking/tutorials/k8s-network-policies',
+          to: '/features/network-mapping-network-policies/tutorials/k8s-network-policies',
         },
         {
           from: ['/quick-visual-tutorials/visual-k8s-cluster-mapping', '/quickstart/visualization/k8s-network-mapper', '/quick-tutorials/k8s-network-mapper'],
-          to: '/features/networking/tutorials/k8s-network-mapper',
+          to: '/features/network-mapping-network-policies/tutorials/k8s-network-mapper',
         },
         // Redirect from multiple old paths to the new path
         // {
@@ -327,12 +339,12 @@ const config = {
             position: "right",
           },
           {
-            href: "https://app.otterize.com/signup",
+            href: "https://otterize.com/signup",
             html: "<button class='tw-cursor-pointer tw-inline-flex tw-items-center tw-justify-center tw-gap-2 tw-rounded-xl tw-bg-gradient-to-b tw-px-3 tw-py-2.5 tw-text-sm lg:tw-text-base tw-font-semibold tw-leading-normal tw-no-underline tw-shadow tw-font-sans -tw-mr-2 tw-from-indigo-500 tw-bg-indigo-500 tw-to-indigo-600 tw-h-11 tw-border-none  tw-text-white tw-w-full'><img src='/img/menu/cloud.svg' />Signup <span id='sign-extended-text'>for free<span></button>",
             position: "right",
           },
           {
-            href: "https://calendly.com/otterize-team/kubecon-na",
+            href: "https://otterize.com/book-demo",
             html: "<div class='tw-cursor-pointer tw-font-sans tw-flex tw-items-center tw-rounded-xl tw-h-11 tw-border tw-border-solid tw-border-gray-300 tw-bg-white tw-px-3 tw-text-gray-900 tw-shadow tw-font-medium tw-text-sm lg:tw-text-base tw-w-full tw-justify-center'><span id='request-demo-full-text'>Request a demo</span><span id='request-demo-partial-text'>Demo</span><img class='tw-ml-2' src='/img/menu/right-arrow.svg' /></div>",
             position: "right",
           },
@@ -384,9 +396,9 @@ const config = {
           {
             html: `<div class="footer_copyright tw-w-full">
                     <div style="display:flex;">
-                      <img src="img/footer/cloud-native.svg" style="margin-right:20px;"/>
+                      <img src="/img/footer/cloud-native.svg" style="margin-right:20px;"/>
                       <a href="https://otterize.com/soc2-request" target="_blank" style="height:50px;">
-                        <img src="img/footer/soc.png" style="width:50px;"/>
+                        <img src="/img/footer/soc.png" style="width:50px;"/>
                       </a>
                     </div>
                     <div class="tw-w-full tw-h-14 tw-flex-col tw-justify-start tw-items-start tw-gap-8 tw-inline-flex">

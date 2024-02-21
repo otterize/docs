@@ -1,0 +1,212 @@
+---
+sidebar_position: 4
+title: PostgreSQL table-level access mapping
+
+image: /img/quick-tutorials/postgres/social.png
+---
+
+import CodeBlock from "@theme/CodeBlock";
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Otterize visualizes table-level access to PostgreSQL databases, by collecting PostgreSQL audit logs and associating them with the client service identities.
+
+In this tutorial, we will:
+- Optionally, prepare a Kubernetes cluster and connect it to Otterize Cloud
+- Optionally, deploy a Cloud SQL for PostgreSQL instance
+- Deploy a PostgreSQL client pod that queries the Cloud SQL server
+- Configure the Cloud SQL server to enable database auditing and route the audit logs to a Pub/Sub destination
+- Create an Otterize database integration and configure visibility log collection
+- Create a ClientIntents resource allowing access from the PostgreSQL client pod to the Cloud SQL server
+
+:::info
+Visibility log collection is currently available only for PostgreSQL instances running on GCP Cloud SQL.
+:::
+
+## Prerequisites
+
+### Prepare a Kubernetes cluster and connect it to Otterize Cloud
+Already have Otterize deployed with the database integration configured on your cluster? [Skip to the tutorial.](#tutorial)
+
+<details>
+  <summary>Prepare a Kubernetes cluster</summary>
+  {@include: ../../../_common/cluster-setup.md}
+</details>
+
+<details>
+  <summary>Install Otterize in your cluster, <b>with</b> Otterize Cloud</summary>
+
+  #### Create an Otterize Cloud account
+
+  {@include: ../../../_common/create-account.md}
+
+  #### Install Otterize OSS, connected to Otterize Cloud
+
+  {@include: ../../../_common/install-otterize-from-cloud-with-enforcement.md}
+
+</details>
+
+### Prepare a Cloud SQL for PostgreSQL instance
+Already have a Cloud SQL for PostgreSQL instance ready? [Skip to the tutorial.](#tutorial)
+<details>
+  <summary>Deploy a Cloud SQL for PostgreSQL instance</summary>
+
+  Follow the [installation instructions on the Google Cloud SQL documentation](https://cloud.google.com/sql/docs/postgres/create-instance).
+  <li>
+    On the <b>Connections</b> configuration, make sure you check the <b>Public IP</b> option, to create a public IP address for your Cloud SQL instance.
+  </li>
+  <li>
+    On the <b>Authorized networks</b> configuration, add <b>0.0.0.0/0</b> to allow access from the internet.
+  </li>
+</details>
+
+## Tutorial
+
+### Deploy a PostgreSQL client
+At this step of the tutorial, you will be deploying a dummy postgres client application which will query your
+Cloud SQL instance periodically, approximately once a minute.
+This will generate visibility logs which will be consumed by Otterize Cloud.
+
+Run the following commands, replacing `<PGHOST>`, `<PGUSER>` & `<PGPASSWORD>` with the IP address & credentials for your Cloud SQL for PostgreSQL instance:
+```shell
+export PGHOST="<PGHOST>"
+export PGUSER="<PGUSER>"
+export PGPASSWORD="<PGPASSWORD>"
+export PGPORT="5432"
+export TUTORIAL_DB="otterize_tutorial"
+export TUTORIAL_TABLE="users"
+
+kubectl create namespace otterize-tutorial-postgresql-visibility
+
+# Create a database and a table to be used for the dummy application
+kubectl run -i --tty --rm --image andreswebs/postgresql-client --restart=Never -n otterize-tutorial-postgresql-visibility \
+  --env PGHOST=$PGHOST --env PGPORT=$PGPORT --env PGUSER=$PGUSER --env PGPASSWORD=$PGPASSWORD \
+  -- psql -c "CREATE DATABASE $TUTORIAL_DB;"
+kubectl run -i --tty --rm --image andreswebs/postgresql-client --restart=Never -n otterize-tutorial-postgresql-visibility \
+  --env PGHOST=$PGHOST --env PGPORT=$PGPORT --env PGUSER=$PGUSER --env PGPASSWORD=$PGPASSWORD \
+  -- psql --dbname $TUTORIAL_DB -c "CREATE TABLE IF NOT EXISTS $TUTORIAL_TABLE (id serial PRIMARY KEY); insert into users values (default);"
+
+# deploy the dummy postgres client application
+kubectl create secret generic psql-credentials -n otterize-tutorial-postgresql-visibility \
+    --from-literal=username="$PGUSER" \
+    --from-literal=password="$PGPASSWORD"
+kubectl create configmap psql-host -n otterize-tutorial-postgresql-visibility \
+    --from-literal=pghost="$PGHOST" \
+    --from-literal=pgport="$PGPORT" \
+    --from-literal=pgdatabase="$TUTORIAL_DB" \
+    --from-literal=pgtable="$TUTORIAL_TABLE"
+kubectl apply -f ${ABSOLUTE_URL}/code-examples/postgresql-visibility/psql-client.yaml -n otterize-tutorial-postgresql-visibility
+```
+
+### Configure the Cloud SQL server to enable database auditing
+Otterize utilizes PostgreSQL audit logs generated using the [pgAudit extension](https://www.pgaudit.org/).
+
+Follow the [instructions on GCP docs](https://cloud.google.com/sql/docs/postgres/pg-audit#setting-up-database-auditing) to configure audit for PostgreSQL using pgAudit on your Cloud SQL instance.
+- For the <b>pgaudit.log</b> flag, select the <b>pgaudit.log=all</b> log level.
+- After completing the setup, open the [GCP Logs Explorer](https://console.cloud.google.com/logs/query) application, and apply the following filter to see audit logs collected from your Cloud SQL instance:
+  ```shell
+  resource.type="cloudsql_database"
+  protoPayload.request.@type="type.googleapis.com/google.cloud.sql.audit.v1.PgAuditEntry"
+  logName="projects/<GCP_PROJECT_ID>/logs/cloudaudit.googleapis.com%2Fdata_access"
+  resource.labels.database_id="<GCP_PROJECT_ID>:<CLOUDSQL_INSTANCE_NAME>"
+    ```
+
+If your Cloud SQL instance is handling any requests, you should be seeing audit records generated by it periodically.
+
+### Route Cloud SQL audit logs to a Pub/Sub destination
+Otterize Cloud consumes audit logs collected from your Cloud SQL instancec by subscribing to a pub/sub topic in your GCP project.
+
+Follow the instructions for [third-party integrations with Pub/Sub on GCP docs](https://cloud.google.com/logging/docs/export/pubsub#integrate-thru-pubsub)
+to configure a log sink and route your Cloud SQL instance's audit logs through a Pub/Sub topic, and allow Otterize Cloud to subscribe to it.
+- Under <b>logs to include</b>, provide the following filter to include all audit logs generated by pgAudit
+  for the Cloud SQL instance you are using for this tutorial:
+  ```shell
+  resource.type="cloudsql_database"
+  protoPayload.request.@type="type.googleapis.com/google.cloud.sql.audit.v1.PgAuditEntry"
+  logName="projects/<GCP_PROJECT_ID>/logs/cloudaudit.googleapis.com%2Fdata_access"
+  resource.labels.database_id="<GCP_PROJECT_ID>:<CLOUDSQL_INSTANCE_NAME>"
+    ```
+- For the <b>third-party service account name</b>, use Otterize Cloud service account:
+```shell
+otterize-cloud@otterize-cloud.iam.gserviceaccount.com
+  ```
+
+If your Cloud SQL instance is handling any requests,
+you may now open your [Pub/Sub topic's metrics](https://console.cloud.google.com/cloudpubsub/topic/list) page
+and observe how audit log records are being directed to it.
+
+### Create an Otterize database integration and configure visibility log collection
+To configure Otterize Cloud to subscribe and start consuming your Cloud SQL instance's audit logs,
+create an Otterize database integration and configure it with your GCP project and Pub/Sub topic:
+- Navigate to the [Integrations page](https://app.otterize.com/integrations) on Otterize Cloud and click the <b>+ Add Integration</b> button to create a new integration
+- Choose the <b>Database</b> integration type
+- Name your integration <b>otterize-tutorial-cloudsql</b> (this name will be used later in this tutorial)
+- Follow the form to provide your database information & credentials
+- Click <b>Test Connection</b> to ensure that Otterize Cloud is able to access your database instance
+- Under <b>Visibility settings</b>, choose to collect visibility logs using a <b>GCP Pub/Sub topic</b>
+- Enter your GCP Project ID & Topic name
+- Click <b>Test Visibility</b> to ensure that Otterize Cloud is able to subscribe to your Pub/Sub topic
+- Click <b>Add</b> to finish setting up your database integration
+
+At this point, Otterize's database integration will start collecting visibility logs from your Pub/Sub topic,
+and view them in the [Access graph](https://app.otterize.com/access-graph).
+
+If you deployed the dummy postgres application used earlier in this tutorial,
+you should start seeing connections from the psql-client app to your Cloud SQL server after about one minute.
+
+![Access Graph with unknown PostgreSQL client](/img/visualization/postgresql-visibility/access-graph-unknown-node.png)
+
+Click on the node titled <b>postgres</b> to view additional information about the discovered traffic from the psql-client app:
+
+![Discovered intents for unknown PostgreSQL client](/img/visualization/postgresql-visibility/access-graph-unknown-node-discovered-intents.png)
+![Access table for unknown PostgreSQL client](/img/visualization/postgresql-visibility/access-graph-unknown-node-access-table.png)
+
+
+### Create a ClientIntents resource allowing access from the PostgreSQL client pod to the Cloud SQL server
+At this point, Otterize Cloud is able to monitor and visualize your database access.
+Next, we will configure Otterize OSS to generate just-in-time PostgreSQL client credentials for the client application,
+and apply a permissive ClientIntents resource allowing the client application access to the Cloud SQL instance.
+This will create private credentials, used by the client application and by it only,
+which enables service-level visibility and least privilege access to your Cloud SQL instance.
+
+- Delete the secret containing common psql credentials, generated earlier in this tutorial:
+```shell
+kubectl delete secret psql-credentials -n otterize-tutorial-postgresql-visibility
+```
+
+- Annotate the psql-client app with `credentials-operator.otterize.com/user-password-secret-name:psql-credentials`, to
+start generating just-in-time client credentials for it:
+```shell
+kubectl patch cronjob psql-client -n otterize-tutorial-postgresql-visibility -p \
+  '{"spec": {"jobTemplate": {"spec": {"template": {"metadata": {"annotations": {"credentials-operator.otterize.com/user-password-secret-name": "psql-credentials"}}}}}}}'
+```
+
+- Apply a ClientIntents resource for the psql client application, allowing all access to the Cloud SQL DB:
+```shell
+kubectl apply -f ${ABSOLUTE_URL}/code-examples/postgresql-visibility/psql-client-clientintents.yaml -n otterize-tutorial-postgresql-visibility
+```
+
+You should now see the access graph updated with an edge connecting the psql-client app to your Cloud SQL server:
+
+![Access Graph with known PostgreSQL client](/img/visualization/postgresql-visibility/access-graph-known-node.png)
+
+Click on the node titled <b>psql-client</b> to see Otterize's suggestion about applying least privilege ClientIntents for it, based on
+the discovered traffic seen from your audit logs:
+
+![Discovered intents for unknown PostgreSQL client](/img/visualization/postgresql-visibility/access-graph-known-node-discovered-intents.png)
+
+
+
+## Teardown
+
+To remove the deployed examples:
+- Delete the database used by the dummy application:
+```shell
+kubectl run -i --tty --rm --image andreswebs/postgresql-client --restart=Never -n otterize-tutorial-postgresql-visibility \
+  --env PGHOST=$PGHOST --env PGPORT=$PGPORT --env PGUSER=$PGUSER --env PGPASSWORD=$PGPASSWORD \
+  -- psql -c "DROP DATABASE $TUTORIAL_DB;"
+```
+- Delete the Kubernetes namespace used by this tutorial:
+```shell
+kubectl delete namespace otterize-tutorial-postgresql-visibility
+```
