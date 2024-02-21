@@ -43,7 +43,7 @@ const footerSocialLinks = `
   width='30'
   height='30'
   loading='lazy'
-  src="img/footer/github.svg"
+  src="/img/footer/github.svg"
   alt="GitHub logo"
   className='w-5 h-5 relative'
   />
@@ -53,7 +53,7 @@ const footerSocialLinks = `
   width='30'
   height='30'
   loading='lazy'
-  src="img/footer/linkedin.svg"
+  src="/img/footer/linkedin.svg"
   alt="LinkedIn logo"
   className='w-5 h-5 relative'
   />
@@ -63,7 +63,7 @@ const footerSocialLinks = `
   width='30'
   height='30'
   loading='lazy'
-  src="img/footer/x.svg"
+  src="/img/footer/x.svg"
   alt="X logo"
   className='w-5 h-5 relative'
   />
@@ -73,7 +73,7 @@ const footerSocialLinks = `
   width='30'
   height='30'
   loading='lazy'
-  src="img/footer/slack.svg"
+  src="/img/footer/slack.svg"
   alt="Slack logo"
   className='w-5 h-5 relative'
   />
@@ -83,7 +83,7 @@ const footerSocialLinks = `
   width='30'
   height='30'
   loading='lazy'
-  src="img/footer/youtube.svg"
+  src="/img/footer/youtube.svg"
   alt="YouTube logo"
   className='w-5 h-5 relative'
   />
@@ -396,9 +396,9 @@ const config = {
           {
             html: `<div class="footer_copyright tw-w-full">
                     <div style="display:flex;">
-                      <img src="img/footer/cloud-native.svg" style="margin-right:20px;"/>
+                      <img src="/img/footer/cloud-native.svg" style="margin-right:20px;"/>
                       <a href="https://otterize.com/soc2-request" target="_blank" style="height:50px;">
-                        <img src="img/footer/soc.png" style="width:50px;"/>
+                        <img src="/img/footer/soc.png" style="width:50px;"/>
                       </a>
                     </div>
                     <div class="tw-w-full tw-h-14 tw-flex-col tw-justify-start tw-items-start tw-gap-8 tw-inline-flex">
