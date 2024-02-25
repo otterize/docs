@@ -20,7 +20,7 @@ spec:
       containers:
         - name: frontend
           imagePullPolicy: Always
-          image: 'brianglynn/frontend'
+          image: 'otterize/egress-tutorial-frontend'
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -39,7 +39,7 @@ spec:
       containers:
         - name: backend
           imagePullPolicy: Always
-          image: 'brianglynn/backend'
+          image: 'otterize/egress-tutorial-backend'
           ports:
             - containerPort: 8080
 ---
@@ -47,7 +47,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: backend
-  namespace:  otterize-tutorial-egress-access
+  namespace: otterize-tutorial-egress-access
 spec:
   selector:
     app: backend

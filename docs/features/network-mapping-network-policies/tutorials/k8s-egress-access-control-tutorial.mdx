@@ -3,6 +3,10 @@ sidebar_position: 5
 title: Egress Network Policy Automation
 image: /img/quick-tutorials/egress-access-control/social.png
 ---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
 Let’s learn how Otterize automates egress access control with network policies.
 
 In this tutorial, we will:
@@ -13,7 +17,7 @@ In this tutorial, we will:
 
 ## Prerequisites
 ### Install Otterize on your cluster
-To deploy Otterize, head over to [Otterize Cloud](https://app.otterize.com/), and to integrate your cluster, navigate to the [Clusters page](https://app.otterize.com/clusters) and follow the instructions, but be sure to add the flag below.
+To deploy Otterize, head over to [Otterize Cloud](https://app.otterize.com/), and to integrate your cluster, navigate to the [Integrations page](https://app.otterize.com/integrations) and follow the instructions, but be sure to add the flag below.
 
 **Note:**  Egress policy creation is off by default. We must add the following flag when installing Otterize to enable egress policy creation.
 ```bash
@@ -26,8 +30,8 @@ To deploy Otterize, head over to [Otterize Cloud](https://app.otterize.com/), an
 This will set up the namespace we will use for our tutorial and deploy the cluster containing our front and backend pods. Upon deployment, our cluster will have no network policies in place.
 
 ```yaml
-kubectl create namespace otterize-tutorial-egress
-kubectl apply -n otterize-tutorial-egress -f ${ABSOLUTE_URL}/code-examples/network-egress/all.yaml
+kubectl create namespace otterize-tutorial-egress-access
+kubectl apply -n otterize-tutorial-egress-access -f ${ABSOLUTE_URL}/code-examples/egress-access-control/all.yaml
 ```
 
 ### About Network Policies
@@ -50,19 +54,26 @@ As previously mentioned, the pods will be non-isolated by default, and everythin
 ```bash
 kubectl logs -f -n otterize-tutorial-egress-access deploy/frontend
 ```
+Example log output:
+```
+The answer to all your problems is to:
+The sun always shines above the clouds.
 
-:::danger
-TODO Please add an example output here, and a screenshot of the resulting network map.
-:::
+The answer to all your problems is to:
+Stop procrastinating.
+
+The answer to all your problems is to:
+Don't feed Mogwais after midnight.
+```
+View of our non-isolated cluster within Otterize Cloud
+<img className="tw-w-128 tw-mb-4" src="/img/quick-tutorials/egress-access-control/unprotected-network-egress-tutorial.png"/>
+
 
 ### Applying our intents
 
 Given that this is a serious advice application, we want to lock down our pods to ensure no outside inference can occur.
 
-To enforce the strict communication rules for our services, we will start by applying a default deny policy, ensuring that only explicitly defined connections are allowed.  You’ll see that we are allowing UDP on port 53 to support any DNS lookups we need.
-:::danger
-TODO Please explain why it's important to allow DNS lookups (what would happen if we didn't).
-:::
+To enforce the strict communication rules for our services, we will start by applying a default deny policy, ensuring that only explicitly defined connections are allowed. You’ll see that we are allowing UDP on port 53 to support any DNS lookups we need. Without DNS support, our pods could not resolve their cluster names (*frontend*, *backend*) to their internal IP addresses nor resolve the domain names used by our external advise API service.
 
 ```bash
 kubectl apply -n otterize-tutorial-egress-access -f ${ABSOLUTE_URL}/code-examples/egress-access-control/default-deny-policy.yaml
@@ -73,12 +84,18 @@ kubectl apply -n otterize-tutorial-egress-access -f ${ABSOLUTE_URL}/code-example
 {@include: ../../../../static/code-examples/egress-access-control/default-deny-policy.yaml}
 ```
 
-
 You can now see in the logs that the pods are isolated from each other and the public internet:
 
 ```bash
 kubectl logs -f -n otterize-tutorial-egress-access deploy/frontend
 ```
+Example log output from *frontend* pod:
+```
+Unable to connect to the backend
+Unable to connect to the backend
+Unable to connect to the backend
+```
+
 
 Now that we have secured our broader network, we will apply the following ClientIntents to enable traffic for our services.
 
@@ -86,18 +103,143 @@ Now that we have secured our broader network, we will apply the following Client
 kubectl apply -n otterize-tutorial-egress-access -f ${ABSOLUTE_URL}/code-examples/egress-access-control/intents.yaml
 ```
 
-:::danger
-TODO Please note the use of @include here to make sure the yaml showing below and the link lead to the same file.
-:::
 ```yaml
 {@include: ../../../../static/code-examples/egress-access-control/intents.yaml}
 ```
 
-Now, our network and our services are only able to open connections to those internal and external resources that are explicitly needed.
+Now, our network and our services are only able to open connections to those internal and external resources that are explicitly needed. Below, we can inspect the five different NetworkPolicies generated by Otterize and look at the annotations to see how these policies match their applied pods and designated traffic rules.
 
-:::danger
-TODO Please show the resulting network policies here, and explain how they work (e.g. why the rules that are there result in traffic being allowed).
-:::
+<Tabs>
+<TabItem value="ingress-backend" label="ingress-backend" default>
+
+```yaml
+Name:         access-to-backend-from-otterize-tutorial-egress-access
+Namespace:    otterize-tutorial-egress-access
+Created on:   2024-02-25 12:20:52 -0800 PST
+Labels:       intents.otterize.com/network-policy=backend-otterize-tutorial-eg-00531a
+Annotations:  none
+Spec:
+    # Selector specifying pods to which the policy applies. In this case, it targets pod labeled as backend.
+    # Otterize automatically adds these labels, ensuring they persist across deployments and multiple instances.
+    PodSelector:     intents.otterize.com/server=backend-otterize-tutorial-eg-00531a
+  Allowing ingress traffic:
+    # Specifies that the policy allows traffic to any port on the selected pods.
+    To Port: any (traffic allowed to all ports)
+    From:
+      # Specifying the namespace for our pod selector
+      NamespaceSelector: kubernetes.io/metadata.name=otterize-tutorial-egress-access
+      # Further refines the allowed sources of ingress to only those pods with the Otterize managed label
+      PodSelector: intents.otterize.com/access-backend-otterize-tutorial-eg-00531a=true
+  Not affecting egress traffic
+  # Specifies that this policy only applies to incoming traffic to the selected pods.
+  Policy Types: Ingress
+```
+</TabItem>
+<TabItem value="ingress-frontend" label="ingress-frontend" >
+
+```yaml
+Name:         access-to-frontend-from-otterize-tutorial-egress-access
+Namespace:    otterize-tutorial-egress-access
+Created on:   2024-02-25 12:20:52 -0800 PST
+Labels:       intents.otterize.com/network-policy=frontend-otterize-tutorial-eg-2bb536
+Annotations:  none
+Spec:
+  # This label identifies the NetworkPolicy as relating to the frontend pod
+  # Otterize automatically adds these labels, ensuring they persist across deployments and multiple instances.
+  PodSelector:     intents.otterize.com/server=frontend-otterize-tutorial-eg-2bb536
+  Allowing ingress traffic:
+    # Specifies that the policy permits traffic to any port on the selected pods
+    To Port: any (traffic allowed to all ports)
+    From:
+      # Specifying the namespace for our pod selector
+      NamespaceSelector: kubernetes.io/metadata.name=otterize-tutorial-egress-access
+      # Further refines the allowed sources of ingress to only those pods with the Otterize managed label
+      PodSelector: intents.otterize.com/access-frontend-otterize-tutorial-eg-2bb536=true
+  Not affecting egress traffic
+  # Specifies that this policy only applies to incoming traffic to the selected pods.
+  Policy Types: Ingress
+```
+</TabItem>
+<TabItem value="egress-backend" label="egress-backend">
+
+```yaml
+Name:         egress-to-backend.otterize-tutorial-egress-access-from-frontend
+Namespace:    otterize-tutorial-egress-access
+Created on:   2024-02-25 12:20:52 -0800 PST
+Labels:       intents.otterize.com/egress-network-policy=frontend-otterize-tutorial-eg-2bb536
+              intents.otterize.com/egress-network-policy-target=backend-otterize-tutorial-eg-00531a
+Annotations:  none
+Spec:
+  # This selector targets the pods to which the policy applies. Here, it specifically targets pods labeled as "client" of the "frontend"
+  # Otterize automatically adds these labels, ensuring they persist across deployments and multiple instances.
+  PodSelector:     intents.otterize.com/client=frontend-otterize-tutorial-eg-2bb536
+  Not affecting ingress traffic
+  Allowing egress traffic:
+    # Specifies that the policy allows egress traffic to any port
+    To Port: any (traffic allowed to all ports)
+    To:
+      # Specifying the namespace for our pod selector
+      NamespaceSelector: kubernetes.io/metadata.name=otterize-tutorial-egress-access
+      # Further refines the allowed sources of egress to only those pods with the Otterize managed label
+      PodSelector: intents.otterize.com/server=backend-otterize-tutorial-eg-00531a
+  # Specifies that this policy only applies to outbound traffic to the selected pods.
+  Policy Types: Egress
+```
+</TabItem>
+<TabItem value="egress-frontend" label="egress-frontend">
+
+```yaml
+Name:         egress-to-frontend.otterize-tutorial-egress-access-from-backend
+Namespace:    otterize-tutorial-egress-access
+Created on:   2024-02-25 12:20:52 -0800 PST
+Labels:       intents.otterize.com/egress-network-policy=backend-otterize-tutorial-eg-00531a
+              intents.otterize.com/egress-network-policy-target=frontend-otterize-tutorial-eg-2bb536
+Annotations:  none
+Spec:
+  # This selector targets the pods to which the policy applies. Here, it specifically targets pods labeled as "client" of the "backend"
+  # Otterize automatically adds these labels, ensuring they persist across deployments and multiple instances.
+  PodSelector:     intents.otterize.com/client=backend-otterize-tutorial-eg-00531a
+  Not affecting ingress traffic
+  Allowing egress traffic:
+    # Specifies that the policy allows egress traffic to any port
+    To Port: any (traffic allowed to all ports)
+    To:
+      # Specifying the namespace for our pod selector
+      NamespaceSelector: kubernetes.io/metadata.name=otterize-tutorial-egress-access
+      # Further refines the allowed sources of egress to only those pods with the Otterize managed label
+      PodSelector: intents.otterize.com/server=frontend-otterize-tutorial-eg-2bb536
+  # Specifies that this policy only applies to outbound traffic to the selected pods.
+  Policy Types: Egress
+
+```
+</TabItem>
+<TabItem value="egress-public-backend" label="egress-public-backend">
+
+```yaml
+Name:         egress-to-internet-from-backend
+Namespace:    otterize-tutorial-egress-access
+Created on:   2024-02-25 12:20:52 -0800 PST
+Labels:       intents.otterize.com/egress-internet-network-policy=backend-otterize-tutorial-eg-00531a
+Annotations:  none
+Spec:
+  # This selector targets the pods to which the policy applies. Here, it specifically targets pods labeled as "client" of the "backend"
+  # Otterize automatically adds these labels, ensuring they persist across deployments and multiple instances.
+  PodSelector:     intents.otterize.com/client=backend-otterize-tutorial-eg-00531a
+  Not affecting ingress traffic
+  Allowing egress traffic:
+    # Specifies that the policy allows egress traffic to any port
+    To Port: any (traffic allowed to all ports)
+    To:
+    # Specifies the IP address range to which the policy allows egress traffic. Here, a /32 CIDR notation indicates a single IP address, suggesting this policy targets the IP address associated with our advise API
+    IPBlock:
+        CIDR: 185.53.57.80/32
+        # The 'Except' field allows specifying IP addresses within the defined CIDR range that we should exclude, but it is empty in this case.
+        Except:
+  # Specifies that this policy only applies to outbound traffic to the selected pods.
+  Policy Types: Egress
+```
+</TabItem>
+</Tabs>
 
 The protected network can be seen on Otterize Cloud:
 <img className="tw-w-128 tw-mb-4" src="/img/quick-tutorials/egress-access-control/cluster-intents-applied.png"/>
