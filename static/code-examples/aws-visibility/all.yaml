@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: joketrainer
-          image: brianglynn/aws-visibility-joketraininer:latest
+          image: otterize/aws-visibility-tutorial:latest
           env:
             - name: DAD_JOKE_LAMBDA_ARN
               valueFrom:

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 title: AWS Resource Mapping
-image: /img/quick-tutorials/aws-iam-eks/social.png
+image: /img/quick-tutorials/aws-iam-visibility/social.png
 ---
 
 
@@ -10,8 +10,8 @@ Many production Kubernetes workloads rely on cloud resources, like S3 Buckets, R
 In this tutorial, we will:
 * Set up an EKS cluster.
 * Deploy two Lambda functions.
-* Deploy a server pod that evaluates jokes from one Lambda and forwards a review to another.
-* Automatically detect the Lambda function calls in Otterize.
+* Deploy a server pod that retrieves joke from a Lambda, provides a review, and posts the review to another Lambda.
+* Automatically detect and view the Lambda function calls in Otterize.
 
 By the end, you'll know how to map Kubernetes workloads alongside their dependent AWS resources using Otterize.
 
@@ -47,16 +47,16 @@ aws eks update-kubeconfig --name otterize-tutorial-aws-visibility --region 'us-w
 To provide visibility, we will need to install Otterize in our cluster, and we will want to enable AWS IAM roles for service accounts (IRSA) on our cluster. We can quickly enable this using a cloudformation template on the Otterize Cloud Integrations page.
 
 1. **Install Otterize**
-If you don't have a connected Kubernetes cluster, create one via [Otterize Clusters](https://app.otterize.com/clusters) and follow the setup instructions. Skip if your cluster is already connected.
+If you don't have a connected Kubernetes cluster, create one via [Integrations page](https://app.otterize.com/integrations) and follow the setup instructions for Kubernetes. Skip if your cluster is already connected.
 
 2. **Integrate AWS with Otterize Cloud**
-To begin the integration with AWS, visit the [Integrations page](https://app.otterize.com/integrations). Once there,  you will be asked for information to help populate a cloudformation script we will use to integrate AWS access controls into our cluster.
+To begin the integration with AWS, visit the [Integrations page](https://app.otterize.com/integrations). Once there, you will be asked for information to help populate a cloudformation script we will use to integrate AWS access controls into our cluster.
 
 If you created the EKS cluster above, the cluster name would be￼`otterize-tutorial-aws-visibility`, and the region would be `us-west-2`.
 
 Once the information is provided, a *Launch Cloudformation* button will take you to the AWS Console to deploy the cloudformation script. This script will install IRSA within your EKS cluster and enable Otterize Cloud to manage intents.
 
-After IRSA is enabled in your cluster, you need to redeploy Otterize with the AWS credential operator and AWS visibility enabled. In Otterize Cloud, click the *Next* button to see the updated Helm commands.  Before executing the revised configuration, you will need to set an additional flag at the end of the command:
+After IRSA is enabled in your cluster, you need to redeploy Otterize with the AWS credential operator and AWS visibility enabled. In Otterize Cloud, click the *Next* button to see the updated Helm commands. AWS Visibility is not enabled by default. Before executing the revised configuration, you will need to set an additional flag at the end of the command:
 
 ```bash
 --set networkMapper.aws.visibility.enabled=true
@@ -131,19 +131,7 @@ kubectl apply -n otterize-tutorial-aws-visibility -f ${ABSOLUTE_URL}/code-exampl
 ```
 
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha3
-kind: ClientIntents
-metadata:
-  name: server
-spec:
-  service:
-    name: joketrainer
-  calls:
-    - name: arn:aws:lambda:us-west-2:*:function:OtterizeTutorialJokeTrainingStack-*
-      type: aws
-      awsActions:
-        - "lambda:InvokeFunction"
-
+{@include: ../../../../static/code-examples/aws-visibility/intents.yaml}
 ```
 
 We can now recheck the logs to ensure that the pod is running:
@@ -165,9 +153,14 @@ Sending Feedback of Funny?: No
 ### Visualize Relationships
 The Otterize network mapper inspects pods with the `network-mapper.otterize.com/aws-visibility: true` label. For the labeled pods, the network mapper will identify AWS API calls made by that pod and determine which resources and actions are being used. This information is shown on the [Access graph](https://app.otterize.com/access-graph).
 
-In the Access graph screenshot below, you’ll see 4 AWS resources associated with our server pod: DadJokeLambdaFunction, FeedbackLambdaFunction, the role assumed by our server pod, and our wildcard intent definition. This wildcard definition matches any Lambdas created by our cloudformation stack. These types of wildcard definitions can be helpful for AWS Resources with dynamic ARN names as you move across staging and production deployments. Still, they open up a security space that could be overly permissive for some environments. Otterize makes deploying with a wildcard definition easy and then applying more stringent scoping without disrupting any services.
+In the Access graph screenshot below, you’ll see 4 AWS resources associated with our *joketrainer* pod: *DadJokeLambdaFunction*, *FeedbackLambdaFunction*, the role assumed by our server pod, and our wildcard intent definition. This wildcard definition matches any Lambdas created by our cloudformation stack. These types of wildcard definitions can be helpful for AWS Resources with dynamic ARN names as you move across staging and production deployments. Still, they open up a security space that could be overly permissive for some environments. Otterize makes deploying with a wildcard definition easy and then applying more stringent authorization without disrupting any services.
 
 ![Otterize Cloud AWS Visibility Example](/img/quick-tutorials/aws-iam-visibility/aws-iam-visibility.png)
+
+
+### What's Next
+
+Now that we've discovered AWS resources used within a Kubernetes workload, you can learn more about how you can manage access to these resources with Otterize in the [Automate AWS IAM for EKS](/features/aws-iam/tutorials/aws-iam-eks) tutorial.
 
 ## Clean Up
 
@@ -175,7 +168,6 @@ To remove cloudformation yaml:
 ```bash
 rm template.yaml
 ```
-
 
 To remove the deployed example:
 ```bash
