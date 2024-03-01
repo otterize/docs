@@ -1,0 +1,32 @@
+---
+sidebar_position: 1
+title: GitHub | Overview
+hide_table_of_contents: true
+hide_title: true
+---
+
+import DocsLinkCard from "@site/src/components/LinkCard";
+
+export const tutorials = [
+    {
+        title: 'Automated Authorization Pull Requests',
+        description: 'Automatically create pull requests to resolve any drifts detected in your cluster',
+        url: '/features/github/tutorials/automated-pull-requests'
+    },
+];
+
+
+# GitHub
+
+Otterize can create just-in-time AWS IAM roles and policies for your workloads running on EKS Kubernetes clusters, greatly simplifying the lifecycle of managing IAM roles and policies.
+
+### Tutorials
+
+To learn how to leverage Otterize's continuous monitoring of your cluster's access to detect and resolve any drifts.
+<DocsLinkCard items={tutorials} colSize={"sm"}/>
+
+### How does Otterize work with GitHub?
+
+After installing Otterize in your cluster, it immediately begins monitoring both incoming and outgoing network traffic to your pods and the public internet via the network mapper feature (see Network Mapper for more details). Additionally, Otterize can track activity across various resources, including Postgres, AWS, Kafka, and more. This tracking helps Otterize create a detailed map of interactions and relationships.
+
+By leveraging ClientIntents, Otterize simplifies the application and enforcement of access rights, thereby enhancing cluster security. Once ClientIntents are defined and stored in a GitHub repository, Otterize compares these intended access patterns against actual usage within the cluster. Discrepancies trigger a pull request to update the ClientIntent definitions to reflect current usage. This process enables development teams to either accept the suggested changes or adjust them based on newly observed behaviors.
