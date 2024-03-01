@@ -1,0 +1,8 @@
+{
+  "label": "GitHub",
+  "position": 6,
+  "collapsed": true,
+  "customProps": {
+    "image": "/img/icons/github-logo.svg"
+  }
+}

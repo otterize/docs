@@ -1,0 +1,208 @@
+---
+sidebar_position: 1
+title: Automated Authorization Pull Requests
+image: /img/quick-tutorials/github/social.png
+---
+
+Let’s learn how Otterize can integrate with your GitHub repository to automatically generate pull requests when your cluster’s access changes.
+
+In this tutorial, we will:
+
+- Deploy a sample cluster.
+- Establish a repository for our pods’ ClientIntents.
+- Integrate our new repository into Otterize Cloud and install Otterize’s GitHub app.
+- Modify our cluster, thereby triggering Otterize to creating a pull request with the updated ClientIntents.
+
+## Prerequisites
+
+### CLI tools
+We will need the following CLI tools to set up our repository and export our ClientIntents
+
+1. [Otterize CLI](https://docs.otterize.com/overview/installation#install-the-otterize-cli)
+2. [Github CLI](https://cli.github.com). After installing please log in to an account capable of creating new repositories.
+
+### Install Otterize on your cluster
+To deploy Otterize, head over to [Otterize Cloud](https://app.otterize.com/), and to integrate your cluster, navigate to the [Integrations Page](https://app.otterize.com/integrations) and follow the instructions.
+
+## Tutorial
+
+### Deploy a cluster
+
+The command below will set up the namespace we will use for our tutorial and deploy a sample cluster that simulates a fantasy tabletop game using several services to generate different aspects of the game.
+
+```yaml
+kubectl apply -n otterize-tutorial-github -f ${ABSOLUTE_URL}/code-examples/github/all.yaml
+```
+<details>
+    <summary>View Deployment</summary>
+
+```yaml
+{@include: ../../../../static/code-examples/github/all.yaml}
+```
+</details>
+
+Once deployed, we can see our network map on Otterize Cloud:
+
+<img
+    src="/img/quick-tutorials/github/visual-graph-unsecure-deploy.png"
+    alt="visual graph of cluster deployment"
+/>
+
+
+### Export & apply our ClientIntents
+
+Now that our pods are deployed, we want to apply network access rules to our cluster using [ClientIntents](/reference/IBAC-Overview). Otterize can automatically generate these on our behalf based on the mapped network traffic.
+
+We can use the Otterize CLI tool to export the intent definitions. Note, these definitions are accessible within the Access Graph on Otterize Cloud.
+
+```bash
+mkdir otterize-tutorial-github
+cd otterize-tutorial-github
+mkdir intents
+otterize network-mapper export -n otterize-tutorial-github > ./intents/intents.yaml
+```
+<details>
+    <summary>View intents.yaml</summary>
+
+```yaml
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: adventure
+  namespace: otterize-tutorial-github
+spec:
+  service:
+    name: adventure
+  calls:
+    - name: character-generator
+    - name: monster-generator
+    - name: quest-generator
+    - name: treasure-generator
+```
+</details>
+
+Let’s secure our pods by applying these intents to our cluster:
+
+```bash
+kubectl apply -n otterize-tutorial-github -f ./intents/intents.yaml
+```
+We can see in the Access Graph that the pods are now protected:
+<img
+    src="/img/quick-tutorials/github/visual-graph-intents-applied.png"
+    alt="visual graph of cluster deployment with protected edges"
+/>
+
+### Create our repository
+
+To ensure teams have a versioned lasting record of the intents applied for our services, we should store them in a repository. Using the command below, we will create a new repository and push our intents into the code base.
+
+```bash
+gh repo create otterize-tutorial-github --private
+git init
+git add .
+git commit -m "Initial Intents"
+git branch -M main
+git remote add origin https://github.com/bglynn/otterize-tutorial-github.git
+git push -u origin main
+```
+
+Now that our intents are being version, we can integrate the repository into Otterize Cloud to detect any drifts in our pods needs.
+
+### Add our GitHub repository to Otterize Cloud
+
+To add the repository to Otterize Cloud, we head over to the [Integrations page](https://app.otterize.com/integrations)
+
+1. Click *Add Integration*
+2. Select Integration Type: *GitHub*
+3. Provide a name for the integration: *otterize-tutorial-github*
+4. Leave the *On Trigger* options set to the predefined defaults
+5. For *Repository*, provide {owner name}/otterize-tutorial-github, replacing your specific user or organization name where you created the repository.
+6. For the *Base Branch* option type in *main*. Other branches may be useful for long-held branches that identify “stagging,” “testing,” or other deployment states.
+7. For *ClientIntents path*, we are looking for the directory within our repository that contains our existing intents. For this tutorial, it will be *intents/*
+8. Next, Hit the *Add* button. This will redirect you to GitHub. From here, you’ll select the repository with the intent for your cluster. For our tutorial, that would be *otterize-tutorial-github* and click on *Install*
+
+<img className="tw-w-96 tw-block tw-mx-auto tw-mb-4"
+    src="/img/quick-tutorials/github/install-github-app.png"
+    alt="Github App Install Example"
+/>
+
+The Otterize GitHub app is now installed on your repository. Otterize will continuously look for differences between the ClientIntent definitions in your repository compared to the detected use in your cluster. As drifts are detected, pull requests will be open to update the intent definitions to incorporate the new usage behaviors. Let’s see how this works.
+
+You can learn more about configuring GitHub and how to use the Triggers on the [Reference page](/features/github/reference)
+
+### Update our cluster
+
+In the original deployment of our pods, our game simulation pod (“adventure”) utilized the *monster-generator* pod to fetch a random monster for our game. Now, our newly improved version of our monster generator is ready to be deployed.  Let’s deploy it with the command deploy.
+
+```bash
+kubectl apply -n otterize-tutorial-github -f ${ABSOLUTE_URL}/code-examples/github/all-v2.yaml
+```
+
+Once the pods are deployed, we can check the logs of our *adventure* pod using the command below to see that it’s now utilizing the new version of the monster generator.
+
+```bash
+kubectl logs -f -n otterize-tutorial-github deploy/adventure
+```
+
+Example Log Output:
+
+```
+****************************************************
+Let another great adventure begin!
+****************************************************
+Using MonsterV2 generated monster
+Welcome to your adventure, Elf Wizard!
+Your quest: Escort the Caravan
+Beware, a wild Elephant appears!
+The Elephant has 90 hit points, Our Elf has 244 points.
+---------------------------------------------
+Elf lands a 19 point strike against the smelly Beast!
+Elephant hits our strong Elf doing 20 point of damage.
+The Elephant has 71 hit points, Our Elf has 224 points.
+```
+
+*monster-generator-v2* in Otterize Cloud Access Graph:
+
+<img
+    src="/img/quick-tutorials/github/visual-graph-updated-services.png"
+    alt="visual graph of cluster deployment"
+/>
+
+### View new pull request
+
+With our *adventure* pod calling *monster-generator-v2* the access for *adventure* has changed. We should see a new pull request if we visit the repository with our intent definitions and GitHub app integration.
+
+<img
+    src="/img/quick-tutorials/github/pull-request.png"
+    alt="visual graph of cluster deployment"
+/>
+
+Let’s merge the pull request, pull down the latest to our local copy, and apply the changes to our cluster.
+
+```bash
+git pull
+kubectl apply -n otterize-tutorial-github -f ./intents/intents.yaml
+```
+
+## Teardown
+
+To remove the deployed examples, run:
+
+```*bash*
+kubectl delete namespace otterize-tutorial-github
+```
+
+You can remove the repository with the following command, provided you replace the `{owner name}` with appropriate owner :
+
+Note, that your API key might not have privileges to delete the repository, in which case you will need do so in the *Settings* section of your repository.
+
+```bash
+gh repo delete {owner name}/otterize-tutorial-github
+```
+
+To remove the local files, run:
+
+```bash
+cd ..
+rm -rf otterize-tutorial-github
+```
