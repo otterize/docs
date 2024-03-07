@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: otterize-tutorial-azure-iam
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: client
+  namespace: otterize-tutorial-azure-iam
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client
+  namespace: otterize-tutorial-azure-iam
+spec:
+  selector:
+    matchLabels:
+      app: client
+  template:
+    metadata:
+      labels:
+        app: client
+        azure.workload.identity/use: "true"
+        credentials-operator.otterize.com/create-azure-role-assignment: "true"
+    spec:
+      serviceAccountName: client
+      containers:
+        - name: client
+          image: mcr.microsoft.com/azure-cli
+          command: [ "/bin/sh", "-c", "--" ]
+          args: [ "while true; do az login --federated-token \"$(cat $AZURE_FEDERATED_TOKEN_FILE)\" --service-principal -u $AZURE_CLIENT_ID -t $AZURE_TENANT_ID; az storage blob list --container test --account-name amitlichttest --auth-mode login; sleep 1; echo 'Client - The time is:'; curl -v --silent google.com 2>&1 | grep 'Date:'; sleep 2; done" ]
