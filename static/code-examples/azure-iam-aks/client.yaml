@@ -30,4 +30,9 @@ spec:
         - name: client
           image: mcr.microsoft.com/azure-cli
           command: [ "/bin/sh", "-c", "--" ]
-          args: [ "while true; do az login --federated-token \"$(cat $AZURE_FEDERATED_TOKEN_FILE)\" --service-principal -u $AZURE_CLIENT_ID -t $AZURE_TENANT_ID; az storage blob list --container test --account-name amitlichttest --auth-mode login; sleep 1; echo 'Client - The time is:'; curl -v --silent google.com 2>&1 | grep 'Date:'; sleep 2; done" ]
+          env:
+            - name: AZURE_STORAGE_ACCOUNT
+              value: amitlichttest
+            - name: AZURE_STORAGE_CONTAINER
+              value: test
+          args: [ "while true; do az login --federated-token \"$(cat $AZURE_FEDERATED_TOKEN_FILE)\" --service-principal -u $AZURE_CLIENT_ID -t $AZURE_TENANT_ID; az storage blob list --container $AZURE_STORAGE_CONTAINER --account-name $AZURE_STORAGE_ACCOUNT --auth-mode login; sleep 1; echo 'Client - The time is:'; curl -v --silent google.com 2>&1 | grep 'Date:'; sleep 2; done" ]
