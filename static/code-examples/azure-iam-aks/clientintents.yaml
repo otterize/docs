@@ -7,7 +7,7 @@ spec:
   service:
     name: client
   calls:
-    - name: "/subscriptions/ef54c90c-5351-4c8f-a126-16a6d789104f/resourceGroups/myResourceGroup/providers/Microsoft.Storage/storageAccounts/amitlichttest/blobServices/default/containers/test"
+    - name: "/subscriptions/ef54c90c-5351-4c8f-a126-16a6d789104f/resourceGroups/myResourceGroup/providers/Microsoft.Storage/storageAccounts/otterizetutorialazureiam/blobServices/default/containers/test"
       type: azure
       azureRoles:  # pre-existing (preset or custom) role by name
         - "Storage Blob Data Contributor"
