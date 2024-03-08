@@ -189,6 +189,10 @@ const config = {
           to: '/features/aws-iam/tutorials/aws-iam-eks',
         },
         {
+          from: ['/quickstart/access-control/k8s-network-policies'],
+          to: '/features/network-mapping-network-policies/tutorials/k8s-network-policies',
+        },
+        {
           from: ['/quick-tutorials/aws-eks-cni-mini','/quickstart/access-control/aws-eks-cni-mini'],
           to: '/features/network-mapping-network-policies/tutorials/aws-eks-cni-mini',
         },
