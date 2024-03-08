@@ -22,7 +22,7 @@ To deploy the operator, [use the Helm chart](/reference/configuration/intents-op
 The intents operator pod exposes a Prometheus metrics endpoint on port 2112, on `/metrics`.
 
 ## Controlling access using the intents operator
-To learn how to use the intents operator to control access, consult the guides for [managing network policies using intents](/quickstart/access-control/k8s-network-policies), [Kafka ACLs using intents](/quickstart/access-control/k8s-kafka-mtls) and [Istio AuthorizationPolicy using intents](/quickstart/access-control/k8s-istio-authorization-policies).
+To learn how to use the intents operator to control access, consult the guides for [managing network policies using intents](#network-policies), [Kafka ACLs using intents](#kafka-mtls-and-acls), [PostgreSQL users & access using intents](#postgresql-users-and-access) and [Istio AuthorizationPolicy using intents](#istio-authorization-policy).
 
 ## Pod annotations
 
@@ -35,7 +35,7 @@ You can override the service name the intents operator uses when it computes net
 
 ## Supported enforcement types
 
-### Network policies
+### Network policies {#network-policies}
 The intents operator automatically creates, updates and deletes network policies, and automatically labels client and server pods, to reflect precisely the client-to-server calls declared in client intents files.
 
 The intents operator can also be configured to process client intents *without* creating and managing network policies, to provide visibility on what would happen once enforcement via network policies is activated. More information can be found in the [shadow vs active enforcement documentation](/shadow-vs-active-enforcement).
@@ -62,7 +62,7 @@ This meant that if you had no network policies on a pod, and created ClientInten
 
 This behavior can be disabled using the Helm chart's values.
 
-### Kafka mTLS & ACLs
+### Kafka mTLS & ACLs {#kafka-mtls-and-acls}
 The intents operator automatically creates, updates, and deletes ACLs in Kafka clusters running within your Kubernetes cluster according to the declared intents. It does not modify other ACLs. It works together with the [Otterize credentials operator](/reference/configuration/credentials-operator) to easily enable secure access to Kafka from client pods, all in your Kubernetes cluster.
 
 The intents operator can also be configured to process client intents *without* creating and managing Kafka ACLs, to provide visibility on what would happen once enforcement via Kafka ACLs is activated. More information can be found in the [shadow vs active enforcement documentation](/shadow-vs-active-enforcement).
@@ -75,12 +75,12 @@ To enable this, the intents operator creates an ACL enabling all consumers to re
 The permission check performed by the AclAuthorizer for a consumer group also takes into account whether the consumer has the appropriate access to the topic
 it is attempting to read, so the end result is that the topic ACLs determine actual access.
 
-### PostgreSQL users & access
+### PostgreSQL users & access {#postgresql-users-and-access}
 The intents operator automatically creates, and updates credentials in PostgreSQL databases according to the declared intents. It works together with the Otterize credentials operator to easily enable secure access to PostgreSQL from client pods, all in your Kubernetes cluster.
 
 Try the [Just-in-time PostgreSQL users & access](/features/postgresql/tutorials/postgres) tutorial to learn more.
 
-### Istio AuthorizationPolicy
+### Istio AuthorizationPolicy {#istio-authorization-policy}
 The intents operator automatically creates, updates and deletes Istio authorization policies, automatically looks up service accounts for client pods and labels server pods, to reflect precisely the client-to-server calls declared in client intents files.
 
 The intents operator can also be configured to process client intents *without* creating and managing Istio authorization policies, to provide visibility on what would happen once enforcement via Istio authorization policy is activated. More information can be found in the [shadow vs active enforcement documentation](/shadow-vs-active-enforcement).
