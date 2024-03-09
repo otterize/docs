@@ -4,7 +4,7 @@ title: Intents operator
 ---
 
 The Otterize intents operator is an open source Kubernetes operator for easily managing service-to-service authorization
-by declaring the calls each service needs to make, using [client intents files](/intent-based-access-control).
+by declaring the calls each service needs to make, using [client intents files](/overview/intent-based-access-control).
 The intents operator uses these files to configure network policies, Kafka ACLs, and other enforcement points (in the future) to allow just the intended calls.
 
 If credentials such as X.509 certificates are needed for authentication &mdash; for example,
@@ -22,7 +22,7 @@ To deploy the operator, [use the Helm chart](/reference/configuration/intents-op
 The intents operator pod exposes a Prometheus metrics endpoint on port 2112, on `/metrics`.
 
 ## Controlling access using the intents operator
-To learn how to use the intents operator to control access, consult the guides for [managing network policies using intents](/quickstart/access-control/k8s-network-policies), [Kafka ACLs using intents](/quickstart/access-control/k8s-kafka-mtls) and [Istio AuthorizationPolicy using intents](/quickstart/access-control/k8s-istio-authorization-policies).
+To learn how to use the intents operator to control access, consult the guides for [managing network policies using intents](/features/network-mapping-network-policies/tutorials/k8s-network-policies), [Kafka ACLs using intents](/features/kafka/tutorials/k8s-kafka-mtls) and [Istio AuthorizationPolicy using intents](/features/istio/tutorials/k8s-istio-authorization-policies).
 
 ## Pod annotations
 
