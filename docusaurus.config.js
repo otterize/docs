@@ -110,6 +110,7 @@ const config = {
   url: process.env.NODE_ENV === "production" ? "https://docs.otterize.com" : "http://localhost:3003/",
   baseUrl: "/",
   onBrokenLinks: "throw",
+  // onBrokenAnchors: "throw",
   onBrokenMarkdownLinks: "throw",
   favicon: "img/favicon.svg",
   trailingSlash: false,
@@ -134,108 +135,6 @@ const config = {
   ],
   plugins: [
     path.resolve(__dirname, 'plugins', 'verify-includes'),
-    ['@docusaurus/plugin-client-redirects',
-    {
-      redirects: [
-        {
-          from: ['/getting-started/oss-installation', '/installation'],
-          to: '/overview/installation',
-        },
-        {
-          from: ['/intent-based-access-control', '/reference/intents-and-intents-files'],
-          to: '/overview/intent-based-access-control'
-        },
-        {
-          from: ['/otterize-oss'],
-          to: '/overview/otterize-oss'
-        },
-        {
-          from: ['/reference/access-controls/network-policies'],
-          to: '/features/network-mapping-network-policies/reference/Network-Policies-Deep-Dive'
-        },
-        {
-          from: ['/shadow-vs-active-enforcement'],
-          to: '/reference/shadow-vs-active-enforcement'
-        },
-        {
-          from: ['/otterize-cloud'],
-          to: '/overview/otterize-cloud'
-        },
-        {
-          from: '/quick-tutorials',
-          to: '/',
-        },
-        {
-          from: ['/otterize-oss/usage-telemetry'],
-          to: '/overview/otterize-oss/usage-telemetry'
-        },
-        {
-          from: ['/otterize-oss/error-telemetry'],
-          to: '/overview/otterize-oss/error-telemetry'
-        },
-        {
-          from: ['/otterize-cloud/object-model'],
-          to: '/reference/terminology'
-        },
-        {
-          from: ['/guides/protect-1-service-network-policies'],
-          to: '/features/network-mapping-network-policies/tutorials/protect-1-service-network-policies'
-        },
-        {
-          from: ['/quick-tutorials/k8s-kafka-mtls', '/quickstart/access-control/k8s-kafka-mtls'],
-          to: '/features/kafka/tutorials/k8s-kafka-mtls',
-        },
-        {
-          from: ['/quickstart/access-control/aws-iam-eks'],
-          to: '/features/aws-iam/tutorials/aws-iam-eks',
-        },
-        {
-          from: ['/quickstart/access-control/k8s-network-policies'],
-          to: '/features/network-mapping-network-policies/tutorials/k8s-network-policies',
-        },
-        {
-          from: ['/quick-tutorials/aws-eks-cni-mini','/quickstart/access-control/aws-eks-cni-mini'],
-          to: '/features/network-mapping-network-policies/tutorials/aws-eks-cni-mini',
-        },
-        {
-          from: ['/quick-tutorials/k8s-kafka-mtls-cert-manager', '/quickstart/access-control/k8s-kafka-mtls-cert-manager', '/quick-tutorials/k8s-mtls'],
-          to: '/features/kafka/tutorials/k8s-kafka-mtls-cert-manager',
-        },
-        {
-          from: ['/quick-tutorials/k8s-istio-watcher', '/quickstart/visualization/k8s-istio-watcher'],
-          to: '/features/istio/tutorials/k8s-istio-watcher',
-        },
-        {
-          from: ['/quick-visual-tutorials/visual-ibac-istio-authorization-policies','/quickstart/access-control/k8s-istio-authorization-policies', '/quickstart/k8s-istio-authorization-policies'],
-          to: '/features/istio/tutorials/k8s-istio-authorization-policies',
-        },
-        {
-          from: ['/quick-visual-tutorials/visual-ibac-kafka-k8s'],
-          to: '/features/kafka/tutorials/k8s-kafka-mapping',
-        },
-        {
-          from: ['/quickstart/visualization/postgresql'],
-          to: '/features/postgresql/tutorials/postgres-mapping'
-        },
-        {
-          from: ['/quickstart/access-control/postgresql'],
-          to: '/features/postgresql/tutorials/postgres'
-        },
-        {
-          from: ['/quick-visual-tutorials/visual-ibac-network-policies', '/quick-tutorials/k8s-network-policies'],
-          to: '/features/network-mapping-network-policies/tutorials/k8s-network-policies',
-        },
-        {
-          from: ['/quick-visual-tutorials/visual-k8s-cluster-mapping', '/quickstart/visualization/k8s-network-mapper', '/quick-tutorials/k8s-network-mapper'],
-          to: '/features/network-mapping-network-policies/tutorials/k8s-network-mapper',
-        },
-        // Redirect from multiple old paths to the new path
-        // {
-        //   to: '/docs/newDoc2',
-        //   from: ['/docs/oldDocFrom2019', '/docs/legacyDocFrom2016'],
-        // },
-      ],
-    }],
     ["docusaurus-plugin-includes", {}],
     [
       "@docusaurus/plugin-google-gtag",
@@ -438,5 +337,114 @@ const config = {
       },
     }),
 };
+
+if (process.env.ADD_REDIRECTS === 'production') {
+  console.log("ADDED REDIRECTS")
+  // This plugin keeps the broken link validation from successfully running,
+  // however it only functions when someone browses directly to one of these paths, so we
+  // still need to update internal links when changing paths.
+  config.plugins.push(['@docusaurus/plugin-client-redirects',
+    {
+      redirects: [
+        {
+          from: ['/getting-started/oss-installation', '/installation'],
+          to: '/overview/installation',
+        },
+        {
+          from: ['/intent-based-access-control', '/reference/intents-and-intents-files'],
+          to: '/overview/intent-based-access-control'
+        },
+        {
+          from: ['/otterize-oss'],
+          to: '/overview/otterize-oss'
+        },
+        {
+          from: ['/reference/access-controls/network-policies'],
+          to: '/features/network-mapping-network-policies/reference/Network-Policies-Deep-Dive'
+        },
+        {
+          from: ['/shadow-vs-active-enforcement'],
+          to: '/reference/shadow-vs-active-enforcement'
+        },
+        {
+          from: ['/otterize-cloud'],
+          to: '/overview/otterize-cloud'
+        },
+        {
+          from: '/quick-tutorials',
+          to: '/',
+        },
+        {
+          from: ['/otterize-oss/usage-telemetry'],
+          to: '/overview/otterize-oss/usage-telemetry'
+        },
+        {
+          from: ['/otterize-oss/error-telemetry'],
+          to: '/overview/otterize-oss/error-telemetry'
+        },
+        {
+          from: ['/otterize-cloud/object-model'],
+          to: '/reference/terminology'
+        },
+        {
+          from: ['/guides/protect-1-service-network-policies'],
+          to: '/features/network-mapping-network-policies/tutorials/protect-1-service-network-policies'
+        },
+        {
+          from: ['/quick-tutorials/k8s-kafka-mtls', '/quickstart/access-control/k8s-kafka-mtls'],
+          to: '/features/kafka/tutorials/k8s-kafka-mtls',
+        },
+        {
+          from: ['/quickstart/access-control/aws-iam-eks'],
+          to: '/features/aws-iam/tutorials/aws-iam-eks',
+        },
+        {
+          from: ['/quickstart/access-control/k8s-network-policies'],
+          to: '/features/network-mapping-network-policies/tutorials/k8s-network-policies',
+        },
+        {
+          from: ['/quick-tutorials/aws-eks-cni-mini','/quickstart/access-control/aws-eks-cni-mini'],
+          to: '/features/network-mapping-network-policies/tutorials/aws-eks-cni-mini',
+        },
+        {
+          from: ['/quick-tutorials/k8s-kafka-mtls-cert-manager', '/quickstart/access-control/k8s-kafka-mtls-cert-manager', '/quick-tutorials/k8s-mtls'],
+          to: '/features/kafka/tutorials/k8s-kafka-mtls-cert-manager',
+        },
+        {
+          from: ['/quick-tutorials/k8s-istio-watcher', '/quickstart/visualization/k8s-istio-watcher'],
+          to: '/features/istio/tutorials/k8s-istio-watcher',
+        },
+        {
+          from: ['/quick-visual-tutorials/visual-ibac-istio-authorization-policies','/quickstart/access-control/k8s-istio-authorization-policies', '/quickstart/k8s-istio-authorization-policies'],
+          to: '/features/istio/tutorials/k8s-istio-authorization-policies',
+        },
+        {
+          from: ['/quick-visual-tutorials/visual-ibac-kafka-k8s'],
+          to: '/features/kafka/tutorials/k8s-kafka-mapping',
+        },
+        {
+          from: ['/quickstart/visualization/postgresql'],
+          to: '/features/postgresql/tutorials/postgres-mapping'
+        },
+        {
+          from: ['/quickstart/access-control/postgresql'],
+          to: '/features/postgresql/tutorials/postgres'
+        },
+        {
+          from: ['/quick-visual-tutorials/visual-ibac-network-policies', '/quick-tutorials/k8s-network-policies'],
+          to: '/features/network-mapping-network-policies/tutorials/k8s-network-policies',
+        },
+        {
+          from: ['/quick-visual-tutorials/visual-k8s-cluster-mapping', '/quickstart/visualization/k8s-network-mapper', '/quick-tutorials/k8s-network-mapper'],
+          to: '/features/network-mapping-network-policies/tutorials/k8s-network-mapper',
+        },
+        // Redirect from multiple old paths to the new path
+        // {
+        //   to: '/docs/newDoc2',
+        //   from: ['/docs/oldDocFrom2019', '/docs/legacyDocFrom2016'],
+        // },
+      ],
+    }])
+}
 
 module.exports = config;
