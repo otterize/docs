@@ -113,6 +113,7 @@ const config = {
   onBrokenMarkdownLinks: "throw",
   favicon: "img/favicon.svg",
   trailingSlash: false,
+  onDuplicateRoutes: "throw",
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
@@ -221,7 +222,7 @@ const config = {
           to: '/features/postgresql/tutorials/postgres'
         },
         {
-          from: ['/quick-visual-tutorials/visual-ibac-network-policies', '/quick-tutorials/k8s-network-policies', '/quickstart/access-control/k8s-network-policies'],
+          from: ['/quick-visual-tutorials/visual-ibac-network-policies', '/quick-tutorials/k8s-network-policies'],
           to: '/features/network-mapping-network-policies/tutorials/k8s-network-policies',
         },
         {
