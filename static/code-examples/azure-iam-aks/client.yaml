@@ -23,7 +23,6 @@ spec:
       labels:
         app: client
         azure.workload.identity/use: "true"
-        credentials-operator.otterize.com/create-azure-workload-identity: "true"
     spec:
       serviceAccountName: client
       containers:
@@ -41,11 +40,14 @@ spec:
                 echo;
                 echo 'Client - The time is:' $(date);
                 echo;
-                echo 'Logging in using federated identity credentials';
-                az login -o table --federated-token \"$(cat $AZURE_FEDERATED_TOKEN_FILE)\" --service-principal -u $AZURE_CLIENT_ID -t $AZURE_TENANT_ID;
-                echo;
-                echo 'Listing storage blob container $AZURE_STORAGE_CONTAINER in storage account $AZURE_STORAGE_ACCOUNT';
-                az storage blob list --container $AZURE_STORAGE_CONTAINER --account-name $AZURE_STORAGE_ACCOUNT --auth-mode login -o table;
-                echo;
-                sleep 5;
+                if [[ -z "$AZURE_CLIENT_ID" ]]; then echo "Azure client ID not set";
+                else
+                  echo 'Logging in using federated identity credentials';
+                  az login -o table --federated-token $(cat $AZURE_FEDERATED_TOKEN_FILE) --service-principal -u $AZURE_CLIENT_ID -t $AZURE_TENANT_ID;
+                  echo;
+                  echo 'Listing storage blob container' $AZURE_STORAGE_CONTAINER 'in storage account' $AZURE_STORAGE_ACCOUNT;
+                  az storage blob list --container $AZURE_STORAGE_CONTAINER --account-name $AZURE_STORAGE_ACCOUNT --auth-mode login -o table;
+                  echo;
+                  sleep 5;
+                fi;
               done

@@ -141,21 +141,20 @@ kubectl apply -n otterize-tutorial-azure-iam -f ${ABSOLUTE_URL}/code-examples/az
 
 
 ### View logs for the client - access denied
-The client logs will show that it fails to access the Azure Blob Storage container.
+The client logs will show that it fails to log in using the federated identity credentials and access the Azure Blob Storage container.
+This is because we haven't yet applied any `ClientIntents` to this pod, so no role assignments have been created for it:
 
 ```text
+Client - The time is: Sun Mar 10 18:27:31 UTC 2024
+
+Logging in using federated identity credentials
+ERROR: No subscriptions found for <AZURE_CLIENT_ID>
+
+Listing storage blob container otterizeazureiamtutorialcontainer in storage account otterizeazureiamtutorial
 ERROR: Please run 'az login' to setup account.
-
-Client - The time is: Sun Mar 10 18:11:32 UTC 2024
-
-ERROR: No subscriptions found for cbdd32dc-b978-420c-b5c4-d093fc86c2b2
 ```
 
-```bash
-TODO
-```
-
-### Label the server pod to create an Azure workload identity role
+### Label the client pod to create an Azure workload identity
 Label the client pod so that the Otterize credentials operator creates an Azure workload identity for it and binds its Kubernetes ServiceAccount to the newly created identity.
 ```yaml
 metadata:
@@ -169,7 +168,7 @@ To do this, we won't be labeling the pod directly, but instead patching the `tem
 kubectl patch deployment -n otterize-tutorial-azure-iam client -p '{"spec": {"template":{"metadata":{"labels":{"credentials-operator.otterize.com/create-azure-workload-identity":"true"}}}} }'
 ```
 
-#### An Azure workload identity was created for the server pod
+#### An Azure workload identity was created for the client pod
 Let's inspect the created managed identity
 ```bash
 az identity list --query "[?starts_with(name,'ottr-uai-')]" --output table
@@ -198,7 +197,7 @@ https://eastus.oic.prod-aks.azure.com/f8b92b88-e477-41ad-a5af-079de8dc8210/bd429
 [//]: # (TODO: rename to the IDs generated in the tutorial )
 
 #### The Kubernetes ServiceAccount was annotated with the workload identity ID
-The credentials operator automatically annotated the Kubernetes ServiceAccount for the server pod with the newly created workload identity
+The credentials operator automatically annotated the Kubernetes ServiceAccount for the client pod with the newly created workload identity
 
 Let's look at the service account:
 ```bash
