@@ -124,8 +124,6 @@ az storage blob upload \
 ```bash
 kubectl create namespace otterize-tutorial-azure-iam
 kubectl apply -n otterize-tutorial-azure-iam -f ${ABSOLUTE_URL}/code-examples/azure-iam-aks/client.yaml
-kubectl patch deployment -n otterize-tutorial-azure-iam server --type='json' -p="[{\"op\": \"replace\", \"path\": \"/spec/template/spec/containers/0/env\", \"value\": [{\"name\": \"AZURE_STORAGE_ACCOUNT\", \"value\": \"$STORAGE_ACCOUNT_NAME\"}]}]"
-kubectl patch deployment -n otterize-tutorial-azure-iam server --type='json' -p="[{\"op\": \"replace\", \"path\": \"/spec/template/spec/containers/0/env\", \"value\": [{\"name\": \"AZURE_STORAGE_CONTAINER\", \"value\": \"$STORAGE_CONTAINER_NAME\"}]}]"
 ```
 
 <details>
