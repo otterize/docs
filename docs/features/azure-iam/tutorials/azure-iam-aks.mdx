@@ -102,9 +102,7 @@ export STORAGE_ACCOUNT_NAME=otterizeazureiamtutorial
 az storage account create \
   --name $STORAGE_ACCOUNT_NAME \
   --resource-group $RESOURCE_GROUP \
-  --location $LOCATION \
-  --sku Standard_ZRS \
-  --encryption-services blob
+  --location $LOCATION
 ```
 
 Create a container in the storage account:
