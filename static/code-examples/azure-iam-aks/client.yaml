@@ -22,6 +22,7 @@ spec:
     metadata:
       labels:
         app: client
+        # Required by the Azure workload identity operator, only the pods with this label can use workload identity
         azure.workload.identity/use: "true"
     spec:
       serviceAccountName: client
