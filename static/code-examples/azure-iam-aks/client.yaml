@@ -23,7 +23,7 @@ spec:
       labels:
         app: client
         azure.workload.identity/use: "true"
-        credentials-operator.otterize.com/create-azure-role-assignment: "true"
+        credentials-operator.otterize.com/create-azure-workload-identity: "true"
     spec:
       serviceAccountName: client
       containers:
@@ -32,7 +32,7 @@ spec:
           command: [ "/bin/sh", "-c", "--" ]
           env:
             - name: AZURE_STORAGE_ACCOUNT
-              value: otterizetutorialazureiam
+              value: otterizeazureiamtutorial
             - name: AZURE_STORAGE_CONTAINER
-              value: test
+              value: otterizeazureiamtutorialcontainer
           args: [ "while true; do az login -o table --federated-token \"$(cat $AZURE_FEDERATED_TOKEN_FILE)\" --service-principal -u $AZURE_CLIENT_ID -t $AZURE_TENANT_ID; az storage blob list --container $AZURE_STORAGE_CONTAINER --account-name $AZURE_STORAGE_ACCOUNT --auth-mode login -o table; sleep 1; echo 'Client - The time is:' $(date); sleep 2; done" ]

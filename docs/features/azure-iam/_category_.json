@@ -1,0 +1,8 @@
+{
+  "label": "Azure IAM",
+  "position": 2,
+  "collapsed": true,
+  "customProps": {
+    "image": "/img/icons/aws.png"
+  }
+}
