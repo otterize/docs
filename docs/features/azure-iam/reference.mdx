@@ -9,39 +9,36 @@ title: Reference
 apiVersion: k8s.otterize.com/v1alpha3
 kind: ClientIntents
 metadata:
-  name: server
+  # The name of the pod that will be granted access
+  name: client
 spec:
   service:
-    # The name of the pod that will be granted access
-    name: server
+    name: client
   calls:
-      # The AWS ARN or ARN wildcard that references the resource(s) for the authorization
-    - name: arn:aws:s3:::example-bucket-*/*
-      type: aws
-      # one or more AWS Actions or Action wildcards that will be provided to the specified resources
-      awsActions:
-        - "s3:PutObject"
-        - "s3:GetObject"
-      # Multiple call definitions can be defined for a single service.
-	- name: arn:aws:s3:::read-only-bucket-*/*
-      type: aws
-      awsActions:
-        - "s3:GetObject"
+    # The Azure resource ID that references the resource(s) for the authorization
+    # replace 00000000-0000-0000-0000-000000000000 with your Azure subscription ID
+    - name: "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/myResourceGroup/providers/Microsoft.Storage/storageAccounts/otterizeazureiamtutorial/blobServices/default/containers/otterizeazureiamtutorialcontainer"
+      type: azure
+      # one or more Azure roles that will be provided to the specified resources
+      azureRoles:
+        - "Storage Blob Data Contributor"
 ```
 
 ### Annotations
 
 | Key                                                        | Description                                                                                                                                                                                  | Default  |
 |------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
-| `credentials-operator.otterize.com/create-aws-role` | By setting to **true** the credential operator will create an unique AWS Role for the associated pod | `false` |
+| `credentials-operator.otterize.com/create-azure-workload-identity` | By setting to **true** the credential operator will create an Azure workload identity the associated pod | `false` |
 
 
 ### Helm Chart options
 
 | Key                                                        | Description                                                                                                                                                                                  | Default  |
 |------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
-| `global.aws.enabled`                                       | Enable or disable AWS integration                                                                                                                                                            | `false`  |
-| `global.aws.eksClusterNameOverride`                        | EKS cluster name (overrides auto-detection)                                                                                                                                                  | `(none)` |
-| `aws.roleARN` | ARN of the AWS role the operator will use to access AWS. By defeault, Otterize will create a unique role for each service an annotate the service with the role's ARN. | `(none)` |
+| `global.azure.enabled`                                       | Enable or disable Azure integration                                                                                                                                                            | `false`  |
+| `azure.userAssignedIdentityID` | ID of the user assigned identity used by the operator to access Azure. | `(none)` |
+| `azure.subscriptionID`         | ID of the Azure subscription in which the AKS cluster is deployed.     | `(none)` |
+| `azure.resoureceGroup`         | Name of the Azure resource group in which the AKS cluster is deployed. | `(none)` |
+| `azure.aksClusterName`         | Name of the AKS cluster in which the operator is deployed.             | `(none)` |
 
 View the [Helm chart reference](/reference/configuration/otterize-chart) for all other options
