@@ -143,8 +143,12 @@ kubectl apply -n otterize-tutorial-azure-iam -f ${ABSOLUTE_URL}/code-examples/az
 ### View logs for the client - access denied
 The client logs will show that it fails to access the Azure Blob Storage container.
 
-```bash
-kubectl logs -f -n otterize-tutorial-azure-iam deploy/client
+```text
+ERROR: Please run 'az login' to setup account.
+
+Client - The time is: Sun Mar 10 18:11:32 UTC 2024
+
+ERROR: No subscriptions found for cbdd32dc-b978-420c-b5c4-d093fc86c2b2
 ```
 
 ```bash

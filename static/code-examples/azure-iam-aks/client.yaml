@@ -35,4 +35,17 @@ spec:
               value: otterizeazureiamtutorial
             - name: AZURE_STORAGE_CONTAINER
               value: otterizeazureiamtutorialcontainer
-          args: [ "while true; do az login -o table --federated-token \"$(cat $AZURE_FEDERATED_TOKEN_FILE)\" --service-principal -u $AZURE_CLIENT_ID -t $AZURE_TENANT_ID; echo '\n'; az storage blob list --container $AZURE_STORAGE_CONTAINER --account-name $AZURE_STORAGE_ACCOUNT --auth-mode login -o table; sleep 1; echo '\nClient - The time is:' $(date) '\n'; sleep 2; done" ]
+          args:
+            - while true;
+              do
+                echo;
+                echo 'Client - The time is:' $(date);
+                echo;
+                echo 'Logging in using federated identity credentials';
+                az login -o table --federated-token \"$(cat $AZURE_FEDERATED_TOKEN_FILE)\" --service-principal -u $AZURE_CLIENT_ID -t $AZURE_TENANT_ID;
+                echo;
+                echo 'Listing storage blob container $AZURE_STORAGE_CONTAINER in storage account $AZURE_STORAGE_ACCOUNT';
+                az storage blob list --container $AZURE_STORAGE_CONTAINER --account-name $AZURE_STORAGE_ACCOUNT --auth-mode login -o table;
+                echo;
+                sleep 5;
+              done
