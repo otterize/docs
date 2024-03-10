@@ -55,6 +55,7 @@ Alternatively, update an existing AKS cluster to enable OIDC issuer and workload
 
 Export the following environment variables:
 ```bash
+export LOCATION="<YOUR_LOCATION>"
 export RESOURCE_GROUP="<YOUR_RESOURCE_GROUP>"
 export AKS_CLUSTER_NAME="<YOUR_AKS_CLUSTER_NAME>"
 ```
@@ -70,7 +71,7 @@ az aks update -g $RESOURCE_GROUP -n $AKS_CLUSTER_NAME --enable-oidc-issuer --ena
 
 Don't forget to configure your kubeconfig for your cluster. If using the example cluster above, use this command:
 ```bash
-az aks get-credentials -n otterizeAzureIAMTutorialAKSCluster -g otterizeAzureIAMTutorialResourceGroup
+az aks get-credentials -n $AKS_CLUSTER_NAME -g $RESOURCE_GROUP
 ```
 
 ### 2. Deploy Otterize for Azure IAM
@@ -98,7 +99,12 @@ Since you now have the Azure integration enabled, you need to redeploy Otterize 
 Create a general-purpose storage account using the Azure CLI:
 ```bash
 export STORAGE_ACCOUNT_NAME=otterizeazureiamtutorial
-az storage account create --name $STORAGE_ACCOUNT_NAME --resource-group $RESOURCE_GROUP --location $LOCATION --sku Standard_ZRS --encryption-services blob
+az storage account create \
+  --name $STORAGE_ACCOUNT_NAME \
+  --resource-group $RESOURCE_GROUP \
+  --location $LOCATION \
+  --sku Standard_ZRS \
+  --encryption-services blob
 ```
 
 Create a container in the storage account:
