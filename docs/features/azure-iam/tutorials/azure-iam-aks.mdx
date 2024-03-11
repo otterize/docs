@@ -90,7 +90,7 @@ Once the Azure integration is configured, you'll be presented with instructions 
 This creates a managed identity and federated identity credential for the Otterize Kubernetes operator, and assigns it the resource group owner role on the resource group containing your AKS cluster, so that it is able to manage identitiies and role assignments for your AKS workloads.
 This setup is required once per-cluster.
 
-After terraform has configured your cluster, click Next and you'll be presented with the configuration for deploying Otterize.
+After Terraform has configured your cluster, click Next and you'll be presented with the configuration for deploying Otterize.
 Since you now have the Azure integration enabled, you need to redeploy Otterize with Azure integration enabled flag, providing it the client ID for the managed identity created during the terraform installation.
 
 ## Tutorial
