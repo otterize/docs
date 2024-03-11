@@ -15,9 +15,8 @@ spec:
   service:
     name: client
   calls:
-    # The Azure resource ID that references the resource(s) for the authorization
-    # replace 00000000-0000-0000-0000-000000000000 with your Azure subscription ID
-    - name: "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/myResourceGroup/providers/Microsoft.Storage/storageAccounts/otterizeazureiamtutorial/blobServices/default/containers/otterizeazureiamtutorialcontainer"
+    # The Azure resource ID that references the resource(s) for the authorization. Subscription & resource group are automatically appended.
+    - name: "/providers/Microsoft.Storage/storageAccounts/otterizeazureiamtutorial/blobServices/default/containers/otterizeazureiamtutorialcontainer"
       type: azure
       # one or more Azure roles that will be provided to the specified resources
       azureRoles:

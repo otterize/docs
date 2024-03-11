@@ -48,8 +48,7 @@ spec:
   service:
     name: client
   calls:
-    # replace 00000000-0000-0000-0000-000000000000 with your Azure subscription ID
-    - name: "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/myResourceGroup/providers/Microsoft.Storage/storageAccounts/otterizetutorialazureiam/blobServices/default/containers/test"
+    - name: "/providers/Microsoft.Storage/storageAccounts/otterizetutorialazureiam/blobServices/default/containers/test"
       type: azure
       azureRoles:
         - "Storage Blob Data Contributor"
