@@ -128,6 +128,7 @@ az storage blob upload \
 ```bash
 kubectl create namespace otterize-tutorial-azure-iam
 kubectl apply -n otterize-tutorial-azure-iam -f ${ABSOLUTE_URL}/code-examples/azure-iam-aks/client.yaml
+kubectl patch deployment -n otterize-tutorial-azure-iam client --type='json' -p="[{\"op\": \"replace\", \"path\": \"/spec/template/spec/containers/0/env\", \"value\": [{\"name\": \"AZURE_STORAGE_ACCOUNT\", \"value\": \"$STORAGE_ACCOUNT_NAME\"}, {\"name\": \"AZURE_STORAGE_CONTAINER\", \"value\": \"$STORAGE_CONTAINER_NAME\"}]}]"
 ```
 
 <details>
@@ -167,7 +168,7 @@ kubectl patch deployment -n otterize-tutorial-azure-iam client -p '{"spec": {"te
 #### An Azure workload identity was created for the client pod
 Let's inspect the created managed identity
 ```bash
-az identity list --query "[?starts_with(name,'ottr-uai-')]" --output table
+az identity list --query "[?starts_with(name,'ottr-uai-')]" --resource-group $RESOURCE_GROUP --output table
 ```
 
 In the output, you should see that a managed identity was created for the client workload, with the name starting with `ottr-uai-otterize-tutorial-azure-iam-client-...`:
@@ -179,7 +180,7 @@ ottr-uai-otterize-tutorial-azure-iam-client-otterizeAzureIAMTutorialAKSCluster-X
 
 You could also inspect the federated identity credential created for the client workload:
 ```bash
-export WORKLOAD_IDENTITY_NAME=$(az identity list --query "[?starts_with(name,'ottr-uai-otterize-tutorial-azure-iam-client-$AKS_CLUSTER_NAME')].name" -o tsv    )
+export WORKLOAD_IDENTITY_NAME=$(az identity list --query "[?starts_with(name,'ottr-uai-otterize-tutorial-azure-iam-client-$AKS_CLUSTER_NAME')].name" --resource-group $RESOURCE_GROUP  -o tsv)
 az identity federated-credential list --identity-name $WORKLOAD_IDENTITY_NAME --resource-group $RESOURCE_GROUP --output table --query "[].{name:name, subject:subject}"
 ```
 
@@ -223,6 +224,7 @@ We will specify the following ClientIntents, granting the `Storage Blob Data Con
 To apply these intents, run the following command:
 ```bash
 kubectl apply -n otterize-tutorial-azure-iam -f ${ABSOLUTE_URL}/code-examples/azure-iam-aks/clientintents.yaml
+kubectl patch clientintents -n otterize-tutorial-azure-iam client --type='json' -p="[{\"op\": \"replace\", \"path\": \"/spec/calls/0/name\", \"value\": \"/providers/Microsoft.Storage/storageAccounts/"$STORAGE_ACCOUNT_NAME"/blobServices/default/containers/"$STORAGE_CONTAINER_NAME"\"}]"
 ```
 
 ### The client can now list files in the Azure Blob Storage container!
