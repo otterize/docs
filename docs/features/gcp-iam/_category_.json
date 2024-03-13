@@ -1,0 +1,8 @@
+{
+  "label": "GCP IAM",
+  "position": 2,
+  "collapsed": true,
+  "customProps": {
+    "image": "/img/icons/gcp.png"
+  }
+}
