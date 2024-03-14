@@ -96,8 +96,6 @@ If there were multiple clients, their `ClientIntents` resource descriptions woul
 
 When you `kubectl apply` these client intents declarations, there is still no enforcement and no blocking, but the access graph tells you you're ready to protect without breaking authorized calls:
 
-![Otterize Cloud - access graph - ready to protect](/img/shadow-vs-active-enforcement/access-graph-all-shadow-ready-to-protect-checkoutservice.png)
-
 Now, knowing authorized clients won't be blocked, you can override shadow mode for just this service and protect it with a `ProtectedService` resource:
 ```yaml
 apiVersion: k8s.otterize.com/v1alpha3
