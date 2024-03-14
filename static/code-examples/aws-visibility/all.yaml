@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: joketrainer
+  namespace: otterize-tutorial-aws-visibility
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: joketrainer
+  template:
+    metadata:
+      labels:
+        app: joketrainer
+        network-mapper.otterize.com/aws-visibility: "true"
+        credentials-operator.otterize.com/create-aws-role: "true"
+    spec:
+      containers:
+        - name: joketrainer
+          image: otterize/aws-visibility-tutorial:latest
+          env:
+            - name: DAD_JOKE_LAMBDA_ARN
+              valueFrom:
+                configMapKeyRef:
+                  name: lambda-arns
+                  key: dadJokeLambdaArn
+            - name: FEEDBACK_LAMBDA_ARN
+              valueFrom:
+                configMapKeyRef:
+                  name: lambda-arns
+                  key: feedbackLambdaArn

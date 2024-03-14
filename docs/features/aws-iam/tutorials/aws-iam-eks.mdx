@@ -25,56 +25,18 @@ Before you start, you'll need an AWS EKS cluster. Any cluster will do; there are
 <summary>How to set up an AWS EKS cluster using eksctl</summary>
 
 
-Save this `yaml` as `cluster-config.yaml`:
+Run the following command to create your AWS cluster. [Don't have eksctl? Install it now.](https://eksctl.io/installation/)
+
+```bash
+curl ${ABSOLUTE_URL}/code-examples/aws-iam-eks/cluster-config.yaml | eksctl create cluster -f -
+```
+<details>
+<summary>Inspect eks-cluster.yaml contents</summary>
 
 ```yaml
-apiVersion: eksctl.io/v1alpha5
-kind: ClusterConfig
-
-metadata:
-  name: otterize-iam-eks-tutorial
-  region: us-west-2
-  version: "1.27"
-
-iam:
-  withOIDC: true
-
-vpc:
-  clusterEndpoints:
-    publicAccess: true
-    privateAccess: true
-
-addons:
-  - name: vpc-cni
-    version: 1.14.0
-    attachPolicyARNs: #optional
-    - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
-    configurationValues: |-
-      enableNetworkPolicy: "true"
-  - name: coredns
-  - name: kube-proxy
-
-managedNodeGroups:
-  - name: small-on-demand
-    amiFamily: AmazonLinux2
-    instanceTypes: [ "t3.large" ]
-    minSize: 0
-    desiredCapacity: 2
-    maxSize: 6
-    privateNetworking: true
-    disableIMDSv1: true
-    volumeSize: 100
-    volumeType: gp3
-    volumeEncrypted: true
-    tags:
-      team: "eks"
+{@include: ../../../../static/code-examples/aws-iam-eks/cluster-config.yaml}
 ```
-
-Then run the following command to create your cluster. [Don't have eksctl? Install it now.](https://eksctl.io/installation/)
-
-```shell
-eksctl create cluster -f cluster-config.yaml
-```
+</details>
 
 </details>
 

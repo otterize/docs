@@ -1,0 +1,41 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: np-ipv4-127
+  region: us-west-2
+  version: "1.27"
+
+iam:
+  withOIDC: true
+
+vpc:
+  clusterEndpoints:
+    publicAccess: true
+    privateAccess: true
+
+addons:
+  - name: vpc-cni
+    version: 1.14.0
+    attachPolicyARNs: #optional
+      - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+    configurationValues: |-
+      # highlight-next-line
+      enableNetworkPolicy: "true"
+  - name: coredns
+  - name: kube-proxy
+
+managedNodeGroups:
+  - name: small-on-demand
+    amiFamily: AmazonLinux2
+    instanceTypes: [ "t3.large" ]
+    minSize: 0
+    desiredCapacity: 2
+    maxSize: 6
+    privateNetworking: true
+    disableIMDSv1: true
+    volumeSize: 100
+    volumeType: gp3
+    volumeEncrypted: true
+    tags:
+      team: "eks"
