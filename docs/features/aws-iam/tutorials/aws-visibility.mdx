@@ -1,6 +1,6 @@
 ---
 sidebar_position: 2
-title: AWS Resource Mapping
+title: AWS resource mapping & IAM policy generation
 image: /img/quick-tutorials/aws-iam-visibility/social.png
 ---
 
@@ -10,7 +10,7 @@ Many production Kubernetes workloads rely on cloud resources, like S3 Buckets, R
 In this tutorial, we will:
 * Set up an EKS cluster.
 * Deploy two Lambda functions.
-* Deploy a server pod that retrieves joke from a Lambda, provides a review, and posts the review to another Lambda.
+* Deploy a server pod that retrieves a joke (as in, a string containing a joke ;) from a Lambda, provides a review, and posts the review to another Lambda.
 * Automatically detect and view the Lambda function calls in Otterize.
 
 By the end, you'll know how to map Kubernetes workloads alongside their dependent AWS resources using Otterize.
@@ -20,7 +20,7 @@ By the end, you'll know how to map Kubernetes workloads alongside their dependen
 ### CLI tools
 We will need the following CLI tools to set up our cluster and deploy our scripts.
 
-1. [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html). You will also need credentials within the target account with permissions to work with EKS clusters, IAM, Cloudformation, and Lambda functions
+1. [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html). You will also need credentials within the target account with permissions to work with EKS clusters, IAM, CloudFormation, and Lambda functions.
 2. [eksctl](https://eksctl.io/installation/)
 
 ### Create an EKS cluster
@@ -31,7 +31,7 @@ Begin by creating an EKS cluster for pod deployment using **eksctl** with the YA
 curl ${ABSOLUTE_URL}/code-examples/aws-visibility/eks-cluster.yaml | eksctl create cluster -f -
 ```
 <details>
-    <summary>Inspect Cluster Configuration</summary>
+    <summary>Inspect eks-cluster.yaml contents</summary>
 
 ```yaml
 {@include: ../../../../static/code-examples/aws-visibility/eks-cluster.yaml}
@@ -50,7 +50,7 @@ To provide visibility, we will need to install Otterize in our cluster, and we w
 If you don't have a connected Kubernetes cluster, create one via [Integrations page](https://app.otterize.com/integrations) and follow the setup instructions for Kubernetes. Skip if your cluster is already connected.
 
 2. **Integrate AWS with Otterize Cloud**
-To begin the integration with AWS, visit the [Integrations page](https://app.otterize.com/integrations). Once there, you will be asked for information to help populate a cloudformation script we will use to integrate AWS access controls into our cluster.
+To begin the integration with AWS, visit the [Integrations page](https://app.otterize.com/integrations). Once there, you will be asked for information to help populate a CloudFormation template we will use to set up roles and policies for the Otterize deployment in our cluster.
 
 If you created the EKS cluster above, the cluster name would be￼`otterize-tutorial-aws-visibility`, and the region would be `us-west-2`.
 
@@ -160,14 +160,9 @@ In the Access graph screenshot below, you’ll see 4 AWS resources associated wi
 
 ### What's Next
 
-Now that we've discovered AWS resources used within a Kubernetes workload, you can learn more about how you can manage access to these resources with Otterize in the [Automate AWS IAM for EKS](/features/aws-iam/tutorials/aws-iam-eks) tutorial.
+Now that we've discovered the AWS resources used within a Kubernetes workload, you can learn more about how you can manage access to these resources with Otterize in the [Automate AWS IAM for EKS](/features/aws-iam/tutorials/aws-iam-eks) tutorial.
 
-## Clean Up
-
-To remove cloudformation yaml:
-```bash
-rm template.yaml
-```
+## Cleanup
 
 To remove the deployed example:
 ```bash
