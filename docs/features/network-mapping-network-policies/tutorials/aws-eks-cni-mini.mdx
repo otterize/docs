@@ -33,11 +33,11 @@ Run the following command to create your AWS cluster. [Don't have eksctl? Instal
 curl ${ABSOLUTE_URL}/code-examples/aws-eks-mini/cluster-config.yaml | eksctl create cluster -f -
 ```
 <details>
-    <summary>Inspect eks-cluster.yaml contents</summary>
+<summary>Inspect eks-cluster.yaml contents</summary>
 
-    ```yaml
-    {@include: ../../../../static/code-examples/aws-eks-mini/cluster-config}
-    ```
+```yaml
+{@include: ../../../../static/code-examples/aws-eks-mini/cluster-config.yaml}
+```
 </details>
 
 Once your AWS EKS has finished deploying the control pane and node group, the next step is deploying Otterize as well as a couple of clients and a server to see how they are affected by network policies.
