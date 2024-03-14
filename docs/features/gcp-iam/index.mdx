@@ -1,0 +1,64 @@
+---
+sidebar_position: 1
+title: GCP IAM | Overview
+hide_table_of_contents: true
+hide_title: true
+---
+
+import DocsLinkCard from "@site/src/components/LinkCard";
+
+export const tutorials = [
+    {
+        title: 'Automate GCP IAM for GKE',
+        description: 'Create just-in-time GCP IAM roles and policies that are kept in sync with your workloads',
+        url: '/features/gcp-iam/tutorials/gcp-iam-gke'
+    },
+];
+
+
+# GCP IAM
+
+Otterize can create just-in-time GCP IAM workload identities & role assignments for your workloads running on GKE Kubernetes clusters, greatly simplifying the lifecycle of managing GCP IAM identities and roles.
+
+### Tutorials
+
+To learn how to use the Intents Operator and Credentials Operator to manage just-in-time GCP IAM access, check out the tutorial.
+<DocsLinkCard items={tutorials} colSize={"sm"}/>
+
+
+### How does Otterize work with GCP IAM?
+
+1. First, the GKE cluster must have:
+   - Enabled [workload identity federation for GKE](https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity)
+   - [Config Connector Installed](https://cloud.google.com/config-connector/docs/how-to/install-upgrade-uninstall)
+   - [Otterize installed](/overview/installation).
+2. To have a role created for a pod, label the pod with `credentials-operator.otterize.com/create-gcp-sa: "true"`
+3. The credentials operator will:
+   - Annotate the pod ServiceAccount and Namespace with the relevant workload identity and Otterize labels.
+   - Create a GCP ServiceAccount and bind it to the pod ServiceAccount.
+4. At this point, the pod is connected to your GCP project through the newly created GCP ServiceAccount but does not have any permissions to perform any action. We will need to create a ClientIntents YAML for the access the service requires and apply it to our cluster. Below is an example of a ClientIntents file for accessing a GCS bucket. View the [reference](/features/gcp-iam/reference) to learn more about the GCP IAM ClientIntents syntax.
+5. Once the intent is applied, the intents operator will create a new GCP IAM policy, which will be attached to the service’s role with the appropriate access.
+6. Done!
+
+```yaml
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: server
+  namespace: my-namespace
+spec:
+  service:
+    name: server
+  calls:
+    - name: projects/_/buckets/otterize-demo-bucket*
+      type: gcp
+      gcpPermissions:
+        - "storage.admin"
+```
+
+### Automatically generating ClientIntents for GCP IAM
+
+Figuring out which access you need for GCP can be a painful, trial and error process, and something you _must_ do if you're tightening production access.
+
+Otterize is getting ready to release support for using existing traffic to generate least-privilege IAM policies. Keen to try this out as part of early access? Sign up to the [Early Access Beta Program](https://otterize.com/EarlyAccessBetaProgram) and we'll be in touch!
+

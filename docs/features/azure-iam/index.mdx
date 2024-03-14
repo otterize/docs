@@ -1,0 +1,62 @@
+---
+sidebar_position: 1
+title: Azure IAM | Overview
+hide_table_of_contents: true
+hide_title: true
+---
+
+import DocsLinkCard from "@site/src/components/LinkCard";
+
+export const tutorials = [
+    {
+        title: 'Automate Azure IAM for AKS',
+        description: 'Create just-in-time Azure workload identities & role assignments that are kept in sync with your workloads',
+        url: '/features/azure-iam/tutorials/azure-iam-aks'
+    },
+];
+
+
+# Azure IAM
+
+Otterize can create just-in-time Azure IAM workload identities & role assignments for your workloads running on AKS Kubernetes clusters, greatly simplifying the lifecycle of managing Azure IAM identities and roles.
+
+### Tutorials
+
+To learn how to use the Intents Operator and Credentials Operator to manage just-in-time Azure IAM access, check out the tutorial.
+<DocsLinkCard items={tutorials} colSize={"sm"}/>
+
+
+### How does Otterize work with Azure IAM?
+
+1. First, the AKS cluster must have [Otterize installed](/overview/installation), as well as the Otterize Azure integration configured.
+2. To have a workload identity created for a pod, label the pod with `credentials-operator.otterize.com/create-azure-workload-identity: "true"`
+3. The credentials operator will create an Azure workload identity and federated identity credential bound to the pod's ServiceAccount. The ServiceAccount will be annotated automatically.
+4. At this point, the pod is able to assume the identity, but it does not have the permissions to perform any actions.
+We will need to create a ClientIntents YAML for the access the service requires and apply it to our cluster.
+Below is an example of a ClientIntents file for accessing an Azure Storage Blobs bucket.
+View the [reference](/features/azure-iam/reference) to learn more about the Azure IAM ClientIntents syntax.
+5. Once the intent is applied, the intents operator will create a new role assignment, which will be attached to the workload identity with the appropriate access.
+6. Done!
+
+```yaml
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: client
+  namespace: otterize-tutorial-azure-iam
+spec:
+  service:
+    name: client
+  calls:
+    - name: "/providers/Microsoft.Storage/storageAccounts/otterizetutorialazureiam/blobServices/default/containers/test"
+      type: azure
+      azureRoles:
+        - "Storage Blob Data Contributor"
+```
+
+### Automatically generating ClientIntents for Azure IAM
+
+Figuring out which access you need for Azure can be a painful, trial and error process, and something you _must_ do if you're tightening production access.
+
+Otterize is getting ready to release support for using existing traffic to generate least-privilege Azure IAM policies. Keen to try this out as part of early access? Sign up to the [Early Access Beta Program](https://otterize.com/EarlyAccessBetaProgram) and we'll be in touch!
+

@@ -1,7 +1,6 @@
 import React from 'react';
 
 export default function CardList(props) {
-    console.log(JSON.stringify(props));
     return (
         <div role="list" className="tw-grid tw-gap-6 tw-grid-cols-2">
         {items.map((item) => (

@@ -1,0 +1,49 @@
+---
+sidebar_position: 3
+title: Reference
+---
+
+### ClientIntents example (YAML)
+
+```yaml
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: server
+spec:
+  service:
+    # The name of the pod that will be granted access
+    name: server
+  calls:
+      # The GCP resource name as defined in the linked documentation below
+      # Wildcards can be used in the end of the resource name to match multiple and nested resources
+    - name: projects/_/buckets/otterize-demo-bucket*
+      type: gcp
+      # one or more GCP Roles that will be provided to the specified resources
+      gcpPermissions:
+        - "storage.admin"
+      # Multiple call definitions can be defined for a single service.
+	- name: projects/_/buckets/otterize-read-only-bucket*
+      type: gcp
+      gcpPermissions:
+        - "storage.objectViewer"
+```
+
+### GCP documentation references
+   - For GCP resource names, refer to the [Resource Name Format](https://cloud.google.com/iam/docs/conditions-resource-attributes#resource-name) documentation.
+   - For GCP roles and permissions, refer to the [Predefined roles and permissions](https://cloud.google.com/iam/docs/understanding-roles#predefined_roles) documentation.
+
+### Annotations
+
+| Key                                                        | Description                                                                                                                                                                                  | Default  |
+|------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
+| `credentials-operator.otterize.com/create-gcp-sa` | When set to **true**, the credential operator will create a unique GCP service account for the K8S ServiceAccount of the associated pod | `false` |
+
+
+### Helm Chart options
+
+| Key                                                        | Description                                                                                                                                                                                  | Default  |
+|------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
+| `global.gcp.enabled`                                       | Enable or disable GCP integration                                                                                                                                                            | `false`  |
+
+View the [Helm chart reference](/reference/configuration/otterize-chart) for all other options

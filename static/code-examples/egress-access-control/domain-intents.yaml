@@ -1,0 +1,26 @@
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: frontend
+  namespace:  otterize-tutorial-egress-access
+spec:
+  service:
+    name: frontend
+  calls:
+    - name: backend
+---
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: backend
+  namespace: otterize-tutorial-egress-access
+spec:
+  service:
+    name: backend
+  calls:
+    - type: internet
+      internet:
+        domains:
+          # Domain name for our advice service
+          - api.adviceslip.com
+    - name: frontend

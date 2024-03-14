@@ -2,7 +2,7 @@
 title: Otterize Cloud
 ---
 
-Otterize Cloud provides a cloud-based control plane for deploying and managing [intents-based access control (IBAC)](/intent-based-access-control).
+Otterize Cloud provides a cloud-based control plane for deploying and managing [intents-based access control (IBAC)](/overview/intent-based-access-control).
 
 It currently supports IBAC within Kubernetes clusters, configuring access between pods and access to Kafka nodes using network policies and Kafka ACLs.
 Soon, Otterize Cloud will also support IBAC across clusters and non-Kubernetes services and resources (e.g. standalone and managed Kafka, RDS, etc.).
@@ -10,7 +10,7 @@ This page is focused on the current capabilities of Otterize Cloud.
 
 ## What it does
 
-Otterize Cloud attaches to [Otterize OSS](/otterize-oss) operators (the intents operator, network mapper, and credentials operator) running in your Kubernetes clusters.
+Otterize Cloud attaches to [Otterize OSS](/overview/otterize-oss) operators (the intents operator, network mapper, and credentials operator) running in your Kubernetes clusters.
 While Otterize OSS does the heavy lifting &mdash; mapping pod-to-pod traffic, responding to intents files applied with `kubectl` and
 configuring network policies, Kafka ACLs, and Istio authorization policies &mdash; Otterize Cloud adds:
 - **Visibility**: visualize the network map of any connected cluster.
