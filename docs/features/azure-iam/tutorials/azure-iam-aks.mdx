@@ -145,6 +145,11 @@ kubectl patch deployment -n otterize-tutorial-azure-iam client --type='json' -p=
 The client logs will show that the Azure client ID environment variable is not set.
 This is because no Azure workload identity has been created for the client pod yet.
 
+```bash
+kubectl logs -f -n otterize-tutorial-azure-iam deploy/client
+```
+
+
 ```text
 Client - The time is: Sun Mar 10 18:40:37 UTC 2024
 
