@@ -1,10 +1,10 @@
 ---
 sidebar_position: 3
 title: Reference
-hide_table_of_contents: true
+hide_table_of_contents: false
 ---
 
-### ClientIntents example (YAML)
+## ClientIntents example (YAML)
 
 ```yaml
 apiVersion: k8s.otterize.com/v1alpha3
@@ -28,8 +28,22 @@ spec:
           methods: [ get, post ]
 ```
 
+#### ClientIntents and DNS values
 
-### Helm Chart options
+When a ClientIntent is specified utilizing DNS identifiers, such as domain names, it initiates a sequence of operations to integrate the relevant IP addresses into the respective NetworkPolicies.
+
+1. The Network Mapper incorporates a DNS cache layer, which identifies and archives all resolved DNS records alongside their corresponding IPv4 and IPv6 IP addresses.
+2. Without a ClientIntent associated with the given domain or its related IP addresses, Otterize will propose a policy tailored to the observed traffic.
+3. Upon the application of a ClientIntent with a domain name present in the cache, the NetworkMapper dynamically updates the intent’s `status` section at one-second intervals with any newly identified IP addresses. It is important to note that Otterize retains all previously identified IP addresses to ensure backward compatibility.
+4. The Intents Operator reviews changes within the `status` section and amends the associated NetworkPolicy to include these newly discovered IP addresses.
+
+
+
+
+
+
+
+## Helm Chart options
 
 | Key                                     | Description                                                                                                                           | Default |
 |-----------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|---------|
@@ -39,12 +53,12 @@ spec:
 
 View the [Helm chart reference](/reference/configuration/otterize-chart) for all other options
 
-### Network mapper parameters
+## Network mapper parameters
 All configurable parameters of the network mapper can be configured under the alias `networkMapper`.
 Further information about network mapper parameters can be found [in the network mapper's chart](https://github.com/otterize/helm-charts/tree/main/network-mapper).
 
 
-### CLI: Network mapper commands
+## CLI: Network mapper commands
 
 All `otterize network-mapper` commands share a set of optional flags which will not be repeated in the documentation
 for each command.
