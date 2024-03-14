@@ -34,7 +34,7 @@ To learn how to use the Intents Operator and Credentials Operator to manage just
    - [Otterize installed](/overview/installation).
 2. To have a role created for a pod, label the pod with `credentials-operator.otterize.com/create-gcp-sa: "true"`
 3. The credentials operator will:
-   - Annotate the pod ServiceAccount and Namespace with the relevant workload identity and Otterize tags.
+   - Annotate the pod ServiceAccount and Namespace with the relevant workload identity and Otterize labels.
    - Create a GCP ServiceAccount and bind it to the pod ServiceAccount.
 4. At this point, the pod is connected to your GCP project through the newly created GCP ServiceAccount but does not have any permissions to perform any action. We will need to create a ClientIntents YAML for the access the service requires and apply it to our cluster. Below is an example of a ClientIntents file for accessing a GCS bucket. View the [reference](/features/gcp-iam/reference) to learn more about the GCP IAM ClientIntents syntax.
 5. Once the intent is applied, the intents operator will create a new GCP IAM policy, which will be attached to the service’s role with the appropriate access.
