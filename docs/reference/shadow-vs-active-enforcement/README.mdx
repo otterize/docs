@@ -51,8 +51,6 @@ So by operating in this "shadow mode", and comparing the discovered intents with
 
 To unlock these insights, the Otterize OSS components (the intents operator, the network mapper, and the credentials operator) can be configured to connect to Otterize Cloud in order to report their configurations, the discovered intents, and the declared intents in the cluster. Within Otterize Cloud, the results are processed and displayed as **the access graph**, with all these insights: what would be blocked, what would be allowed, and what you need to do to make sure intended calls will be allowed once services are protected.
 
-![Otterize Cloud - access graph - all shadow](/img/shadow-vs-active-enforcement/access-graph-all-shadow-and-checkoutservice.png)
-
 ## Protected services
 
 When the operator is in `defaultShadow` mode, to override the default non-enforcing shadow mode for a service and enforce access controls for it, you simply create a `ProtectedService` resource.
