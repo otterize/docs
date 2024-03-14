@@ -1,0 +1,272 @@
+---
+sidebar_position: 2
+title: Automate Azure IAM for AKS
+image: /img/quick-tutorials/azure-iam-aks/social.png
+---
+
+
+Otterize automates Azure IAM identities and role assignments for your Azure AKS workloads, all in Kubernetes.
+
+In this tutorial, we will:
+
+- Optionally, spin up an AKS cluster, install the Otterize Kubernetes operator on it, and configure it to manage Azure IAM.
+- Deploy a client pod that lists files in an Azure Blog Storage container.
+- Label the client pod, telling the credentials operator to link its Kubernetes ServiceAccount with an Azure workload identity created for it.
+- Create a `ClientIntents` resource allowing the client pod to access Azure Blob Storage, that tells the intents operator to create a role assignment and associate it with the previously created workload identity.
+- See that the client is now able to list files in the Azure Blob Storage container.
+
+## Prerequisites
+Already have Otterize deployed with the Azure IAM integration configured on your cluster? [Skip to the tutorial.](#tutorial)
+
+
+### 1. Install the Azure CLI
+Follow the installation instructions for the [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli).
+
+### 2. Create an Azure AKS cluster
+Before you start, you'll need an Azure AKS cluster, with OIDC issuer & workload identity enabled.
+
+<details>
+<summary>How to set up an Azure AKS cluster using the Azure CLI</summary>
+
+
+Export the following environment variables:
+```bash
+export LOCATION="eastus"
+export RESOURCE_GROUP="otterizeAzureIAMTutorialResourceGroup"
+export AKS_CLUSTER_NAME="otterizeAzureIAMTutorialAKSCluster"
+```
+
+Create a resource group:
+```bash
+az group create --name $RESOURCE_GROUP --location $LOCATION
+```
+
+Create an AKS cluster, with OIDC issuer and workload identity enabled:
+```bash
+az aks create -g $RESOURCE_GROUP -n $AKS_CLUSTER_NAME --node-count 1 --enable-oidc-issuer --enable-workload-identity --generate-ssh-keys
+```
+
+</details>
+
+Alternatively, update an existing AKS cluster to enable OIDC issuer and workload identity:
+
+<details>
+<summary>How to update an existing AKS cluster using the Azure CLI</summary>
+
+Export the following environment variables:
+```bash
+export LOCATION="<YOUR_LOCATION>"
+export RESOURCE_GROUP="<YOUR_RESOURCE_GROUP>"
+export AKS_CLUSTER_NAME="<YOUR_AKS_CLUSTER_NAME>"
+```
+
+Update the AKS cluster to enable OIDC issuer and workload identity:
+```bash
+az aks update -g $RESOURCE_GROUP -n $AKS_CLUSTER_NAME --enable-oidc-issuer --enable-workload-identity
+```
+
+</details>
+
+
+
+Don't forget to configure your kubeconfig for your cluster. If using the example cluster above, use this command:
+```bash
+az aks get-credentials -n $AKS_CLUSTER_NAME -g $RESOURCE_GROUP
+```
+
+### 2. Deploy Otterize for Azure IAM
+To deploy Otterize, head over to [Otterize Cloud](https://app.otterize.com) and:
+
+1. Create a Kubernetes integration on the [Integrations page](https://app.otterize.com/integrations), and follow the instructions. *Make sure to enable enforcement mode for this tutorial.* If you already have a Kubernetes cluster connected, skip this step.
+
+2. Create an Azure IAM integration on the [Integrations page](https://app.otterize.com/integrations).
+    - Input your Azure tenant & subscription IDs. These are available in the Azure portal, or by running the following command:
+        ```bash
+        az account list --output table
+        ```
+    - If you are using the cluster from the previous step, the resource group name is `otterizeAzureIAMTutorialResourceGroup` and the cluster name is `otterizeAzureIAMTutorialAKSCluster`.
+
+Once the Azure integration is configured, you'll be presented with instructions for configuring your Otterize integration with Azure IAM support.
+This creates a managed identity and federated identity credential for the Otterize Kubernetes operator, and assigns it the resource group owner role on the resource group containing your AKS cluster, so that it is able to manage identitiies and role assignments for your AKS workloads.
+This setup is required once per-cluster.
+
+After Terraform has configured your cluster, click Next and you'll be presented with the configuration for deploying Otterize.
+Since you now have the Azure integration enabled, you need to redeploy Otterize with Azure integration enabled flag, providing it the client ID for the managed identity created during the terraform installation.
+
+## Tutorial
+
+### Create an Azure Blob Storage account & container
+Create a general-purpose storage account using the Azure CLI:
+```bash
+export STORAGE_ACCOUNT_NAME=otterizeazureiamtutorial
+az storage account create \
+  --name $STORAGE_ACCOUNT_NAME \
+  --resource-group $RESOURCE_GROUP \
+  --location $LOCATION
+```
+
+Create a container in the storage account:
+```bash
+export STORAGE_CONTAINER_NAME=otterizeazureiamtutorialcontainer
+az storage container create \
+    --account-name $STORAGE_ACCOUNT_NAME \
+    --name $STORAGE_CONTAINER_NAME
+```
+
+Upload a blob to the storage container:
+```bash
+echo "Hello, Azure integration" > testfile.txt
+az storage blob upload \
+    --account-name $STORAGE_ACCOUNT_NAME \
+    --container-name $STORAGE_CONTAINER_NAME \
+    --file testfile.txt \
+    --name testfile.txt
+```
+
+### Deploy the sample client
+
+```bash
+kubectl create namespace otterize-tutorial-azure-iam
+kubectl apply -n otterize-tutorial-azure-iam -f ${ABSOLUTE_URL}/code-examples/azure-iam-aks/client.yaml
+kubectl patch deployment -n otterize-tutorial-azure-iam client --type='json' -p="[{\"op\": \"replace\", \"path\": \"/spec/template/spec/containers/0/env\", \"value\": [{\"name\": \"AZURE_STORAGE_ACCOUNT\", \"value\": \"$STORAGE_ACCOUNT_NAME\"}, {\"name\": \"AZURE_STORAGE_CONTAINER\", \"value\": \"$STORAGE_CONTAINER_NAME\"}]}]"
+```
+
+<details>
+<summary>Expand to see the deployment YAML</summary>
+
+```yaml
+{@include: ../../../../static/code-examples/azure-iam-aks/client.yaml}
+```
+
+</details>
+
+
+### View logs for the client - access denied
+The client logs will show that the Azure client ID environment variable is not set.
+This is because no Azure workload identity has been created for the client pod yet.
+
+```text
+Client - The time is: Sun Mar 10 18:40:37 UTC 2024
+
+Azure client ID not set
+```
+
+### Label the client pod to create an Azure workload identity
+Label the client pod so that the Otterize credentials operator creates an Azure workload identity for it and binds its Kubernetes ServiceAccount to the newly created identity.
+```yaml
+metadata:
+  labels:
+    credentials-operator.otterize.com/create-azure-workload-identity: "true"
+```
+
+To do this, we won't be labeling the pod directly, but instead patching the `template` attribute of the `Deployment` we created earlier so that it updates the pod.
+
+```bash
+kubectl patch deployment -n otterize-tutorial-azure-iam client -p '{"spec": {"template":{"metadata":{"labels":{"credentials-operator.otterize.com/create-azure-workload-identity":"true"}}}} }'
+```
+
+#### An Azure workload identity was created for the client pod
+Let's inspect the created managed identity
+```bash
+az identity list --query "[?starts_with(name,'ottr-uai-')]" --resource-group $RESOURCE_GROUP --output table
+```
+
+In the output, you should see that a managed identity was created for the client workload, with the name starting with `ottr-uai-otterize-tutorial-azure-iam-client-...`:
+```bash
+Name                                                                                  Location    TenantId                              PrincipalId                           ClientId                              ResourceGroup
+------------------------------------------------------------------------------------  ----------  ------------------------------------  ------------------------------------  ------------------------------------  ---------------------------------
+ottr-uai-otterize-tutorial-azure-iam-client-otterizeAzureIAMTutorialAKSCluster-XXXXX  eastus      00000000-0000-0000-0000-000000000000  00000000-0000-0000-0000-000000000000  00000000-0000-0000-0000-000000000000  otterizeAzureIAMTutorialResourceGroup
+````
+
+You could also inspect the federated identity credential created for the client workload:
+```bash
+export WORKLOAD_IDENTITY_NAME=$(az identity list --query "[?starts_with(name,'ottr-uai-otterize-tutorial-azure-iam-client-$AKS_CLUSTER_NAME')].name" --resource-group $RESOURCE_GROUP  -o tsv)
+az identity federated-credential list --identity-name $WORKLOAD_IDENTITY_NAME --resource-group $RESOURCE_GROUP --output table --query "[].{name:name, subject:subject}"
+```
+
+In the output, you should see that a federated identity credential was created for the client workload:
+```bash
+Name                                                                                  Subject
+------------------------------------------------------------------------------------  --------------------------------------------------------
+ottr-fic-otterize-tutorial-azure-iam-client-otterizeAzureIAMTutorialAKSCluster-XXXXX  system:serviceaccount:otterize-tutorial-azure-iam:client
+```
+
+#### The Kubernetes ServiceAccount was annotated with the workload identity ID
+The credentials operator automatically annotated the Kubernetes ServiceAccount for the client pod with the newly created workload identity
+
+Let's look at the service account:
+```bash
+kubectl get serviceaccount -n otterize-tutorial-azure-iam client -o yaml
+```
+
+```yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  annotations:
+    # highlight-next-line
+    azure.workload.identity/client-id: 6fda2902-d98c-40f6-800d-29d5856e359a
+  name: client
+  namespace: otterize-tutorial-azure-iam
+```
+
+
+### Apply intents to create the necessary IAM role assignments
+
+By annotating the pod, we've created a workload identity.
+We now need to specify what we need to access, and the intents operator will create an Azure IAM role assignment accordingly.
+
+We will specify the following ClientIntents, granting the `Storage Blob Data Contributor` permission to the `otterizeazureiamtutorialcontainer` container in the `otterizeazureiamtutorial` storage account.
+```yaml
+{@include: ../../../../static/code-examples/azure-iam-aks/clientintents.yaml}
+```
+
+To apply these intents, run the following command:
+```bash
+kubectl apply -n otterize-tutorial-azure-iam -f ${ABSOLUTE_URL}/code-examples/azure-iam-aks/clientintents.yaml
+kubectl patch clientintents -n otterize-tutorial-azure-iam client --type='json' -p="[{\"op\": \"replace\", \"path\": \"/spec/calls/0/name\", \"value\": \"/providers/Microsoft.Storage/storageAccounts/"$STORAGE_ACCOUNT_NAME"/blobServices/default/containers/"$STORAGE_CONTAINER_NAME"\"}]"
+```
+
+### The client can now list files in the Azure Blob Storage container!
+
+Let's look at the client logs again to see that no more errors are being reported:
+```bash
+kubectl logs -f -n otterize-tutorial-azure-iam deploy/client
+```
+
+```text
+Client - The time is: Sun Mar 10 18:53:24 UTC 2024
+
+Logging in using federated identity credentials
+CloudName    HomeTenantId                          IsDefault    Name                  State    TenantId
+-----------  ------------------------------------  -----------  --------------------  -------  ------------------------------------
+AzureCloud   00000000-0000-0000-0000-000000000000  True         Azure subscription 1  Enabled  00000000-0000-0000-0000-000000000000
+
+Listing storage blob container otterizeazureiamtutorialcontainer in storage account otterizeazureiamtutorial
+Name          Blob Type    Blob Tier    Length    Content Type    Last Modified              Snapshot
+------------  -----------  -----------  --------  --------------  -------------------------  ----------
+testfile.txt  BlockBlob    Hot          25        text/plain      2024-03-10T18:07:21+00:00
+
+
+```
+
+### What's next?
+
+Try out some of the other quick tutorials to learn about how to use ClientIntents to manage network policies, Istio policies, PostgreSQL access, and more. You can use a single ClientIntents resource to specify all the access required for a pod.
+
+## Teardown
+
+To remove the deployed examples run:
+```bash
+kubectl delete namespace otterize-tutorial-azure-iam
+```
+
+To delete the Azure blob storage account & container:
+```bash
+az storage account delete --name $STORAGE_ACCOUNT_NAME --resource-group $RESOURCE_GROUP
+```
+
+To delete the cluster, if you created the one in this tutorial:
+```bash
+az aks delete --name $AKS_CLUSTER_NAME --resource-group $RESOURCE_GROUP
+```

@@ -1,0 +1,43 @@
+---
+sidebar_position: 3
+title: Reference
+---
+
+### ClientIntents example (YAML)
+
+```yaml
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  # The name of the pod that will be granted access
+  name: client
+spec:
+  service:
+    name: client
+  calls:
+    # The Azure resource ID that references the resource(s) for the authorization. Subscription & resource group are automatically appended.
+    - name: "/providers/Microsoft.Storage/storageAccounts/otterizeazureiamtutorial/blobServices/default/containers/otterizeazureiamtutorialcontainer"
+      type: azure
+      # one or more Azure roles that will be provided to the specified resources
+      azureRoles:
+        - "Storage Blob Data Contributor"
+```
+
+### Annotations
+
+| Key                                                        | Description                                                                                                                                                                                  | Default  |
+|------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
+| `credentials-operator.otterize.com/create-azure-workload-identity` | By setting to **true** the credential operator will create an Azure workload identity the associated pod | `false` |
+
+
+### Helm Chart options
+
+| Key                                                        | Description                                                                                                                                                                                  | Default  |
+|------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
+| `global.azure.enabled`                                       | Enable or disable Azure integration                                                                                                                                                            | `false`  |
+| `azure.userAssignedIdentityID` | ID of the user assigned identity used by the operator to access Azure. | `(none)` |
+| `azure.subscriptionID`         | ID of the Azure subscription in which the AKS cluster is deployed.     | `(none)` |
+| `azure.resoureceGroup`         | Name of the Azure resource group in which the AKS cluster is deployed. | `(none)` |
+| `azure.aksClusterName`         | Name of the AKS cluster in which the operator is deployed.             | `(none)` |
+
+View the [Helm chart reference](/reference/configuration/otterize-chart) for all other options
