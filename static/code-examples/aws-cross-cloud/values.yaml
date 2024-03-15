@@ -1,0 +1,12 @@
+app:
+  trustDomain: spiffe.cert-manager.io
+  issuer:
+    name: cert-manager-spiffe
+  approver:
+    signerName: clusterissuers.cert-manager.io/cert-manager-spiffe
+
+image:
+  tag: aws
+  repository:
+    driver: ghcr.io/joshvanl/cert-manager-csi-driver
+    approver: ghcr.io/joshvanl/cert-manager-csi-driver-approver

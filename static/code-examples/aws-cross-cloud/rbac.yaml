@@ -1,0 +1,23 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: certificaterequest-creator
+  namespace: otterize-tutorial-cross-cloud
+rules:
+  - apiGroups: ["cert-manager.io"]
+    resources: ["certificaterequests"]
+    verbs: ["create"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: server-certificaterequest
+  namespace: otterize-tutorial-cross-cloud
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: certificaterequest-creator
+subjects:
+  - kind: ServiceAccount
+    name: server
+    namespace: otterize-tutorial-cross-cloud

@@ -1,0 +1,33 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: selfsigned
+  namespace: cert-manager
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: cert-manager-spiffe
+  namespace: cert-manager
+spec:
+  isCA: true
+  duration: 732h # 1 month
+  secretName: cert-manager-spiffe
+  commonName: spiffe.cert-manager.io
+  subject:
+    organizations:
+      - mattiasgees
+  issuerRef:
+    name: selfsigned
+    kind: Issuer
+    group: cert-manager.io
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: cert-manager-spiffe
+spec:
+  ca:
+    secretName: cert-manager-spiffe

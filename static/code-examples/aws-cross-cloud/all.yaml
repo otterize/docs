@@ -11,12 +11,17 @@ spec:
     metadata:
       labels:
         app: server
+        network-mapper.otterize.com/aws-visibility: "true"
+        credentials-operator.otterize.com/create-aws-role: "true"
     spec:
       serviceAccountName: server
       containers:
         - name: server
           imagePullPolicy: Always
           image: 'otterize/eks-tutorial-server'
+          env:
+            - name: AWS_REGION
+              value: "eu-west-2"
           ports:
             - containerPort: 80
 ---

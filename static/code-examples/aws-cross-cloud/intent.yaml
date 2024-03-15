@@ -1,0 +1,13 @@
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: server
+  namespace: otterize-tutorial-cross-cloud
+spec:
+  service:
+    name: server
+  calls:
+    - name: arn:aws:s3:::otterize-tutorial-bucket-*/*
+      type: aws
+      awsActions:
+        - "s3:PutObject"
