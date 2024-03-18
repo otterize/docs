@@ -399,6 +399,10 @@ if (process.env.ADD_REDIRECTS === 'production') {
           to: '/features/aws-iam/tutorials/aws-iam-eks',
         },
         {
+          from: ['/troubleshooting'],
+          to: '/reference/troubleshooting',
+        },
+        {
           from: ['/quickstart/access-control/k8s-network-policies'],
           to: '/features/network-mapping-network-policies/tutorials/k8s-network-policies',
         },
