@@ -72,7 +72,7 @@ First, we will deploy two Lambda functions (`DadJokeLambdaFunction` ￼and `Feed
 
 We can deploy the lambda functions and their required roles with the following command:
 ```bash
-curl http://localhost:3003/code-examples/aws-visibility/cloudformation.yaml -o template.yaml && \
+curl ${ABSOLUTE_URL}/code-examples/aws-visibility/cloudformation.yaml -o template.yaml && \
 aws cloudformation deploy --template-file template.yaml --stack-name OtterizeTutorialJokeTrainingStack --capabilities CAPABILITY_IAM --region 'us-west-2'
 ```
 <details>
@@ -83,7 +83,7 @@ aws cloudformation deploy --template-file template.yaml --stack-name OtterizeTut
 ```
 </details>
 
-### Deploy clusters with access to Lambda functions
+### Deploy server with access to Lambda functions
 
 Now that our Lambdas are deployed, we want to deploy our server pod within our cluster and point it to our two Lambda functions. In the commands below, we will create a configmap to hold our functions ARNs and pass the map into our deployment YAML.
 
