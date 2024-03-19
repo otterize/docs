@@ -7,7 +7,7 @@ spec:
   service:
     name: client
   calls:
-    - name: "/providers/Microsoft.Storage/storageAccounts/otterizeazureiamtutorial/blobServices/default/containers/otterizeazureiamtutorialcontainer"
+    - name: "/providers/Microsoft.Storage/storageAccounts/ottrtutorial/blobServices/default/containers/ottrtutorialcontainer"
       type: azure
       azureRoles:
         - "Storage Blob Data Contributor"

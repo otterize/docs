@@ -98,7 +98,7 @@ Since you now have the Azure integration enabled, you need to redeploy Otterize 
 ### Create an Azure Blob Storage account & container
 Create a general-purpose storage account using the Azure CLI:
 ```bash
-export STORAGE_ACCOUNT_NAME=otterizeazureiamtutorial
+export STORAGE_ACCOUNT_NAME=ottrtutorial`date +%s`
 az storage account create \
   --name $STORAGE_ACCOUNT_NAME \
   --resource-group $RESOURCE_GROUP \
@@ -107,7 +107,7 @@ az storage account create \
 
 Create a container in the storage account:
 ```bash
-export STORAGE_CONTAINER_NAME=otterizeazureiamtutorialcontainer
+export STORAGE_CONTAINER_NAME=ottrtutorialcontainer
 az storage container create \
     --account-name $STORAGE_ACCOUNT_NAME \
     --name $STORAGE_CONTAINER_NAME
@@ -115,12 +115,12 @@ az storage container create \
 
 Upload a blob to the storage container:
 ```bash
-echo "Hello, Azure integration" > testfile.txt
+echo "Hello, Azure integration" > hello.txt
 az storage blob upload \
     --account-name $STORAGE_ACCOUNT_NAME \
     --container-name $STORAGE_CONTAINER_NAME \
-    --file testfile.txt \
-    --name testfile.txt
+    --file hello.txt \
+    --name hello.txt
 ```
 
 ### Deploy the sample client
@@ -141,7 +141,7 @@ kubectl patch deployment -n otterize-tutorial-azure-iam client --type='json' -p=
 </details>
 
 
-### View logs for the client - access denied
+#### View logs for the client - Azure client ID not set
 The client logs will show that the Azure client ID environment variable is not set.
 This is because no Azure workload identity has been created for the client pod yet.
 
@@ -157,17 +157,18 @@ Azure client ID not set
 ```
 
 ### Label the client pod to create an Azure workload identity
-Label the client pod so that the Otterize credentials operator creates an Azure workload identity for it and binds its Kubernetes ServiceAccount to the newly created identity.
+Label the client pod so that the Otterize credentials operator creates an Azure workload identity for it and binds its Kubernetes ServiceAccount to the newly created identity:
+
+
+```bash
+kubectl patch deployment -n otterize-tutorial-azure-iam client -p '{"spec": {"template":{"metadata":{"labels":{"credentials-operator.otterize.com/create-azure-workload-identity":"true"}}}} }'
+```
+
+This applies the following label to the client pod:
 ```yaml
 metadata:
   labels:
     credentials-operator.otterize.com/create-azure-workload-identity: "true"
-```
-
-To do this, we won't be labeling the pod directly, but instead patching the `template` attribute of the `Deployment` we created earlier so that it updates the pod.
-
-```bash
-kubectl patch deployment -n otterize-tutorial-azure-iam client -p '{"spec": {"template":{"metadata":{"labels":{"credentials-operator.otterize.com/create-azure-workload-identity":"true"}}}} }'
 ```
 
 #### An Azure workload identity was created for the client pod
@@ -215,21 +216,40 @@ metadata:
   namespace: otterize-tutorial-azure-iam
 ```
 
+#### View logs for the client - Azure client ID is set, but no subscriptions found
+The client logs will now show that the Azure client ID environment variable is set,
+and the client attempts to log in using federated identity credentials.
+However, the client is still unable to login or access any Azure resources,
+as no Azure IAM role assignments have been created for the client workload identity yet.
+
+```shell
+kubectl logs -f -n otterize-tutorial-azure-iam deploy/client
+```
+
+
+```text
+Logging in using federated identity credentials
+ERROR: No subscriptions found for 00000000-0000-0000-0000-000000000000
+
+Listing storage blob container ottrtutorialcontainer in storage account ottrtutorial
+ERROR: Please run 'az login' to setup account.
+```
+
 
 ### Apply intents to create the necessary IAM role assignments
 
 By annotating the pod, we've created a workload identity.
 We now need to specify what we need to access, and the intents operator will create an Azure IAM role assignment accordingly.
 
-We will specify the following ClientIntents, granting the `Storage Blob Data Contributor` permission to the `otterizeazureiamtutorialcontainer` container in the `otterizeazureiamtutorial` storage account.
-```yaml
-{@include: ../../../../static/code-examples/azure-iam-aks/clientintents.yaml}
-```
-
-To apply these intents, run the following command:
+To do so, we will apply a `ClientIntents` resource that specifies the access required for the client pod:
 ```bash
 kubectl apply -n otterize-tutorial-azure-iam -f ${ABSOLUTE_URL}/code-examples/azure-iam-aks/clientintents.yaml
 kubectl patch clientintents -n otterize-tutorial-azure-iam client --type='json' -p="[{\"op\": \"replace\", \"path\": \"/spec/calls/0/name\", \"value\": \"/providers/Microsoft.Storage/storageAccounts/"$STORAGE_ACCOUNT_NAME"/blobServices/default/containers/"$STORAGE_CONTAINER_NAME"\"}]"
+```
+
+This applies the following ClientIntents, granting the `Storage Blob Data Contributor` permission to the Azure Blog Storage account & container we created:
+```yaml
+{@include: ../../../../static/code-examples/azure-iam-aks/clientintents.yaml}
 ```
 
 ### The client can now list files in the Azure Blob Storage container!
@@ -247,13 +267,18 @@ CloudName    HomeTenantId                          IsDefault    Name            
 -----------  ------------------------------------  -----------  --------------------  -------  ------------------------------------
 AzureCloud   00000000-0000-0000-0000-000000000000  True         Azure subscription 1  Enabled  00000000-0000-0000-0000-000000000000
 
-Listing storage blob container otterizeazureiamtutorialcontainer in storage account otterizeazureiamtutorial
-Name          Blob Type    Blob Tier    Length    Content Type    Last Modified              Snapshot
-------------  -----------  -----------  --------  --------------  -------------------------  ----------
-testfile.txt  BlockBlob    Hot          25        text/plain      2024-03-10T18:07:21+00:00
+Listing storage blob container ottrtutorialcontainer in storage account ottrtutorial
+Name       Blob Type    Blob Tier    Length    Content Type    Last Modified              Snapshot
+---------  -----------  -----------  --------  --------------  -------------------------  ----------
+hello.txt  BlockBlob    Hot          25        text/plain      2024-03-10T18:07:21+00:00
 
 
 ```
+
+:::note
+Azure role assignments may take up to 10 minutes to take effect. This is a known limitation of Azure RBAC.
+If you are still seeing access errors in the client logs, wait a few minutes and try again.
+:::
 
 ### What's next?
 
