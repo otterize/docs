@@ -27,7 +27,6 @@ All of this is presented in a unified, filtered view called the **access graph**
 are they blocked or would they be blocked if enforcement were turned on, are they protected, and how are they configured.
 
 ![Otterize Cloud - access graph 1](/img/cloud-ui/access-graph-screenshot-1.png)
-![Otterize Cloud - access graph 2](/img/cloud-ui/access-graph-screenshot-2.png)
 
 The access graph **continuously** reflects the state of your cluster, as reported by the Otterize OSS operators. Any changes made in the cluster appear in real time in Otterize Cloud.
 
@@ -91,15 +90,19 @@ The access graph combines all the information about the Kubernetes cluster and t
 
 Here is the meaning of the various arrows connecting the services &mdash; the edges of the graph that connect its nodes:
 
-![Otterize Cloud - access graph legend](/img/cloud-ui/access-graph-legend.png)
+<img alt="Otterize Cloud - green arrow" src="/img/cloud-ui/green-arrow.png" className="tw-max-h-8"/>
 
-Solid colored arrows indicate that all discovered intents &mdash; calls that were detected by the network mapper &mdash; were declared as intents. There may even be declared intents beyond what was detected.
+A green arrow indicates a connection allowed by policies
 
-Dashed colored arrows indicate that at least some discovered intents were not declared.
+<img alt="Otterize Cloud - yellow arrow" src="/img/cloud-ui/yellow-arrow.png" className="tw-max-h-12"/>
 
-Solid black arrows indicate declared intents from the intents operator only, when the network mapper isn't integrated and supplying information on actual, discovered intents.
+A yellow arrow indicates a connection that will be blocked when enforcement is enabled
 
-Dashed black arrows indicate discovered intents from the network mapper only, when the intents operator isn't integrated and supplying information on declared intents.
+<img alt="Otterize Cloud - red arrow" src="/img/cloud-ui/red-arrow.png" className="tw-max-h-8"/>
+
+A red arrow indicates a connection that will be blocked
+
+
 
 {@include: _environments_and_namespaces.mdx}
 
