@@ -45,11 +45,11 @@ kubectl apply -n otterize-ecom-demo -f ${ABSOLUTE_URL}/code-examples/shadow-mode
     <summary><em>Optional: check that the demo was deployed.</em></summary>
 
     To see all the pods in the demo:
-    ```bash
-    kubectl get pods -n otterize-ecom-demo
-    ```
+```bash
+kubectl get pods -n otterize-ecom-demo
+```
     The pods should all be ready and running:
-    ```bash
+```bash
     NAME                                     READY   STATUS    RESTARTS      AGE
     adservice-65494cbb9d-5lrv6               1/1     Running   0             115s
     cartservice-6d84fc45bb-hdtwn             1/1     Running   0             115s
@@ -66,46 +66,46 @@ kubectl apply -n otterize-ecom-demo -f ${ABSOLUTE_URL}/code-examples/shadow-mode
     recommendationservice-6c8d848498-zm2rm   1/1     Running   0             114s
     redis-cart-6b79c5b497-xpms2              1/1     Running   0             115s
     shippingservice-85694cb9bd-v54xp         1/1     Running   0             114s
-    ```
+```
 
     You can now browse the web app of this demo, if you wish:
 
-    <Tabs groupId="frontend-addr">
-        <TabItem value="k8s" label="K8s">
+<Tabs groupId="frontend-addr">
+<TabItem value="k8s" label="K8s">
 
-            To get the externally-accessible URL where your demo front end is available, run:
-            ```bash
-            kubectl get service -n otterize-ecom-demo frontend-external | awk '{print $4}'
-            ```
-            The result should be similar to (if running on AWS EKS):
-            ```
-            a11843075fd254f8099a986467098647-1889474685.us-east-1.elb.amazonaws.com
-            ```
-            Go ahead and browse to the URL above to "shop" and get a feel for the demo's behavior.
-            (The URL might take some time to populate across DNS servers. Note that we are accessing an HTTP and not an HTTPS website.)
-        </TabItem>
-        <TabItem value="minikube" label="Minikube">
+To get the externally-accessible URL where your demo front end is available, run:
+```bash
+kubectl get service -n otterize-ecom-demo frontend-external | awk '{print $4}'
+```
+The result should be similar to (if running on AWS EKS):
+```
+a11843075fd254f8099a986467098647-1889474685.us-east-1.elb.amazonaws.com
+```
+Go ahead and browse to the URL above to "shop" and get a feel for the demo's behavior.
+(The URL might take some time to populate across DNS servers. Note that we are accessing an HTTP and not an HTTPS website.)
+</TabItem>
+<TabItem value="minikube" label="Minikube">
 
-            To get the externally-accessible URL where your demo front end is available, run:
-            ```
-            kubectl port-forward -n otterize-ecom-demo service/frontend-external 8080:80 &
-            ```
-            The demo is now accessible at:
-            ```
-            http://localhost:8080
-            ```
-            Go ahead and browse to the URL above to "shop" and get a feel for the demo's behavior.
-        </TabItem>
-    </Tabs>
+To get the externally-accessible URL where your demo front end is available, run:
+```
+kubectl port-forward -n otterize-ecom-demo service/frontend-external 8080:80 &
+```
+The demo is now accessible at:
+```
+http://localhost:8080
+```
+Go ahead and browse to the URL above to "shop" and get a feel for the demo's behavior.
+</TabItem>
+</Tabs>
 </details>
 
 ### Seeing the access graph
 
-In the Otterize Cloud UI, your [integration](https://app.otterize.com/integrations) should now show all 3 Otterize OSS operators &mdash; the network mapper, intents operator, and credentials operator &mdash; as connected, with a green status.
+In the Otterize Cloud UI, your [access graph](https://app.otterize.com/access-graph) should show 3 green statuses indicating that Otterize OSS operators &mdash; the network mapper, intents operator, and credentials operator &mdash; as connected.
 
 <img src="/img/guides/protect-1-service-network-policies/otterize-oss-connected.png" alt="Access graph - Otterize OSS connected" width="600"/>
 
-And when you go back to the [access graph](https://app.otterize.com/access-graph) (and select your cluster from the dropdown, if needed), you should see the following map for the demo running in your cluster:
+Below you should see the following map for the demo running in your cluster:
 
 ![Access graph - network map](/img/guides/protect-1-service-network-policies/network-map.png)
 
@@ -125,14 +125,9 @@ In fact the graph shows a lot of interesting insights, such as:
     - <span style={{color:"#F3AF3D", fontWeight:"bold"}}>would be blocked</span> if the server were protected;
     - <span style={{color:"#238C32", fontWeight:"bold"}}>allowed</span> even when the server is protected; or
     - <span style={{color:"#E9615C", fontWeight:"bold"}}>blocked</span> right now.
+    - <span style={{color:"rgb(72, 101, 129)", fontWeight:"bold"}}>N/A</span> when no server is being called.
 
-For our demo, the services and the arrows are all <span style={{color:"#F3AF3D", fontWeight:"bold"}}>yellow</span> because the servers aren't (yet) protected, and because we haven't declared any intents so calls would be blocked if the servers were protected.
-
-The graph can reveal more information but this should suffice for the moment.
-
-Otterize can configure several access control mechanisms, such as Istio authorization policies and Kafka ACLs, and the access graph can take into account their combined state. But for this demo, we're only using network policies, so let's adjust the access graph view to only take these network policies into account: at the top right, toggle on "Use in access graph" for network policies, toggle off for the others.
-
-<img src="/img/guides/protect-1-service-network-policies/access-graph-panel.png" alt="Access graph - access controls panel" width="800"/>
+For our demo, the servers statuses are all <span style={{color:"#F3AF3D", fontWeight:"bold"}}>yellow</span> because the servers aren't (yet) protected, and because we haven't declared any intents so calls would be blocked if the servers were protected.
 
 ### Choose one service to protect
 
@@ -158,21 +153,6 @@ We can see that:
 - To authorize its clients' access, we're told to **declare their intents** (which would generate those network policies &mdash; this is what IBAC means, after all).
 
 Go ahead and close the `productcatalogservice` details. It's time to declare its clients' intents.
-
-<details>
-<summary><b>Optional: Understanding intents from the access graph</b></summary>
-
-The access graph shows three services calling the `productcatalogservice`: `frontend`, `recommendationservice`, and `checkoutservice`. The access graph shows an arrow between a client and a server if the network mapper discovered calls were happening ("discovered intent"), or if the client explicitly declared an intent to call the server, or both.
-
-Click, for example, on the yellow arrow from `frontend` &rarr; `productcatalogservice`:
-
-<img src="/img/guides/protect-1-service-network-policies/frontend-calls-productcatalogservice-no-intents.png" alt="Clicked on frontend to productcatalogservice" width="600"/>
-
-We see that:
-- There is a discovered intent, but without a corresponding declared intent.
-- Access would therefore be blocked, once the `productcatalogservice` server is protected.
-
-</details>
 
 ### Declare client intents
 
@@ -296,7 +276,7 @@ Let's look again at the access graph to see what happened in the cluster:
 
 ![3 intents declared and server protected](/img/guides/protect-1-service-network-policies/3-intents-protected.png)
 
-Sure enough, the `productcatalogservice` is <span style={{color:"#238C32", fontWeight:"bold"}}>green</span>: it's **protected against unauthorized access**, and **allowing authorized clients** since its clients' arrows are green. Clicking on it confirms this:
+Sure enough, the `productcatalogservice` is <span style={{color:"#238C32", fontWeight:"bold"}}>green</span>: it's **protected against unauthorized access**, and **allowing authorized clients**. Clicking on it confirms this:
 
 <img src="/img/guides/protect-1-service-network-policies/productcatalogservice-with-intents-protected.png" alt="Clicked on productcatalogservice" width="600"/>
 
