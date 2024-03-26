@@ -52,6 +52,19 @@ spec:
       type: azure
       azureRoles:
         - "Storage Blob Data Contributor"
+    - name: "/providers/Microsoft.KeyVault/vaults/otterizetutorialazureiamkeyvault"
+      type: azure
+      # Optional - Grant Azure Key Vault data plane access by using Key Vault access policy
+      azureKeyVaultPolicy:
+        certificatePermissions:
+          - "all"
+        keyPermissions:
+          - "all"
+        secretPermissions:
+          - "all"
+        storagePermissions:
+          - "get"
+          - "list"
 ```
 
 ### Automatically generating ClientIntents for Azure IAM
