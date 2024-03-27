@@ -68,7 +68,7 @@ Having configured our environment, we'll deploy AWS resources, authorize pod acc
 
 ### Deploy two Lambda functions
 
-First, we will deploy two Lambda functions (`DadJokeLambdaFunction` ￼and `FeedbackLambdaFunction`). These services will work alongside our server pod to generate a humor training dataset. This works by receiving a joke from the DadJokeLambdaFunction, the server pod reviewing the joke, and then sending the feedback to the FeedbackLambdaFunction.
+First, we will deploy two Lambda functions (`DadJokeLambdaFunction` and `FeedbackLambdaFunction`). These services will work alongside our server pod to generate a humor training dataset. This works by receiving a joke from the DadJokeLambdaFunction, the server pod reviewing the joke, and then sending the feedback to the FeedbackLambdaFunction.
 
 We can deploy the lambda functions and their required roles with the following command:
 ```bash
