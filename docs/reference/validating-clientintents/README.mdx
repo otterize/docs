@@ -1,0 +1,43 @@
+---
+sidebar_position: 9
+title: Validating ClientIntents
+---
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+Otterize's `ClientIntent` CRDs can be validated using [Kyverno](https://kyverno.io/#td-block-1).
+Kyverno is a policy engine designed for Kubernetes
+Kyverno policies can validate, mutate, generate, and cleanup Kubernetes resources, and verify image signatures and artifacts to help secure the software supply chain.
+
+To install and setup Kyverno, follow the instructions in the [Kyverno documentation](https://kyverno.io/docs/installation/).
+
+The following are some example Kyverno policies that can be used to validate `ClientIntent` CRDs:
+
+* Validate that `ClientIntent` CRDs do not have any AWS `s3:DeleteAction` operations:
+    ```yaml
+    apiVersion: kyverno.io/v1
+    kind: ClusterPolicy
+    metadata:
+      name: validate-clientintents
+    spec:
+      validationFailureAction: Enforce
+      rules:
+        - name: deny-s3-deleteobject
+          match:
+            any:
+              - resources:
+                  kinds:
+                    - k8s.otterize.com/v1alpha3/ClientIntents
+          validate:
+            message: "s3:DeleteObject is not allowed"
+            foreach:
+              - list: request.object.spec.calls[]
+                foreach:
+                  - list: "element.awsActions"
+                    deny:
+                      conditions:
+                        all:
+                          - key: "{{element}}"
+                            operator: Equals
+                            value: "s3:DeleteAction"
+    ```
