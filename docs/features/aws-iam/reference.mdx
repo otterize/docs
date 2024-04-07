@@ -22,11 +22,30 @@ spec:
       awsActions:
         - "s3:PutObject"
         - "s3:GetObject"
-      # Multiple call definitions can be defined for a single service.
-	- name: arn:aws:s3:::read-only-bucket-*/*
+    # Multiple call definitions can be defined for a single service.
+    - name: arn:aws:s3:::read-only-bucket-*/*
       type: aws
       awsActions:
         - "s3:GetObject"
+```
+
+Otterize supports templating AWS resource names by AWS region & account ID.
+The templates `$(AWS_REGION)` & `$(AWS_ACCOUNT_ID)` in AWS resource ARNs will be automatically replaced with the EKS cluster's region & account ID:
+
+```yaml
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: server
+spec:
+  service:
+    name: server
+  calls:
+    # $(AWS_REGION) & $(AWS_ACCOUNT_ID) will be replaced with the EKS cluster's region & account ID
+    - name: arn:aws:sqs:$(AWS_REGION):$(AWS_ACCOUNT_ID):queue1
+      type: aws
+      awsActions:
+        - "sqs:*"
 ```
 
 ### Annotations
