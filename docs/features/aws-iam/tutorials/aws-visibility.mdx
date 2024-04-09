@@ -147,7 +147,7 @@ kubectl delete namespace otterize-tutorial-aws-visibility
 
 To remove the Lambda functions:
 ```bash
-aws cloudformation delete-stack --stack-name OtterizeTutorialJokeTrainingStack
+aws cloudformation delete-stack --stack-name OtterizeTutorialJokeTrainingStack --region 'us-west-2'
 ```
 
 To remove the EKS cluster:
