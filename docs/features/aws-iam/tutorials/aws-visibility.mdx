@@ -24,7 +24,7 @@ We will need the following CLI tools to set up our cluster and deploy our script
 2. [eksctl](https://eksctl.io/installation/)
 
 ### Create an EKS cluster
-Already have Otterize deployed with the IAM integration configured on your cluster? [Skip to the tutorial.](#tutorial)
+Already have EKS cluster? [Skip to the Installing Otterize](#enable-aws-visibility-with-otterize-installation)
 
 Begin by creating an EKS cluster for pod deployment using **eksctl** with the YAML configuration below:
 ```bash
@@ -44,27 +44,19 @@ aws eks update-kubeconfig --name otterize-tutorial-aws-visibility --region 'us-w
 ```
 
 ### Enable AWS Visibility with Otterize Installation
-To provide visibility, we will need to install Otterize in our cluster, and we will want to enable AWS IAM roles for service accounts (IRSA) on our cluster. We can quickly enable this using a cloudformation template on the Otterize Cloud Integrations page.
+To provide visibility, we will need to install Otterize in our cluster, and we will want to enable AWS visibility on our cluster by setting the appropriate flag.
 
-1. **Install Otterize**
+**Install Otterize**
 If you don't have a connected Kubernetes cluster, create one via [Integrations page](https://app.otterize.com/integrations) and follow the setup instructions for Kubernetes. Skip if your cluster is already connected.
 
-2. **Integrate AWS with Otterize Cloud**
-To begin the integration with AWS, visit the [Integrations page](https://app.otterize.com/integrations). Once there, you will be asked for information to help populate a CloudFormation template we will use to set up roles and policies for the Otterize deployment in our cluster.
-
-If you created the EKS cluster above, the cluster name would be `otterize-tutorial-aws-visibility`, and the region would be `us-west-2`.
-
-Once the information is provided, a *Launch Cloudformation* button will take you to the AWS Console to deploy the cloudformation script. This script will install IRSA within your EKS cluster and enable Otterize Cloud to manage intents.
-
-After IRSA is enabled in your cluster, you need to redeploy Otterize with the AWS credential operator and AWS visibility enabled. In Otterize Cloud, click the *Next* button to see the updated Helm commands. AWS Visibility is not enabled by default. Before executing the revised configuration, you will need to set an additional flag at the end of the command:
-
+When installing Otterize append the following flag to the helm command to enable AWS visibility:
 ```bash
 --set networkMapper.aws.visibility.enabled=true
 ```
 
 ## Tutorial
 
-Having configured our environment, we'll deploy AWS resources, authorize pod access using ClientIntents, and monitor access in Otterize Cloud.
+Having configured our environment, we will now deploy AWS resources and monitor access in Otterize Cloud.
 
 ### Deploy two Lambda functions
 
@@ -85,7 +77,7 @@ aws cloudformation deploy --template-file template.yaml --stack-name OtterizeTut
 
 ### Deploy server with access to Lambda functions
 
-Now that our Lambdas are deployed, we want to deploy our server pod within our cluster and point it to our two Lambda functions. In the commands below, we will create a configmap to hold our functions ARNs and pass the map into our deployment YAML.
+With our Lambdas are deployed, we want to deploy our server pod within our cluster and point it to our two Lambda functions. In the commands below, we will create a configmap to hold our functions ARNs, a secret to hold our service user's credentials, and then apply our deployment YAML.
 
 ```bash
 
@@ -99,6 +91,13 @@ kubectl create configmap lambda-arns \
   --from-literal=feedbackLambdaArn=$FEEDBACK_LAMBDA_ARN \
   -n otterize-tutorial-aws-visibility
 
+
+USER_NAME=$(aws cloudformation describe-stacks --region 'us-west-2' --stack-name OtterizeTutorialJokeTrainingStack --query "Stacks[0].Outputs[?OutputKey=='LambdaInvokeUserAccessKeyId'].OutputValue" --output text)
+
+aws iam create-access-key --user-name "$USER_NAME" | \
+jq -r '"--from-literal=AWS_ACCESS_KEY_ID="+.AccessKey.AccessKeyId+" --from-literal=AWS_SECRET_ACCESS_KEY="+.AccessKey.SecretAccessKey' | \
+xargs kubectl create secret generic aws-credentials -n otterize-tutorial-aws-visibility
+
 kubectl apply -n otterize-tutorial-aws-visibility -f ${ABSOLUTE_URL}/code-examples/aws-visibility/all.yaml
 ```
 <details>
@@ -109,32 +108,10 @@ kubectl apply -n otterize-tutorial-aws-visibility -f ${ABSOLUTE_URL}/code-exampl
 ```
 </details>
 
-Inspecting our deployment YAML, you will see we have added two labels to our pod. The first `network-mapper.otterize.com/aws-visibility` informs the network mapper to identify AWS API calls, and the `credentials-operator.otterize.com/create-aws-role` that drives the credentials operator to create a role specifically for this pod that will be used for our intents.
+Inspecting our deployment YAML, you will see we have added a label of `network-mapper.otterize.com/aws-visibility` to our pod. This informs the network mapper to identify AWS API calls for this pod to determine the resources and actions are being used. Otterize will only monitor AWS API calls for pods with this label.
 
-Once our pod is deployed, we can inspect the logs and see that we cannot access the Lambda functions.
+Once our pod is deployed, we can inspect the logs and see that we are calling our Lambda functions successfully.
 
-```bash
-kubectl logs -f -n otterize-tutorial-aws-visibility deploy/joketrainer
-```
-
-Sample output:
-```
-invoke error, operation error Lambda: Invoke, https response error StatusCode: 403, RequestID: a3bab063-dfb0-49e3-b466-0069807c56fa, api error AccessDeniedException: User: arn:aws:sts::12345678910:assumed-role/otr-otterize-tutorial-aws-visibility.default@otterize-tut-ecfd9d/12345678910 is not authorized to perform: lambda:InvokeFunction on resource: arn:aws:lambda:us-west-2:12345678910:function:OtterizeTutorialJokeTrainingStack-DadJokeLambda-dnNYqlwipYxG because no identity-based policy allows the lambda:InvokeFunction action
-```
-
-### Applying Intents
-
-We can apply an intent for our pod to be able to call the Lambda functions created by our cloudformation stack.
-
-```bash
-kubectl apply -n otterize-tutorial-aws-visibility -f ${ABSOLUTE_URL}/code-examples/aws-visibility/intents.yaml
-```
-
-```yaml
-{@include: ../../../../static/code-examples/aws-visibility/intents.yaml}
-```
-
-We can now recheck the logs to ensure that the pod is running:
 ```bash
 kubectl logs -f -n otterize-tutorial-aws-visibility deploy/joketrainer
 ```
@@ -151,12 +128,11 @@ Sending Feedback of Funny?: No
 ```
 
 ### Visualize Relationships
-The Otterize network mapper inspects pods with the `network-mapper.otterize.com/aws-visibility: true` label. For the labeled pods, the network mapper will identify AWS API calls made by that pod and determine which resources and actions are being used. This information is shown on the [Access graph](https://app.otterize.com/access-graph).
+Now that Otterize is monitoring the AWS API calls, we can access Otterize Cloud to see both Lambdas being called and using the `InvokeLambda` action. This information is shown on the [Access graph](https://app.otterize.com/access-graph).
 
-In the Access graph screenshot below, you’ll see 4 AWS resources associated with our *joketrainer* pod: *DadJokeLambdaFunction*, *FeedbackLambdaFunction*, the role assumed by our server pod, and our wildcard intent definition. This wildcard definition matches any Lambdas created by our cloudformation stack. These types of wildcard definitions can be helpful for AWS Resources with dynamic ARN names as you move across staging and production deployments. Still, they open up a security space that could be overly permissive for some environments. Otterize makes deploying with a wildcard definition easy and then applying more stringent authorization without disrupting any services.
+In the Access graph, you’ll see 2 AWS resources associated with our *joketrainer* pod: *DadJokeLambdaFunction* and *FeedbackLambdaFunction*.
 
 ![Otterize Cloud AWS Visibility Example](/img/quick-tutorials/aws-iam-visibility/aws-iam-visibility.png)
-
 
 ### What's Next
 

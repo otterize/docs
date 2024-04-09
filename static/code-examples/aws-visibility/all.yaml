@@ -13,12 +13,21 @@ spec:
       labels:
         app: joketrainer
         network-mapper.otterize.com/aws-visibility: "true"
-        credentials-operator.otterize.com/create-aws-role: "true"
     spec:
       containers:
         - name: joketrainer
           image: otterize/aws-visibility-tutorial:latest
           env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: aws-credentials
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: aws-credentials
+                  key: AWS_SECRET_ACCESS_KEY
             - name: DAD_JOKE_LAMBDA_ARN
               valueFrom:
                 configMapKeyRef:
