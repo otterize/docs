@@ -97,12 +97,13 @@ We can see in the Access Graph that the pods are now protected:
 To ensure teams have a versioned lasting record of the intents applied for our services, we should store them in a repository. Using the command below, we will create a new repository and push our intents into the code base.
 
 ```bash
+export GH_USER=$(gh api user | jq -r '.login')
 gh repo create otterize-tutorial-github --private
 git init
 git add .
 git commit -m "Initial Intents"
 git branch -M main
-git remote add origin https://github.com/bglynn/otterize-tutorial-github.git
+git remote add origin https://github.com/$GH_USER/otterize-tutorial-github.git
 git push -u origin main
 ```
 
