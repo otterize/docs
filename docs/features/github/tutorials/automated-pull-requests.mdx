@@ -116,7 +116,7 @@ To add the repository to Otterize Cloud, we head over to the [Integrations page]
 1. Click *Add Integration*
 2. Select Integration Type: *GitHub*
 3. Provide a name for the integration: *otterize-tutorial-github*
-4. Leave the *On Trigger* options set to the predefined defaults
+4. For *On Trigger*, select your Kubernetes cluster, and leave the other options set to the predefined defaults
 5. For *Repository*, provide {owner name}/otterize-tutorial-github, replacing your specific user or organization name where you created the repository.
 6. For the *Base Branch* option type in *main*. Other branches may be useful for long-held branches that identify “stagging,” “testing,” or other deployment states.
 7. For *ClientIntents path*, we are looking for the directory within our repository that contains our existing intents. For this tutorial, it will be *intents/*
@@ -127,7 +127,7 @@ To add the repository to Otterize Cloud, we head over to the [Integrations page]
     alt="Github App Install Example"
 />
 
-The Otterize GitHub app is now installed on your repository. Otterize will continuously look for differences between the ClientIntent definitions in your repository compared to the detected use in your cluster. As drifts are detected, pull requests will be open to update the intent definitions to incorporate the new usage behaviors. Let’s see how this works.
+The Otterize GitHub app is now installed on your repository. Otterize will continuously look for differences between the ClientIntents definitions in your repository compared to the detected use in your cluster. As drifts are detected, pull requests will be open to update the intent definitions to incorporate the new usage behaviors. Let’s see how this works.
 
 You can learn more about configuring GitHub and how to use the Triggers on the [Reference page](/features/github/reference)
 
