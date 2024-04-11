@@ -54,3 +54,11 @@ spec:
 | `azure.aksClusterName`         | Name of the AKS cluster in which the operator is deployed.             | `(none)` |
 
 View the [Helm chart reference](/reference/configuration/otterize-chart) for all other options
+
+### Azure locks support
+:::note
+[Azure locks](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/lock-resources?tabs=json) are not supported in the current version of Otterize. The Otterize operators will attempt to create, update and delete Azure managed identities, and Azure locks will prevent it. Please ensure you don't have Azure locks.
+Contact us through the [Otterize Community Slack](https://joinslack.otterize.com/) for more details.
+:::
+
+
