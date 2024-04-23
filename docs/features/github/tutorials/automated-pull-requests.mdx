@@ -4,31 +4,35 @@ title: Automated Authorization Pull Requests
 image: /img/quick-tutorials/github/social.png
 ---
 
-Let’s learn how Otterize can integrate with your GitHub repository to automatically generate pull requests when your cluster’s access changes.
+Otterize integrates with GitHub repositories to automatically generate pull requests as application access requirements change in the cluster. This enables platform administrators to continuously align security requirements with code updates.
 
-In this tutorial, we will:
+In this tutorial, you will:
 
-- Deploy a sample cluster.
-- Establish a repository for our pods’ ClientIntents.
-- Integrate our new repository into Otterize Cloud and install Otterize’s GitHub app.
-- Modify our cluster, thereby triggering Otterize to creating a pull request with the updated ClientIntents.
+- Deploy a sample application.
+- Create a Git repository to store ClientIntents manifests.
+- Integrate a new Git repository into Otterize Cloud and install Otterize’s GitHub app.
+- Modify application communication patterns, thereby triggering Otterize to create a pull request with the updated ClientIntents.
 
 ## Prerequisites
 
 ### CLI tools
-We will need the following CLI tools to set up our repository and export our ClientIntents
+You will need the following CLI tools to set up the repository and export ClientIntents:
 
 1. [Otterize CLI](https://docs.otterize.com/overview/installation#install-the-otterize-cli)
-2. [Github CLI](https://cli.github.com). After installing please log in to an account capable of creating new repositories.
+2. [Github CLI](https://cli.github.com)
 
-### Install Otterize on your cluster
-To deploy Otterize, head over to [Otterize Cloud](https://app.otterize.com/), and to integrate your cluster, navigate to the [Integrations Page](https://app.otterize.com/integrations) and follow the instructions.
+After installation, log in  with `gh auth login` and select your preferred method for authentication. Ensure your account has the necessary permissions to create new repositories.
+
+### Deploy Otterize
+
+
+With a Kubernetes cluster ready, head over to [Otterize Cloud](https://app.otterize.com/) and navigate to the [integrations page](https://app.otterize.com/integrations) to deploy Otterize. Follow the provided instructions to integrate your cluster.
 
 ## Tutorial
 
-### Deploy a cluster
+### Deploy the application 
 
-The command below will set up the namespace we will use for our tutorial and deploy a sample cluster that simulates a fantasy tabletop game using several services to generate different aspects of the game.
+Use the following command to set up the tutorial namespace and deploy a sample application simulating a fantasy tabletop game. The application comprises several services responsible for different aspects of the game.
 
 ```yaml
 kubectl apply -n otterize-tutorial-github -f ${ABSOLUTE_URL}/code-examples/github/all.yaml
@@ -41,7 +45,15 @@ kubectl apply -n otterize-tutorial-github -f ${ABSOLUTE_URL}/code-examples/githu
 ```
 </details>
 
-Once deployed, we can see our network map on Otterize Cloud:
+Once the deployment is complete , you can view the application's network map on Otterize Cloud. Turn on `Assume default deny` under network policies, as shown in the picture below.
+
+<img
+    src="/img/quick-tutorials/github/visual-graph-assume-default-deny.png"
+    alt="visual graph of default deny network policy"
+    style={{width: 200}}
+/>
+
+The connections will turn red.
 
 <img
     src="/img/quick-tutorials/github/visual-graph-unsecure-deploy.png"
@@ -49,11 +61,11 @@ Once deployed, we can see our network map on Otterize Cloud:
 />
 
 
-### Export & apply our ClientIntents
+### Export and apply ClientIntents
 
-Now that our pods are deployed, we want to apply network access rules to our cluster using [ClientIntents](/reference/IBAC-Overview). Otterize can automatically generate these on our behalf based on the mapped network traffic.
+Otterize can automatically generate application access rules based on the actual network traffic detected by the network-mapper.
 
-We can use the Otterize CLI tool to export the intent definitions. Note, these definitions are accessible within the Access Graph on Otterize Cloud.
+Use the Otterize CLI tool to export the recommended intent definitions. You can also access these definitions directly from the Access Graph on Otterize Cloud.
 
 ```bash
 mkdir otterize-tutorial-github
@@ -81,20 +93,22 @@ spec:
 ```
 </details>
 
-Let’s secure our pods by applying these intents to our cluster:
+Next, secure the application's pods by applying these intents to the cluster.
 
 ```bash
 kubectl apply -n otterize-tutorial-github -f ./intents/intents.yaml
 ```
-We can see in the Access Graph that the pods are now protected:
+In the Access Graph, the *adventure* client is now allowed to access the protected services.
 <img
-    src="/img/quick-tutorials/github/visual-graph-intents-applied.png"
+    src="/img/quick-tutorials/github/protected-services.gif"
     alt="visual graph of cluster deployment with protected edges"
 />
 
-### Create our repository
+### Create the repository
 
-To ensure teams have a versioned lasting record of the intents applied for our services, we should store them in a repository. Using the command below, we will create a new repository and push our intents into the code base.
+To ensure versioned records, create a Git repository, stage and commit the applied intents. Then push the changes to the main branch. 
+
+Make sure you are in the `otterize-tutorial-github` directory before executing the following commands.
 
 ```bash
 export GH_USER=$(gh api user | jq -r '.login')
@@ -107,45 +121,49 @@ git remote add origin https://github.com/$GH_USER/otterize-tutorial-github.git
 git push -u origin main
 ```
 
-Now that our intents are being version, we can integrate the repository into Otterize Cloud to detect any drifts in our pods needs.
+The repository can now be integrated to Otterize cloud to detect drifts in case of changes in traffic patterns.
 
-### Add our GitHub repository to Otterize Cloud
+### Add the GitHub repository to Otterize Cloud
 
-To add the repository to Otterize Cloud, we head over to the [Integrations page](https://app.otterize.com/integrations)
+:::tip
+In this section, you will use the *main* branch to track ClientIntents changes.For production environments, we recommend monitoring traffic changes in other long-held branches, such as *development*, *test*, or *staging*. You can then deploy the new compiled ClientIntents in production with your preferred tool.
+:::
 
-1. Click *Add Integration*
-2. Select Integration Type: *GitHub*
-3. Provide a name for the integration: *otterize-tutorial-github*
-4. For *On Trigger*, select your Kubernetes cluster, and leave the other options set to the predefined defaults
-5. For *Repository*, provide {owner name}/otterize-tutorial-github, replacing your specific user or organization name where you created the repository.
-6. For the *Base Branch* option type in *main*. Other branches may be useful for long-held branches that identify “stagging,” “testing,” or other deployment states.
-7. For *ClientIntents path*, we are looking for the directory within our repository that contains our existing intents. For this tutorial, it will be *intents/*
-8. Next, Hit the *Add* button. This will redirect you to GitHub. From here, you’ll select the repository with the intent for your cluster. For our tutorial, that would be *otterize-tutorial-github* and click on *Install*
+To add the repository to Otterize Cloud, navigate to the [Integrations page](https://app.otterize.com/integrations).
+
+1. Click `Add Integration`.
+2. Select integration type: `GitHub`.
+3. Provide the name *otterize-tutorial-github* as the integration.
+4. In the `On Trigger` section, select your Kubernetes cluster, and leave the other options set to the predefined defaults.
+5. In the `Open PR on` section, select the `Repository` field, and provide the owner and organization names in the form: *<github user name\>/otterize-tutorial-github*.
+6. Select the `Base Branch` field, and enter *main*.
+7. Select the `ClientIntents path` field, and enter `intents`. It represents the relative path hosting the ClientIntents manifests.
+8. Next, click the `Add` button. This will redirect you to GitHub. If needed, select your GitHub account that owns the tutorial repository and click `continue`. Then, select the desired organization and the tutorial repository (*otterize-tutorial-github*), as depicted in the picture below. Finally, click on `Install`.
 
 <img className="tw-w-96 tw-block tw-mx-auto tw-mb-4"
     src="/img/quick-tutorials/github/install-github-app.png"
     alt="Github App Install Example"
 />
 
-The Otterize GitHub app is now installed on your repository. Otterize will continuously look for differences between the ClientIntents definitions in your repository compared to the detected use in your cluster. As drifts are detected, pull requests will be open to update the intent definitions to incorporate the new usage behaviors. Let’s see how this works.
+The Otterize GitHub app is now installed in your repository. Otterize will continuously monitor for differences between the ClientIntents definitions in your repository and the actual usage detected in your cluster. If drifts are detected, pull requests will be automatically opened to update the intent definitions and reflect the new usage behaviors.
 
-You can learn more about configuring GitHub and how to use the Triggers on the [Reference page](/features/github/reference)
+You can learn more about GitHub configuration and how to use the Triggers on the [Reference page](/features/github/reference)
 
-### Update our cluster
+### Update the application
 
-In the original deployment of our pods, our game simulation pod (“adventure”) utilized the *monster-generator* pod to fetch a random monster for our game. Now, our newly improved version of our monster generator is ready to be deployed.  Let’s deploy it with the command deploy.
+In the original deployment, the game simulation's *adventure* pod utilized the *monster-generator* pod to fetch a random monster. An improved version, *monster-generator-v2*, has just been released and is ready for deployment.
 
 ```bash
 kubectl apply -n otterize-tutorial-github -f ${ABSOLUTE_URL}/code-examples/github/all-v2.yaml
 ```
 
-Once the pods are deployed, we can check the logs of our *adventure* pod using the command below to see that it’s now utilizing the new version of the monster generator.
+Once the pod is deployed, check the logs of the *adventure* pod using the command below. It should reflect the new application version.
 
 ```bash
 kubectl logs -f -n otterize-tutorial-github deploy/adventure
 ```
 
-Example Log Output:
+Here is an example of the expected output.
 
 ```
 ****************************************************
@@ -162,46 +180,47 @@ Elephant hits our strong Elf doing 20 point of damage.
 The Elephant has 71 hit points, Our Elf has 224 points.
 ```
 
-*monster-generator-v2* in Otterize Cloud Access Graph:
+*monster-generator-v2* is now displayed in Otterize Cloud Access Graph.
 
 <img
     src="/img/quick-tutorials/github/visual-graph-updated-services.png"
     alt="visual graph of cluster deployment"
 />
 
-### View new pull request
+### Check for a new pull request
 
-With our *adventure* pod calling *monster-generator-v2* the access for *adventure* has changed. We should see a new pull request if we visit the repository with our intent definitions and GitHub app integration.
+Following the introduction of a new application component, the network-mapper has detected a new connection and updated Otterize cloud. This update has triggered the GitHub integration, resulting in the submission of a new pull request.
 
 <img
     src="/img/quick-tutorials/github/pull-request.png"
     alt="visual graph of cluster deployment"
 />
 
-Let’s merge the pull request, pull down the latest to our local copy, and apply the changes to our cluster.
+Finally, merge the pull request and deploy the updated ClientIntents manifest.
 
-```bash
-git pull
+```text
+gh pr merge 1 -m
 kubectl apply -n otterize-tutorial-github -f ./intents/intents.yaml
 ```
 
 ## Teardown
 
-To remove the deployed examples, run:
+Delete the application.
 
 ```*bash*
 kubectl delete namespace otterize-tutorial-github
 ```
 
-You can remove the repository with the following command, provided you replace the `{owner name}` with appropriate owner :
-
-Note, that your API key might not have privileges to delete the repository, in which case you will need do so in the *Settings* section of your repository.
+Delete the Git repository with the following command, replacing the GitHub user name with yours.
 
 ```bash
 gh repo delete {owner name}/otterize-tutorial-github
 ```
+:::note
+If your API doesn't grant *delete* privileges, navigate to the repository's *Settings* section to delete it manually.
+:::
 
-To remove the local files, run:
+Finally, you can delete your local copy of the repository.
 
 ```bash
 cd ..
