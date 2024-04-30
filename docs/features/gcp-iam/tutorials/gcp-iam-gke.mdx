@@ -28,11 +28,13 @@ Before you start, you'll need an GCP GKE cluster. The cluster should have
 
   Run the following commands to configure your project and create your cluster. [Don't have gcloud? Install it now.](https://cloud.google.com/sdk/docs/install)
 
-  1. Create a project and Set the default gcloud configurations
+  1. Create a project and set the default gcloud configurations
   ```shell
-  gcloud projects create [PROJECT_NAME]
-  gcloud config set project [PROJECT_NAME]
-  gcloud config set compute/region [us-central1]
+  export PROJECT_NAME=otterize-gcp-demo
+  export REGION=us-central1
+  gcloud projects create $PROJECT_NAME
+  gcloud config set project $PROJECT_NAME
+  gcloud config set compute/region $REGION
   ```
 
   2. Enable the relevant APIS
@@ -47,7 +49,7 @@ Before you start, you'll need an GCP GKE cluster. The cluster should have
   gcloud container clusters create otterize-iam-gke-tutorial \
   --release-channel regular \
   --addons ConfigConnector \
-  --workload-pool=[PROJECT_NAME].svc.id.goog \
+  --workload-pool=$PROJECT_NAME.svc.id.goog \
   --logging=SYSTEM \
   --monitoring=SYSTEM
   ```
@@ -69,8 +71,9 @@ To deploy Otterize, head over to [Otterize Cloud](https://app.otterize.com) and:
 If you are using the cluster from the previous step, the cluster name is `otterize-iam-gke-tutorial` and the region is `us-central1`.
 
 Once the GCP integration is configured, you'll be presented with instructions for configuring your Otterize integration with GCP IAM support.
-  - **If you dont have a GCP service account for config connector**, make sure to toggle "I don't have Config Connector on my cluster". This will
+  - **If you don't have a GCP service account for config connector**, make sure to toggle "I don't have Config Connector on my cluster". This will
     tell terraform to create a GCP service account for config connector and give it the necessary permissions to manage GCP IAM.
+    Choose this option if you deployed your GKE cluster using the instructions in the previous step.  
   - **If you have a GCP service account for config connector**, keep the "I have Config Connector deployed with a GCP service account" toggle and provide the service account name.
     This will tell terraform to use the existing service account and give it the necessary permissions to manage GCP IAM.
 
@@ -98,15 +101,15 @@ You may also manually configure your clusters config connector to be used with O
       ```
       You can use the following command to add permissions to the service account
       ```shell
-        gcloud projects add-iam-policy-binding [PROJECT_NAME] \
-        --member="serviceAccount:[CONFIG_CONNECTOR_SA_NAME]@[PROJECT_NAME].iam.gserviceaccount.com" \
+        gcloud projects add-iam-policy-binding $PROJECT_NAME \
+        --member="serviceAccount:[CONFIG_CONNECTOR_SA_NAME]@$PROJECT_NAME.iam.gserviceaccount.com" \
         --role="roles/iam.roleAdmin"
       ```
     - Bind the service account to workload identity
       ```shell
         gcloud iam service-accounts add-iam-policy-binding \
-        [CONFIG_CONNECTOR_SA_NAME]@[PROJECT_NAME].iam.gserviceaccount.com \
-        --member="serviceAccount:[PROJECT_NAME].svc.id.goog[cnrm-system/cnrm-controller-manager]" \
+        [CONFIG_CONNECTOR_SA_NAME]@$PROJECT_NAME.iam.gserviceaccount.com \
+        --member="serviceAccount:$PROJECT_NAME.svc.id.goog[cnrm-system/cnrm-controller-manager]" \
         --role="roles/iam.workloadIdentityUser"
       ```
 2. Apply the following YAML to your kubernetes cluster to finish the config connector configuration.
@@ -117,7 +120,7 @@ You may also manually configure your clusters config connector to be used with O
       name: configconnector.core.cnrm.cloud.google.com
     spec:
       mode: cluster
-      googleServiceAccount: "[CONFIG_CONNECTOR_SA_NAME]@[PROJECT_NAME].iam.gserviceaccount.com"
+      googleServiceAccount: "[CONFIG_CONNECTOR_SA_NAME]@$PROJECT_NAME.iam.gserviceaccount.com"
     ```
 
 </details>
@@ -135,7 +138,7 @@ echo $BUCKET_NAME
 ```
 
 ```bash
-gcloud config set project [PROJECT_NAME]
+gcloud config set project $PROJECT_NAME
 gsutil mb -c standard -l us-central1 gs://$BUCKET_NAME
 ```
 
