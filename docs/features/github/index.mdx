@@ -17,8 +17,7 @@ export const tutorials = [
 
 
 # GitHub
-
-Otterize can create just-in-time AWS IAM roles and policies for your workloads running on EKS Kubernetes clusters, greatly simplifying the lifecycle of managing IAM roles and policies.
+With the GitHub integration, Otterize automatically opens pull requests when it detects differences between policies defined in ClientIntents and actual application traffic.
 
 ### Tutorials
 
@@ -27,6 +26,8 @@ To learn how to leverage Otterize's continuous monitoring of your cluster's acce
 
 ### How does Otterize work with GitHub?
 
-After installing Otterize in your cluster, it immediately begins monitoring both incoming and outgoing network traffic to your pods and the public internet via the network mapper feature (see Network Mapper for more details). Additionally, Otterize can track activity across various resources, including Postgres, AWS, Kafka, and more. This tracking helps Otterize create a detailed map of interactions and relationships.
+ After you deploy ClientIntents and enable enforcement, any traffic that doesn't match the configured intents is blocked. With the GitHub integration, Otterize continuously compares the ClientIntents stored in your remote repository with the traffic the Network Mapper detects in your cluster.
 
-By leveraging ClientIntents, Otterize simplifies the application and enforcement of access rights, thereby enhancing cluster security. Once ClientIntents are defined and stored in a GitHub repository, Otterize compares these intended access patterns against actual usage within the cluster. Discrepancies trigger a pull request to update the ClientIntent definitions to reflect current usage. This process enables development teams to either accept the suggested changes or adjust them based on newly observed behaviors.
+If changes in your application's traffic patterns are detected, Otterize automatically submits a pull request to your chosen branch, updating the ClientIntents in your remote repository to reflect the actual traffic. This approach significantly reduces frictions for developers, allowing discrepancies to be resolved easily through familiar GitOps workflows.
+
+Alternatively, you can use the GitHub integration in shadow mode. In this mode, Otterize does not enforce any intents but continues updating the ClientIntents in your remote repository. This setup lets you gradually build the necessary ClientIntents for intended access without risking blocked connections. Once you stop receiving new pull requests for new connections, you can be confident that all required ClientIntents are declared and proceed to activate enforcement.
