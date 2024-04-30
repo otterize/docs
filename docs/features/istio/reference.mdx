@@ -25,14 +25,14 @@ spec:
 
 ### Helm Chart options
 
-| Key                             | Description                             | Default                        |
-|---------------------------------|-----------------------------------------|--------------------------------|
-| `istiowatcher.enable`           | Enable Istio watcher deployment (beta). | `false`                        |
-| `istiowatcher.image.repository` | Istio watcher image repository.         | `otterize`                     |
-| `istiowatcher.image.image`      | Istio watcher image.                    | `network-mapper-istio-watcher` |
-| `istiowatcher.image.tag`        | Istio watcher image tag.                | `latest`                       |
-| `istiowatcher.pullPolicy`       | Istio watcher pull policy.              | `(none)`                       |
-| `istiowatcher.pullSecrets`      | Istio watcher pull secrets.             | `(none)`                       |
-| `istiowatcher.resources`        | Resources override.                     | `(none)`                       |
+| Key                        | Description                             | Default                        |
+|----------------------------|-----------------------------------------|--------------------------------|
+| `istiowatcher.enable`      | Enable Istio watcher deployment (beta). | `false`                        |
+| `istiowatcher.repository`  | Istio watcher image repository.         | `otterize`                     |
+| `istiowatcher.image`       | Istio watcher image.                    | `network-mapper-istio-watcher` |
+| `istiowatcher.tag`         | Istio watcher image tag.                | `(pinned to latest version as of this Helm chart version's publish)`                       |
+| `istiowatcher.pullPolicy`  | Istio watcher pull policy.              | `(none)`                       |
+| `istiowatcher.pullSecrets` | Istio watcher pull secrets.             | `(none)`                       |
+| `istiowatcher.resources`   | Resources override.                     | `(none)`                       |
 
 View the [Helm chart reference](/reference/configuration/otterize-chart) for all other options
