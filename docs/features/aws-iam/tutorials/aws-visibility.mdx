@@ -4,29 +4,29 @@ title: AWS resource mapping & IAM policy generation
 image: /img/quick-tutorials/aws-iam-visibility/social.png
 ---
 
+Many production Kubernetes workloads depend on cloud resources, such as S3 buckets, RDS databases, and Lambda functions. In this tutorial, you will learn how Otterize can enhance your visibility into the AWS resources that are accessed by your workloads.
 
-Many production Kubernetes workloads rely on cloud resources, like S3 Buckets, RDS databases, and Lambda functions. In this tutorial, we will look at how Otterize provides visibility into the AWS resources called by your workloads.
+In this tutorial, you will:
 
-In this tutorial, we will:
 * Set up an EKS cluster.
 * Deploy two Lambda functions.
-* Deploy a server pod that retrieves a joke (as in, a string containing a joke ;) from a Lambda, provides a review, and posts the review to another Lambda.
-* Automatically detect and view the Lambda function calls in Otterize.
+* Deploy a *server* pod that retrieves a joke (as a string) from one Lambda function, reviews it, and posts the review to another Lambda function.
+* Automatically detect and monitor the Lambda function calls using Otterize.
 
-By the end, you'll know how to map Kubernetes workloads alongside their dependent AWS resources using Otterize.
+By the end of this tutorial, you will understand how to map Kubernetes workloads and their associated AWS resources using Otterize.
 
 ## Prerequisites
 
 ### CLI tools
-We will need the following CLI tools to set up our cluster and deploy our scripts.
+You will need the following CLI tools to work with this environment:
 
-1. [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html). You will also need credentials within the target account with permissions to work with EKS clusters, IAM, CloudFormation, and Lambda functions.
-2. [eksctl](https://eksctl.io/installation/)
+1. [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) - Ensure you have credentials within the target account that grant permissions to work with EKS clusters, IAM, CloudFormation, and Lambda functions.
+2. [eksctl](https://eksctl.io/installation/) - This tool simplifies the creation and management of an EKS cluster.
 
 ### Create an EKS cluster
-Already have EKS cluster? [Skip to the Installing Otterize](#enable-aws-visibility-with-otterize-installation)
+Already have EKS cluster? Skip to the [next step](#enable-aws-visibility-with-otterize-installation).
 
-Begin by creating an EKS cluster for pod deployment using **eksctl** with the YAML configuration below:
+Start by creating an EKS cluster for deploying your pods. Use the **eksctl** tool with the following YAML configuration:
 ```bash
 curl ${ABSOLUTE_URL}/code-examples/aws-visibility/eks-cluster.yaml | eksctl create cluster -f -
 ```
@@ -38,31 +38,32 @@ curl ${ABSOLUTE_URL}/code-examples/aws-visibility/eks-cluster.yaml | eksctl crea
 ```
 </details>
 
-Next, update **kubeconfig** to link it with the new cluster:
+Next, update your **kubeconfig** to connect with the new cluster.
 ```bash
 aws eks update-kubeconfig --name otterize-tutorial-aws-visibility --region 'us-west-2'
 ```
 
-### Enable AWS Visibility with Otterize Installation
-To provide visibility, we will need to install Otterize in our cluster, and we will want to enable AWS visibility on our cluster by setting the appropriate flag.
+### Enable AWS Visibility
+You will first need to install Otterize in your cluster. If your cluster is not already connected, you can do so by following the Kubernetes setup instructions detailed on the [Integrations](https://app.otterize.com/integrations) page.
 
-**Install Otterize**
-If you don't have a connected Kubernetes cluster, create one via [Integrations page](https://app.otterize.com/integrations) and follow the setup instructions for Kubernetes. Skip if your cluster is already connected.
+:::info Important
+When installing Otterize, append the following flag to the helm command to enable aws visibility:
+:::
 
-When installing Otterize append the following flag to the helm command to enable AWS visibility:
 ```bash
 --set networkMapper.aws.visibility.enabled=true
 ```
 
 ## Tutorial
 
-Having configured our environment, we will now deploy AWS resources and monitor access in Otterize Cloud.
+Now that your environment is set up, you are ready to deploy the application components, including the AWS resources that Otterize will monitor.
 
 ### Deploy two Lambda functions
 
-First, we will deploy two Lambda functions (`DadJokeLambdaFunction` and `FeedbackLambdaFunction`). These services will work alongside our server pod to generate a humor training dataset. This works by receiving a joke from the DadJokeLambdaFunction, the server pod reviewing the joke, and then sending the feedback to the FeedbackLambdaFunction.
+First, you will deploy two Lambda functions: `DadJokeLambdaFunction` and `FeedbackLambdaFunction`. These functions will interact with your *server* pod to generate a dad joke training dataset. The *server* pod receives a joke from the ``DadJokeLambdaFunction``, reviews the joke, and sends the feedback to the `FeedbackLambdaFunction`.
 
-We can deploy the lambda functions and their required roles with the following command:
+To deploy the Lambda functions and their required roles, use the following command:
+
 ```bash
 curl ${ABSOLUTE_URL}/code-examples/aws-visibility/cloudformation.yaml -o template.yaml && \
 aws cloudformation deploy --template-file template.yaml --stack-name OtterizeTutorialJokeTrainingStack --capabilities CAPABILITY_IAM --region 'us-west-2'
@@ -77,29 +78,44 @@ aws cloudformation deploy --template-file template.yaml --stack-name OtterizeTut
 
 ### Deploy server with access to Lambda functions
 
-With our Lambdas are deployed, we want to deploy our server pod within our cluster and point it to our two Lambda functions. In the commands below, we will create a configmap to hold our functions ARNs, a secret to hold our service user's credentials, and then apply our deployment YAML.
+With the Lambda functions deployed, you're now ready to deploy your *server* pod and configure it to interact with the two Lambda functions. Follow these steps to set up your environment:
+
+- Create a namespace:
 
 ```bash
-
 kubectl create namespace otterize-tutorial-aws-visibility
+```
 
+- Retrieve Lambda ARNs:
+
+```bash
 DAD_JOKE_LAMBDA_ARN=$(aws cloudformation describe-stacks --region 'us-west-2' --stack-name OtterizeTutorialJokeTrainingStack --query "Stacks[0].Outputs[?OutputKey=='DadJokeLambdaFunction'].OutputValue" --output text)
 FEEDBACK_LAMBDA_ARN=$(aws cloudformation describe-stacks --region 'us-west-2' --stack-name OtterizeTutorialJokeTrainingStack --query "Stacks[0].Outputs[?OutputKey=='FeedbackLambdaFunction'].OutputValue" --output text)
+```
 
+- Create a `ConfigMap` for Lambda ARNs:
+
+```bash
 kubectl create configmap lambda-arns \
   --from-literal=dadJokeLambdaArn=$DAD_JOKE_LAMBDA_ARN \
   --from-literal=feedbackLambdaArn=$FEEDBACK_LAMBDA_ARN \
   -n otterize-tutorial-aws-visibility
+```
 
-
+- Generate AWS credentials and create a `Secret`:
+```bash
 USER_NAME=$(aws cloudformation describe-stacks --region 'us-west-2' --stack-name OtterizeTutorialJokeTrainingStack --query "Stacks[0].Outputs[?OutputKey=='LambdaInvokeUserAccessKeyId'].OutputValue" --output text)
 
 aws iam create-access-key --user-name "$USER_NAME" | \
 jq -r '"--from-literal=AWS_ACCESS_KEY_ID="+.AccessKey.AccessKeyId+" --from-literal=AWS_SECRET_ACCESS_KEY="+.AccessKey.SecretAccessKey' | \
 xargs kubectl create secret generic aws-credentials -n otterize-tutorial-aws-visibility
+```
+- Deploy the *server* pod:
 
+```bash 
 kubectl apply -n otterize-tutorial-aws-visibility -f ${ABSOLUTE_URL}/code-examples/aws-visibility/all.yaml
 ```
+
 <details>
     <summary>Inspect deployment YAML</summary>
 
@@ -108,9 +124,9 @@ kubectl apply -n otterize-tutorial-aws-visibility -f ${ABSOLUTE_URL}/code-exampl
 ```
 </details>
 
-Inspecting our deployment YAML, you will see we have added a label of `network-mapper.otterize.com/aws-visibility` to our pod. This informs the network mapper to identify AWS API calls for this pod to determine the resources and actions are being used. Otterize will only monitor AWS API calls for pods with this label.
+In the Kubernetes `Deployment` manifest, you will notice the following label in the pod template: `network-mapper.otterize.com/aws-visibility`. This label instructs the network mapper to track AWS API calls for this pod, helping identify the resources and actions being utilized.
 
-Once our pod is deployed, we can inspect the logs and see that we are calling our Lambda functions successfully.
+Once the pod is deployed, you can verify the logs to confirm it is successfully calling the Lambda functions:
 
 ```bash
 kubectl logs -f -n otterize-tutorial-aws-visibility deploy/joketrainer
@@ -128,15 +144,14 @@ Sending Feedback of Funny?: No
 ```
 
 ### Visualize Relationships
-Now that Otterize is monitoring the AWS API calls, we can access Otterize Cloud to see both Lambdas being called and using the `InvokeLambda` action. This information is shown on the [Access graph](https://app.otterize.com/access-graph).
 
-In the Access graph, you’ll see 2 AWS resources associated with our *joketrainer* pod: *DadJokeLambdaFunction* and *FeedbackLambdaFunction*.
+With Otterize monitoring the AWS API calls, access Otterize Cloud to observe both Lambdas in action. The [Access graph](https://app.otterize.com/access-graph) will display two AWS resources associated with the *joketrainer* pod: *DadJokeLambdaFunction* and *FeedbackLambdaFunction*.
 
 ![Otterize Cloud AWS Visibility Example](/img/quick-tutorials/aws-iam-visibility/aws-iam-visibility.png)
 
 ### What's Next
 
-Now that we've discovered the AWS resources used within a Kubernetes workload, you can learn more about how you can manage access to these resources with Otterize in the [Automate AWS IAM for EKS](/features/aws-iam/tutorials/aws-iam-eks) tutorial.
+Now that you have learned how to enable visibility for AWS resources in your Kubernetes cluster, you are ready to explore how to manage access to these resources. Continue your learning journey with the next tutorial: [Automate AWS IAM for EKS](/features/aws-iam/tutorials/aws-iam-eks).
 
 ## Cleanup
 
