@@ -135,14 +135,26 @@ If your Cloud SQL instance is handling any requests,
 you may now open your [Pub/Sub topic's metrics](https://console.cloud.google.com/cloudpubsub/topic/list) page
 and observe how audit log records are being directed to it.
 
+### Apply a PostgreSQLServerConfig in your cluster
+To enable Otterize operators to access your database, apply a PostgreSQLServerConfig in your cluster:
+```yaml
+apiVersion: k8s.otterize.com/v1alpha3
+kind: PostgreSQLServerConfig
+metadata:
+  name: otterize-tutorial-cloudsql # database instance name - should match the target in ClientIntents
+spec:
+  address: <PGHOST:PGPORT> # Your CloudSQL database address
+  credentials:
+    username: <PGUSER> # Username Otterize will connect with & configure permissions as
+    password: <PGPASSWORD> # Password for above username
+```
+
 ### Create an Otterize database integration and configure visibility log collection
 To configure Otterize Cloud to subscribe and start consuming your Cloud SQL instance's audit logs,
 create an Otterize database integration and configure it with your GCP project and Pub/Sub topic:
 - Navigate to the [Integrations page](https://app.otterize.com/integrations) on Otterize Cloud and click the <b>+ Add Integration</b> button to create a new integration
 - Choose the <b>Database</b> integration type
-- Name your integration <b>otterize-tutorial-cloudsql</b> (this name will be used later in this tutorial)
-- Follow the form to provide your database information & credentials
-- Click <b>Test Connection</b> to ensure that Otterize Cloud is able to access your database instance
+- Name your integration <b>otterize-tutorial-cloudsql</b>
 - Under <b>Visibility settings</b>, choose to collect visibility logs using a <b>GCP Pub/Sub topic</b>
 - Enter your GCP Project ID & Topic name
 - Click <b>Test Visibility</b> to ensure that Otterize Cloud is able to subscribe to your Pub/Sub topic

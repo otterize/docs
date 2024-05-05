@@ -397,7 +397,3 @@ footer .container-fluid {
 .dropdown > .navbar__link:after {
   display: none;
 }
-
-.hideme {
-  display: none !important;
-}

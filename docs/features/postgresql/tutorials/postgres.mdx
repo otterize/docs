@@ -33,8 +33,7 @@ The server needs appropriate permissions to access the database. You could use o
 
 In this tutorial, we will:
 * Deploy an example cluster
-* Make our database accessible to Otterize Cloud
-* Connect our cluster and database to Otterize Cloud
+* Deploy Otterize in our cluster and give it access to our database instance
 * Declare a ClientIntents resource for the server, specifying required access
 * See that the required access has been granted
 
@@ -53,12 +52,11 @@ Then start your Minikube cluster with Calico, in order to enforce network polici
 ```shell
 minikube start --cpus=4 --memory 4096 --disk-size 32g --cni=calico
 ```
-
 </details>
 
+#### 2. Deploy Otterize
+To deploy Otterize, head over to [Otterize Cloud](https://app.otterize.com) and associate a Kubernetes cluster on the [Integrations page](https://app.otterize.com/integrations), and follow the instructions. If you already have a Kubernetes cluster connected, skip this step.
 
-#### 2. ngrok
-We will be using it to create a proxy to connect our locally running database to Otterize Cloud, for the tutorial's purposes. Once you have a [ngrok account](https://dashboard.ngrok.com/signup), you’ll want to install it in your terminal using the instructions found here: [ngrok install](https://ngrok.com/download)
 
 # Tutorial
 
@@ -80,48 +78,32 @@ kubectl create namespace otterize-tutorial-postgres
 kubectl apply -n otterize-tutorial-postgres -f ${ABSOLUTE_URL}/code-examples/postgres/client-server-database.yaml
 ```
 
-### Make the database accessible to Otterize Cloud
-
-We need to allow Otterize Cloud to access the database server so Otterize Cloud can configure on-demand credentials for our server’s access. This tutorial will expose our database port to our local environment and then proxy it to Otterize Cloud using ngrok. We will need both of these processes up and running during the rest of this tutorial.
-
-In a new terminal window, run the following command to forward our database port from our cluster into your local environment:
-```shell
-kubectl port-forward svc/database 5432:5432 -n otterize-tutorial-postgres
+### Deploy a PostgresServerConfig to allow Otterize DB access
+```yaml
+apiVersion: k8s.otterize.com/v1alpha3
+kind: PostgreSQLServerConfig
+metadata:
+  name: postgres-tutorial-db
+spec:
+  address: database.otterize-tutorial-postgres.svc.cluster.local:5432
+  credentials:
+    username: otterize-tutorial
+    password: jeffdog523
 ```
+The above CRD tells Otterize how to access a database instance named `postgres-tutorial-db`, meaning that when intents
+are applied requesting access permissions to `postgres-tutorial-db`, Otterize operators will be able to configure
+them.
 
-Now that your database port is accessible to your local environment, we are using ngrok to make that available to Otterize Cloud. For production uses, this can be done through firewall configurations.
+In this tutorial, the `database` workload already comes with the predefined username & password, but for future uses a
+role will have to be created in the database to grant Otterize access as well as the ability to configure other users.
+:::caution
+The type PostgreSQLServerConfig should be considered as sensitive and require high cluster privileges to access.
+:::
 
-In a new terminal window, run:
+Let's apply the above `PostgreSQLServerConfig` so Otterize will know how to access our database instance.
 ```shell
-ngrok tcp 5432
+kubectl apply -f pgserverconf.yaml
 ```
-
-Once ngrok is running, make note of the *Forwarding* host and port. Will need this for our next step.
-
-### Integrate the database to Otterize Cloud
-
-To add the database, we head over to the [Integrations page](https://app.otterize.com/integrations)
-
-1. Click *Add Integration*
-2. Select Integration Type: *Database*
-3. Provide a name for the integration: *otterize-tutorial-postgres*
-4. Leave the database type set to *PostgreSQL*
-5. Copy your *Forwarding* host and port from ngrok in the *Address* Field. This will look something like `0.tcp.us-cal-1.ngrok.io:14192`. Be sure to remove the `tcp://` portion of the URL.
-6. *Username*: otterize-tutorial, *Password*: jeffdog523
-1. Note this is a superuser, which allows Otterize to create unique credentials for each service. For production, it is recommended to create a privileged user for Otterize’s exclusive use. This user should have the necessary permissions to GRANT access to any databases and tables you want it to manage.
-7. Hit *Test Connection*, and you should see an “OK” status.
-8. Hit the Add button to complete the integration
-
-### Integrate the cluster to Otterize Cloud
-Create a Kubernetes integration on the [Integrations page](https://app.otterize.com/integrations), and follow the instructions.
-
-In the second step, after providing an integration name and environment, choose:
-
-1. mTLS and Kafka Support: None
-2. Enforcement mode: Enabled.
-3. Copy and run the Helm upgrade command.
-4. You should see the Connection status change.
-
 
 ### View logs for the server
 After the client, server, and database are up and running, we can see that the server does not have the appropriate access to the database by inspecting the logs with the following command.
@@ -130,15 +112,16 @@ After the client, server, and database are up and running, we can see that the s
 kubectl logs -f -n otterize-tutorial-postgres deploy/server
 ```
 
-
 Example log:
 <Terminal>
-    pq: password authentication failed for user "svc_9cigb2qemv_otterize_tutorial_postgres_server"
+Unable to perform INSERT operation
+    <br></br>
+Unable to perform SELECT operation
 </Terminal>
 
 ### Define your ClientIntents
 
-ClientIntents are Otterize’s way of defining access through unique relationships, which lead to perfectly scoped access. In this example, we provide our `server` service the ability to insert select records to allow it to access the database.
+ClientIntents are Otterize’s way of defining access through unique relationships, which lead to perfectly scoped access. In this example, we provide our `server` workload the ability to insert and select records to allow it to access the database.
 
 Below is our `intents.yaml` file. As you can see, it is scoped to our database named `otterize-tutorial` and our `public.example` table. We also have limited the access to just `SELECT` and `INSERT` operations. We could add more databases, tables, or operations if our service required more access.
 
@@ -153,7 +136,7 @@ spec:
   service:
     name: server
   calls:
-    - name: otterize-tutorial-postgres # Same name as our integration
+    - name: postgres-tutorial-db # Same name as our PostgresSQLServerConfig metadata.name
       type: database
       databaseResources:
         - databaseName: otterize-tutorial
@@ -163,7 +146,7 @@ spec:
             - INSERT
 ```
 
-We can now apply our intents. Behind the scenes, Otterize Cloud runs `CREATE USER` and `GRANT` queries on the database, making our `SELECT` and `INSERT` errors disappear.
+We can now apply our intents. Behind the scenes,the Otterize credentials-operator created the user for our `server` workload while the intents-operator ran `GRANT` queries on the database, making our `SELECT` and `INSERT` errors disappear.
 
 ```shell
 kubectl apply -f intents.yaml
@@ -171,8 +154,9 @@ kubectl apply -f intents.yaml
 
 Example log:
 <Terminal>
-    Successfully INSERTED into our table
-    Successfully SELECTED, most recent value:  2024-01-22T18:48:43Z
+Successfully INSERTED into our table
+
+Successfully SELECTED, most recent value:  2024-04-30T13:20:46Z
 </Terminal>
 
 That’s it! If your service’s functionality changes, adding or removing access is as simple as updating your ClientIntents definitions. For fun, try altering the `operations` to just `SELECT` or `INSERT`.
@@ -180,7 +164,6 @@ That’s it! If your service’s functionality changes, adding or removing acces
 # Teardown
 To remove the deployed examples, run:
 ```shell
+kubectl delete clientintents.k8s.otterize.com -n otterize-tutorial-postgres client-intents-for-server && \
 kubectl delete namespace otterize-tutorial-postgres
 ```
-
-End the ngrok and port forwarding processes by closing the terminal windows or Ctrl-C the processes.

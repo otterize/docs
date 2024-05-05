@@ -24,8 +24,6 @@ export const postgres_tutorials = [
 Otterize is able to create just-in-time username-and-password pairs for your service, providing them as a Kubernetes Secret that can be mounted to file or mapped to environment variables, as well as `GRANT`ing access to databases and tables, based on `ClientIntents` ([Intents-Based Access Control](/overview/intent-based-access-control)) declarations.
 In addition, Otterize can map the access to your PostgreSQL database, showing you which service is accessing which database, table and which operation it's performing. This can be used to automatically generate the `ClientIntents` declarations.
 
-Unlike other access controls in Otterize, PostgreSQL support is exclusively available when using Otterize Cloud.
-
 ### Tutorials
 
 To learn how to use the Intents Operator and Credentials Operator to enforce access using PostgreSQL GRANTs, or map access to your PostgreSQL database, try one of these quickstart tutorials.
@@ -38,8 +36,20 @@ To learn how to use the Intents Operator and Credentials Operator to enforce acc
 
 Otterize Cloud will create a unique PostgreSQL username-password combination for each service's use, exposed via a Kubernetes Secret. The service will use these credentials to connect to the database. `ClientIntents` will define the access required by that service. As the intents are applied, Otterize Cloud will keep the database's list of users and GRANTs up to date so that the service is able to access it.
 
-1. To get started, your cluster must have Otterize Cloud installed.
-2. You’ll need to [integrate](https://app.otterize.com/integrations) your database by providing a connection URL and admin-level credentials to manage permissions in your database.
+1. To get started, your cluster must have Otterize deployed.
+2. You'll need to create a `PostgreSQLServerConfig` in your cluster, providing a connection URL and admin-level credentials for Otterize to manage permissions in your database. Below is an example `PostgreSQLServerConfig` resource.
+```yaml
+apiVersion: k8s.otterize.com/v1alpha3
+kind: PostgreSQLServerConfig
+metadata:
+  name: postgres-tutorial-db # database instance name - should match the target in ClientIntents
+spec:
+  address: <PGHOST:PGPORT> # Your Postgres address
+  credentials:
+    username: <PGUSER> # Username Otterize will connect with & configure permissions as
+    password: <PGPASSWORD> # Password for above username
+```
+
 3. Each service can request a username-password Secret to be created, by annotating the Pod with `credentials-operator.otterize.com/user-password-secret-name`. Below is an example of that annotation and passing the generated credentials into a container with environmental variables.
 
 ```yaml
@@ -94,7 +104,7 @@ spec:
   service:
     name: server
   calls:
-    - name: otterize-tutorial-postgres # Same name as our integration
+    - name: postgres-tutorial-db # Same name as our PostgresSQLServerConfig metadata.name
       type: database
       databaseResources:
         - databaseName: otterize-tutorial
