@@ -1,0 +1,33 @@
+---
+sidebar_position: 1
+title: GitHub | Overview
+hide_table_of_contents: true
+hide_title: true
+---
+
+import DocsLinkCard from "@site/src/components/LinkCard";
+
+export const tutorials = [
+    {
+        title: 'Automated Authorization Pull Requests',
+        description: 'Automatically create pull requests to resolve any drifts detected in your cluster',
+        url: '/features/github/tutorials/automated-pull-requests'
+    },
+];
+
+
+# GitHub
+With the GitHub integration, Otterize automatically opens pull requests when it detects differences between policies defined in ClientIntents and actual application traffic.
+
+### Tutorials
+
+To learn how to leverage Otterize's continuous monitoring of your cluster's access to detect and resolve any drifts.
+<DocsLinkCard items={tutorials} colSize={"sm"}/>
+
+### How does Otterize work with GitHub?
+
+ After you deploy ClientIntents and enable enforcement, any traffic that doesn't match the configured intents is blocked. With the GitHub integration, Otterize continuously compares the ClientIntents stored in your remote repository with the traffic the Network Mapper detects in your cluster.
+
+If changes in your application's traffic patterns are detected, Otterize automatically submits a pull request to your chosen branch, updating the ClientIntents in your remote repository to reflect the actual traffic. This approach significantly reduces frictions for developers, allowing discrepancies to be resolved easily through familiar GitOps workflows.
+
+Alternatively, you can use the GitHub integration in shadow mode. In this mode, Otterize does not enforce any intents but continues updating the ClientIntents in your remote repository. This setup lets you gradually build the necessary ClientIntents for intended access without risking blocked connections. Once you stop receiving new pull requests for new connections, you can be confident that all required ClientIntents are declared and proceed to activate enforcement.
