@@ -13,16 +13,16 @@ Make sure to include `--set kafkaServers={}` and provide a list of Kafka servers
 Servers in the list should be specified as `name.namespace`.
 
 ## Kafka watcher parameters
-| Key                             | Description                                                 | Default                        |
-|---------------------------------|-------------------------------------------------------------|--------------------------------|
-| `kafkawatcher.enable`           | Enable Kafka watcher deployment (beta).                     | `false`                        |
-| `kafkawatcher.image.repository` | Kafka watcher image repository.                             | `otterize`                     |
-| `kafkawatcher.image.image`      | Kafka watcher image.                                        | `network-mapper-kafka-watcher` |
-| `kafkawatcher.image.tag`        | Kafka watcher image tag.                                    | `latest`                       |
-| `kafkawatcher.pullPolicy`       | Kafka watcher pull policy.                                  | `(none)`                       |
-| `kafkawatcher.pullSecrets`      | Kafka watcher pull secrets.                                 | `(none)`                       |
-| `kafkawatcher.resources`        | Resources override.                                         | `(none)`                       |
-| `kafkawatcher.kafkaServers`     | Kafka servers to watch, specified as `pod.namespace` items. | `(none)`                       |
+| Key                         | Description                                                 | Default                        |
+|-----------------------------|-------------------------------------------------------------|--------------------------------|
+| `kafkawatcher.enable`       | Enable Kafka watcher deployment (beta).                     | `false`                        |
+| `kafkawatcher.repository`   | Kafka watcher image repository.                             | `otterize`                     |
+| `kafkawatcher.image`        | Kafka watcher image.                                        | `network-mapper-kafka-watcher` |
+| `kafkawatcher.tag`          | Kafka watcher image tag.                                    | `(pinned to latest version as of this Helm chart version's publish)`                       |
+| `kafkawatcher.pullPolicy`   | Kafka watcher pull policy.                                  | `(none)`                       |
+| `kafkawatcher.pullSecrets`  | Kafka watcher pull secrets.                                 | `(none)`                       |
+| `kafkawatcher.resources`    | Resources override.                                         | `(none)`                       |
+| `kafkawatcher.kafkaServers` | Kafka servers to watch, specified as `pod.namespace` items. | `(none)`                       |
 
 ## Enabling debug logs in Kafka servers
 The Kafka watcher periodically examines logs of Kafka servers provided by the user through configuration,

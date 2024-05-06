@@ -2,7 +2,6 @@
   "label": "PostgreSQL",
   "position": 5,
   "collapsed": true,
-  "className": "hideme",
   "customProps": {
     "image": "/img/icons/postgresql-no-word-mark.svg"
   }

@@ -18,7 +18,7 @@
   --ifm-color-primary-lighter: #377fad;
   --ifm-color-primary-lightest: #408fc2;
   --ifm-code-font-size: 85%;
-  --ifm-font-size-base: 0.85rem;
+  --ifm-font-size-base: 1rem;
   --ifm-font-weight-base: 400;
   --ifm-h1-font-size: 2.5rem;
   --ifm-code-border-radius: 5px;
@@ -136,7 +136,7 @@ article {
 
 /* Allow for slightly longer sidebar items than the default width */
 :root {
-  --doc-sidebar-width: 350px !important;
+  --doc-sidebar-width: 300px !important;
 }
 
 /* Auto-wrap text in code blocks
@@ -396,8 +396,4 @@ footer .container-fluid {
 /* Removes the default dropdown arrow */
 .dropdown > .navbar__link:after {
   display: none;
-}
-
-.hideme {
-  display: none !important;
 }
