@@ -214,7 +214,7 @@ kubectl delete namespace otterize-tutorial-github
 Delete the Git repository with the following command, replacing the GitHub user name with yours.
 
 ```bash
-gh repo delete {owner name}/otterize-tutorial-github
+gh repo delete $GH_USER/otterize-tutorial-github
 ```
 :::note
 If your API doesn't grant *delete* privileges, navigate to the repository's *Settings* section to delete it manually.
