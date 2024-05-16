@@ -1,6 +1,6 @@
 ---
 sidebar_position: 1
-title: Automated Authorization Pull Requests
+title: Automated authorization pull requests
 image: /img/quick-tutorials/github/social.png
 ---
 
@@ -19,7 +19,7 @@ In this tutorial, you will:
 You will need the following CLI tools to set up the repository and export ClientIntents:
 
 1. [Otterize CLI](https://docs.otterize.com/overview/installation#install-the-otterize-cli)
-2. [Github CLI](https://cli.github.com)
+2. [GitHub CLI](https://cli.github.com)
 
 After installation, log in  with `gh auth login` and select your preferred method for authentication. Ensure your account has the necessary permissions to create new repositories.
 
@@ -142,7 +142,7 @@ To add the repository to Otterize Cloud, navigate to the [Integrations page](htt
 
 <img className="tw-w-96 tw-block tw-mx-auto tw-mb-4"
     src="/img/quick-tutorials/github/install-github-app.png"
-    alt="Github App Install Example"
+    alt="GitHub App Install Example"
 />
 
 The Otterize GitHub app is now installed in your repository. Otterize will continuously monitor for differences between the ClientIntents definitions in your repository and the actual usage detected in your cluster. If drifts are detected, pull requests will be automatically opened to update the intent definitions and reflect the new usage behaviors.
