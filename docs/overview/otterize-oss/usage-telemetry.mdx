@@ -30,6 +30,7 @@ The information reported by Otterize OSS is defined in the [GraphQL schema of th
 | `INTENTS_DISCOVERED`             | How many intents were discovered by the network mapper.                                              |
 | `INTENTS_DISCOVERED_SOCKET_SCAN` | How many intents were discovered by the network watcher ("sniffer") via scanning for open sockets.   |
 | `INTENTS_DISCOVERED_CAPTURE`     | How many intents were discovered by the network watcher ("sniffer") via reading DNS query responses. |
+| `INTENTS_DISCOVERED_TCP`         | How many intents were discovered by the network watcher ("sniffer") via reading TCP-SYN packets.     |
 | `INTENTS_DISCOVERED_KAFKA`       | How many intents were discovered by the Kafka watcher.                                               |
 | `INTENTS_DISCOVERED_ISTIO`       | How many intents were discovered by the Istio watcher.                                               |
 | `MAPPER_EXPORT `                 | How many intents from the network mapper were exported by the CLI: `otterize mapper export...`.      |
@@ -43,7 +44,7 @@ The information reported by Otterize OSS is defined in the [GraphQL schema of th
 | `ISTIO_POLICIES_CREATED`         | How many Istio authorization policies were created by the intents operator.                          |
 | `ISTIO_POLICIES_DELETED`         | How many Istio authorization policies were deleted by the intents operator.                          |
 | `STARTED`                        | The operator was started.                                                                            |
-| `ACTIVE`                         | Sent periodically to indicate that the component is still running.                                                                             |
+| `ACTIVE`                         | Sent periodically to indicate that the component is still running.                                   |
 | `SERVICE_DISCOVERED`             | How many services were discovered by the network mapper.                                             |
 | `NAMESPACE_DISCOVERED`           | How many namespaces were discovered by the network mapper.                                           |
 | `PROTECTED_SERVICE_APPLIED`      | How many protected services were applied.                                                            |
