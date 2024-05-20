@@ -71,7 +71,7 @@ Our server's Deployment spec will specify an annotation on the Pod, which reques
         credentials-operator.otterize.com/user-password-secret-name: server-creds
 ```
 This specifies that the secret `server-creds` will have keys with the username and password to connect to the database.
-The secret will only be created once the database is integrated with Otterize Cloud.
+The secret will only be created by the Otterize operator after it is integrated with your database by applying a MySQLServerConfig resources.
 
 ``` shell
 kubectl create namespace otterize-tutorial-postgres

@@ -1,12 +1,12 @@
 apiVersion: k8s.otterize.com/v1alpha3
 kind: ClientIntents
 metadata:
-  name: server
+  name: client-intents-for-server
 spec:
   service:
     name: server
   calls:
-    - name: otterize-tutorial-mysql
+    - name: mysql-tutorial-db
       type: database
       databaseResources:
         - databaseName: otterize_example
