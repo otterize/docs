@@ -1,0 +1,8 @@
+{
+  "label": "MySQL",
+  "position": 5,
+  "collapsed": true,
+  "customProps": {
+    "image": "/img/icons/mysql.svg"
+  }
+}

@@ -1,0 +1,198 @@
+---
+sidebar_position: 2
+title: Just-in-time MySQL access
+image: /img/quick-tutorials/mysql/social.png
+---
+
+import CodeBlock from "@theme/CodeBlock";
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+export const Terminal = ({children}) => (
+    <div
+        style={{
+            backgroundColor: '#eee',
+            borderRadius: '5px',
+            fontSize: '12px',
+            fontWeight: '600',
+            color: 'darkgreen',
+            padding: '1rem',
+            fontFamily: 'monospace, monospace'
+        }}>
+        {children}
+    </div>
+);
+
+
+# Overview
+This tutorial will deploy an example cluster to highlight Otterize's MySQL capabilities. Within that cluster is a client service that hits an endpoint on a server, which then connects to a database. The server runs two different database operations:
+1. An `INSERT` operation to append a table within the database
+2. A `SELECT` operation to validate the updates.
+
+The server needs appropriate permissions to access the database. You could use one admin user for all services, which is insecure and is the cause for many security breaches. With Otterize, you can specify required access, and have Otterize create users and perform correctly scoped SQL GRANTs just in time, as the service spins up and down.
+
+In this tutorial, we will:
+* Optionally, spin up a MySQL database instance, based on Amazon RDS for MySQL. Alternatively, you could use any MySQL server of your choice.
+* Deploy an example cluster
+* Deploy Otterize in our cluster and give it access to our database instance
+* Declare a ClientIntents resource for the server, specifying required access
+* See that the required access has been granted
+
+# Prerequisites
+
+#### 1. Minikube Cluster
+<details>
+    <summary>Prepare a Kubernetes cluster with Minikube</summary>
+
+For this tutorial you'll need a local Kubernetes cluster. Having a cluster with a [CNI](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/) that supports [NetworkPolicies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) isn't required for this tutorial, but is recommended so that your cluster works with other tutorials.
+
+If you don't have the Minikube CLI, first [install it](https://minikube.sigs.k8s.io/docs/start/).
+
+Then start your Minikube cluster with Calico, in order to enforce network policies.
+
+```shell
+minikube start --cpus=4 --memory 4096 --disk-size 32g --cni=calico
+```
+</details>
+
+#### 2. Deploy Otterize
+To deploy Otterize, head over to [Otterize Cloud](https://app.otterize.com) and associate a Kubernetes cluster on the [Integrations page](https://app.otterize.com/integrations), and follow the instructions. If you already have a Kubernetes cluster connected, skip this step.
+
+#### 3. Deploy a MySQL database instance
+Already have a MySQL database instance? [Skip to the tutorial.](#tutorial)
+
+<details>
+<summary>Deploy a MySQL database instance, based on Amazon RDS for MySQL</summary>
+
+Follow the [installation instructions on the AWS RDS documentation](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_GettingStarted.CreatingConnecting.MySQL.html#CHAP_GettingStarted.Creating.MySQL).
+
+<li>
+    You may use the Free tier template for this tutorial.
+</li>
+<li>
+    Under "Settings", choose "Auto generate password". Make sure you save the generated password after the instance is created.
+</li>
+<li>
+    Under "Connectivity", enable public access to allow access from your Kubernetes cluster. Otterize will require that access to manage credentials for you.
+    Additionally, make sure you choose a security group that allows inbound access from your Kubernetes cluster.
+
+    Alternatively, if your Kubernetes cluster is running on AWS EKS, you may configure your RDS instance to allow connectivity from your EKS cluster's VPC.
+</li>
+
+</details>
+
+
+
+# Tutorial
+
+### Setup MySQL database and table for the tutorial
+This will create a database named `otterize_tutorial` and a table named `example` in your MySQL instance.
+Our tutorial server will use this database and table to perform `INSERT` and `SELECT` operations.
+```
+export MYSQLHOST=<YOURMYSQLHOST>
+export MYSQLPASSWORD=<YOURPASSWORD>
+
+export MYSQL_PWD=$MYSQLPASSWORD
+curl ${ABSOLUTE_URL}/code-examples/mysql/db-setup.sql | mysql -u admin -h $MYSQLHOST --verbose
+```
+### Deploy tutorial services and request database credentials
+This will set up the namespace we will use for our tutorial and deploy the client & server.
+
+Our server's Deployment spec will specify an annotation on the Pod, which requests that the credentials operator will provision a username and password for the server.
+```yaml
+  template:
+    metadata:
+      annotations:
+        credentials-operator.otterize.com/user-password-secret-name: server-creds
+```
+This specifies that the secret `server-creds` will have keys with the username and password to connect to the database.
+The secret will only be created once the database is integrated with Otterize Cloud.
+
+``` shell
+kubectl create namespace otterize-tutorial-mysql
+kubectl apply -n otterize-tutorial-mysql -f ${ABSOLUTE_URL}/code-examples/mysql/client-server.yaml
+kubectl patch deployment -n otterize-tutorial-mysql server --type='json' -p="[{\"op\": \"replace\", \"path\": \"/spec/template/spec/containers/0/env\", \"value\": [{\"name\": \"DB_HOST\", \"value\": \"$MYSQLHOST\"}]}]"
+```
+
+<details>
+<summary>Expand to see the deployment YAML</summary>
+
+```yaml
+{@include: ../../../../static/code-examples/mysql/client-server.yaml}
+```
+
+</details>
+
+### Deploy a MySQLServerConfig to allow Otterize DB access
+```yaml
+{@include: ../../../../static/code-examples/mysql/mysqlserverconfig.yaml}
+```
+
+The above CRD tells Otterize how to access a database instance named `mysql-tutorial-db`, meaning that when intents
+are applied requesting access permissions to `mysql-tutorial-db`, Otterize operators will be able to configure
+them.
+
+In this tutorial, we use the admin user to grant Otterize permissions to create users and grant them access to the database.
+In a production environment, it is recommended to create a dedicated user for Otterize, and grant it the necessary permissions to create and manage other users.
+
+:::caution
+The type MySQLServerConfig should be considered as sensitive and require high cluster privileges to access.
+:::
+
+Let's apply the above `MySQLServerConfig` so Otterize will know how to access our database instance.
+```shell
+kubectl apply -f mysqlserverconf.yaml
+kubectl patch mysqlserverconfig -n otterize-tutorial-mysql mysql-tutorial-db --type='json' -p="[{\"op\": \"replace\", \"path\": \"/spec/address\", \"value\": \"$MYSQLHOST\"}, {\"op\": \"replace\", \"path\": \"/spec/credentials/password\", \"value\": \"$MYSQLPASSWORD\"}]"
+```
+
+### View logs for the server
+After the client, server, and database are up and running, we can see that the server does not have the appropriate access to the database by inspecting the logs with the following command.
+
+```shell
+kubectl logs -f -n otterize-tutorial-mysql deploy/server
+```
+
+Example log:
+<Terminal>
+Unable to perform INSERT operation
+    <br></br>
+Unable to perform SELECT operation
+</Terminal>
+
+### Define your ClientIntents
+
+ClientIntents are Otterize’s way of defining access through unique relationships, which lead to perfectly scoped access. In this example, we provide our `server` workload the ability to insert and select records to allow it to access the database.
+
+Below is our `intents.yaml` file. As you can see, it is scoped to our database named `otterize_tutorial` and our `example` table. We also have limited the access to just `SELECT` and `INSERT` operations. We could add more databases, tables, or operations if our service required more access.
+
+Specifying the table and operations is optional. If you don't specify the table, access will be granted to all tables in the specified database. If you don't specify the operations, all operations will be allowed.
+```yaml
+{@include: ../../../../static/code-examples/mysql/clientintents.yaml}
+```
+We can now apply our intents. Behind the scenes,the Otterize credentials-operator created the user for our `server` workload while the intents-operator ran `GRANT` queries on the database, making our `SELECT` and `INSERT` errors disappear.
+
+```shell
+kubectl apply -n otterize-tutorial-mysql -f ${ABSOLUTE_URL}/code-examples/mysql/clientintents.yaml
+```
+
+### View logs for the server
+We can now view the server logs once again. This time, we should see that the server has the appropriate access to the database:
+
+```shell
+kubectl logs -f -n otterize-tutorial-mysql deploy/server
+```
+
+Example log:
+<Terminal>
+Successfully INSERTED into our table
+
+Successfully SELECTED, most recent value:  2024-04-30T13:20:46Z
+</Terminal>
+
+That’s it! If your service’s functionality changes, adding or removing access is as simple as updating your ClientIntents definitions. For fun, try altering the `operations` to just `SELECT` or `INSERT`.
+
+# Teardown
+To remove the deployed examples, run:
+```shell
+kubectl delete namespace otterize-tutorial-mysql
+```

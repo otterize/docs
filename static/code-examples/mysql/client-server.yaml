@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: server
+  template:
+    metadata:
+      annotations:
+        credentials-operator.otterize.com/user-password-secret-name: server-creds
+      labels:
+        app: server
+    spec:
+      serviceAccountName: server
+      containers:
+        - name: server
+          imagePullPolicy: Always
+          image: 'otterize/mysql-tutorial-server'
+          ports:
+            - containerPort: 80
+          env:
+            - name: DB_HOST
+              value: database
+            - name: DB_NAME
+              value: otterize_example
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_SERVER_USER
+              valueFrom:
+                secretKeyRef:
+                  name: server-creds
+                  key: username
+            - name: DB_SERVER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: server-creds
+                  key: password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: server
+spec:
+  type: ClusterIP
+  selector:
+    app: server
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: server
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: client
+  template:
+    metadata:
+      labels:
+        app: client
+    spec:
+      containers:
+        - name: client
+          imagePullPolicy: Always
+          image: 'otterize/mysql-tutorial-client'
+          ports:
+            - containerPort: 80

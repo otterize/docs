@@ -3,17 +3,17 @@ sidebar_position: 3
 title: Reference
 ---
 
-### PostgreSQLServerConfig example (YAML)
+### MySQLServerConfig example (YAML)
 ```yaml
 apiVersion: k8s.otterize.com/v1alpha3
-kind: PostgreSQLServerConfig
+kind: MySQLServerConfig
 metadata:
-  name: postgres-tutorial-db # database instance name - should match the target in ClientIntents
+  name: mysql-tutorial-db # database instance name - should match the target in ClientIntents
 spec:
-  address: <PGHOST:PGPORT> # Your Postgres address
+  address: <HOST:PORT> # Your MySQL servers address
   credentials:
-    username: <PGUSER> # Username Otterize will connect with & configure permissions as
-    password: <PGPASSWORD> # Password for above username
+    username: <USER> # Username Otterize will connect with & configure permissions as
+    password: <PASSWORD> # Password for above username
 ```
 
 ### ClientIntents example (YAML)
@@ -23,14 +23,14 @@ apiVersion: k8s.otterize.com/v1alpha3
 kind: ClientIntents
 metadata:
   name: client-intents-for-server
-  namespace: otterize-tutorial-postgres
+  namespace: otterize-tutorial-mysql
 spec:
   service:
-    # Service requiring access to PostgreSQL
+    # Service requiring access to MySQL
     name: server
   calls:
-      # This name will need to match the PostgreSQLServerConfig metadata.name field
-    - name: otterize-tutorial-postgres
+      # This name will need to match the MySQLServerConfig metadata.name field
+    - name: otterize-tutorial-mysql
       type: database
       databaseResources:
         - databaseName: otterize-tutorial
