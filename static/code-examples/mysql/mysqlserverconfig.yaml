@@ -1,7 +1,7 @@
 apiVersion: k8s.otterize.com/v1alpha3
 kind: MySQLServerConfig
 metadata:
-  name: mysql-tutorial-db
+  name: otterize-tutorial-mysql
 spec:
   address: database # Your MySQL server address
   credentials:

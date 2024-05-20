@@ -8,11 +8,11 @@ title: Reference
 apiVersion: k8s.otterize.com/v1alpha3
 kind: MySQLServerConfig
 metadata:
-  name: mysql-tutorial-db # database instance name - should match the target in ClientIntents
+  name: otterize-tutorial-mysql # database instance name - should match the target in ClientIntents
 spec:
   address: <HOST:PORT> # Your MySQL servers address
   credentials:
-    username: <USER> # Username Otterize will connect with & configure permissions as
+    username: <USER> # Username Otterize will connect with & configure permissions as (typically 'admin')
     password: <PASSWORD> # Password for above username
 ```
 
@@ -33,9 +33,9 @@ spec:
     - name: otterize-tutorial-mysql
       type: database
       databaseResources:
-        - databaseName: otterize-tutorial
+        - databaseName: otterize_tutorial
           # Optional table name, if omitted all tables will be granted access
-          table: public.example
+          table: example
           # Operations being granted, options include SELECT, INSERT, UPDATE, DELETE, ALL
           operations:
             - SELECT
