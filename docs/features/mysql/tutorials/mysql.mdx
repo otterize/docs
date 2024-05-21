@@ -156,7 +156,7 @@ This applies the following `MySQLServerConfig` to your cluster, and patches it w
 ```
 
 The above CRD tells Otterize how to access a database instance named `mysql-tutorial-db`, meaning that when intents
-are applied requesting access permissions to `mysql-tutorial-db`, Otterize operators will be able to configure
+are applied requesting access permissions to `mysql-tutorial-db`, the Otterize operator will be able to configure
 them.
 
 In this tutorial, we use the admin user to grant Otterize permissions to create users and grant them access to the database.
@@ -177,7 +177,7 @@ Specifying the table and operations is optional. If you don't specify the table,
 ```yaml
 {@include: ../../../../static/code-examples/mysql/clientintents.yaml}
 ```
-We can now apply our intents. Behind the scenes,the Otterize credentials-operator created the user for our `server` workload while the intents-operator ran `GRANT` queries on the database, making our `SELECT` and `INSERT` errors disappear.
+We can now apply our intents. Behind the scenes, the Otterize operator created the user for our `server` workload and executed `GRANT` queries on the database, making our `SELECT` and `INSERT` errors disappear.
 
 ```shell
 kubectl apply -n otterize-tutorial-mysql -f ${ABSOLUTE_URL}/code-examples/mysql/clientintents.yaml
