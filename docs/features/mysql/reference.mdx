@@ -1,0 +1,45 @@
+---
+sidebar_position: 3
+title: Reference
+---
+
+### MySQLServerConfig example (YAML)
+```yaml
+apiVersion: k8s.otterize.com/v1alpha3
+kind: MySQLServerConfig
+metadata:
+  name: otterize-tutorial-mysql # database instance name - should match the target in ClientIntents
+spec:
+  address: <HOST:PORT> # Your MySQL servers address
+  credentials:
+    username: <USER> # Username Otterize will connect with & configure permissions as (typically 'admin')
+    password: <PASSWORD> # Password for above username
+```
+
+### ClientIntents example (YAML)
+
+```yaml
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: client-intents-for-server
+  namespace: otterize-tutorial-mysql
+spec:
+  service:
+    # Service requiring access to MySQL
+    name: server
+  calls:
+      # This name will need to match the MySQLServerConfig metadata.name field
+    - name: otterize-tutorial-mysql
+      type: database
+      databaseResources:
+        - databaseName: otterize_tutorial
+          # Optional table name, if omitted all tables will be granted access
+          table: example
+          # Operations being granted, options include SELECT, INSERT, UPDATE, DELETE, ALL
+          operations:
+            - SELECT
+            - INSERT
+```
+
+

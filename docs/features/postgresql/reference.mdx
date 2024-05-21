@@ -3,6 +3,19 @@ sidebar_position: 3
 title: Reference
 ---
 
+### PostgreSQLServerConfig example (YAML)
+```yaml
+apiVersion: k8s.otterize.com/v1alpha3
+kind: PostgreSQLServerConfig
+metadata:
+  name: otterize-tutorial-postgres # database instance name - should match the target in ClientIntents
+spec:
+  address: <PGHOST:PGPORT> # Your Postgres address
+  credentials:
+    username: <PGUSER> # Username Otterize will connect with & configure permissions as
+    password: <PGPASSWORD> # Password for above username
+```
+
 ### ClientIntents example (YAML)
 
 ```yaml
@@ -16,7 +29,7 @@ spec:
     # Service requiring access to PostgreSQL
     name: server
   calls:
-      # This name will need to match the provided integration name
+      # This name will need to match the PostgreSQLServerConfig metadata.name field
     - name: otterize-tutorial-postgres
       type: database
       databaseResources:

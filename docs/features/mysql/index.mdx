@@ -1,53 +1,47 @@
 ---
 sidebar_position: 1
-title: PostgreSQL | Overview
+title: MySQL | Overview
 hide_title: true
 ---
 
 import DocsLinkCard from "@site/src/components/LinkCard";
 
-export const postgres_tutorials = [
+export const mysql_tutorials = [
     {
-        title: 'Just-in-time PostgreSQL Access',
+        title: 'Just-in-time MySQL Access',
         description: 'Learn how to manage just-in-time users and SQL GRANTs',
-        url: '/features/postgresql/tutorials/postgres'
+        url: '/features/mysql/tutorials/mysql'
     },
-    {
-        title: 'Map PostgreSQL access',
-        description: 'Learn how to use PostgreSQL audit logs to map access to your database',
-        url: '/features/postgresql/tutorials/postgres-mapping'
-    }
 ];
 
-# PostgreSQL
+# MySQL
 
 Otterize is able to create just-in-time username-and-password pairs for your service, providing them as a Kubernetes Secret that can be mounted to file or mapped to environment variables, as well as `GRANT`ing access to databases and tables, based on `ClientIntents` ([Intent-Based Access Control](/overview/intent-based-access-control)) declarations.
-In addition, Otterize can map the access to your PostgreSQL database, showing you which service is accessing which database, table and which operation it's performing. This can be used to automatically generate the `ClientIntents` declarations.
 
 ### Tutorials
 
-To learn how to use the Intents Operator and Credentials Operator to enforce access using PostgreSQL GRANTs, or map access to your PostgreSQL database, try one of these quickstart tutorials.
+To learn how to use the Intents Operator and Credentials Operator to enforce access using MySQL GRANTs, try one of these quickstart tutorials:
 
-<DocsLinkCard items={postgres_tutorials} colSize={"sm"}/>
+<DocsLinkCard items={mysql_tutorials} colSize={"sm"}/>
 
 
 
-### How does Otterize work with PostgreSQL?
+### How does Otterize work with MySQL?
 
-The Otterize credentials operator will create a unique PostgreSQL username-password combination for each service's use, exposed via a Kubernetes Secret. The service will use these credentials to connect to the database. `ClientIntents` will define the access required by that service. As the intents are applied, The Otterize intents operator will keep the database's list of users and GRANTs up to date so that the service is able to access it.
+The Otterize credentials operator will create a unique MySQL username-password combination for each service's use, exposed via a Kubernetes Secret. The service will use these credentials to connect to the database. `ClientIntents` will define the access required by that service. As the intents are applied, The Otterize intents operator will keep the database's list of users and GRANTs up to date so that the service is able to access it.
 
 1. To get started, your cluster must have Otterize deployed.
-2. You'll need to create a `PostgreSQLServerConfig` in your cluster, providing a connection URL and admin-level credentials for Otterize to manage permissions in your database. Below is an example `PostgreSQLServerConfig` resource.
+2. You'll need to create a `MySQLServerConfig` in your cluster, providing a connection URL and admin-level credentials for Otterize to manage permissions in your database. Below is an example `MySQLServerConfig` resource.
 ```yaml
 apiVersion: k8s.otterize.com/v1alpha3
-kind: PostgreSQLServerConfig
+kind: MySQLServerConfig
 metadata:
-  name: postgres-tutorial-db # database instance name - should match the target in ClientIntents
+  name: mysql-tutorial-db # database instance name - should match the target in ClientIntents
 spec:
-  address: <PGHOST:PGPORT> # Your Postgres address
+  address: <HOST:PORT> # Your MySQL servers address
   credentials:
-    username: <PGUSER> # Username Otterize will connect with & configure permissions as
-    password: <PGPASSWORD> # Password for above username
+    username: <USER> # Username Otterize will connect with & configure permissions as
+    password: <PASSWORD> # Password for above username
 ```
 
 3. Each service can request a username-password Secret to be created, by annotating the Pod with `credentials-operator.otterize.com/user-password-secret-name`. Below is an example of that annotation and passing the generated credentials into a container with environmental variables.
@@ -99,16 +93,16 @@ apiVersion: k8s.otterize.com/v1alpha3
 kind: ClientIntents
 metadata:
   name: client-intents-for-server
-  namespace: otterize-tutorial-postgres
+  namespace: otterize-tutorial-mysql
 spec:
   service:
     name: server
   calls:
-    - name: postgres-tutorial-db # Same name as our PostgreSQLServerConfig metadata.name
+    - name: mysql-tutorial-db # Same name as MySQLServerConfig metadata.name
       type: database
       databaseResources:
         - databaseName: otterize-tutorial
-          table: public.example
+          table: example
           operations:
             - SELECT
             - INSERT

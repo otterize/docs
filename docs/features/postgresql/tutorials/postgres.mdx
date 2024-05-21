@@ -63,7 +63,7 @@ To deploy Otterize, head over to [Otterize Cloud](https://app.otterize.com) and 
 ### Deploy tutorial services and request database credentials
 This will set up the namespace we will use for our tutorial and deploy the client, server, and database.
 
-Our server's Deployment spec will specify an annotation on the Pod, which requests that the credentials operator will provision a username and password for the server.
+Our server's Deployment spec will specify an annotation on the Pod, which requests that the Otterize operator will provision a username and password for the server.
 ```yaml
   template:
     metadata:
@@ -71,7 +71,7 @@ Our server's Deployment spec will specify an annotation on the Pod, which reques
         credentials-operator.otterize.com/user-password-secret-name: server-creds
 ```
 This specifies that the secret `server-creds` will have keys with the username and password to connect to the database.
-The secret will only be created once the database is integrated with Otterize Cloud.
+The secret will only be created by the Otterize operator after it is integrated with your database by applying a MySQLServerConfig resources.
 
 ``` shell
 kubectl create namespace otterize-tutorial-postgres
@@ -80,18 +80,10 @@ kubectl apply -n otterize-tutorial-postgres -f ${ABSOLUTE_URL}/code-examples/pos
 
 ### Deploy a PostgreSQLServerConfig to allow Otterize DB access
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha3
-kind: PostgreSQLServerConfig
-metadata:
-  name: postgres-tutorial-db
-spec:
-  address: database.otterize-tutorial-postgres.svc.cluster.local:5432
-  credentials:
-    username: otterize-tutorial
-    password: jeffdog523
+{@include: ../../../../static/code-examples/postgres/postgresqlserverconfig.yaml}
 ```
 The above CRD tells Otterize how to access a database instance named `postgres-tutorial-db`, meaning that when intents
-are applied requesting access permissions to `postgres-tutorial-db`, Otterize operators will be able to configure
+are applied requesting access permissions to `postgres-tutorial-db`, the Otterize operator will be able to configure
 them.
 
 In this tutorial, the `database` workload already comes with the predefined username & password, but for future uses a
@@ -102,7 +94,7 @@ The type PostgreSQLServerConfig should be considered as sensitive and require hi
 
 Let's apply the above `PostgreSQLServerConfig` so Otterize will know how to access our database instance.
 ```shell
-kubectl apply -f pgserverconf.yaml
+kubectl apply -n otterize-tutorial-postgres -f ${ABSOLUTE_URL}/code-examples/postgres/postgresqlserverconfig.yaml
 ```
 
 ### View logs for the server
@@ -127,32 +119,18 @@ Below is our `intents.yaml` file. As you can see, it is scoped to our database n
 
 Specifying the table and operations is optional. If you don't specify the table, access will be granted to all tables in the specified database. If you don't specify the operations, all operations will be allowed.
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha3
-kind: ClientIntents
-metadata:
-  name: client-intents-for-server
-  namespace: otterize-tutorial-postgres
-spec:
-  service:
-    name: server
-  calls:
-    - name: postgres-tutorial-db # Same name as our PostgresSQLServerConfig metadata.name
-      type: database
-      databaseResources:
-        - databaseName: otterize-tutorial
-          table: public.example
-          operations:
-            - SELECT
-            - INSERT
+{@include: ../../../../static/code-examples/postgres/clientintents.yaml}
 ```
 
-We can now apply our intents. Behind the scenes,the Otterize credentials-operator created the user for our `server` workload while the intents-operator ran `GRANT` queries on the database, making our `SELECT` and `INSERT` errors disappear.
+We can now apply our intents. Behind the scenes, the Otterize operator created the user for our `server` workload and executed `GRANT` queries on the database, making our `SELECT` and `INSERT` errors disappear.
 
 ```shell
-kubectl apply -f intents.yaml
+kubectl apply -n otterize-tutorial-postgres -f ${ABSOLUTE_URL}/code-examples/postgres/clientintents.yaml
 ```
 
-Example log:
+### View logs for the server
+We can now view the server logs once again. This time, we should see that the server has the appropriate access to the database:
+
 <Terminal>
 Successfully INSERTED into our table
 
