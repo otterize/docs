@@ -80,15 +80,7 @@ kubectl apply -n otterize-tutorial-postgres -f ${ABSOLUTE_URL}/code-examples/pos
 
 ### Deploy a PostgreSQLServerConfig to allow Otterize DB access
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha3
-kind: PostgreSQLServerConfig
-metadata:
-  name: postgres-tutorial-db
-spec:
-  address: database.otterize-tutorial-postgres.svc.cluster.local:5432
-  credentials:
-    username: otterize-tutorial
-    password: jeffdog523
+{@include: ../../../../static/code-examples/postgres/postgresqlserverconfig.yaml}
 ```
 The above CRD tells Otterize how to access a database instance named `postgres-tutorial-db`, meaning that when intents
 are applied requesting access permissions to `postgres-tutorial-db`, Otterize operators will be able to configure
@@ -102,7 +94,7 @@ The type PostgreSQLServerConfig should be considered as sensitive and require hi
 
 Let's apply the above `PostgreSQLServerConfig` so Otterize will know how to access our database instance.
 ```shell
-kubectl apply -f pgserverconf.yaml
+kubectl apply -n otterize-tutorial-postgres -f ${ABSOLUTE_URL}/code-examples/postgres/postgresqlserverconfig.yaml
 ```
 
 ### View logs for the server
@@ -127,32 +119,18 @@ Below is our `intents.yaml` file. As you can see, it is scoped to our database n
 
 Specifying the table and operations is optional. If you don't specify the table, access will be granted to all tables in the specified database. If you don't specify the operations, all operations will be allowed.
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha3
-kind: ClientIntents
-metadata:
-  name: client-intents-for-server
-  namespace: otterize-tutorial-postgres
-spec:
-  service:
-    name: server
-  calls:
-    - name: postgres-tutorial-db # Same name as our PostgreSQLServerConfig metadata.name
-      type: database
-      databaseResources:
-        - databaseName: otterize-tutorial
-          table: public.example
-          operations:
-            - SELECT
-            - INSERT
+{@include: ../../../../static/code-examples/postgres/clientintents.yaml}
 ```
 
 We can now apply our intents. Behind the scenes,the Otterize credentials-operator created the user for our `server` workload while the intents-operator ran `GRANT` queries on the database, making our `SELECT` and `INSERT` errors disappear.
 
 ```shell
-kubectl apply -f intents.yaml
+kubectl apply -n otterize-tutorial-postgres -f ${ABSOLUTE_URL}/code-examples/postgres/clientintents.yaml
 ```
 
-Example log:
+### View logs for the server
+We can now view the server logs once again. This time, we should see that the server has the appropriate access to the database:
+
 <Terminal>
 Successfully INSERTED into our table
 
