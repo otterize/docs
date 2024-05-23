@@ -93,6 +93,26 @@ Resources:
           };
       Timeout: 10
 
+  LambdaInvokeUser:
+    Type: 'AWS::IAM::User'
+
+  LambdaInvokePolicy:
+      Type: 'AWS::IAM::Policy'
+      Properties:
+        PolicyName: 'LambdaInvokePolicy'
+        Users:
+          - !Ref LambdaInvokeUser
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action: 'lambda:InvokeFunction'
+              Resource:
+                - !GetAtt DadJokeLambda.Arn
+                - !GetAtt FeedbackLambda.Arn
+
+
+
 Outputs:
   DadJokeLambdaFunction:
     Description: "Dad Joke Lambda Function ARN"
@@ -102,3 +122,6 @@ Outputs:
     Description: "Feedback Lambda Function ARN"
     Value: !GetAtt FeedbackLambda.Arn
 
+  LambdaInvokeUserAccessKeyId:
+    Description: "IAM User Name for accessing Joke Lambda"
+    Value: !Ref LambdaInvokeUser
