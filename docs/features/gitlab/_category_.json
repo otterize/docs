@@ -1,0 +1,8 @@
+{
+  "label": "GitLab",
+  "position": 6,
+  "collapsed": true,
+  "customProps": {
+    "image": "/img/icons/gitlab-logo.svg"
+  }
+}

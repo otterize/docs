@@ -1,0 +1,30 @@
+---
+sidebar_position: 3
+title: Reference
+---
+
+## Triggers
+
+#### About
+
+Teams adopt various strategies for organizing their repositories, including creating separate repositories for individual clusters, namespaces, and services or using branches to represent different states of deployment. Triggers enhance this organizational flexibility, enabling you to tailor the mapping of your environment to your GitLab repositories according to your specific requirements. You can fine-tune the GitLab integration by configuring multiple triggers to align precisely with your needs.
+
+#### On Trigger
+
+The *On Trigger* configurations define the trigger’s scope, limiting it to only the specific contexts required to be monitored for changes. This allows targeted workflows, such as tracking changes in the *Staging* environment to prepare intents for an upcoming production release.
+
+| Item         | Description                                                  |
+|--------------|--------------------------------------------------------------|
+| Clusters     | Relates to a Kubernetes cluster integrated into Otterize. The names associated with the cluster are those provided during the integration.  |
+| Environments | One or more environments (testing, staging, production, etc.) are to be monitored for changes. Default is *All* |
+| Namespaces   | One or more Kubernetes namespaces to be monitored for changes. Default is *All* |
+| Services     | One or more Kubernetes Services to be monitored for changes. Default is *All* |
+#### Open merge request On
+
+The *Open merge request on* definition associates the *On Trigger* scope to a specific GitLab project, branch, and directory path in your .
+
+| Item               | Description                                                  |
+|--------------------|--------------------------------------------------------------|
+| Project            | Refers to the owner or group and project name combination that uniquely identifies a project in GitLab. For example, Otterizes network mapper would be supplied by `otterize/network-mapper`  |
+| Base branch        | Base branch for most repositories is `main` or `master`.     |
+| ClientIntents path | The path from the repository root folder that contains the intent definition files. For instance: `/helm/intents/` |
