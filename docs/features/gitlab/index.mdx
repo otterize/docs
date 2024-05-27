@@ -1,0 +1,33 @@
+---
+sidebar_position: 1
+title: GitLab | Overview
+hide_table_of_contents: true
+hide_title: true
+---
+
+import DocsLinkCard from "@site/src/components/LinkCard";
+
+export const tutorials = [
+    {
+        title: 'Automated authorization merge requests',
+        description: 'Automatically create merge requests to resolve any drifts detected in your cluster',
+        url: '/features/gitlab/tutorials/automated-merge-requests'
+    },
+];
+
+
+# GitLab
+With the GitLab integration, Otterize automatically opens merge requests when it detects differences between policies defined in ClientIntents and actual application traffic.
+
+### Tutorials
+
+To learn how to leverage Otterize's continuous monitoring of your cluster's access to detect and resolve any drifts.
+<DocsLinkCard items={tutorials} colSize={"sm"}/>
+
+### How does Otterize work with GitLab?
+
+After you deploy ClientIntents and enable enforcement, any traffic that doesn't match the configured intents is blocked. With the GitLab integration, Otterize continuously compares the ClientIntents stored in your remote repository with the traffic the Network Mapper detects in your cluster.
+
+If changes in your application's traffic patterns are detected, Otterize automatically submits a merge request to your chosen branch, updating the ClientIntents in your remote repository to reflect the actual traffic. This approach significantly reduces frictions for developers, allowing discrepancies to be resolved easily through familiar GitOps workflows.
+
+Alternatively, you can use the GitLab integration in shadow mode. In this mode, Otterize does not enforce any intents but continues updating the ClientIntents in your remote repository. This setup lets you gradually build the necessary ClientIntents for intended access without risking blocked connections. Once you stop receiving new merge requests for new connections, you can be confident that all required ClientIntents are declared and proceed to activate enforcement.
