@@ -1,0 +1,190 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: otterize-tutorial-gitlab
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: adventure
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: adventure
+  template:
+    metadata:
+      labels:
+        app: adventure
+    spec:
+      containers:
+        - name: github-tutorial
+          image: otterize/github-tutorial:latest
+          args: ["./adventure"]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: character-generator
+spec:
+  selector:
+    matchLabels:
+      app: character-generator
+  template:
+    metadata:
+      labels:
+        app: character-generator
+    spec:
+      containers:
+        - name: github-tutorial
+          image: otterize/github-tutorial:latest
+          args: ["./character-generator"]
+          ports:
+            - containerPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quest-generator
+spec:
+  selector:
+    matchLabels:
+      app: quest-generator
+  template:
+    metadata:
+      labels:
+        app: quest-generator
+    spec:
+      containers:
+        - name: github-tutorial
+          image: otterize/github-tutorial:latest
+          args: ["./quest-generator"]
+          ports:
+            - containerPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: monster-generator
+spec:
+  selector:
+    matchLabels:
+      app: monster-generator
+  template:
+    metadata:
+      labels:
+        app: monster-generator
+    spec:
+      containers:
+        - name: github-tutorial
+          image: otterize/github-tutorial:latest
+          args: ["./monster-generator"]
+          ports:
+            - containerPort: 8080
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: treasure-generator
+spec:
+  selector:
+    matchLabels:
+      app: treasure-generator
+  template:
+    metadata:
+      labels:
+        app: treasure-generator
+    spec:
+      containers:
+        - name: github-tutorial
+          image: otterize/github-tutorial:latest
+          args: ["./treasure-generator"]
+          ports:
+            - containerPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: monster-generator-v2
+spec:
+  selector:
+    matchLabels:
+      app: monster-generator-v2
+  template:
+    metadata:
+      labels:
+        app: monster-generator-v2
+    spec:
+      containers:
+        - name: github-tutorial
+          image: otterize/github-tutorial:latest
+          args: ["./monster-generator-v2"]
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: treasure-generator
+spec:
+  type: ClusterIP
+  selector:
+    app: treasure-generator
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: character-generator
+spec:
+  type: ClusterIP
+  selector:
+    app: character-generator
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: monster-generator
+spec:
+  type: ClusterIP
+  selector:
+    app: monster-generator
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: quest-generator
+spec:
+  type: ClusterIP
+  selector:
+    app: quest-generator
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: monster-generator-v2
+spec:
+  type: ClusterIP
+  selector:
+    app: monster-generator-v2
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+---
