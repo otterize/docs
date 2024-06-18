@@ -145,8 +145,14 @@ metadata:
 spec:
   address: <PGHOST:PGPORT> # Your CloudSQL database address
   credentials:
-    username: <PGUSER> # Username Otterize will connect with & configure permissions as
-    password: <PGPASSWORD> # Password for above username
+    # Username Otterize will connect with & configure permissions as; optional, can be omitted if using a secretRef
+    username: <PGUSER>
+    # Password for the above username; optional, can be omitted if using a secretRef
+    password: <PGPASSWORD>
+    # Secret containing the postgres credentials; optional, can be omitted if using the above username & password fields
+    secretRef:
+      # Name of the secret containing the postgres credentials; required
+      name: postgres-credentials
 ```
 
 ### Create an Otterize database integration and configure visibility log collection

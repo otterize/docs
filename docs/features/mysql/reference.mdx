@@ -8,12 +8,25 @@ title: Reference
 apiVersion: k8s.otterize.com/v1alpha3
 kind: MySQLServerConfig
 metadata:
-  name: otterize-tutorial-mysql # database instance name - should match the target in ClientIntents
+  name: mysql-tutorial-db # database instance name - should match the target in ClientIntents
+  namespace: otterize-tutorial-mysql
 spec:
   address: <HOST:PORT> # Your MySQL servers address
   credentials:
-    username: <USER> # Username Otterize will connect with & configure permissions as (typically 'admin')
-    password: <PASSWORD> # Password for above username
+    # Username Otterize will connect with & configure permissions as; optional, can be omitted if using a secretRef
+    username: <USER>
+    # Password for the above username; optional, can be omitted if using a secretRef
+    password: <PASSWORD>
+    # Secret containing the database credentials; optional, can be omitted if using the above username & password fields
+    secretRef:
+      # Name of the secret containing the database credentials; required
+      name: mysql-credentials
+      # Namespace where the secret is stored; optional, defaults to the namespace of the MySQLServerConfig
+      namespace: otterize-tutorial-mysql
+      # Key in the secret containing the username; optional, defaults to 'username'
+      usernameKey: username
+      # Key in the secret containing the password; optional, defaults to 'password'
+      passwordKey: password
 ```
 
 ### ClientIntents example (YAML)

@@ -43,11 +43,24 @@ apiVersion: k8s.otterize.com/v1alpha3
 kind: PostgreSQLServerConfig
 metadata:
   name: postgres-tutorial-db # database instance name - should match the target in ClientIntents
+  namespace: otterize-tutorial-postgres
 spec:
   address: <PGHOST:PGPORT> # Your Postgres address
   credentials:
-    username: <PGUSER> # Username Otterize will connect with & configure permissions as
-    password: <PGPASSWORD> # Password for above username
+    # Username Otterize will connect with & configure permissions as; optional, can be omitted if using a secretRef
+    username: <PGUSER>
+    # Password for the above username; optional, can be omitted if using a secretRef
+    password: <PGPASSWORD>
+    # Secret containing the database credentials; optional, can be omitted if using the above username & password fields
+    secretRef:
+      # Name of the secret containing the database credentials; required
+      name: postgres-credentials
+      # Namespace where the secret is stored; optional, defaults to the namespace of the PostgreSQLServerConfig
+      namespace: otterize-tutorial-postgres
+      # Key in the secret containing the username; optional, defaults to 'username'
+      usernameKey: username
+      # Key in the secret containing the password; optional, defaults to 'password'
+      passwordKey: password
 ```
 
 3. Each service can request a username-password Secret to be created, by annotating the Pod with `credentials-operator.otterize.com/user-password-secret-name`. Below is an example of that annotation and passing the generated credentials into a container with environmental variables.

@@ -5,5 +5,14 @@ metadata:
 spec:
   address: database # Your MySQL server address
   credentials:
+    secretRef:
+      name: mysql-tutorial-db-credentials
+---
+apiVersion: v1
+type: Opaque
+kind: Secret
+metadata:
+  name: mysql-tutorial-db-credentials
+data:
     username: admin # Your MySQL server user
     password: password # Your MySQL server password
