@@ -32,7 +32,7 @@ This tutorial will deploy an example cluster to highlight Otterize's MySQL capab
 The server needs appropriate permissions to access the database. You could use one admin user for all services, which is insecure and is the cause for many security breaches. With Otterize, you can specify required access, and have Otterize create users and perform correctly scoped SQL GRANTs just in time, as the service spins up and down.
 
 In this tutorial, we will:
-* Optionally, spin up a MySQL database instance, based on Amazon RDS for MySQL. Alternatively, you could use any MySQL server of your choice.
+* Optionally, spin up a MySQL database instance on AWS, based on Amazon RDS for MySQL, or in your Kubernetes cluster, based on the official MySQL docker image. Alternatively, you could use any MySQL server of your choice.
 * Deploy an example cluster
 * Deploy Otterize in our cluster and give it access to our database instance
 * Declare a ClientIntents resource for the server, specifying required access
@@ -79,22 +79,68 @@ Follow the [installation instructions on the AWS RDS documentation](https://docs
 
 </details>
 
+<details>
+<summary>Deploy a MySQL database instance, based on the official MySQL docker image</summary>
 
+To deploy a local MySQL database instance, you can use the official MySQL docker image. Run the following command to deploy a MySQL instance with the root password set to `password`:
+```shell
+kubectl create namespace otterize-tutorial-mysql
+kubectl apply -n otterize-tutorial-mysql -f ${ABSOLUTE_URL}/code-examples/mysql/database.yaml
+```
+
+Next, start a MySQL client to connect to your MySQL instance:
+```shell
+POD=$(kubectl get pod -n otterize-tutorial-mysql -l app=mysql -o jsonpath="{.items[0].metadata.name}")
+kubectl exec -it -n otterize-tutorial-mysql $POD -- mysql -uroot -ppassword
+```
+
+Run the following command to create an admin user, used for this tutorial:
+```mysql
+CREATE USER 'admin'@'%' IDENTIFIED BY 'password';
+GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+exit;
+```
+
+Use the following values as your MySQL host and password:
+
+```shell
+export MYSQLHOST=mysql.otterize-tutorial-mysql.svc.cluster.local
+export MYSQLUSER=admin
+export MYSQLPASSWORD=password
+```
+</details>
 
 # Tutorial
 
 ### Setup MySQL database and table for the tutorial
 Throughout this tutorial, we will refer to your MySQL host & credentials via environment variables, so make sure to set them up:
 ```shell
-export MYSQLHOST=<YOURMYSQLHOST>
-export MYSQLPASSWORD=<YOURPASSWORD>
+export MYSQLHOST=<YOURMYSQLHOST> # For RDS, this is the endpoint; for the official MySQL docker image, this is `mysql.otterize-tutorial-mysql.svc.cluster.local`
+export MYSQLUSER=admin
+export MYSQLPASSWORD=<YOURPASSWORD> # For RDS, this is the password set during the RDS instance deployment; for the official MySQL docker image, this is `password`
 ```
 
-Next, run the following command to create a database named `otterize_tutorial` and a table named `example` in your MySQL instance.
-Our tutorial server will use this database and table to perform `INSERT` and `SELECT` operations.
+Next, start a MySQL client to connect to your MySQL instance:
 ```shell
-export MYSQL_PWD=$MYSQLPASSWORD
-curl ${ABSOLUTE_URL}/code-examples/mysql/db-setup.sql | mysql -u admin -h $MYSQLHOST --verbose
+kubectl create namespace otterize-tutorial-mysql
+kubectl run -n otterize-tutorial-mysql -it --rm --image=mysql:latest --restart=Never mysql-client -- mysql -h $MYSQLHOST -u $MYSQLUSER -p$MYSQLPASSWORD
+```
+
+And run the following command to create a database named `otterize_tutorial` and a table named `example` in your MySQL instance.
+Our tutorial server will use this database and table to perform `INSERT` and `SELECT` operations.
+```mysql
+CREATE DATABASE IF NOT EXISTS otterize_example;
+
+USE otterize_example;
+
+CREATE TABLE IF NOT EXISTS example
+(
+    file_name   VARCHAR(255),
+    upload_time BIGINT
+);
+
+exit;
 ```
 
 ### Deploy tutorial services and request database credentials
@@ -145,10 +191,13 @@ Example log:
 Let's apply a `MySQLServerConfig` so Otterize will know how to access our database instance:
 ```shell
 kubectl apply -n otterize-tutorial-mysql -f ${ABSOLUTE_URL}/code-examples/mysql/mysqlserverconfig.yaml
-kubectl patch mysqlserverconfig -n otterize-tutorial-mysql mysql-tutorial-db --type='json' -p="[{\"op\": \"replace\", \"path\": \"/spec/address\", \"value\": \"$MYSQLHOST\"}, {\"op\": \"replace\", \"path\": \"/spec/credentials/password\", \"value\": \"$MYSQLPASSWORD\"}]"
+kubectl patch mysqlserverconfig -n otterize-tutorial-mysql mysql-tutorial-db --type='json' -p="[{\"op\": \"replace\", \"path\": \"/spec/address\", \"value\": \"$MYSQLHOST\"}]"
+MYSQLUSER_B64=$(echo -n $MYSQLUSER | base64)
+MYSQLPASSWORD_B64=$(echo -n $MYSQLPASSWORD | base64)
+kubectl patch secret -n otterize-tutorial-mysql mysql-tutorial-db-credentials --type='json' -p="[{\"op\": \"replace\", \"path\": \"/data/username\", \"value\": \"$MYSQLUSER_B64\"}, {\"op\": \"replace\", \"path\": \"/data/password\", \"value\": \"$MYSQLPASSWORD_B64\"}]"
 ```
 
-This applies the following `MySQLServerConfig` to your cluster, and patches it with your DB instance & credentials:
+This applies the following `MySQLServerConfig` to your cluster, and patches it with your DB instance address & credentials:
 
 
 ```yaml
@@ -161,10 +210,6 @@ them.
 
 In this tutorial, we use the admin user to grant Otterize permissions to create users and grant them access to the database.
 In a production environment, it is recommended to create a dedicated user for Otterize, and grant it the necessary permissions to create and manage other users.
-
-:::caution
-The type MySQLServerConfig should be considered as sensitive and require high cluster privileges to access.
-:::
 
 
 ### Define your ClientIntents

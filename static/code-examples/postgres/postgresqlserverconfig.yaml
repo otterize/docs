@@ -14,5 +14,5 @@ kind: Secret
 metadata:
   name: postgres-tutorial-db-credentials
 data:
-  username: otterize-tutorial
-  password: jeffdog523
+  username: '' # Your PostgreSQL server user
+  password: '' # Your PostgreSQL server password

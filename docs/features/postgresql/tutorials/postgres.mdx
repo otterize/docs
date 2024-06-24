@@ -88,13 +88,13 @@ them.
 
 In this tutorial, the `database` workload already comes with the predefined username & password, but for future uses a
 role will have to be created in the database to grant Otterize access as well as the ability to configure other users.
-:::caution
-The type PostgreSQLServerConfig should be considered as sensitive and require high cluster privileges to access.
-:::
 
 Let's apply the above `PostgreSQLServerConfig` so Otterize will know how to access our database instance.
 ```shell
 kubectl apply -n otterize-tutorial-postgres -f ${ABSOLUTE_URL}/code-examples/postgres/postgresqlserverconfig.yaml
+PSQLUSER_B64=$(echo -n otterize-tutorial | base64)
+PSQLPASSWORD_B64=$(echo -n jeffdog523 | base64)
+kubectl patch secret -n otterize-tutorial-postgres postgres-tutorial-db-credentials --type='json' -p="[{\"op\": \"replace\", \"path\": \"/data/username\", \"value\": \"$PSQLUSER_B64\"}, {\"op\": \"replace\", \"path\": \"/data/password\", \"value\": \"$PSQLPASSWORD_B64\"}]"
 ```
 
 ### View logs for the server
