@@ -88,25 +88,11 @@ kubectl create namespace otterize-tutorial-mysql
 kubectl apply -n otterize-tutorial-mysql -f ${ABSOLUTE_URL}/code-examples/mysql/database.yaml
 ```
 
-Next, start a MySQL client to connect to your MySQL instance:
-```shell
-POD=$(kubectl get pod -n otterize-tutorial-mysql -l app=mysql -o jsonpath="{.items[0].metadata.name}")
-kubectl exec -it -n otterize-tutorial-mysql $POD -- mysql -uroot -ppassword
-```
-
-Run the following command to create an admin user, used for this tutorial:
-```mysql
-CREATE USER 'admin'@'%' IDENTIFIED BY 'password';
-GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' WITH GRANT OPTION;
-FLUSH PRIVILEGES;
-exit;
-```
-
 Use the following values as your MySQL host and password:
 
 ```shell
 export MYSQLHOST=mysql.otterize-tutorial-mysql.svc.cluster.local
-export MYSQLUSER=admin
+export MYSQLUSER=root
 export MYSQLPASSWORD=password
 ```
 </details>
@@ -117,20 +103,16 @@ export MYSQLPASSWORD=password
 Throughout this tutorial, we will refer to your MySQL host & credentials via environment variables, so make sure to set them up:
 ```shell
 export MYSQLHOST=<YOURMYSQLHOST> # For RDS, this is the endpoint; for the official MySQL docker image, this is `mysql.otterize-tutorial-mysql.svc.cluster.local`
-export MYSQLUSER=admin
+export MYSQLUSER=<YOURUSER> # For RDS, this is the username set during the RDS instance deployment, typically 'admin'; for the official MySQL docker image, this is `root`
 export MYSQLPASSWORD=<YOURPASSWORD> # For RDS, this is the password set during the RDS instance deployment; for the official MySQL docker image, this is `password`
 ```
 
-Next, start a MySQL client to connect to your MySQL instance:
+Next, start a MySQL client to connect to your MySQL instance, and create a database named `otterize_tutorial` and a table named `example` in your MySQL instance.
+Our tutorial server will use this database and table to perform `INSERT` and `SELECT` operations.
 ```shell
 kubectl create namespace otterize-tutorial-mysql
-kubectl run -n otterize-tutorial-mysql -it --rm --image=mysql:latest --restart=Never mysql-client -- mysql -h $MYSQLHOST -u $MYSQLUSER -p$MYSQLPASSWORD
-```
-
-And run the following command to create a database named `otterize_tutorial` and a table named `example` in your MySQL instance.
-Our tutorial server will use this database and table to perform `INSERT` and `SELECT` operations.
-```mysql
-CREATE DATABASE IF NOT EXISTS otterize_example;
+kubectl run -n otterize-tutorial-mysql -it --rm --image=mysql:latest --restart=Never mysql-client -- mysql -h $MYSQLHOST -u $MYSQLUSER -p$MYSQLPASSWORD \
+ -e 'CREATE DATABASE IF NOT EXISTS otterize_example;
 
 USE otterize_example;
 
@@ -141,6 +123,7 @@ CREATE TABLE IF NOT EXISTS example
 );
 
 exit;
+'
 ```
 
 ### Deploy tutorial services and request database credentials
