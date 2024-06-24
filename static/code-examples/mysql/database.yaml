@@ -18,6 +18,8 @@ spec:
           env:
             - name: MYSQL_ROOT_PASSWORD
               value: password
+            - name: MYSQL_ROOT_HOST
+              value: "%" # Allow all hosts
           ports:
             - containerPort: 3306
               name: mysql
