@@ -38,7 +38,7 @@ const resourcesLinks = `
 /** Components */
 
 const footerSocialLinks = `
-<a href="https://github.com/otterize?view_as=public">
+<a href="https://github.com/otterize">
   <img
   width='30'
   height='30'
@@ -78,7 +78,7 @@ const footerSocialLinks = `
   className='w-5 h-5 relative'
   />
 </a>
-<a href="https://www.youtube.com/@the-otterize/featured">
+<a href="https://www.youtube.com/@OtterizeOfficial">
   <img
   width='30'
   height='30'
