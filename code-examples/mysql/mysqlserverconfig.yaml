@@ -3,7 +3,16 @@ kind: MySQLServerConfig
 metadata:
   name: mysql-tutorial-db
 spec:
-  address: database # Your MySQL server address
+  address: mysql.otterize-tutorial-mysql.svc.cluster.local:3306 # Your MySQL server address
   credentials:
-    username: admin # Your MySQL server user
-    password: password # Your MySQL server password
+    secretRef:
+      name: mysql-tutorial-db-credentials
+---
+apiVersion: v1
+type: Opaque
+kind: Secret
+metadata:
+  name: mysql-tutorial-db-credentials
+data:
+    username: '' # Your MySQL server user
+    password: '' # Your MySQL server password
