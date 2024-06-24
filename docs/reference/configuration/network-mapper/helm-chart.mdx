@@ -13,15 +13,15 @@ Checkout the network mapper [tutorial](/features/network-mapping-network-policie
 # Parameters
 
 ## Mapper parameters
-| Key                            | Description                                                                                     | Default          |
-|--------------------------------|-------------------------------------------------------------------------------------------------|------------------|
-| `mapper.repository`      | Mapper image repository.                                                                        | `otterize`       |
-| `mapper.image`           | Mapper image.                                                                                   | `network-mapper` |
-| `mapper.tag`             | Mapper image tag.                                                                               | `(pinned to latest version as of this Helm chart version's publish)`         |
-| `mapper.pullPolicy`            | Mapper pull policy.                                                                             | `(none)`         |
-| `mapper.resources`             | Resources override.                                                                             | `(none)`         |
-| `mapper.uploadIntervalSeconds` | Interval for uploading data to cloud                                                            | `60`             |
-| `mapper.extraEnvVars`          | List of extra env vars for the mapper, formatted as in the Kubernetes PodSpec (name and value). | `(none)`         |
+| Key                            | Description                                                                                     | Default                                                              |
+|--------------------------------|-------------------------------------------------------------------------------------------------|----------------------------------------------------------------------|
+| `mapper.repository`            | Mapper image repository.                                                                        | `otterize`                                                           |
+| `mapper.image`                 | Mapper image.                                                                                   | `network-mapper`                                                     |
+| `mapper.tag`                   | Mapper image tag.                                                                               | `(pinned to latest version as of this Helm chart version's publish)` |
+| `mapper.pullPolicy`            | Mapper pull policy.                                                                             | `(none)`                                                             |
+| `mapper.resources`             | Resources override.                                                                             | `(none)`                                                             |
+| `mapper.uploadIntervalSeconds` | Interval for uploading data to cloud                                                            | `60`                                                                 |
+| `mapper.extraEnvVars`          | List of extra env vars for the mapper, formatted as in the Kubernetes PodSpec (name and value). | `(none)`                                                             |
 
 ## Internet-facing traffic reporting
 | Key                                    | Description                                                                                                                 | Default |
@@ -36,39 +36,39 @@ Checkout the network mapper [tutorial](/features/network-mapping-network-policie
 | `opentelemetry.metricName` | The name of the OpenTelemetry metric name exported for the Grafana Tempo-style metric.                                                                                                                          | `traces_service_graph_request_total` |
 
 ## Sniffer parameters
-| Key                         | Description               | Default                  |
-|-----------------------------|---------------------------|--------------------------|
-| `sniffer.repository`  | Sniffer image repository. | `otterize`               |
-| `sniffer.image`       | Sniffer image.            | `network-mapper-sniffer` |
-| `sniffer.tag`         | Sniffer image tag.        | `(pinned to latest version as of this Helm chart version's publish)`                 |
-| `sniffer.pullPolicy`        | Sniffer pull policy.      | `(none)`                 |
-| `sniffer.resources`         | Resources override.       | `(none)`                 |
-| `sniffer.tolerations`       | Tolerations override.     | `(none)`                 |
-| `sniffer.priorityClassName` | Set priorityClassName.    | `(none)`                 |
+| Key                         | Description               | Default                                                              |
+|-----------------------------|---------------------------|----------------------------------------------------------------------|
+| `sniffer.repository`        | Sniffer image repository. | `otterize`                                                           |
+| `sniffer.image`             | Sniffer image.            | `network-mapper-sniffer`                                             |
+| `sniffer.tag`               | Sniffer image tag.        | `(pinned to latest version as of this Helm chart version's publish)` |
+| `sniffer.pullPolicy`        | Sniffer pull policy.      | `(none)`                                                             |
+| `sniffer.resources`         | Resources override.       | `(none)`                                                             |
+| `sniffer.tolerations`       | Tolerations override.     | `(none)`                                                             |
+| `sniffer.priorityClassName` | Set priorityClassName.    | `(none)`                                                             |
 
 
 ## Kafka watcher parameters
-| Key                             | Description                                                 | Default                        |
-|---------------------------------|-------------------------------------------------------------|--------------------------------|
-| `kafkawatcher.enable`           | Enable Kafka watcher deployment (beta).                     | `false`                        |
-| `kafkawatcher.repository` | Kafka watcher image repository.                             | `otterize`                     |
-| `kafkawatcher.image`      | Kafka watcher image.                                        | `network-mapper-kafka-watcher` |
-| `kafkawatcher.tag`        | Kafka watcher image tag.                                    | `(pinned to latest version as of this Helm chart version's publish)`                       |
-| `kafkawatcher.pullPolicy`       | Kafka watcher pull policy.                                  | `(none)`                       |
-| `kafkawatcher.pullSecrets`      | Kafka watcher pull secrets.                                 | `(none)`                       |
-| `kafkawatcher.resources`        | Resources override.                                         | `(none)`                       |
-| `kafkawatcher.kafkaServers`     | Kafka servers to watch, specified as `pod.namespace` items. | `(none)`                       |
+| Key                         | Description                                                 | Default                                                              |
+|-----------------------------|-------------------------------------------------------------|----------------------------------------------------------------------|
+| `kafkawatcher.enable`       | Enable Kafka watcher deployment (beta).                     | `false`                                                              |
+| `kafkawatcher.repository`   | Kafka watcher image repository.                             | `otterize`                                                           |
+| `kafkawatcher.image`        | Kafka watcher image.                                        | `network-mapper-kafka-watcher`                                       |
+| `kafkawatcher.tag`          | Kafka watcher image tag.                                    | `(pinned to latest version as of this Helm chart version's publish)` |
+| `kafkawatcher.pullPolicy`   | Kafka watcher pull policy.                                  | `(none)`                                                             |
+| `kafkawatcher.pullSecrets`  | Kafka watcher pull secrets.                                 | `(none)`                                                             |
+| `kafkawatcher.resources`    | Resources override.                                         | `(none)`                                                             |
+| `kafkawatcher.kafkaServers` | Kafka servers to watch, specified as `pod.namespace` items. | `(none)`                                                             |
 
 ## Istio watcher parameters
-| Key                             | Description                             | Default                        |
-|---------------------------------|-----------------------------------------|--------------------------------|
-| `istiowatcher.enable`           | Enable Istio watcher deployment (beta). | `false`                        |
-| `istiowatcher.repository` | Istio watcher image repository.         | `otterize`                     |
-| `istiowatcher.image`      | Istio watcher image.                    | `network-mapper-istio-watcher` |
-| `istiowatcher.tag`        | Istio watcher image tag.                | `(pinned to latest version as of this Helm chart version's publish)`                       |
-| `istiowatcher.pullPolicy`       | Istio watcher pull policy.              | `(none)`                       |
-| `istiowatcher.pullSecrets`      | Istio watcher pull secrets.             | `(none)`                       |
-| `istiowatcher.resources`        | Resources override.                     | `(none)`                       |
+| Key                        | Description                             | Default                                                              |
+|----------------------------|-----------------------------------------|----------------------------------------------------------------------|
+| `istiowatcher.enable`      | Enable Istio watcher deployment (beta). | `false`                                                              |
+| `istiowatcher.repository`  | Istio watcher image repository.         | `otterize`                                                           |
+| `istiowatcher.image`       | Istio watcher image.                    | `network-mapper-istio-watcher`                                       |
+| `istiowatcher.tag`         | Istio watcher image tag.                | `(pinned to latest version as of this Helm chart version's publish)` |
+| `istiowatcher.pullPolicy`  | Istio watcher pull policy.              | `(none)`                                                             |
+| `istiowatcher.pullSecrets` | Istio watcher pull secrets.             | `(none)`                                                             |
+| `istiowatcher.resources`   | Resources override.                     | `(none)`                                                             |
 
 ## Cloud parameters
 | Key                                                        | Description                                                                                                                                                                                  | Default  |
@@ -81,14 +81,14 @@ Checkout the network mapper [tutorial](/features/network-mapping-network-policie
 | `global.otterizeCloud.apiExtraCAPEMSecret`                 | The name of a secret containing a single `CA.pem` file for an extra root CA used to connect to Otterize Cloud. The secret should be placed in the same namespace as the Otterize deployment. | `(none)` |
 
 ## Global parameters
-| Key                              | Description                                                                                                                                 | Default |
-|----------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------|---------|
-| `global.allowGetAllResources`    | If defined overrides `allowGetAllResources`.                                                                                                |         |
-| `global.telemetry.enabled`       | If set to `false`, anonymous telemetries collection will be disabled                                                                        | `true`  |
-| `global.commonAnnotations`       | Annotations to add to all deployed objects                                                                                                  | {}      |
-| `global.commonLabels`            | Labels to add to all deployed objects                                                                                                       | {}      |
-| `global.podAnnotations`          | Annotations to add to all deployed pods                                                                                                     | {}      |
-| `global.podLabels`               | Labels to add to all deployed pods                                                                                                          | {}      |
+| Key                                        | Description                                                                                                                                                                                                                                                                                   | Default                             |
+|--------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------|
+| `global.allowGetAllResources`              | If defined overrides `allowGetAllResources`.                                                                                                                                                                                                                                                  |                                     |
+| `global.telemetry.enabled`                 | If set to `false`, anonymous telemetries collection will be disabled                                                                                                                                                                                                                          | `true`                              |
+| `global.commonAnnotations`                 | Annotations to add to all deployed objects                                                                                                                                                                                                                                                    | {}                                  |
+| `global.commonLabels`                      | Labels to add to all deployed objects                                                                                                                                                                                                                                                         | {}                                  |
+| `global.podAnnotations`                    | Annotations to add to all deployed pods                                                                                                                                                                                                                                                       | {}                                  |
+| `global.podLabels`                         | Labels to add to all deployed pods                                                                                                                                                                                                                                                            | {}                                  |
 | `global.serviceNameOverrideAnnotationName` | Which annotation to use (in the [service name resolution algorithm](/reference/service-identities#kubernetes-service-identity-resolution)) for setting a pod's service name, if not the default. Use this if you already have annotations on your pods that provide the correct service name. | `intents.otterize.com/service-name` |
 
 
