@@ -7,12 +7,3 @@ spec:
   credentials:
     secretRef:
       name: postgres-tutorial-db-credentials
----
-apiVersion: v1
-type: Opaque
-kind: Secret
-metadata:
-  name: postgres-tutorial-db-credentials
-data:
-  username: '' # Your PostgreSQL server user
-  password: '' # Your PostgreSQL server password

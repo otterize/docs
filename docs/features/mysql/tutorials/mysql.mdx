@@ -144,7 +144,7 @@ kubectl patch deployment -n otterize-tutorial-mysql server --type='json' -p="[{\
 ```
 </details>
 
-Our server's Deployment spec specify an annotation on its Pod, which requests that the Otterize operator provision a username and password for it:
+Our server's Deployment spec specifies an annotation on its Pod, which requests that the Otterize operator provision a username and password for it:
 ```yaml
   template:
     metadata:
@@ -152,7 +152,7 @@ Our server's Deployment spec specify an annotation on its Pod, which requests th
         credentials-operator.otterize.com/user-password-secret-name: server-creds
 ```
 This specifies that the secret `server-creds` will be populated with keys containing the username and password used by this pod to connect to the database.
-The secret will only be created by the Otterize operator after it is integrated with your database by applying a MySQLServerConfig resources.
+The secret will only be created by the Otterize operator after it is integrated with your database by applying a `MySQLServerConfig` resources.
 
 
 ### View logs for the server
@@ -171,25 +171,28 @@ Example log:
 
 
 ### Deploy a MySQLServerConfig to allow Otterize DB access
-Let's apply a `MySQLServerConfig` so Otterize will know how to access our database instance:
+Let's apply a `MySQLServerConfig` so Otterize will know how to access our database instance.
+
+First, create a Kuberentes secret containing the database credentials:
 ```shell
-kubectl apply -n otterize-tutorial-mysql -f ${ABSOLUTE_URL}/code-examples/mysql/mysqlserverconfig.yaml
-kubectl patch mysqlserverconfig -n otterize-tutorial-mysql mysql-tutorial-db --type='json' -p="[{\"op\": \"replace\", \"path\": \"/spec/address\", \"value\": \"$MYSQLHOST\"}]"
-MYSQLUSER_B64=$(echo -n $MYSQLUSER | base64)
-MYSQLPASSWORD_B64=$(echo -n $MYSQLPASSWORD | base64)
-kubectl patch secret -n otterize-tutorial-mysql mysql-tutorial-db-credentials --type='json' -p="[{\"op\": \"replace\", \"path\": \"/data/username\", \"value\": \"$MYSQLUSER_B64\"}, {\"op\": \"replace\", \"path\": \"/data/password\", \"value\": \"$MYSQLPASSWORD_B64\"}]"
+kubectl create secret generic mysql-tutorial-db-credentials -n otterize-tutorial-mysql --from-literal=username=$MYSQLUSER --from-literal=password=$MYSQLPASSWORD
 ```
 
-This applies the following `MySQLServerConfig` to your cluster, and patches it with your DB instance address & credentials:
+Next, apply the `MySQLServerConfig` to the cluster, and patch it with your DB instance address:
+```
+kubectl apply -n otterize-tutorial-mysql -f ${ABSOLUTE_URL}/code-examples/mysql/mysqlserverconfig.yaml
+kubectl patch mysqlserverconfig -n otterize-tutorial-mysql mysql-tutorial-db --type='json' -p="[{\"op\": \"replace\", \"path\": \"/spec/address\", \"value\": \"$MYSQLHOST\"}]"
+```
 
+This `MySQLServerConfig` tells Otterize how to access a database instance named `mysql-tutorial-db`, meaning that when intents
+are applied requesting access permissions to `mysql-tutorial-db`, the Otterize operator will be able to configure
+them:
 
 ```yaml
 {@include: ../../../../static/code-examples/mysql/mysqlserverconfig.yaml}
 ```
 
-The above CRD tells Otterize how to access a database instance named `mysql-tutorial-db`, meaning that when intents
-are applied requesting access permissions to `mysql-tutorial-db`, the Otterize operator will be able to configure
-them.
+
 
 In this tutorial, we use the admin user to grant Otterize permissions to create users and grant them access to the database.
 In a production environment, it is recommended to create a dedicated user for Otterize, and grant it the necessary permissions to create and manage other users.
