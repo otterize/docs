@@ -61,41 +61,30 @@ To deploy Otterize, head over to [Otterize Cloud](https://app.otterize.com) and 
 # Tutorial
 
 ### Deploy tutorial services and request database credentials
-This will set up the namespace we will use for our tutorial and deploy the client, server, and database.
+Next, set up the namespace used for our tutorial and deploy the client, server & database services in it:
+``` shell
+kubectl create namespace otterize-tutorial-postgres
+kubectl apply -n otterize-tutorial-postgres -f ${ABSOLUTE_URL}/code-examples/postgres/client-server-database.yaml
+```
 
-Our server's Deployment spec will specify an annotation on the Pod, which requests that the Otterize operator will provision a username and password for the server.
+<details>
+<summary>Expand to see the deployment YAML</summary>
+
+```yaml
+{@include: ../../../../static/code-examples/postgres/client-server-database.yaml}
+```
+</details>
+
+
+Our server's Deployment spec specifies an annotation on its Pod, which requests that the Otterize operator provision a username and password for it:
 ```yaml
   template:
     metadata:
       annotations:
         credentials-operator.otterize.com/user-password-secret-name: server-creds
 ```
-This specifies that the secret `server-creds` will have keys with the username and password to connect to the database.
-The secret will only be created by the Otterize operator after it is integrated with your database by applying a MySQLServerConfig resources.
-
-``` shell
-kubectl create namespace otterize-tutorial-postgres
-kubectl apply -n otterize-tutorial-postgres -f ${ABSOLUTE_URL}/code-examples/postgres/client-server-database.yaml
-```
-
-### Deploy a PostgreSQLServerConfig to allow Otterize DB access
-```yaml
-{@include: ../../../../static/code-examples/postgres/postgresqlserverconfig.yaml}
-```
-The above CRD tells Otterize how to access a database instance named `postgres-tutorial-db`, meaning that when intents
-are applied requesting access permissions to `postgres-tutorial-db`, the Otterize operator will be able to configure
-them.
-
-In this tutorial, the `database` workload already comes with the predefined username & password, but for future uses a
-role will have to be created in the database to grant Otterize access as well as the ability to configure other users.
-
-Let's apply the above `PostgreSQLServerConfig` so Otterize will know how to access our database instance.
-```shell
-kubectl apply -n otterize-tutorial-postgres -f ${ABSOLUTE_URL}/code-examples/postgres/postgresqlserverconfig.yaml
-PSQLUSER_B64=$(echo -n otterize-tutorial | base64)
-PSQLPASSWORD_B64=$(echo -n jeffdog523 | base64)
-kubectl patch secret -n otterize-tutorial-postgres postgres-tutorial-db-credentials --type='json' -p="[{\"op\": \"replace\", \"path\": \"/data/username\", \"value\": \"$PSQLUSER_B64\"}, {\"op\": \"replace\", \"path\": \"/data/password\", \"value\": \"$PSQLPASSWORD_B64\"}]"
-```
+This specifies that the secret `server-creds` will be populated with keys containing the username and password used by this pod to connect to the database.
+The secret will only be created by the Otterize operator after it is integrated with your database by applying a `PostgreSQLServerConfig` resources.
 
 ### View logs for the server
 After the client, server, and database are up and running, we can see that the server does not have the appropriate access to the database by inspecting the logs with the following command.
@@ -106,10 +95,37 @@ kubectl logs -f -n otterize-tutorial-postgres deploy/server
 
 Example log:
 <Terminal>
-Unable to perform INSERT operation
+    Unable to perform INSERT operation
     <br></br>
-Unable to perform SELECT operation
+    Unable to perform SELECT operation
 </Terminal>
+
+
+
+### Deploy a PostgreSQLServerConfig to allow Otterize DB access
+Let's apply a `PostgreSQLServerConfig` so Otterize will know how to access our database instance.
+
+First, create a Kuberentes secret containing the database credentials:
+```shell
+kubectl create secret generic postgres-tutorial-db-credentials -n otterize-tutorial-postgres --from-literal=username='otterize-tutorial' --from-literal=password='jeffdog523'
+```
+In this tutorial, the PostgreSQL database comes with the predefined username & password, but for future uses a
+role will have to be created in the database to grant Otterize access as well as the ability to configure other users.
+
+
+Next, apply the `PostgreSQLServerConfig` to the cluster:
+```
+kubectl apply -n otterize-tutorial-postgres -f ${ABSOLUTE_URL}/code-examples/postgres/postgresqlserverconfig.yaml
+```
+
+This `PostgreSQLServerConfig` tells Otterize how to access a database instance named `postgres-tutorial-db`, meaning that when intents
+are applied requesting access permissions to `postgres-tutorial-db`, the Otterize operator will be able to configure
+them:
+
+```yaml
+{@include: ../../../../static/code-examples/postgres/postgresqlserverconfig.yaml}
+```
+
 
 ### Define your ClientIntents
 
@@ -131,6 +147,11 @@ kubectl apply -n otterize-tutorial-postgres -f ${ABSOLUTE_URL}/code-examples/pos
 ### View logs for the server
 We can now view the server logs once again. This time, we should see that the server has the appropriate access to the database:
 
+```shell
+kubectl logs -f -n otterize-tutorial-postgres deploy/server
+```
+
+Example log:
 <Terminal>
 Successfully INSERTED into our table
 
