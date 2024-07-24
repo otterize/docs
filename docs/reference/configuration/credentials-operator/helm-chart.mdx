@@ -16,24 +16,24 @@ If you would like to deploy it on its own, add the Otterize Helm chart repositor
 
 ## Global parameters
 
-| Key                              | Description                                                                                                                                 | Default   |
-|----------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------|-----------|
-| `global.certificateProvider`     | What provider should be used to generate certificates - `"spire"`, `"otterize-cloud"` or `"cert-manager"`                       | `"spire"` |
-| `global.spire.serverServiceName` | If deployed with SPIRE, this key specifies SPIRE-server's service name. You should use either this **OR** `spire.serverAddress` (not both). |           |
-| `global.allowGetAllResources`    | If defined overrides                                                                                                                        | `false`   |
-| `global.commonAnnotations`       | Annotations to add to all deployed objects                                                                                                  | {}        |
-| `global.commonLabels`            | Labels to add to all deployed objects                                                                                                       | {}        |
-| `global.podAnnotations`          | Annotations to add to all deployed pods                                                                                                     | {}        |
-| `global.podLabels`               | Labels to add to all deployed pods                                                                                                          | {}        |
-| `global.serviceNameOverrideAnnotationName` | Which annotation to use (in the [service name resolution algorithm](/reference/service-identities#kubernetes-service-identity-resolution)) for setting a pod's service name, if not the default. Use this if you already have annotations on your pods that provide the correct service name.    | `intents.otterize.com/service-name` |
+| Key                                        | Description                                                                                                                                                                                                                                                                                   | Default                             |
+|--------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------|
+| `global.certificateProvider`               | What provider should be used to generate certificates - `"spire"`, `"otterize-cloud"` or `"cert-manager"`                                                                                                                                                                                     | `"spire"`                           |
+| `global.spire.serverServiceName`           | If deployed with SPIRE, this key specifies SPIRE-server's service name. You should use either this **OR** `spire.serverAddress` (not both).                                                                                                                                                   |                                     |
+| `global.allowGetAllResources`              | If defined overrides                                                                                                                                                                                                                                                                          | `false`                             |
+| `global.commonAnnotations`                 | Annotations to add to all deployed objects                                                                                                                                                                                                                                                    | {}                                  |
+| `global.commonLabels`                      | Labels to add to all deployed objects                                                                                                                                                                                                                                                         | {}                                  |
+| `global.podAnnotations`                    | Annotations to add to all deployed pods                                                                                                                                                                                                                                                       | {}                                  |
+| `global.podLabels`                         | Labels to add to all deployed pods                                                                                                                                                                                                                                                            | {}                                  |
+| `global.serviceNameOverrideAnnotationName` | Which annotation to use (in the [service name resolution algorithm](/reference/service-identities#kubernetes-service-identity-resolution)) for setting a pod's service name, if not the default. Use this if you already have annotations on your pods that provide the correct service name. | `intents.otterize.com/service-name` |
 
 ## cert-manager parameters
 
-| Key                                   | Description                                                                                                                       | Default |
-|---------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------|---------|
+| Key                            | Description                                                                                                                       | Default |
+|--------------------------------|-----------------------------------------------------------------------------------------------------------------------------------|---------|
 | `certManager.issuerName`       | The cert-manager Issuer (or ClusterIssuer if `useClusterIssuer` is set) to be used for certificate generation                     | `""`    |
 | `certManager.useClusterIssuer` | Use ClusterIssuer. If false, looks for a namespace-scoped Issuer.                                                                 | `true`  |
-| `certManager.autoApprove`      | Makes the credentials-operator auto-approve its CertificateRequests. Use when the cert-manager default auto-approver is disabled. | `false`  |
+| `certManager.autoApprove`      | Makes the credentials-operator auto-approve its CertificateRequests. Use when the cert-manager default auto-approver is disabled. | `false` |
 
 ## Operator parameters
 
@@ -79,3 +79,4 @@ If you would like to deploy it on its own, add the Otterize Helm chart repositor
 | Key                              | Description                                                                                                                   | Default |
 |----------------------------------|-------------------------------------------------------------------------------------------------------------------------------|---------|
 | `databaseSecretRotationInterval` | Interval in which secrets created by the credentials operator will be rotated. Valid time units are "ns", "ms", "s", "m", "h" | `8h`    |
+| `enableSecretRotation`           | Whether periodic secret rotation is enabled                                                                                   | false   |
