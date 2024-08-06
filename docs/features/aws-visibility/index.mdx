@@ -1,0 +1,42 @@
+---
+sidebar_position: 1
+title: AWS IAM | Overview
+hide_table_of_contents: true
+hide_title: true
+---
+
+import DocsLinkCard from "@site/src/components/LinkCard";
+
+export const tutorials = [
+    {
+        title: '',
+        description: '',
+        url: '/features/aws-visibility/tutorials/aws-visibility-tutorial'
+    },
+];
+
+
+# AWS Visibility Integration
+
+Otterize can collect metadata on your AWS resources so to recognize and differentiate traffic your workloads are making to your own AWS hosted services.
+
+### What it does / How does it differ from AWS IAM?
+
+While AWS IAM lets you secure (authenticate, monitor, enforce policies) the access of your EKS workloads to AWS API (Upload a file to S3, make a call to Lambda function, etc...),
+AWS Visibility helps you recognize egress traffic to your own services that *"happen to be"* hosted on AWS.
+
+If your cluster is making calls to `another-api.yourcompany.com` which points to another EKS cluster's Ingress (through a LB), or to `some-db.yourcompany.com` which is an alias to an external RDS endpoint,
+AWS Visibility will make sure those calls are made visible as edges in your access graph, rather than registering as generic egress internet traffic.
+
+### How does it work?
+
+Unlike AWS IAM, AWS Visibility doesn't require installing additional components as part of provisioning Otterize on your cluster.
+It merely requires an IAM Role in your AWS account (with some very limited read-only permissions) to be assumed by Otterize Cloud.
+This role is created in your account using a CloudFormation template to which you'll be redirected after you create a new AWS Visibility integration through our web app.
+(Alternatively, [this](https://registry.terraform.io/modules/otterize/otterize-aws-visibility/aws/latest) Terraform module can be used).
+Once the integration is created, Otterize Cloud will start to periodically collect metadata on your publicly (or privately) exposed AWS resources.
+Each integration would be associated with a single AWS account (you can create multiple integrations for multiple accounts), and for each a list of relevant regions to monitor should be configured.
+
+### Tutorial
+
+<DocsLinkCard items={tutorials} colSize={"sm"}/>
