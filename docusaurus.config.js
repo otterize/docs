@@ -132,6 +132,7 @@ const config = {
     { src: "/newsLetterSubscription.js", async: true },
     { src: "/ui.js", async: true },
     { src: "/pixels.js", async: true },
+    { src: "https://app.otterize.com/static/hs.js", async: true }
   ],
   plugins: [
     path.resolve(__dirname, 'plugins', 'verify-includes'),
