@@ -21,7 +21,7 @@ export const postgres_tutorials = [
 
 # PostgreSQL
 
-Otterize enables secure and efficient access to your PostgreSQL database within your Kubernetes environment. By utilizing [Intent-Based Access Control](/overview/intent-based-access-control) (IBAC), Otterize creates just-in-time username-and-password pairs for your services, delivering them as Kubernetes Secrets that can be mounted to files or mapped to environment variables, as well as `GRANT`ing access to databases and tables based on these declarations. Additionally, Otterize can automatically generate IBAC declarations (`ClientIntents`) by analyzing your database access patterns, determining which services are accessing which databases, tables, and the specific operations they're performing.
+Otterize enables secure and efficient access to your PostgreSQL database, regardless of where it's located, from within your Kubernetes environment. By utilizing [Intent-Based Access Control](/overview/intent-based-access-control) (IBAC), Otterize creates just-in-time username-and-password pairs for your services, delivering them as Kubernetes Secrets that can be mounted to files or mapped to environment variables, as well as `GRANT`ing access to databases and tables based on these declarations. Additionally, Otterize can automatically generate IBAC declarations (`ClientIntents`) by analyzing your database access patterns, determining which services are accessing which databases, tables, and the specific operations they're performing.
 
 ## How Otterize Manages Database Access
 
