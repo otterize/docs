@@ -166,19 +166,24 @@ Example log:
 </Terminal>
 
 
-### Deploy a MySQLServerConfig to allow Otterize DB access
-Let's apply a `MySQLServerConfig` so Otterize will know how to access our database instance.
+### Create an Otterize database integration and deploy a MySQLServerConfig to allow Otterize DB access
+To create a database integration, head over to the [Otterize Cloud](https://app.otterize.com) and navigate to the [Integrations page](https://app.otterize.com/integrations).
+Click on the "Add Integration" button and select the "Database" option.
+Fill in the required fields and click "Create" to create your integration.
 
-First, create a Kuberentes secret containing the database credentials:
-```shell
-kubectl create secret generic mysql-tutorial-db-credentials -n otterize-tutorial-mysql --from-literal=username=$MYSQLUSER --from-literal=password=$MYSQLPASSWORD
-```
 
-Next, apply the `MySQLServerConfig` to the cluster, and patch it with your DB instance address:
-```
-kubectl apply -n otterize-tutorial-mysql -f ${ABSOLUTE_URL}/code-examples/mysql/mysqlserverconfig.yaml
-kubectl patch mysqlserverconfig -n otterize-tutorial-mysql mysql-tutorial-db --type='json' -p="[{\"op\": \"replace\", \"path\": \"/spec/address\", \"value\": \"$MYSQLHOST\"}]"
-```
+Next, apply a `MySQLServerConfig` so Otterize will know how to access our database instance:
+
+- Create a Kuberentes secret containing the database credentials:
+    ```shell
+    kubectl create secret generic mysql-tutorial-db-credentials -n otterize-tutorial-mysql --from-literal=username=$MYSQLUSER --from-literal=password=$MYSQLPASSWORD
+    ```
+
+- Apply the `MySQLServerConfig` to the cluster, and patch it with your DB instance address:
+    ```
+    kubectl apply -n otterize-tutorial-mysql -f ${ABSOLUTE_URL}/code-examples/mysql/mysqlserverconfig.yaml
+    kubectl patch mysqlserverconfig -n otterize-tutorial-mysql mysql-tutorial-db --type='json' -p="[{\"op\": \"replace\", \"path\": \"/spec/address\", \"value\": \"$MYSQLHOST\"}]"
+    ```
 
 This `MySQLServerConfig` tells Otterize how to access a database instance named `mysql-tutorial-db`, meaning that when intents
 are applied requesting access permissions to `mysql-tutorial-db`, the Otterize operator will be able to configure
