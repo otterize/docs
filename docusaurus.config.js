@@ -7,11 +7,11 @@ const path = require("path");
 
 const platformLinks = `
 <div class="tw-self-stretch tw-h-20 tw-flex-col tw-justify-start tw-items-start tw-flex tw-text-left">
-  <div class="tw-self-stretch tw-py-2 tw-justify-start tw-items-start tw-inline-flex">
-    <a href="https://www.otterize.com/open-source" class="tw-grow tw-shrink tw-basis-0 tw-text-sky-950 tw-text-base tw-font-medium tw-font-sans tw-leading-normal !tw-no-underline">Open Source</a>
+    <div class="tw-self-stretch tw-py-2 tw-justify-start tw-items-start tw-inline-flex">
+    <a href="/" class="tw-grow tw-shrink tw-basis-0 tw-text-sky-950 tw-text-base tw-font-medium tw-font-sans tw-leading-normal tw-cursor-pointer !tw-no-underline">Documentation</a>
   </div>
-  <div class="tw-self-stretch tw-py-2 tw-justify-start tw-items-start tw-inline-flex">
-    <a  href="https://www.otterize.com/cloud" class="tw-grow tw-shrink tw-basis-0 tw-text-sky-950 tw-text-base tw-font-medium tw-font-sans tw-leading-normal !tw-no-underline">Otterize Cloud</a>
+    <div class="tw-self-stretch tw-py-2 tw-justify-start tw-items-start tw-inline-flex">
+    <a href="https://www.otterize.com/pricing" class="tw-grow tw-shrink tw-basis-0 tw-text-sky-950 tw-text-base tw-font-medium tw-font-sans tw-leading-normal tw-cursor-pointer !tw-no-underline">Pricing</a>
   </div>
 </div>
 `
@@ -20,16 +20,10 @@ const platformLinks = `
 const resourcesLinks = `
 <div class="tw-self-stretch tw-h-40 tw-flex-col tw-justify-start tw-items-start tw-flex tw-text-left">
   <div class="tw-self-stretch tw-py-2 tw-justify-start tw-items-start tw-inline-flex">
-    <a href="/" class="tw-grow tw-shrink tw-basis-0 tw-text-sky-950 tw-text-base tw-font-medium tw-font-sans tw-leading-normal tw-cursor-pointer !tw-no-underline">Documentation</a>
+    <a href="https://www.otterize.com/resources" class="tw-grow tw-shrink tw-basis-0 tw-text-sky-950 tw-text-base tw-font-medium tw-font-sans tw-leading-normal tw-cursor-pointer !tw-no-underline">Blog</a>
   </div>
   <div class="tw-self-stretch tw-py-2 tw-justify-start tw-items-start tw-inline-flex">
-    <a href="https://www.otterize.com/resources" class="tw-grow tw-shrink tw-basis-0 tw-text-sky-950 tw-text-base tw-font-medium tw-font-sans tw-leading-normal tw-cursor-pointer !tw-no-underline">Resource Hub</a>
-  </div>
-  <div class="tw-self-stretch tw-py-2 tw-justify-start tw-items-start tw-inline-flex">
-    <a href="https://www.otterize.com/team" class="tw-grow tw-shrink tw-basis-0 tw-text-sky-950 tw-text-base tw-font-medium tw-font-sans tw-leading-normal tw-cursor-pointer !tw-no-underline">About Us</a>
-  </div>
-  <div class="tw-self-stretch tw-py-2 tw-justify-start tw-items-start tw-inline-flex">
-    <a href="https://www.otterize.com/pricing" class="tw-grow tw-shrink tw-basis-0 tw-text-sky-950 tw-text-base tw-font-medium tw-font-sans tw-leading-normal tw-cursor-pointer !tw-no-underline">Pricing</a>
+    <a href="https://www.otterize.com/team" class="tw-grow tw-shrink tw-basis-0 tw-text-sky-950 tw-text-base tw-font-medium tw-font-sans tw-leading-normal tw-cursor-pointer !tw-no-underline">About us</a>
   </div>
 </div>
 `
@@ -132,6 +126,7 @@ const config = {
     { src: "/newsLetterSubscription.js", async: true },
     { src: "/ui.js", async: true },
     { src: "/pixels.js", async: true },
+    { src: "https://app.otterize.com/static/hs.js", async: true }
   ],
   plugins: [
     path.resolve(__dirname, 'plugins', 'verify-includes'),
@@ -187,23 +182,6 @@ const config = {
         },
         items: [
           {
-            type: "dropdown",
-            position: "left",
-            html: `<div id='platform-navbar-item' class='tw-flex tw-font-normal tw-text-base tw-group'>Platform${dropdownChevron}</div>`,
-            items: [
-              {
-                href: "https://otterize.com/open-source",
-                target: "_self",
-                html: getNavDropdownItem({label: 'Open Source', icon: "open-source-menu", description: "Explore, contribute, and strengthen security with Otterize OSS."})
-              },
-              {
-                href: "https://otterize.com/cloud",
-                target: "_self",
-                html: getNavDropdownItem({label: 'Otterize Cloud', icon: "cloud-menu", description: "Secure your infrastructure, your way! Eliminate the need to struggle with network policies, Kafka ACLs, certificates, and IAM."}),
-              }
-            ],
-          },
-          {
             position: "left",
             target: "_self",
             href:'https://docs.otterize.com/',
@@ -216,31 +194,26 @@ const config = {
             html: "<div class='tw-inline tw-font-normal tw-text-base'>Pricing</div>",
           },
           {
-            type: "dropdown",
             position: "left",
-            html: `<div id='learn-navbar-item' class='tw-flex tw-font-normal tw-text-base tw-group'>Learn${dropdownChevron}</div>`,
-            items: [
-              {
-                href: "https://otterize.com/blog",
-                html: getNavDropdownItem({label: 'Blog', icon: "blog-menu", description: ""}),
-                target: "_self",
-              },
-              {
-                href: "https://otterize.com/resources",
-                html: getNavDropdownItem({label: "The Otter's Den", icon: "resources-menu", description: "Your go-to resource hub for Kubernetes security and tech know-how."}),
-                target: "_self",
-              },
-              {
-                href: "https://otterize.com/team",
-                html: getNavDropdownItem({label: 'Our Story', icon: "philosophy-menu", description: "Dive into our company’s mission, our philosophy, and the team that makes it all possible."}),
-                target: "_self",
-              },
-            ],
+            target: "_self",
+            href:'https://www.otterize.com/resources',
+            html: "<div class='tw-inline tw-font-normal tw-text-base'>Blog</div>",
+          },
+          {
+            position: "left",
+            target: "_self",
+            href:'https://www.otterize.com/team',
+            html: "<div class='tw-inline tw-font-normal tw-text-base'>The Team behind IBAC</div>",
           },
           {
             href: "https://app.otterize.com/",
-            html: "<div id='login-link' className='tw-inline-flex tw-h-11 tw-w-24 tw-items-center tw-justify-center tw-gap-2 tw-rounded-lg tw-px-4 tw-py-2.5 tw-text-sm lg:tw-text-base tw-font-semibold tw-leading-normal tw-text-gray-600 tw-no-underline -tw-mr-10'>Log in</div>",
+            html: "<div id='login-link' class='tw-inline-flex tw-h-11 tw-w-24 tw-items-center tw-justify-center tw-gap-2 tw-rounded-lg tw-px-4 tw-py-2.5 tw-text-sm lg:tw-text-base tw-font-semibold tw-leading-normal tw-text-gray-600 tw-no-underline -tw-mr-10'>Log in</div>",
             position: "right",
+          },
+          {
+           href: "https://joinslack.otterize.com",
+           html: "<img  width='30'  height='30'  loading='lazy'  src='/img/footer/slack.svg'  alt='Slack logo'  className='w-5 h-5 relative'  />",
+           position: "right",
           },
           {
             href: "https://otterize.com/signup",

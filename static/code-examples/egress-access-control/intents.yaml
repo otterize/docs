@@ -21,5 +21,7 @@ spec:
     - type: internet
       internet:
         ips:
-          - 185.53.57.80 # IP address of our external aPI
+          - 185.53.57.80 # IP address of our external API
+          # Can also be specified as a CIDR
+          # - 185.53.57.0/24
     - name: frontend
