@@ -415,6 +415,30 @@ if (process.env.ADD_REDIRECTS === 'production') {
           from: ['/quick-visual-tutorials/visual-k8s-cluster-mapping', '/quickstart/visualization/k8s-network-mapper', '/quick-tutorials/k8s-network-mapper'],
           to: '/features/network-mapping-network-policies/tutorials/k8s-network-mapper',
         },
+        {
+          from: '/reference/configuration/intents-operator',
+          to: '/reference/intents-operator'
+        },
+        {
+          from: '/reference/configuration/intents-operator/helm-chart',
+          to: '/reference/intents-operator/helm-chart'
+        },
+        {
+          from: '/reference/configuration/credentials-operator',
+          to: '/reference/credentials-operator'
+        },
+        {
+          from: '/reference/configuration/credentials-operator/helm-chart',
+            to: '/reference/credentials-operator/helm-chart'
+        },
+        {
+          from: '/reference/configuration/network-mapper',
+          to: '/reference/network-mapper'
+        },
+        {
+          from: '/reference/configuration/network-mapper/helm-chart',
+            to: '/reference/network-mapper/helm-chart'
+        }
         // Redirect from multiple old paths to the new path
         // {
         //   to: '/docs/newDoc2',

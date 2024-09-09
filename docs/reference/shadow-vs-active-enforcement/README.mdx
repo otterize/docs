@@ -3,7 +3,7 @@ sidebar_position: 8
 title: 'Shadow vs active enforcement'
 ---
 
-When installing Otterize, the intents operator can be [configured](/reference/configuration/intents-operator/helm-chart) to enforce access controls and protect services, or not.
+When installing Otterize, the intents operator can be [configured](/reference/intents-operator/helm-chart) to enforce access controls and protect services, or not.
 
 By default, the intents operator enforces access controls by creating, updating and deleting network policies, Kafka ACLs, and so on.
 
@@ -21,7 +21,7 @@ To disable a specific access control type cluster-wide, set one or more of the f
 - `enableKafkaACLCreation`: completely disables network policy management if set to `false`.
 - `enableIstioPolicyCreation`: completely disables network policy management if set to `false`.
 
-All these and more are documented in the [Otterize OSS Helm chart](/reference/configuration/otterize-chart).
+All these and more are documented in the [Otterize OSS Helm chart](/reference/otterize-chart).
 
 ## Active enforcement
 
