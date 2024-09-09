@@ -9,14 +9,14 @@ The intents operator uses these files to configure network policies, Kafka ACLs,
 
 If credentials such as X.509 certificates are needed for authentication &mdash; for example,
 to connect to Kafka using mTLS &mdash; the Otterize intents operator works with SPIRE via the
-[credentials operator](/reference/configuration/credentials-operator) to automatically:
+[credentials operator](/reference/credentials-operator) to automatically:
 - Establish pod service identities.
 - Generate trusted credentials for each client service.
 - Deliver the credentials to the pod's containers within a locally-mounted volume.
 
 
 ## Deploying the intents operator
-To deploy the operator, [use the Helm chart](/reference/configuration/intents-operator/helm-chart).
+To deploy the operator, [use the Helm chart](/reference/intents-operator/helm-chart).
 
 ## Monitoring the intents operator
 The intents operator pod exposes a Prometheus metrics endpoint on port 2112, on `/metrics`.
@@ -63,27 +63,27 @@ This behavior can be disabled using the Helm chart's values.
 
 ### AWS IAM
 The intents operator enables automatic management of AWS IAM roles and policies according to the
-declared intents. It works together with the [Otterize credentials operator](/reference/configuration/credentials-operator) to easily enable secure access
+declared intents. It works together with the [Otterize credentials operator](/reference/credentials-operator) to easily enable secure access
 to AWS cloud resources from client pods, all in your Kubernetes cluster.
 
 Try the [AWS IAM tutorial](https://docs.otterize.com/quickstart/access-control/aws-iam-eks) to learn more.
 
 ### Azure IAM
 The intents operator enables automatic management of Azure managed identities and role assignments according to the
-declared intents. It works together with the [Otterize credentials operator](/reference/configuration/credentials-operator) to easily enable secure access
+declared intents. It works together with the [Otterize credentials operator](/reference/credentials-operator) to easily enable secure access
 to Azure cloud resources from client pods, all in your Kubernetes cluster.
 
 Try the [Azure IAM tutorial](https://docs.otterize.com/features/azure-iam/tutorials/azure-iam-aks) to learn more.
 
 ### Google Cloud IAM
 The intents operator enables automatic management of Google Cloud service accounts and policies according to the
-declared intents. It works together with the [Otterize credentials operator](/reference/configuration/credentials-operator) to easily enable secure access
+declared intents. It works together with the [Otterize credentials operator](/reference/credentials-operator) to easily enable secure access
 to Azure cloud resources from client pods, all in your Kubernetes cluster.
 
 Try the [GCP IAM tutorial](https://docs.otterize.com/features/gcp-iam/tutorials/gcp-iam-gke) to learn more.
 
 ### Kafka mTLS & ACLs
-The intents operator automatically creates, updates, and deletes ACLs in Kafka clusters running within your Kubernetes cluster according to the declared intents. It does not modify other ACLs. It works together with the [Otterize credentials operator](/reference/configuration/credentials-operator) to easily enable secure access to Kafka from client pods, all in your Kubernetes cluster.
+The intents operator automatically creates, updates, and deletes ACLs in Kafka clusters running within your Kubernetes cluster according to the declared intents. It does not modify other ACLs. It works together with the [Otterize credentials operator](/reference/credentials-operator) to easily enable secure access to Kafka from client pods, all in your Kubernetes cluster.
 
 The intents operator can also be configured to process client intents *without* creating and managing Kafka ACLs, to provide visibility on what would happen once enforcement via Kafka ACLs is activated. More information can be found in the [shadow vs active enforcement documentation](/reference/shadow-vs-active-enforcement).
 
