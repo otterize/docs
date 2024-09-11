@@ -203,7 +203,7 @@ const config = {
             position: "left",
             target: "_self",
             href:'https://www.otterize.com/team',
-            html: "<div class='tw-inline tw-font-normal tw-text-base'>The Team behind IBAC</div>",
+            html: "<div class='tw-inline tw-font-normal tw-text-base'>Team</div>",
           },
           {
             href: "https://app.otterize.com/",
