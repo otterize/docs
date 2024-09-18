@@ -42,7 +42,7 @@ By default, in Kubernetes, pods are non-isolated. Meaning they accept traffic fr
 
 Stringent policies can be essential in certain sectors, such as healthcare, finance, and government. Implementing egress policies is crucial in minimizing attack surfaces by concealing services or restricting the exposure of any compromised services. However, challenges may emerge when egress policies are applied to services dependent on external communications that were not initially accounted for. These external communications could include DNS, time synchronization, package repositories, logging, telemetry, cloud services, authentication, or other critical external dependencies that, while not directly related to a pod's primary functionality, are vital for its operation.
 
-Otterize helps elevate these issues by capturing and mapping the ingress and egress connections used by your pods and then providing suggested policies to maintain your witnessed tariff. You can also enable [shadow enforcement](/reference/shadow-vs-active-enforcement) to see which connections would be blocked without committing to active enforcement.
+Otterize helps elevate these issues by capturing and mapping the ingress and egress connections used by your pods and then providing suggested policies to maintain your witnessed traffic. You can also enable [shadow enforcement](/reference/shadow-vs-active-enforcement) to see which connections would be blocked without committing to active enforcement.
 
 ### Defining our intents
 
