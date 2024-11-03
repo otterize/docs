@@ -59,6 +59,12 @@ article {
   white-space: nowrap;
 }
 
+@media (min-width: 997px) {
+  .docItemCol {
+    max-width: 100% !important;
+  }
+}
+
 @media screen and (max-width: 1400px) {
   .navbar__item {
     margin-left: 0px;
@@ -379,6 +385,7 @@ footer .container-fluid {
   }
 
 }
+
 @media screen and (min-width: 996px) and (max-width: 1140px) {
   #sign-extended-text {
     display: none;
@@ -391,6 +398,34 @@ footer .container-fluid {
     margin-top: 60px;
   }
 
+  article {
+    margin-left: 0;
+  }
+}
+
+@media screen and (max-width: 996px) {
+  a:has(> #login-link) {
+    justify-content: center;
+    margin-top: 60px;
+  }
+
+  article {
+    margin-left: 0;
+  }
+}
+
+
+.feature-block {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+@media screen and (max-width: 640px) {
+  article {
+    margin-left: 0;
+  }
+
+  .feature-block {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
 }
 
 /* Removes the default dropdown arrow */
