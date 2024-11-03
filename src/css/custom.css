@@ -379,6 +379,7 @@ footer .container-fluid {
   }
 
 }
+
 @media screen and (min-width: 996px) and (max-width: 1140px) {
   #sign-extended-text {
     display: none;
@@ -391,6 +392,18 @@ footer .container-fluid {
     margin-top: 60px;
   }
 
+  article {
+    margin-left: 0;
+  }
+}
+
+.feature-block {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+@media screen and (max-width: 640px) {
+  .feature-block {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
 }
 
 /* Removes the default dropdown arrow */
