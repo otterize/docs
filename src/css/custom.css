@@ -59,12 +59,6 @@ article {
   white-space: nowrap;
 }
 
-@media (min-width: 997px) {
-  .docItemCol {
-    max-width: 100% !important;
-  }
-}
-
 @media screen and (max-width: 1400px) {
   .navbar__item {
     margin-left: 0px;
