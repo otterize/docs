@@ -16,11 +16,18 @@ spec:
     name: client
   calls:
     # The Azure resource ID that references the resource(s) for the authorization. Subscription & resource group are automatically appended.
-    - name: "/providers/Microsoft.Storage/storageAccounts/otterizeazureiamtutorial/blobServices/default/containers/otterizeazureiamtutorialcontainer"
+    - name: "/providers/Microsoft.Storage/storageAccounts/otterizeazureiamtutorial/blobServices/default/containers/otterizeazureiamtutorialcontainer1"
       type: azure
       # one or more Azure roles that will be provided to the specified resources
       azureRoles:
         - "Storage Blob Data Contributor"
+    - name: "/providers/Microsoft.Storage/storageAccounts/otterizeazureiamtutorial/blobServices/default/containers/otterizeazureiamtutorialcontainer2"
+      # one or more Azure actions that can be performed on the specified resources (cannot be used with azureRoles)
+      azureActions:
+        - "Microsoft.Storage/storageAccounts/blobServices/containers/read"
+      # one or more Azure data actions that can be performed on the specified resources (cannot be used with azureRoles)
+      azureDataActions:
+        - "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read"
     - name: "/providers/Microsoft.KeyVault/vaults/otterizetutorialazureiamkeyvault"
       type: azure
       # Optional - Grant Azure Key Vault data plane access by using Key Vault access policy
