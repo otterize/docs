@@ -6,7 +6,7 @@ title: Reference
 ### KafkaServerConfig example (YAML)
 
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2alpha1
 kind: KafkaServerConfig
 metadata:
   name: kafkaserverconfig
@@ -21,27 +21,28 @@ spec:
 ### ClientIntents example (YAML)
 
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2alpha1
 kind: ClientIntents
 metadata:
   name: client
   namespace: otterize-tutorial-kafka-mtls
 spec:
-  service:
+  workload:
     # The service requiring access to a topic
     name: client
-  calls:
+    kind: Deployment
+  targets:
       # name of the Kafka service broker
-    - name: kafka.kafka
-      type: kafka
-      kafkaTopics:
+    - kafka:
+        name: kafka.kafka
+        topics:
           # Topic name
-        - name: mytopic
-          # ACL Operations including alter, delete, all, etc
-          operations: [ produce,describe,consume ]
+          - name: mytopic
+            # ACL Operations including alter, delete, all, etc
+            operations: [ produce,describe,consume ]
           # Multiple topics can be added
-        - name: transactions
-          operations: [ produce,describe,consume ]
+          - name: transactions
+            operations: [ produce,describe,consume ]
 ```
 
 ### Helm Chart options

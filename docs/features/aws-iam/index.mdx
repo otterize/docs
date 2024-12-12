@@ -6,6 +6,8 @@ hide_title: true
 ---
 
 import DocsLinkCard from "@site/src/components/LinkCard";
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
 
 export const tutorials = [
     {
@@ -41,19 +43,20 @@ To learn how to use the Intents Operator and Credentials Operator to manage just
 6. Done!
 
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2alpha1
 kind: ClientIntents
 metadata:
   name: server
 spec:
-  service:
+  workload:
     name: server
-  calls:
-    - name: arn:aws:s3:::example-bucket-*/*
-      type: aws
-      awsActions:
-        - "s3:PutObject"
-        - "s3:GetObject"
+    kind: Deployment
+  targets:
+    - aws:
+        arn: arn:aws:s3:::example-bucket-*/*
+        actions:
+          - "s3:PutObject"
+          - "s3:GetObject"
 ```
 
 ### Automatically generating ClientIntents for AWS IAM

@@ -5,7 +5,7 @@ title: Reference
 
 ### PostgreSQLServerConfig example (YAML)
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2alpha1
 kind: PostgreSQLServerConfig
 metadata:
   name: postgres-tutorial-db # database instance name - should match the target in ClientIntents
@@ -32,27 +32,28 @@ spec:
 ### ClientIntents example (YAML)
 
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2alpha1
 kind: ClientIntents
 metadata:
   name: client-intents-for-server
   namespace: otterize-tutorial-postgres
 spec:
-  service:
+  workload:
     # Service requiring access to PostgreSQL
     name: server
-  calls:
+    kind: Deployment
+  targets:
       # This name will need to match the PostgreSQLServerConfig metadata.name field
-    - name: postgres-tutorial-db
-      type: database
-      databaseResources:
-        - databaseName: otterize-tutorial
-          # Optional table name, if omitted all tables will be granted access
-          table: public.example
-          # Operations being granted, options include SELECT, INSERT, UPDATE, DELETE, ALL
-          operations:
-            - SELECT
-            - INSERT
+    - sql:
+        name: postgres-tutorial-db
+        privileges:
+          - databaseName: otterize-tutorial
+            # Optional table name, if omitted all tables will be granted access
+            table: public.example
+            # Operations being granted, options include SELECT, INSERT, UPDATE, DELETE, ALL
+            operations:
+              - SELECT
+              - INSERT
 ```
 
 

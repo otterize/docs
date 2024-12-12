@@ -60,27 +60,31 @@ client-other in namespace otterize-tutorial-npol calls:
 ```
 **otterize mapper export example:**
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2alpha1
 kind: ClientIntents
 metadata:
   name: client
   namespace: otterize-tutorial-npol
 spec:
-  service:
+  workload:
     name: client
-  calls:
-    - name: server
+    kind: Deployment
+  targets:
+    - service:
+        name: server
 ---
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2alpha1
 kind: ClientIntents
 metadata:
   name: client-other
   namespace: otterize-tutorial-npol
 spec:
-  service:
+  workload:
     name: client-other
-  calls:
-    - name: server
+    kind: Deployment
+  targets:
+    - service:
+        name: server
 ```
 
 
@@ -94,14 +98,15 @@ Having deployed Otterize, you can then apply the [ClientIntents](/reference/IBAC
 Read more in the [Network Policies Deep Dive](/features/network-mapping-network-policies/Reference/Network-Policies-Deep-Dive).
 
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2alpha1
 kind: ClientIntents
 metadata:
   name: client
   namespace: otterize-tutorial-istio
 spec:
-  service:
+  workload:
     name: client
-  calls:
-    - name: nginx
+  targets:
+    - service:
+        name: nginx
 ```

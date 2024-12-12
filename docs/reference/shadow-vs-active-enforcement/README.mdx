@@ -71,22 +71,30 @@ otterize network-mapper export --server <SERVICE_NAME>.<SERVICE_NAMESPACE> > cli
 The result, when there happens to be a single client, `frontend`, calling the `checkoutservice` as well as other services, would look like:
 
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2alpha1
 kind: ClientIntents
 metadata:
   name: frontend
   namespace: otterize-ecom-demo
 spec:
-  service:
+  workload:
     name: frontend
-  calls:
-    - name: adservice
-    - name: cartservice
-    - name: checkoutservice
-    - name: currencyservice
-    - name: productcatalogservice
-    - name: recommendationservice
-    - name: shippingservice
+    kind: Deployment
+  targets:
+    - service:
+        name: adservice
+    - service:
+        name: cartservice
+    - service:
+        name: checkoutservice
+    - service:
+        name: currencyservice
+    - service:
+        name: productcatalogservice
+    - service:
+        name: recommendationservice
+    - service:
+        name: shippingservice
 ```
 
 If there were multiple clients, their `ClientIntents` resource descriptions would be in a single YAML, unless you specified to put each in a separate YAML.
@@ -95,14 +103,18 @@ If there were multiple clients, their `ClientIntents` resource descriptions woul
 When you `kubectl apply` these client intents declarations, there is still no enforcement and no blocking, but the access graph tells you you're ready to protect without breaking authorized calls:
 
 Now, knowing authorized clients won't be blocked, you can override shadow mode for just this service and protect it with a `ProtectedService` resource:
+
+
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2alpha1
 kind: ProtectedService
 metadata:
   name: <SERVICE_NAME> # This can actually be any name you want to give to this resource
   namespace: <SERVICE_NAMESPACE>
 spec:
   name: <SERVICE_NAME> # the name of the service you want to protect
+  kind: <SERVICE_KIND> # OPTIONAL: the kubernetes kind of the service you want to protect (Deployment, StatefulSet, Service, etc.)
+
 ```
 
 This will place a default-deny network policy on the server, and at the same time create network policies to allow access that was declared using in those `ClientIntents` YAMLs.

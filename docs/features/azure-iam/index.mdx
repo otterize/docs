@@ -39,32 +39,33 @@ View the [reference](/features/azure-iam/reference) to learn more about the Azur
 6. Done!
 
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2alpha1
 kind: ClientIntents
 metadata:
   name: client
   namespace: otterize-tutorial-azure-iam
 spec:
-  service:
+  workload:
     name: client
-  calls:
-    - name: "/providers/Microsoft.Storage/storageAccounts/otterizetutorialazureiam/blobServices/default/containers/test"
-      type: azure
-      azureRoles:
-        - "Storage Blob Data Contributor"
-    - name: "/providers/Microsoft.KeyVault/vaults/otterizetutorialazureiamkeyvault"
-      type: azure
-      # Optional - Grant Azure Key Vault data plane access by using Key Vault access policy
-      azureKeyVaultPolicy:
-        certificatePermissions:
-          - "all"
-        keyPermissions:
-          - "all"
-        secretPermissions:
-          - "all"
-        storagePermissions:
-          - "get"
-          - "list"
+    kind: Deployment
+  targets:
+    - azure:
+        scope: "/providers/Microsoft.Storage/storageAccounts/otterizetutorialazureiam/blobServices/default/containers/test"
+        roles:
+          - "Storage Blob Data Contributor"
+    - azure:
+        scope: "/providers/Microsoft.KeyVault/vaults/otterizetutorialazureiamkeyvault"
+        # Optional - Grant Azure Key Vault data plane access by using Key Vault access policy
+        keyVaultPolicy:
+          certificatePermissions:
+            - "all"
+          keyPermissions:
+            - "all"
+          secretPermissions:
+            - "all"
+          storagePermissions:
+            - "get"
+            - "list"
 ```
 
 ### Automatically generating ClientIntents for Azure IAM

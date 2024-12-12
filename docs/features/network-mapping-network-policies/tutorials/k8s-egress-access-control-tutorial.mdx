@@ -276,7 +276,7 @@ Name:         backend
 Namespace:    otterize-tutorial-egress-access
 Labels:       none
 Annotations:  none
-API Version:  k8s.otterize.com/v1alpha3
+API Version:  k8s.otterize.com/v2alpha1
 Kind:         ClientIntents
 Metadata:
   Creation Timestamp:  2024-03-08T18:53:40Z
@@ -286,13 +286,13 @@ Metadata:
   Resource Version:  2122
   UID:               c93d8cc4-2a8f-404e-b06c-1935176f1dc8
 Spec:
-  Calls:
+  targets:
     Internet:
       Domains:
         api.adviceslip.com
-    Type:  internet
-    Name:  frontend
-  Service:
+    Service:
+      Name:  frontend
+  Workload:
     Name:  backend
 Status:
   Observed Generation:  2

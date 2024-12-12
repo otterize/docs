@@ -11,14 +11,16 @@ and manage its lifespan alongside the broker. If you deploy a chart that deploys
 Here is an annotated example of a `KafkaServerConfig`, followed by an in-depth explanation for each section.
 
 ## Full annotated example
+
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2alpha1
 kind: KafkaServerConfig
 metadata:
   name: kafkabroker  # the name of the KafkaServerConfig resource
 spec:
   service:
     name: ecomm-events # the name of the Otterize service, as it would appear in ClientIntents as the destination.
+    kind: Deployment # OPTIONAL: the kubernetes kind of the service you want to protect (Deployment, StatefulSet, Service, etc.)
   addr: ecommevents.namespace:9092 # the address the intents operator will connect to in order to apply ACLs to this broker
   noAutoCreateIntentsForOperator: false # By default, the operator automatically creates a ClientIntent for itself to this server, so that it's able to connect. To disable, set to "true".
   tls: # this section informs the operator where to find the credentials to authenticate with the broker via mTLS. The values here are the defaults set by the otterize-kubernetes chart.
@@ -32,18 +34,20 @@ spec:
       intentsRequired: false # Whether intents are required - if set to true, all access will be denied unless intents are declared
 ```
 
+
 ### Service name
 The name of the service as it appears in ClientIntents.
 For example:
+
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2alpha1
 kind: ClientIntents
 [...]
 spec:
 [...]
-  calls:
-    - name: ecomm-events # here!
-      type: kafka
+  targets:
+    - kafka:
+        name: ecomm-events # here!
 ```
 
 ### Address (`addr`)
@@ -125,19 +129,19 @@ Set(User:ANONYMOUS has DENY permission for operations: ALL from hosts: *)
 
 And when you declare and apply this intent:
 
-```yaml title="Intent"
-apiVersion: k8s.otterize.com/v1alpha3
+```yaml
+apiVersion: k8s.otterize.com/v2alpha1
 kind: ClientIntents
 [...]
 spec:
-  service:
+  workload:
     name: interactive
-  calls:
-    - name: kafka.kafka
-      type: kafka
-      kafkaTopics:
-        - name: mytopic-intended
-          operations: [ all ]
+  targets:
+    - kafka:
+        name: kafka.kafka
+        topics:
+          - name: mytopic-intended
+            operations: [ all ]
 ```
 
 Otterize will add this ACL:

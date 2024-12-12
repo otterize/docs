@@ -41,27 +41,31 @@ of the example above.
    ```
 2. For the simple example above, you should see (concatenated into one YAML file):
    ```yaml
-   apiVersion: k8s.otterize.com/v1alpha3
+   apiVersion: k8s.otterize.com/v2alpha1
    kind: ClientIntents
    metadata:
      name: client
      namespace: otterize-tutorial-mapper
    spec:
-     service:
+     workload:
        name: client
-     calls:
-       - name: server
+       kind: Deployment
+     targets:
+       - service:
+           name: server
    ---
-   apiVersion: k8s.otterize.com/v1alpha3
+   apiVersion: k8s.otterize.com/v2alpha1
    kind: ClientIntents
    metadata:
      name: server
      namespace: otterize-tutorial-mapper
    spec:
-     service:
+     workload:
        name: client2
-     calls:
-       - name: server
+       kind: Deployment
+     targets:
+       - service:
+           name: server
    ```
 
 </TabItem>
@@ -77,36 +81,42 @@ of the example above.
    [
      {
        "kind": "ClientIntents",
-       "apiVersion": "k8s.otterize.com/v1alpha3",
+       "apiVersion": "k8s.otterize.com/v2alpha1",
        "metadata": {
          "name": "client",
          "namespace": "otterize-tutorial-mapper"
        },
        "spec": {
-         "service": {
+         "workload": {
            "name": "client"
+           "kind": "Deployment"
          },
-         "calls": [
+         "targets": [
            {
-             "name": "server"
+             "service": {
+               "name": "server"
+             }
            }
          ]
        }
      },
      {
        "kind": "ClientIntents",
-       "apiVersion": "k8s.otterize.com/v1alpha3",
+       "apiVersion": "k8s.otterize.com/v2alpha1",
        "metadata": {
          "name": "client",
          "namespace": "otterize-tutorial-mapper"
        },
        "spec": {
-         "service": {
+         "workload": {
            "name": "client"
+           "kind": "Deployment"
          },
-         "calls": [
+         "targets": [
            {
-             "name": "server"
+             "service": {
+               "name": "server"
+             }
            }
          ]
        }

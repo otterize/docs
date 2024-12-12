@@ -154,15 +154,16 @@ Let's look at an example from our demo. We have a **frontend** service being acc
 
 By applying the following intents file:
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2alpha1
 kind: ClientIntents
 metadata:
   name: loadgenerator
 spec:
-  service:
+  workload:
     name: loadgenerator
-  calls:
-    - name: frontend
+  targets:
+    - service:
+        name: frontend
 ```
 Otterize will generate a network policy allowing access from the **loadgenerator** service to the **frontend** service.
 Once a single network policy matches a pod, other traffic not allowed by existing network policies to the **frontend** will get blocked. In our
