@@ -8,34 +8,39 @@ Otterize supports two approaches for specifying service identities in Kubernetes
 ## Explicitly specifying `Kind`
 This approach requires specifying both the name, possibly with a namespace, and the kind of the service in the intent, ensuring precise identification.
 ```yaml
-   apiVersion: k8s.otterize.com/v1alpha3
+   apiVersion: k8s.otterize.com/v2alpha1
    kind: ClientIntents
    metadata:
      name: client
      namespace: otterize-tutorial-istio-mapping
    spec:
-     service:
+     workload:
        name: client
        kind: Deployment
-     calls:
-       - name: server.example-ns
-         kind: Service
+     targets:
+       - kubernetes:
+           name: server.example-ns
+           kind: Service
+       # This is equivalent to the above target
+       - service:
+           name: server.example-ns
 ```
 In the YAML above, the service `client` is a `Deployment` in the namespace `otterize-tutorial-istio-mapping`, and it intends to call the service `server` is a `Service` in the namespace `example-ns`.
 
 ## Implicit Specification
 This approach requires only the service name to be specified in the intent. When using the implicit approach, Otterize employs an [identity resolution algorithm](/reference/service-identities#kubernetes-service-identity-resolution) to determine the service kind.
 ```yaml
-   apiVersion: k8s.otterize.com/v1alpha3
+   apiVersion: k8s.otterize.com/v2alpha1
    kind: ClientIntents
    metadata:
      name: client
      namespace: otterize-tutorial-istio-mapping
    spec:
-     service:
+     workload:
        name: client
-     calls:
-       - name: server.example-ns
+     targets:
+       - kubernetes:
+           name: server.example-ns
 ```
 In the YAML above, both services has no kind specified. Otterize will resolve the kind of the service based on the identity resolution algorithm.
 Pay attention that by not specifying the kind, the identity resolution algorithm will not use the kubernetes kind:`Service` but will use the kind of the resource that owns the pod.

@@ -77,27 +77,31 @@ otterize network-mapper export --server server.otterize-tutorial-eks | kubectl a
 Running this command will generate the following `ClientIntents` for each client connected to `server` and apply it to your cluster. You could also place it in a Helm chart or apply it some other way, instead of piping it directly to kubectl.
 
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2alpha1
 kind: ClientIntents
 metadata:
   name: client
   namespace: otterize-tutorial-eks
 spec:
-  service:
+  workload:
     name: client
-  calls:
-    - name: server
+    kind: Deployment
+  targets:
+    - service:
+        name: server
 ---
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2alpha1
 kind: ClientIntents
 metadata:
   name: client-other
   namespace: otterize-tutorial-eks
 spec:
-  service:
+  workload:
     name: client-other
-  calls:
-    - name: server
+    kind: Deployment
+  targets:
+    - service:
+        name: server
 ```
 
 At which point you should see that the `server` service is ready to be protected:

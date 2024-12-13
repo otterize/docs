@@ -33,7 +33,7 @@ The Otterize credentials operator will create a unique MySQL username-password c
 1. To get started, your cluster must have Otterize deployed.
 2. You'll need to create a `MySQLServerConfig` in your cluster, providing a connection URL and admin-level credentials for Otterize to manage permissions in your database. Below is an example `MySQLServerConfig` resource.
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2alpha1
 kind: MySQLServerConfig
 metadata:
   name: mysql-tutorial-db # database instance name - should match the target in ClientIntents
@@ -102,23 +102,24 @@ spec:
 
 
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2alpha1
 kind: ClientIntents
 metadata:
   name: client-intents-for-server
   namespace: otterize-tutorial-mysql
 spec:
-  service:
+  workload:
     name: server
-  calls:
-    - name: mysql-tutorial-db # Same name as MySQLServerConfig metadata.name
-      type: database
-      databaseResources:
-        - databaseName: otterize-tutorial
-          table: example
-          operations:
-            - SELECT
-            - INSERT
+    kind: Deployment
+  targets:
+    - sql:
+        name: mysql-tutorial-db # Same name as MySQLServerConfig metadata.name
+        privileges:
+          - databaseName: otterize-tutorial
+            table: example
+            operations:
+              - SELECT
+              - INSERT
 ```
 
 5. Done!
