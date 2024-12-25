@@ -1,0 +1,118 @@
+---
+sidebar_position: 7
+title: 'ClientIntents CRD'
+---
+
+```yaml
+apiVersion: k8s.otterize.com/v2alpha1
+kind: ClientIntents
+metadata:
+  name: intents-for-checkoutservice
+  namespace: otterize-ecom-demo
+spec:
+  workload:
+    name: checkoutservice # Name of the workload initiating calls
+    kind: Deployment # Type of workload (e.g., Deployment, StatefulSet, etc.)
+  targets:
+    - kubernetes:
+        name: emailservice # Target Kubernetes resource name
+        kind: Service # Kind of the Kubernetes resource
+    - service: # Equivalent to kubernetes target with kind: Service
+        name: orderservice # Target Service name
+        http:
+          - path: /orders # HTTP path to target
+            methods: [ GET ] # Allowed HTTP methods
+    - kafka:
+        name: kafka-prod # Kafka cluster name
+        topics:
+          - name: orders # Kafka topic
+            operations: [ read, write ] # Allowed operations on the topic
+    - sql:
+        name: mysql-db # SQL database resource name
+        privileges:
+          - databaseName: ecommerce # Target database name
+            table: orders # Table name
+            operations: [ SELECT, INSERT ] # Allowed SQL operations
+    - internet:
+        domains:
+          - api.example.com
+        ips:
+          - 192.168.1.1
+        ports:
+          - 443
+    - aws:
+        arn: arn:aws:s3:::my-bucket # AWS resource ARN
+        actions:
+          - s3:GetObject
+          - s3:PutObject
+    - gcp:
+        resource: projects/my-project-id/buckets/my-bucket
+        permissions:
+          - storage.objects.get
+          - storage.objects.create
+    - azure:
+        scope: /subscriptions/my-subscription/resourceGroups/my-group/providers/Microsoft.Storage/storageAccounts/myaccount
+        actions:
+          - Microsoft.Storage/storageAccounts/blobServices/containers/read
+
+```
+
+
+
+:::warning Note
+Don't use v1alpha3 it's bad
+:::
+
+```yaml
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: intents-for-inventoryservice
+  namespace: otterize-retail-demo
+spec:
+  service:
+    name: inventoryservice # Name of the client workload initiating requests
+  calls:
+    - name: emailservice # Name of the Kubernetes resource (service)
+    - name: orderservice # Another Kubernetes service target
+      HTTPResources:
+        - path: /orders
+          methods: [ GET, POST ]
+    - name: arn:aws:s3:::inventory-bucket # AWS resource ARN
+      awsActions:
+        - s3:GetObject
+        - s3:PutObject
+    - name: /subscriptions/my-subscription/resourceGroups/my-group/providers/Microsoft.Storage/storageAccounts/mystorageaccount # Azure resource scope
+      azureRoles:
+        - Storage Blob Data Reader
+        - Storage Blob Data Contributor
+      azureKeyVaultPolicy:
+        secretPermissions:
+          - get
+          - list
+        keyPermissions:
+          - decrypt
+          - encrypt
+    - name: projects/my-project-id/buckets/my-bucket # GCP resource name
+      gcpPermissions:
+        - storage.objects.get
+        - storage.objects.create
+    - name: kafka-prod # Kafka cluster name
+      kafkaTopics:
+        - name: inventory_updates # Kafka topic name
+          operations: [ produce, consume ]
+    - name: ecommerce-database # SQL database resource name
+      databaseResources:
+        - databaseName: inventory_db # Database name
+          table: products # Table name
+          operations: [ SELECT, UPDATE ]
+    - name: api.retail.example.com # Internet domain
+      internet:
+        domains:
+          - api.retail.example.com
+        ips:
+          - 203.0.113.10
+        ports:
+          - 443
+```
+

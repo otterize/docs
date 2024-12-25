@@ -1,19 +1,26 @@
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2alpha1
 kind: ClientIntents
 metadata:
   name: checkoutservice
 spec:
-  service:
+  workload:
     name: checkoutservice
-  calls:
-    - name: kafka
-      type: kafka
-      kafkaTopics:
-        - name: orders
-          operations: [ produce ]
-    - name: cartservice
-    - name: currencyservice
-    - name: emailservice
-    - name: paymentservice
-    - name: productcatalogservice
-    - name: shippingservice
+    kind: Deployment
+  targets:
+    - kafka:
+        name: kafka
+        topics:
+          - name: orders
+            operations: [ produce ]
+    - service:
+        name: cartservice
+    - service:
+        name: currencyservice
+    - service:
+        name: emailservice
+    - service:
+        name: paymentservice
+    - service:
+        name: productcatalogservice
+    - service:
+        name: shippingservice

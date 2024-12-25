@@ -1,10 +1,11 @@
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2alpha1
 kind: ClientIntents
 metadata:
   name: client
   namespace:  otterize-tutorial-npol
 spec:
-  service:
+  workload:
     name: client
-  calls:
-    - name: server
+  targets:
+    - service:
+        name: server
