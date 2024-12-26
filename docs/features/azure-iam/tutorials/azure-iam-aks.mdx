@@ -128,7 +128,7 @@ Upload a blob to the source container:
 echo "Hello, Azure integration" > hello.txt
 az storage blob upload \
     --account-name $STORAGE_ACCOUNT_NAME \
-    --container-name uploads \
+    --container-name downloads \
     --file hello.txt \
     --name hello.txt
 ```
@@ -263,7 +263,7 @@ This applies the following ClientIntents, grant read access to the `downloads` c
 
 ### The client can now download files in the Azure Blob Storage container!
 
-Let's look at the client logs again to see that no more errors are being reported:
+Let's look at the client logs again:
 ```bash
 kubectl logs -f -n otterize-tutorial-azure-iam deploy/client
 ```
@@ -276,12 +276,38 @@ CloudName    HomeTenantId                          IsDefault    Name            
 -----------  ------------------------------------  -----------  --------------------  -------  ------------------------------------
 AzureCloud   00000000-0000-0000-0000-000000000000  True         Azure subscription 1  Enabled  00000000-0000-0000-0000-000000000000
 
-Listing storage blob container ottrtutorialcontainer in storage account ottrtutorial
-Name       Blob Type    Blob Tier    Length    Content Type    Last Modified              Snapshot
----------  -----------  -----------  --------  --------------  -------------------------  ----------
-hello.txt  BlockBlob    Hot          25        text/plain      2024-03-10T18:07:21+00:00
+Downloading file from storage blob container downloads in storage account ottrtutorial1735147968
+ Hello, Azure integration                                                                                                                        │
+Alive[################################################################]  100.0000%Finished[#################################################### │
+Uploading file to storage blob container uploads in storage account ottrtutorial1735147968                                                      │
+ERROR:                                                                                                                                          │
+You do not have the required permissions needed to perform this operation.                                                                      │
+Depending on your operation, you may need to be assigned one of the following roles:                                                            │
+    "Storage Blob Data Owner"                                                                                                                   │
+    "Storage Blob Data Contributor"                                                                                                             │
+    "Storage Blob Data Reader"                                                                                                                  │
+    "Storage Queue Data Contributor"                                                                                                            │
+    "Storage Queue Data Reader"                                                                                                                 │
+    "Storage Table Data Contributor"                                                                                                            │
+    "Storage Table Data Reader"
+```
 
+The file is successfully downloader from the `downloads` container, but we fail to upload it to the `uploads` container. This is because our intents file didn't specify all required permissions.
 
+We can fix this by taking a look at the access graph at [Otterize Cloud](https://app.otterize.com) and adding the necessary permissions to the `ClientIntents` resource:
+
+![Access Graph](/img/quick-tutorials/azure-iam-aks/accessgraph.png)
+
+This graph shows a green line where intents were applied, and a yellow line where access was discovered, but not yet granted. This is the access we need to add to the `ClientIntents` resource. Click on the yellow line to see the required permissions, and apply them to the cluster.
+
+```bash
+kubectl apply -n otterize-tutorial-azure-iam -f ${ABSOLUTE_URL}/code-examples/azure-iam-aks/clientintents-2.yaml
+kubectl patch -n otterize-tutorial-azure-iam clientintents/client-intents-for-client  --type='json' -p="[{\"op\": \"replace\", \"path\": \"/spec/calls/0/name\", \"value\": \"/providers/Microsoft.Storage/storageAccounts/$STORAGE_ACCOUNT_NAME/blobServices/default/containers/downloads\"}]"
+kubectl patch -n otterize-tutorial-azure-iam clientintents/client-intents-for-client  --type='json' -p="[{\"op\": \"replace\", \"path\": \"/spec/calls/1/name\", \"value\": \"/providers/Microsoft.Storage/storageAccounts/$STORAGE_ACCOUNT_NAME/blobServices/default/containers/downloads\"}]"
+```
+
+```yaml
+{@include: ../../../../static/code-examples/azure-iam-aks/clientintents-2.yaml}
 ```
 
 :::note
