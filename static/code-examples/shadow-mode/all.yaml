@@ -1,21 +1,23 @@
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2alpha1
 kind: ClientIntents
 metadata:
   name: cartservice
 spec:
   workload:
     name: cartservice
+    kind: Deployment
   targets:
     - service:
         name: redis-cart
 ---
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2alpha1
 kind: ClientIntents
 metadata:
   name: checkoutservice
 spec:
   workload:
     name: checkoutservice
+    kind: Deployment
   targets:
     - service:
         name: cartservice
@@ -33,13 +35,14 @@ spec:
         name: shippingservice
 
 ---
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2alpha1
 kind: ClientIntents
 metadata:
   name: frontend
 spec:
   workload:
     name: frontend
+    kind: Deployment
   targets:
     - service:
         name: adservice
@@ -56,61 +59,66 @@ spec:
     - service:
         name: shippingservice
 ---
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2alpha1
 kind: ClientIntents
 metadata:
   name: kafka
 spec:
   workload:
     name: kafka
+    kind: StatefulSet
   targets:
     - service:
         name: kafka
     - service:
         name: zookeeper
 ---
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2alpha1
 kind: ClientIntents
 metadata:
   name: loadgenerator
 spec:
   workload:
     name: loadgenerator
+    kind: Deployment
   targets:
     - service:
         name: frontend
 ---
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2alpha1
 kind: ClientIntents
 metadata:
   name: orderservice
 spec:
   workload:
     name: orderservice
+    kind: Deployment
   targets:
     - service:
         name: kafka
     - service:
         name: emailservice
 ---
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2alpha1
 kind: ClientIntents
 metadata:
   name: paymentservice
 spec:
   workload:
     name: paymentservice
+    kind: Deployment
   targets:
     - service:
         name: kafka
 ---
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2alpha1
 kind: ClientIntents
 metadata:
   name: recommendationservice
 spec:
   workload:
     name: recommendationservice
+    kind: Deployment
   targets:
     - service:
         name: productcatalogservice

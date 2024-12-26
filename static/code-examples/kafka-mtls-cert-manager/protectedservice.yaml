@@ -1,4 +1,4 @@
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2alpha1
 kind: ProtectedService
 metadata:
   name: kafka-protectedservice

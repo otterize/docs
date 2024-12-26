@@ -1,15 +1,16 @@
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2alpha1
 kind: ClientIntents
 metadata:
   name: recommendationservice
   namespace: otterize-visual-tutorial-istio
 spec:
-  service:
+  workload:
     name: recommendationservice
-  calls:
-    - name: productcatalogservice
-      type: http
-      HTTPResources:
-        - path: /similar-products
-          methods:
-            - GET
+    kind: Deployment
+  targets:
+    - service:
+        name: productcatalogservice
+        http:
+          - path: /similar-products
+            methods:
+              - GET

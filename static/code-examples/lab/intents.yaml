@@ -59,7 +59,7 @@ spec:
     - service:
     -   name: shippingservice
 ---
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2alpha1
 kind: ClientIntents
 metadata:
   name: loadgenerator
@@ -72,7 +72,7 @@ spec:
     - service:
         name: frontend
 ---
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2alpha1
 kind: ClientIntents
 metadata:
   name: recommendationservice
