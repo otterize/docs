@@ -26,15 +26,15 @@ export const postgres_tutorials = [
 
 # PostgreSQL
 
-Otterize enables secure and efficient access to your PostgreSQL database, regardless of where it's located, from within your Kubernetes environment. By utilizing [Intent-Based Access Control](/overview/intent-based-access-control) (IBAC), Otterize creates just-in-time username-and-password pairs for your services, delivering them as Kubernetes Secrets that can be mounted to files or mapped to environment variables, as well as `GRANT`ing access to databases and tables based on these declarations. Additionally, Otterize can automatically generate IBAC declarations (`ClientIntents`) by analyzing your database access patterns, determining which services are accessing which databases, tables, and the specific operations they're performing.
+Otterize enables secure and efficient access to your PostgreSQL database, regardless of where it's located, from within your Kubernetes environment. By utilizing [Intent-Based Access Control](/overview/intent-based-access-control) (IBAC), Otterize creates just-in-time username-and-password pairs for your workloads, delivering them as Kubernetes Secrets that can be mounted to files or mapped to environment variables, as well as `GRANT`ing access to databases and tables based on these declarations. Additionally, Otterize can automatically generate IBAC declarations (`ClientIntents`) by analyzing your database access patterns, determining which workloads are accessing which databases, tables, and the specific operations they're performing.
 
 ## How Otterize Manages Database Access
 
 Otterize manages database access through two specialized components:
 
-**Credentials Operator**: This component creates and manages Kubernetes Secrets containing username-and-password pairs for your services. It ensures these credentials are synchronized with your PostgreSQL database, even performing password rotations if configured. The Credentials Operator establishes a connection to your database using the credentials provided in the `PostgreSQLServerConfig`, even if password rotation is not enabled, to set up the initial user credentials.
+**Credentials Operator**: This component creates and manages Kubernetes Secrets containing username-and-password pairs for your workloads. It ensures these credentials are synchronized with your PostgreSQL database, even performing password rotations if configured. The Credentials Operator establishes a connection to your database using the credentials provided in the `PostgreSQLServerConfig`, even if password rotation is not enabled, to set up the initial user credentials.
 
-**Intents Operator**: This component is responsible for applying `GRANTs` and `REVOKEs` to database objects based on your ClientIntents declarations. It ensures that your services have the precise level of access required and nothing more. The Intents Operator also connects to your PostgreSQL database using the same credentials as the Credentials Operator.
+**Intents Operator**: This component is responsible for applying `GRANTs` and `REVOKEs` to database objects based on your ClientIntents declarations. It ensures that your workloads have the precise level of access required and nothing more. The Intents Operator also connects to your PostgreSQL database using the same credentials as the Credentials Operator.
 
 ## Required Database Permissions for otterize
 
@@ -57,7 +57,7 @@ To learn how to use the Intents Operator and Credentials Operator to enforce acc
 
 ### How does Otterize work with PostgreSQL?
 
-The Otterize credentials operator will create a unique PostgreSQL username-password combination for each service's use, exposed via a Kubernetes Secret. The service will use these credentials to connect to the database. `ClientIntents` will define the access required by that service. As the intents are applied, The Otterize intents operator will keep the database's list of users and GRANTs up to date so that the service is able to access it.
+The Otterize credentials operator will create a unique PostgreSQL username-password combination for each workload's use, exposed via a Kubernetes Secret. The workload will use these credentials to connect to the database. `ClientIntents` will define the access required by that workload. As the intents are applied, The Otterize intents operator will keep the database's list of users and GRANTs up to date so that the workload is able to access it.
 
 1. To get started, your cluster must have Otterize deployed.
 2. You'll need to create a `PostgreSQLServerConfig` in your cluster, providing a connection URL and admin-level credentials for Otterize to manage permissions in your database. Below is an example `PostgreSQLServerConfig` resource.
@@ -87,7 +87,7 @@ spec:
       passwordKey: password
 ```
 
-3. Each service can request a username-password Secret to be created, by annotating the Pod with `credentials-operator.otterize.com/user-password-secret-name`. Below is an example of that annotation and passing the generated credentials into a container with environmental variables.
+3. Each workload can request a username-password Secret to be created, by annotating the Pod with `credentials-operator.otterize.com/user-password-secret-name`. Below is an example of that annotation and passing the generated credentials into a container with environmental variables.
 
 ```yaml
 apiVersion: apps/v1
@@ -127,7 +127,7 @@ spec:
                   key: password
 ```
 
-4. Apply `ClientIntents` and the specified access will be `GRANT`ed to the service in the `ClientIntents`.
+4. Apply `ClientIntents` and the specified access will be `GRANT`ed to the workload in the `ClientIntents`.
 
 ```yaml
 apiVersion: k8s.otterize.com/v2alpha1

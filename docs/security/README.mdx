@@ -39,7 +39,7 @@ Intent-based access control (IBAC) aims to:
 6. Separate concerns between the access *needed* by development teams and the access *granted* by platform or server teams, per environment, either automatically or manually.
 7. Separate concerns, to the extent possible, between the *access* needed by development teams and the *access control mechanisms* implemented by platform or server teams.
 
-To achieve these, IBAC starts from the client’s (caller’s) intents. An **intents file** for a client service declares the set of calls the client will be making to various server services to achieve its functionality. Intents files are created and maintained by client developers, within the same repositories as the code files of the client. They are updated when the client code changes, to reflect at any time the needs of the code to call other services (servers).
+To achieve these, IBAC starts from the client’s (caller’s) intents. An **intents file** for a client workload declares the set of calls the client will be making to various server services to achieve its functionality. Intents files are created and maintained by client developers, within the same repositories as the code files of the client. They are updated when the client code changes, to reflect at any time the needs of the code to call other services (servers).
 
 ### 1. Make secure access easy
 

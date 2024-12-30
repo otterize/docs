@@ -32,7 +32,7 @@ To learn how to use the Intents Operator and Credentials Operator to manage just
 2. To have a workload identity created for a pod, label the pod with `credentials-operator.otterize.com/create-azure-workload-identity: "true"`
 3. The credentials operator will create an Azure workload identity and federated identity credential bound to the pod's ServiceAccount. The ServiceAccount will be annotated automatically.
 4. At this point, the pod is able to assume the identity, but it does not have the permissions to perform any actions.
-We will need to create a ClientIntents YAML for the access the service requires and apply it to our cluster.
+We will need to create a ClientIntents YAML for the access the workload requires and apply it to our cluster.
 Below is an example of a ClientIntents file for accessing an Azure Storage Blobs bucket.
 View the [reference](/features/azure-iam/reference) to learn more about the Azure IAM ClientIntents syntax.
 5. Once the intent is applied, the intents operator will create a new role assignment, which will be attached to the workload identity with the appropriate access.

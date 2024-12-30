@@ -38,8 +38,8 @@ To learn how to use the Intents Operator and Credentials Operator to manage just
 1. First, the EKS cluster must have [Otterize installed](/overview/installation).
 2. To have a role created for a pod, label the pod with `credentials-operator.otterize.com/create-aws-role: "true"`
 3. The credentials operator will create a role and an `AssumeRolePolicy` (trust relationship) bound to the pod's ServiceAccount. The ServiceAccount will be annotated automatically.
-4. At this point, the pod is able to assume the role, but role does not have the ability to perform any actions. We will need to create a ClientIntents YAML for the access the service requires and apply it to our cluster. Below is an example of a ClientIntents file for accessing an S3 bucket. View the [reference](/features/aws-iam/reference) to learn more about the AWS IAM ClientIntents syntax.
-5. Once the intent is applied, the intents operator will create a new policy, which will be attached to the service’s role with the appropriate access.
+4. At this point, the pod is able to assume the role, but role does not have the ability to perform any actions. We will need to create a ClientIntents YAML for the access the workload requires and apply it to our cluster. Below is an example of a ClientIntents file for accessing an S3 bucket. View the [reference](/features/aws-iam/reference) to learn more about the AWS IAM ClientIntents syntax.
+5. Once the intent is applied, the intents operator will create a new policy, which will be attached to the workload’s role with the appropriate access.
 6. Done!
 
 ```yaml

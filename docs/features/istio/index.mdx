@@ -14,7 +14,7 @@ export const istio_tutorials = [
     },
     {
         title: 'Istio HTTP-level access mapping',
-        description: 'Map access between services including HTTP paths and methods',
+        description: 'Map access between workloads including HTTP paths and methods',
         url: '/features/istio/tutorials/k8s-istio-watcher'
     }
 ];
@@ -23,7 +23,7 @@ export const istio_tutorials = [
 
 # Istio
 
-Otterize can build a map of your cluster based on Istio Envoy metrics, and enforce access between services using Istio Authorization Policies.
+Otterize can build a map of your cluster based on Istio Envoy metrics, and enforce access between workloads using Istio Authorization Policies.
 
 ### Tutorials
 
@@ -35,8 +35,8 @@ To learn how to use the Intents Operator to enforce access using Istio authoriza
 ### How does Otterize work with Istio?
 
 1. First, the cluster must have [Otterize installed](/overview/installation).
-2. To have Otterize generate Istio authorization policies, declare and apply ([IBAC](/overview/intent-based-access-control)) ClientIntents for your services.
-Once you do so, Otterize will generate an Istio authorization policy allowing access from the client service, identified by its ServiceAccount, to the server, identified by its labels.
+2. To have Otterize generate Istio authorization policies, declare and apply ([IBAC](/overview/intent-based-access-control)) ClientIntents for your workloads.
+Once you do so, Otterize will generate an Istio authorization policy allowing access from the client workload, identified by its ServiceAccount, to the server, identified by its labels.
 The HTTP Resources section in the ClientIntents is optional: if you do not specify it, all pod-to-pod access is allowed.
 
 ```yaml

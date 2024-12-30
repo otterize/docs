@@ -66,7 +66,7 @@ Now that you have Otterize installed, the next step is to create an intent which
 
 :::tip
 
-You can click on the services or the lines connecting them to see which ClientIntents you need to apply to make the connection go green!
+You can click on the workloads or the lines connecting them to see which ClientIntents you need to apply to make the connection go green!
 
 :::
 
@@ -104,11 +104,11 @@ spec:
         name: server
 ```
 
-At which point you should see that the `server` service is ready to be protected:
+At which point you should see that the `server` workload is ready to be protected:
 
 ![One intent applied](/img/quick-tutorials/aws-eks-mini/one-intent.png)
 
-And you can then protect the `server` service by applying the following `yaml` file:
+And you can then protect the `server` workload by applying the following `yaml` file:
 
 ```yaml
 {@include: ../../../../static/code-examples/aws-eks-mini/protect-server.yaml}
@@ -119,7 +119,7 @@ Protect the server by applying the resource:
 ```bash
 kubectl apply -f ${ABSOLUTE_URL}/code-examples/aws-eks-mini/protect-server.yaml
 ```
-And you should see your access graph showing the service as protected:
+And you should see your access graph showing the workload as protected:
 
 ![Protected Service](/img/quick-tutorials/aws-eks-mini/protected.png)
 
