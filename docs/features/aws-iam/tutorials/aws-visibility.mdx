@@ -43,15 +43,15 @@ Next, update your **kubeconfig** to connect with the new cluster.
 aws eks update-kubeconfig --name otterize-tutorial-aws-visibility --region 'us-west-2'
 ```
 
-### Enable AWS Visibility
+### Enable AWS Visibility with eBPF
 You will first need to install Otterize in your cluster. If your cluster is not already connected, you can do so by following the Kubernetes setup instructions detailed on the [Integrations](https://app.otterize.com/integrations) page.
 
 :::info Important
-When installing Otterize, append the following flag to the helm command to enable aws visibility:
+When installing Otterize, append the following flag to the helm command to enable the eBPF agent:
 :::
 
-```bash
---set networkMapper.aws.visibility.enabled=true
+```
+helm upgrade ... --set networkMapper.nodeagent.enable=true
 ```
 
 ## Tutorial

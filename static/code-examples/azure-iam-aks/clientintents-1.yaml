@@ -1,0 +1,14 @@
+apiVersion: k8s.otterize.com/v2alpha1
+kind: ClientIntents
+metadata:
+  name: client-intents-for-client
+  namespace: otterize-tutorial-azure-iam
+spec:
+  workload:
+    name: client
+    kind: Deployment
+  targets:
+    - azure:
+        scope: /providers/Microsoft.Storage/storageAccounts/STORAGE_ACCOUNT_NAME/blobServices/default/containers/downloads
+        dataActions:
+          - Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read

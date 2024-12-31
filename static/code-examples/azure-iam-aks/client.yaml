@@ -31,10 +31,8 @@ spec:
           image: mcr.microsoft.com/azure-cli
           command: [ "/bin/sh", "-c", "--" ]
           env:
-            - name: AZURE_STORAGE_ACCOUNT
-              value: otterizeazureiamtutorial
-            - name: AZURE_STORAGE_CONTAINER
-              value: otterizeazureiamtutorialcontainer
+            - name: STORAGE_ACCOUNT_NAME
+              value: ottrazuredemo
           args:
             - while true;
               do
@@ -46,8 +44,10 @@ spec:
                   echo 'Logging in using federated identity credentials';
                   az login -o table --federated-token $(cat $AZURE_FEDERATED_TOKEN_FILE) --service-principal -u $AZURE_CLIENT_ID -t $AZURE_TENANT_ID;
                   echo;
-                  echo 'Listing storage blob container' $AZURE_STORAGE_CONTAINER 'in storage account' $AZURE_STORAGE_ACCOUNT;
-                  az storage blob list --container $AZURE_STORAGE_CONTAINER --account-name $AZURE_STORAGE_ACCOUNT --auth-mode login -o table;
+                  echo 'Downloading file from storage blob container downloads in storage account' $STORAGE_ACCOUNT_NAME;
+                  az storage blob download --account-name $STORAGE_ACCOUNT_NAME -c downloads -n hello.txt --auth-mode login -o table;
+                  echo 'Uploading file to storage blob container uploads in storage account' $STORAGE_ACCOUNT_NAME;
+                  az storage blob upload --account-name $STORAGE_ACCOUNT_NAME --container-name uploads -n hello.txt --data "hello"  --overwrite --auth-mode login -o table;
                   echo;
                 fi;
                 sleep 5;
