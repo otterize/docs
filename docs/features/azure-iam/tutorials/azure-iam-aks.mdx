@@ -256,7 +256,7 @@ kubectl apply -n otterize-tutorial-azure-iam -f ${ABSOLUTE_URL}/code-examples/az
 kubectl patch -n otterize-tutorial-azure-iam clientintents/client-intents-for-client  --type='json' -p="[{\"op\": \"replace\", \"path\": \"/spec/calls/0/name\", \"value\": \"/providers/Microsoft.Storage/storageAccounts/$STORAGE_ACCOUNT_NAME/blobServices/default/containers/downloads\"}]"
 ```
 
-This applies the following ClientIntents, grant read access to the `downloads` container in the storage account:
+This applies the following ClientIntents, granting read access to the `downloads` container in the storage account:
 ```yaml
 {@include: ../../../../static/code-examples/azure-iam-aks/clientintents-1.yaml}
 ```
