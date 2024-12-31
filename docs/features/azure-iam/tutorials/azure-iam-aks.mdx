@@ -307,7 +307,7 @@ Next, apply the full ClientIntents, which add the required permissions to allow 
 ```bash
 kubectl apply -n otterize-tutorial-azure-iam -f ${ABSOLUTE_URL}/code-examples/azure-iam-aks/clientintents-2.yaml
 kubectl patch -n otterize-tutorial-azure-iam clientintents/client-intents-for-client  --type='json' -p="[{\"op\": \"replace\", \"path\": \"/spec/calls/0/name\", \"value\": \"/providers/Microsoft.Storage/storageAccounts/$STORAGE_ACCOUNT_NAME/blobServices/default/containers/downloads\"}]"
-kubectl patch -n otterize-tutorial-azure-iam clientintents/client-intents-for-client  --type='json' -p="[{\"op\": \"replace\", \"path\": \"/spec/calls/1/name\", \"value\": \"/providers/Microsoft.Storage/storageAccounts/$STORAGE_ACCOUNT_NAME/blobServices/default/containers/downloads\"}]"
+kubectl patch -n otterize-tutorial-azure-iam clientintents/client-intents-for-client  --type='json' -p="[{\"op\": \"replace\", \"path\": \"/spec/calls/1/name\", \"value\": \"/providers/Microsoft.Storage/storageAccounts/$STORAGE_ACCOUNT_NAME/blobServices/default/containers/uploads\"}]"
 ```
 
 ```yaml
