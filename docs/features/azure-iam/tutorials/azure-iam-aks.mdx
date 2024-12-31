@@ -310,7 +310,7 @@ By clicking on the `client` node, you can view and download the full set of Clie
 Use the otterize CLI to download and apply the intents to the cluster:
 
 ```bash
-otterize clientintents export --api-address https://app.staging.otterize.com/api -c aks3 -n otterize-tutorial-azure-iam.aks3 | kubectl apply -f-
+otterize clientintents export --api-address https://app.staging.otterize.com/api -n otterize-tutorial-azure-iam.<CLUSTER NAME> -v v2 | kubectl apply -f-
 ```
 
 Complete ClientIntents file:
