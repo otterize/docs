@@ -292,13 +292,17 @@ Depending on your operation, you may need to be assigned one of the following ro
     "Storage Table Data Reader"
 ```
 
-The file is successfully downloader from the `downloads` container, but we fail to upload it to the `uploads` container. This is because our intents file didn't specify all required permissions.
-
-We can fix this by taking a look at the access graph at [Otterize Cloud](https://app.otterize.com) and adding the necessary permissions to the `ClientIntents` resource:
+The file is successfully downloaded from the `downloads` container, but the client fails to upload it to the `uploads` container. This is because some permissions are still missing. Let's take a look at the access graph at [Otterize Cloud](https://app.otterize.com): 
 
 ![Access Graph](/img/quick-tutorials/azure-iam-aks/accessgraph.png)
 
-This graph shows a green line where intents were applied, and a yellow line where access was discovered, but not yet granted. This is the access we need to add to the `ClientIntents` resource. Click on the yellow line to see the required permissions, and apply them to the cluster.
+The access graph visualizes the applied ClientIntents in green, while the newly discovered intents, which are still missing permissions, are shown in yellow. 
+
+By clicking on the `client` node, you can view and download the full set of ClientIntents required for it to access both buckets: 
+
+<add a screenshot here of the access graph with the ClientIntents yaml pane open>
+
+Next, apply the full ClientIntents, which add the required permissions to allow uploading files to the upload bucket:
 
 ```bash
 kubectl apply -n otterize-tutorial-azure-iam -f ${ABSOLUTE_URL}/code-examples/azure-iam-aks/clientintents-2.yaml
