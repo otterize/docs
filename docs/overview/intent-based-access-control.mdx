@@ -38,5 +38,5 @@ spec:
 
 ## How do intents work?
 When intents are created for a client, the intents operator automatically creates, updates, and deletes the corresponding policies and automatically labels client and server pods to reflect precisely the client-to-server calls declared in client intents files. For instance, for a NetworkPolicy, a single policy is created per server, and pod labels are dynamically updated for clients when their intents are updated
-
+ORIORIORI
 Service names are resolved by recursively getting the owner of a pod until the original owner is found, usually a Deployment, StatefulSet, or other such resource. The name of that resource is used unless the pod has a service-name annotation, in which case the value of that annotation is used instead.

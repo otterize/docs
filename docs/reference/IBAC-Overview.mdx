@@ -3,6 +3,8 @@ sidebar_position: 7
 title: 'IBAC: Intent-based access control'
 ---
 
+ORIORIORI
+
 At Otterize, we believe workload IAM should become not only *easy* but actually *transparent* to  developers. We believe that access should not only be self-serve — that it should happen without needing to go through any extra steps beyond what developers are already doing. And we believe that access control enforcement should be completely decoupled from the functional development of the software: that as the organization improves its security and compliance posture, developers should not need to revisit their working code.
 
 These are the principles of **intent-based access control (IBAC)**, a modern, declarative approach to granting access automatically, responsibly, and scalably. **The developer simply declares, in a `ClientIntents` custom resource alongside their code, what other services the code intends to call.** If the code passes review, so does its intents, and access is granted automatically to make those calls, regardless of the type of call, the target infrastructure and location, and the enforcement mechanism. Credentials for declared access are automatically managed and supplied to the service for use in their code, if needed. Any undeclared access is automatically blocked.
