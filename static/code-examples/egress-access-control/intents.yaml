@@ -1,27 +1,28 @@
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2alpha1
 kind: ClientIntents
 metadata:
   name: frontend
   namespace:  otterize-tutorial-egress-access
 spec:
-  service:
+  workload:
     name: frontend
-  calls:
-    - name: backend
+    kind: Deployment
+  targets:
+    - service:
+        name: backend
 ---
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2alpha1
 kind: ClientIntents
 metadata:
   name: backend
   namespace: otterize-tutorial-egress-access
 spec:
-  service:
+  workload:
     name: backend
-  calls:
-    - type: internet
-      internet:
+    kind: Deployment
+  targets:
+    - internet:
         ips:
           - 185.53.57.80 # IP address of our external API
           # Can also be specified as a CIDR
           # - 185.53.57.0/24
-    - name: frontend

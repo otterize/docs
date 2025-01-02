@@ -1,10 +1,13 @@
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2alpha1
 kind: ClientIntents
 metadata:
   name: frontend
 spec:
-  service:
+  workload:
     name: frontend
-  calls:
-    - name: recommendationservice
-    - name: productcatalogservice
+    kind: Deployment
+  targets:
+    - service:
+        name: recommendationservice
+    - service:
+        name: productcatalogservice

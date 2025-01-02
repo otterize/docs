@@ -25,11 +25,11 @@ export const Terminal = ({children}) => (
 
 
 # Overview
-This tutorial will deploy an example cluster to highlight Otterize's MySQL capabilities. Within that cluster is a client service that hits an endpoint on a server, which then connects to a database. The server runs two different database operations:
+This tutorial will deploy an example cluster to highlight Otterize's MySQL capabilities. Within that cluster is a client workload that hits an endpoint on a server, which then connects to a database. The server runs two different database operations:
 1. An `INSERT` operation to append a table within the database
 2. A `SELECT` operation to validate the updates.
 
-The server needs appropriate permissions to access the database. You could use one admin user for all services, which is insecure and is the cause for many security breaches. With Otterize, you can specify required access, and have Otterize create users and perform correctly scoped SQL GRANTs just in time, as the service spins up and down.
+The server needs appropriate permissions to access the database. You could use one admin user for all workloads, which is insecure and is the cause for many security breaches. With Otterize, you can specify required access, and have Otterize create users and perform correctly scoped SQL GRANTs just in time, as the workload spins up and down.
 
 In this tutorial, we will:
 * Optionally, spin up a MySQL database instance on AWS, based on Amazon RDS for MySQL, or in your Kubernetes cluster, based on the official MySQL Docker image. Alternatively, you could use any MySQL server of your choice.
@@ -122,8 +122,8 @@ exit;
 '
 ```
 
-### Deploy tutorial services and request database credentials
-Next, set up the namespace used for our tutorial and deploy the client & server services in it:
+### Deploy tutorial workloads and request database credentials
+Next, set up the namespace used for our tutorial and deploy the client & server workloads in it:
 
 ```shell
 kubectl create namespace otterize-tutorial-mysql
@@ -203,7 +203,7 @@ In a production environment, it is recommended to create a dedicated user for Ot
 
 ClientIntents are Otterize’s way of defining access through unique relationships, which lead to perfectly scoped access. In this example, we provide our `server` workload the ability to insert and select records to allow it to access the database.
 
-Below is our `intents.yaml` file. As you can see, it is scoped to our database named `otterize_tutorial` and our `example` table. We also have limited the access to just `SELECT` and `INSERT` operations. We could add more databases, tables, or operations if our service required more access.
+Below is our `intents.yaml` file. As you can see, it is scoped to our database named `otterize_tutorial` and our `example` table. We also have limited the access to just `SELECT` and `INSERT` operations. We could add more databases, tables, or operations if our workloads required more access.
 
 Specifying the table and operations is optional. If you don't specify the table, access will be granted to all tables in the specified database. If you don't specify the operations, all operations will be allowed.
 ```yaml
@@ -229,7 +229,7 @@ Successfully INSERTED into our table
 Successfully SELECTED, most recent value:  2024-04-30T13:20:46Z
 </Terminal>
 
-That’s it! If your service’s functionality changes, adding or removing access is as simple as updating your ClientIntents definitions. For fun, try altering the `operations` to just `SELECT` or `INSERT`.
+That’s it! If your workload’s functionality changes, adding or removing access is as simple as updating your ClientIntents definitions. For fun, try altering the `operations` to just `SELECT` or `INSERT`.
 
 # Teardown
 To remove the deployed examples, run:

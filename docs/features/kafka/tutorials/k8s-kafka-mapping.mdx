@@ -54,18 +54,18 @@ helm install --create-namespace -n kafka \
 
 ### Deploy demo to simulate traffic
 
-Let's add a few services that will access our Kafka server, and see how the network mapper builds the access map:
+Let's add a few workloads that will access our Kafka server, and see how the network mapper builds the access map:
 
-- One service named "**client**".
-- One service named "**client-2**".
+- One workload named "**client**".
+- One workload named "**client-2**".
 
-To deploy these services, use:
+To deploy these workloads, use:
 
 ```shell
 kubectl apply -n otterize-tutorial-kafka-mapping -f ${ABSOLUTE_URL}/code-examples/kafka-mapping/all.yaml
 ```
 
-Each of these services is built to periodically call the Kafka broker we deployed. Because that broker has the Otterize OSS Kafka watcher enabled and feeding data to the network mapper, we can query the network mapper directly to see the map it has built up.
+Each of these workloads is built to periodically call the Kafka broker we deployed. Because that broker has the Otterize OSS Kafka watcher enabled and feeding data to the network mapper, we can query the network mapper directly to see the map it has built up.
 
 ```shell
 otterize network-mapper list -n otterize-tutorial-kafka-mapping

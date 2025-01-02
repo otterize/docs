@@ -6,27 +6,28 @@ title: Reference
 ### ClientIntents example (YAML)
 
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2alpha1
 kind: ClientIntents
 metadata:
   name: server
 spec:
-  service:
+  workload:
     # The name of the pod that will be granted access
     name: server
-  calls:
+    kind: Deployment
+  targets:
       # The GCP resource name as defined in the linked documentation below
       # Wildcards can be used in the end of the resource name to match multiple and nested resources
-    - name: projects/_/buckets/otterize-demo-bucket*
-      type: gcp
-      # one or more GCP Roles that will be provided to the specified resources
-      gcpPermissions:
-        - "storage.admin"
-      # Multiple call definitions can be defined for a single service.
-	- name: projects/_/buckets/otterize-read-only-bucket*
-      type: gcp
-      gcpPermissions:
-        - "storage.objectViewer"
+    - gcp:
+        resource: projects/_/buckets/otterize-demo-bucket*
+        # one or more GCP Roles that will be provided to the specified resources
+        permissions:
+          - "storage.admin"
+    # Multiple call definitions can be defined for a single service.
+    - gcp:
+        resource: projects/_/buckets/otterize-read-only-bucket*
+        permissions:
+          - "storage.objectViewer"
 ```
 
 ### GCP documentation references

@@ -1,35 +1,37 @@
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2alpha1
 kind: ClientIntents
 metadata:
   name: frontend
 spec:
-  service:
+  workload:
     name: frontend
-  calls:
-    - name: recommendationservice
-      type: http
-      HTTPResources:
-        - path: /recommendations
-          methods:
-            - GET
-    - name: productcatalogservice
-      type: http
-      HTTPResources:
-        - path: /products
-          methods:
-            - GET
+    kind: Deployment
+  targets:
+    - service:
+        name: recommendationservice
+        http:
+          - path: /recommendations
+            methods:
+              - GET
+    - service:
+        name: productcatalogservice
+        http:
+          - path: /products
+            methods:
+              - GET
 ---
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2alpha1
 kind: ClientIntents
 metadata:
   name: checkoutservice
 spec:
-  service:
+  workload:
     name: checkoutservice
+    kind: Deployment
   calls:
-    - name: productcatalogservice
-      type: http
-      HTTPResources:
-        - path: /products
-          methods:
-            - POST
+    - service:
+        name: productcatalogservice
+        http:
+          - path: /products
+            methods:
+              - POST

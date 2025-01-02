@@ -3,6 +3,8 @@ sidebar_position: 10
 title: CLI
 ---
 
+import Tabs from "@theme/Tabs";
+
 The Otterize command line interface (CLI) offers the following capabilities:
 - [Interact with](#network-mapper) the [Otterize network mapper](/features/network-mapping-network-policies/tutorials/k8s-network-mapper) running in a Kubernetes cluster.
 - [Transform](#otterize-intents-convert--f-path) [intents files](/overview/intent-based-access-control) from plain YAML format to Kubernetes custom resource YAML format.
@@ -159,6 +161,41 @@ as YAML [client intents file(s)](/overview/intent-based-access-control) or as JS
 
 Here's a partial output from `otterize network-mapper export -n otterize-ecom-demo`:
 
+<Tabs groupId="ClientIntents">
+<TabItem value="v2" label="ClientIntents v2">
+
+```shell
+apiVersion: k8s.otterize.com/v2alpha1
+kind: ClientIntents
+metadata:
+  name: cartservice
+  namespace: otterize-ecom-demo
+spec:
+  workload:
+    name: cartservice
+    kind: Deployment
+  targets:
+    - service: 
+        name: redis-cart
+---
+apiVersion: k8s.otterize.com/v2alpha1
+kind: ClientIntents
+metadata:
+  name: checkoutservice
+  namespace: otterize-ecom-demo
+spec:
+  workload:
+    name: checkoutservice
+    kind: Deployment
+  targets:
+    - service:
+        name: cartservice
+    - service: 
+        name: currencyservice
+```
+</TabItem>
+<TabItem value="V1" label="ClientIntents v1">
+
 ```shell
 apiVersion: k8s.otterize.com/v1alpha3
 kind: ClientIntents
@@ -186,6 +223,9 @@ spec:
     - name: currencyservice
       type: http
 ```
+</TabItem>
+</Tabs>
+
 
 ## Login
 

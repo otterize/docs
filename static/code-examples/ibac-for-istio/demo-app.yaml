@@ -45,7 +45,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: adservice-service
+  name: adservice
   namespace: otterize-visual-tutorial-istio
 spec:
   selector:
@@ -110,7 +110,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: cartservice-service
+  name: cartservice
   namespace: otterize-visual-tutorial-istio
 spec:
   selector:
@@ -171,7 +171,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: checkoutservice-service
+  name: checkoutservice
   namespace: otterize-visual-tutorial-istio
 spec:
   selector:
@@ -228,7 +228,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: currencyservice-service
+  name: currencyservice
   namespace: otterize-visual-tutorial-istio
 spec:
   selector:
@@ -317,7 +317,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: frontend-service
+  name: frontend
   namespace: otterize-visual-tutorial-istio
 spec:
   selector:
@@ -406,7 +406,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: productcatalogservice-service
+  name: productcatalogservice
   namespace: otterize-visual-tutorial-istio
 spec:
   selector:
@@ -467,7 +467,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: recommendationservice-service
+  name: recommendationservice
   namespace: otterize-visual-tutorial-istio
 spec:
   selector:
@@ -524,7 +524,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: redis-cart-service
+  name: redis-cart
   namespace: otterize-visual-tutorial-istio
 spec:
   selector:
@@ -581,7 +581,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: shippingservice-service
+  name: shippingservice
   namespace: otterize-visual-tutorial-istio
 spec:
   selector:

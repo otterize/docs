@@ -1,16 +1,17 @@
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2alpha1
 kind: ClientIntents
 metadata:
   name: client-intents-for-server
 spec:
-  service:
+  workload:
     name: server
-  calls:
-    - name: mysql-tutorial-db
-      type: database
-      databaseResources:
-        - databaseName: otterize_example
-          table: example
-          operations:
+    kind: Deployment
+  targets:
+    - sql:
+        name: mysql-tutorial-db
+        privileges:
+          - databaseName: otterize_example
+            table: example
+            operations:
             - SELECT
             - INSERT
