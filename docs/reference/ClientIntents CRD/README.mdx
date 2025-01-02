@@ -3,7 +3,18 @@ sidebar_position: 7
 title: 'ClientIntents CRD'
 ---
 
-ORIORIORI
+ClientIntents are used to specify the required and intended access for a particular workload to function successfully. The Otterize operators then use this information to generate the necessary credentials and policies to enable the intended access.
+
+Review for ClientIntents is normally done as part of the normal code review process, either in the same repository of the workload, in a different repository owned by the platform or security teams, or by additional reviewers with [aid of the CODEOWNERS feature for additional required reviewers](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners#codeowners-and-branch-protection).
+
+Some users of Otterize also choose to perform additional validation through [Kyverno validation policies](/reference/validating-clientintents) or the native [Kubernetes ValidatingAdmissionPolicies](https://kubernetes.io/docs/reference/access-authn-authz/validating-admission-policy/) available since v1.30.
+
+## ClientIntents v2
+The following is a fully annotated example of the CRD, demonstrating how you might specify different kinds of access.
+
+:::info Note
+Always use v2: While v1 is still supported, it is deprecated and only supported for backwards compatibility reasons. v2 is easier to understand and use and is an improved version based on customer feedback.
+:::
 
 ```yaml
 apiVersion: k8s.otterize.com/v2alpha1
@@ -59,10 +70,9 @@ spec:
 
 ```
 
-ORIORIORI
-
-:::warning Note
-Don't use v1alpha3 it's bad
+## ClientIntents v1 (deprecated)
+:::caution Note
+Always use v2: While v1 is still supported, it is deprecated and only supported for backwards compatibility reasons. v2 is easier to understand and use and is an improved version based on customer feedback.
 :::
 
 ```yaml

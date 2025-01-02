@@ -1,10 +1,8 @@
 ---
 sidebar_position: 5
-title: Service identities and resolution
+title: Workload identity and resolution
 ---
-ORIORIORI
-
-Otterize supports two approaches for specifying service identities in Kubernetes: explicit and implicit.
+Otterize supports two approaches for specifying workload identity in Kubernetes: explicit and implicit.
 
 ## Explicitly specifying `Kind`
 This approach requires specifying both the name, possibly with a namespace, and the kind of the service in the intent, ensuring precise identification.
@@ -28,28 +26,11 @@ This approach requires specifying both the name, possibly with a namespace, and 
 ```
 In the YAML above, the service `client` is a `Deployment` in the namespace `otterize-tutorial-istio-mapping`, and it intends to call the service `server` is a `Service` in the namespace `example-ns`.
 
-## Implicit Specification
-This approach requires only the service name to be specified in the intent. When using the implicit approach, Otterize employs an [identity resolution algorithm](/reference/service-identities#kubernetes-service-identity-resolution) to determine the service kind.
-```yaml
-   apiVersion: k8s.otterize.com/v2alpha1
-   kind: ClientIntents
-   metadata:
-     name: client
-     namespace: otterize-tutorial-istio-mapping
-   spec:
-     workload:
-       name: client
-     targets:
-       - kubernetes:
-           name: server.example-ns
-```
-In the YAML above, both services has no kind specified. Otterize will resolve the kind of the service based on the identity resolution algorithm.
-Pay attention that by not specifying the kind, the identity resolution algorithm will not use the kubernetes kind:`Service` but will use the kind of the resource that owns the pod.
 
+### Kubernetes workload identity resolution
+How do Otterize operators decide what is the identity of the workload that runs within the pod? The algorithm is as follows:
 
-### Kubernetes service identity resolution
-How do Otterize operators decide what is the name of the service that runs within the pod? The algorithm is as follows:
-
+ORIORIORI - change annotation to `intents.otterize.com/workload-name`?
 1. If the pod has an `intents.otterize.com/service-name` annotation, its value is used as the service name. (You can change which annotation is used by setting `global.serviceNameOverrideAnnotationName` &mdash; see the [docs](/reference/otterize-chart#global-parameters).) This allows developers and
    automations to explicitly name services, if needed. The value must not contain a period `.` as a period is used to separate service name and namespace, when the service is from a different namespace: `svcname.namespace`.
 2. If there is no `intents.otterize.com/service-name` annotation, a recursive look-up is performed for the Kubernetes resource owner of

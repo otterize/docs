@@ -3,18 +3,18 @@ sidebar_position: 8
 title: 'Shadow vs active enforcement'
 ---
 
-When installing Otterize, the intents operator can be [configured](/reference/intents-operator/helm-chart) to enforce access controls and protect services, or not.
+When installing Otterize, the intents operator can be [configured](/reference/intents-operator/helm-chart) to enforce access controls and protect workloads, or not.
 
 By default, the intents operator enforces access controls by creating, updating and deleting network policies, Kafka ACLs, and so on.
 
-But it can also be put in "**shadow mode**" where it does not actually enforce access controls by default, i.e. by default services will not have network policies, Kafka ACLs, etc. In shadow mode, both discovered intents (actual calls, or call attempts) and declared intents (YAML-defined `ClientIntents` resources) are still retained, and are reported to Otterize Cloud if it's integrated, to provide **insights on what would happen if enforcement were turned on and services were protected**: what calls would or would not be blocked, for example.
+But it can also be put in "**shadow mode**" where it does not actually enforce access controls by default, i.e. by default workloads will not have network policies, Kafka ACLs, etc. In shadow mode, both discovered intents (actual calls, or call attempts) and declared intents (YAML-defined `ClientIntents` resources) are still retained, and are reported to Otterize Cloud if it's integrated, to provide **insights on what would happen if enforcement were turned on and services were protected**: what calls would or would not be blocked, for example.
 
-Whether enforcement is active or shadow, on what services, and what kind of enforcement, may be controlled as follows.
+Whether enforcement is active or shadow, on what workloads, and what kind of enforcement, may be controlled as follows.
 
 `mode`: a Helm chart variable with the following values:
-- `defaultActive`: for every service, all the access control types (that are not disabled) **are enforced**.
-- `defaultShadow`: for every service, all access control types **are not enforced** by default.
-  - To **enforce** access controls on a service, and **explicitly protect** it by blocking undeclared access, create a `ProtectedService` (YAML) resource.
+- `defaultActive`: for every workload, all the access control types **are enforced**.
+- `defaultShadow`: for every workload, all access control types **are not enforced** by default.
+  - To **enforce** access controls on a workload, and **explicitly protect** it by blocking undeclared access, create a `ProtectedService` (YAML) resource.
 
 To disable a specific access control type cluster-wide, set one or more of the following Helm chart booleans:
 - `enableNetworkPolicyCreation`: completely disables network policy management if set to `false`.
@@ -27,11 +27,11 @@ All these and more are documented in the [Otterize OSS Helm chart](/reference/ot
 
 When enforcement is active &mdash; when it is not disabled &mdash; the intents operator processes client intents and turns each into access authorizations from the client to its called servers: if network policies are active (and supported by the CNI in the Kubernetes cluster), the operator labels pods and creates/updates network policies to allow access from that client to all its called servers, as well as removing previously-granted access based on out of date intents; and similarly for Kafka ACLs to Kafka servers.
 
-In general, of course, this will immediately block access from services that have not declared their intents to call the now-protected servers. That is, after all, why you use intent-based access control (IBAC).
+In general, of course, this will immediately block access from workloads that have not declared their intents to call the now-protected servers. That is, after all, why you use intent-based access control (IBAC).
 
-Whether this is a good thing or a problem depends on your situation. There are multiple ways of rolling out IBAC across the many services that may be running in some environment or Kubernetes cluster.
-- For example, you can insist that all services are protected by default from unauthorized access, with a global default-deny network policy. All clients must then declare and apply intents in order to reach their intended servers. It's a bit of a "big bang" approach, though.
-- You can also gradually roll out IBAC, service by service. This will often be the most appropriate when you're just starting with IBAC and want to build experience and get value with little risk of breaking anything. It's probably **the easiest way to start**, too. See the next section, on shadow mode.
+Whether this is a good thing or a problem depends on your situation. There are multiple ways of rolling out IBAC across the many workloads that may be running in some environment or Kubernetes cluster.
+- For example, you can insist that all workloads are protected by default from unauthorized access, with a global default-deny network policy. All clients must then declare and apply intents in order to reach their intended servers. It's a bit of a "big bang" approach, though.
+- You can also gradually roll out IBAC, workload by workload. This will often be the most appropriate when you're just starting with IBAC and want to build experience and get value with little risk of breaking anything. It's probably **the easiest way to start**, too. See the next section, on shadow mode.
 
 To help you manage the rollout of IBAC, consider starting with shadow enforcement.
 
@@ -49,11 +49,11 @@ And the Otterize network mapper, if installed in the Kubernetes cluster, still r
 
 So by operating in this "shadow mode", and comparing the discovered intents with the declared intents, you can predict what *would* happen if enforcement were to be active: which clients calls that are in fact happening now would be blocked or allowed, which servers are ready to have enforcement for them activated because none of their clients would get blocked, and so on.
 
-To unlock these insights, the Otterize OSS components (the intents operator, the network mapper, and the credentials operator) can be configured to connect to Otterize Cloud in order to report their configurations, the discovered intents, and the declared intents in the cluster. Within Otterize Cloud, the results are processed and displayed as **the access graph**, with all these insights: what would be blocked, what would be allowed, and what you need to do to make sure intended calls will be allowed once services are protected.
+To unlock these insights, the Otterize OSS components (the intents operator, the network mapper, and the credentials operator) can be configured to connect to Otterize Cloud in order to report their configurations, the discovered intents, and the declared intents in the cluster. Within Otterize Cloud, the results are processed and displayed as **the access graph**, with all these insights: what would be blocked, what would be allowed, and what you need to do to make sure intended calls will be allowed once workloads are protected.
 
 ## Protected services
 
-When the operator is in `defaultShadow` mode, to override the default non-enforcing shadow mode for a service and enforce access controls for it, you simply create a `ProtectedService` resource.
+When the operator is in `defaultShadow` mode, to override the default non-enforcing shadow mode for a workload and enforce access controls for it, you simply create a `ProtectedService` resource.
 
 For network policies, this also creates a default-deny policy and protects the service.
 For Istio, no default-deny policy is created, so this just enables enforcement: Istio authorization policies are created for this service when ClientIntents resources are created.
@@ -62,13 +62,13 @@ For Kafka, no default-deny policy or equivalent is created, so this just enables
 First, you would want to make sure all the intents of all this service's clients are declared, so Otterize enables their access while protecting the service. One easy way to do that, if you have a cluster where those clients are making their expected calls, is to build a network map with the Otterize network mapper, and export just this service's clients' intents:
 
 ```shell
-otterize network-mapper export --server <SERVICE_NAME>.<SERVICE_NAMESPACE> > client-intents-1.yaml
+otterize network-mapper export --server <WORKLOAD_NAME>.<WORKLOAD_NAMESPACE> > client-intents-1.yaml
 ```
 
 <details>
 <summary>See a sample of the exported YAML</summary>
 
-The result, when there happens to be a single client, `frontend`, calling the `checkoutservice` as well as other services, would look like:
+The result, when there happens to be a single client, `frontend`, calling the `checkoutservice` as well as other workloads, would look like:
 
 ```yaml
 apiVersion: k8s.otterize.com/v2alpha1

@@ -1,11 +1,17 @@
 ---
 sidebar_position: 7
-title: 'Differences Between v1 and v2'
+title: 'Differences between v1 and v2'
 ---
 
-ORIORIORI
+ClientIntents v2 is a new version of the `ClientIntents` Custom Resource Definition (CRD) specification. It introduces several changes to the structure and fields of the `ClientIntents` CRD.
+The key differences is that the term `service` is no longer used except exclusively to refer to a Kubernetes `Service`, and `workload` is used instead to refer to workloads that run on your infrastructure.
+The `calls` section has been renamed `targets` and now makes more sense when it is applied to non-network resources such as an AWS S3 bucket or a database.
 
-# ClientIntents: Differences Between v1alpha3 and v2alpha1
+It is now also possible to target a specific kind of Kubernetes resource, such as a `Deployment` or a `StatefulSet`, and to specify the kind of resource that is being targeted, whereas before the way to do this was ambiguous and not obvious from the syntax.
+
+Starting January 2025, or version 5 ORIORIORI of the `otterize-kubernetes` Helm chart, ClientIntents v2 is the default format.
+
+# ClientIntents: Differences between v1alpha3 and v2alpha1
 
 This document highlights the differences in the `ClientIntents` Custom Resource Definition (CRD) specification between `v1alpha3` and `v2alpha1`. It provides a detailed breakdown of each part of the `spec` and outlines what has changed.
 
