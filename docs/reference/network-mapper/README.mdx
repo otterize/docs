@@ -1,16 +1,16 @@
 ---
-sidebar_position: 4
+sidebar_position: 2
 title: Network mapper
 ---
 
 The Otterize network mapper creates a map of in-cluster traffic by (1) capturing DNS traffic and (2) inspecting active connections in the same manner `netstat` does, then resolving the IP addresses participating in connections to the Pods, and crawling up the ownership of the Pod until it reaches the root object. See [Service identities](/reference/service-identities) to learn more on how service name resolving happens. The network mapper continues building the network map as long as it's deployed.
 
-You can then use the Otterize CLI to list the traffic by client, reset the traffic the mapper remembers, or export it as JSON or YAML, which serves as ClientIntents Kubernetes resources). ClientIntents can be consumed by the [Otterize intents operator](/reference/configuration/intents-operator) to apply network policies
+You can then use the Otterize CLI to list the traffic by client, reset the traffic the mapper remembers, or export it as JSON or YAML, which serves as ClientIntents Kubernetes resources). ClientIntents can be consumed by the [Otterize intents operator](/reference/intents-operator) to apply network policies
 or Kafka ACLs to your cluster, implementing [intent-based access control](/overview/intent-based-access-control).
 
 To get started, follow the [quick hands-on tutorial](/features/network-mapping-network-policies/tutorials/k8s-network-mapper).
 
-The network mapper also supports exporting Grafana Tempo-style metrics, contributed by the community. See the [Helm chart documentation's OpenTelemetry section](/reference/configuration/network-mapper/helm-chart#opentelemetry-exporter-parameters) to learn how to enable this feature.
+The network mapper also supports exporting Grafana Tempo-style metrics, contributed by the community. See the [Helm chart documentation's OpenTelemetry section](/reference/network-mapper/helm-chart#opentelemetry-exporter-parameters) to learn how to enable this feature.
 
 ```shell
 cartservice in namespace otterize-ecom-demo calls:
@@ -59,7 +59,7 @@ The watcher is only able to parse Kafka logs when Kafka servers' Authorizer logg
 The Istio watcher periodically queries for all pods with the `security.istio.io/tlsMode` label, queries each pod's Istio sidecar for metrics about connections, and deduces connections with HTTP paths between pods covered by the Istio service mesh.
 
 ## Deploying the network mapper
-To deploy the network mapper, [use the Helm chart](/reference/configuration/network-mapper/helm-chart).
+To deploy the network mapper, [use the Helm chart](/reference/network-mapper/helm-chart).
 
 ## Monitoring the network mapper
 All network mapper pods expose a Prometheus metrics endpoint on port 2112, on `/metrics`.

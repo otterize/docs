@@ -145,7 +145,7 @@ We recommend using these explicit network policies rather than ClientIntents, as
 
 ## Auto-generating network policies for external traffic
 The intents operator defaults to automatically generate network policies for Kubernetes **Services** (type **LoadBalancer** and **NodePort**), and Ingress traffic
-when an intent will generate a network policy that can block external traffic. To disable this feature, consult the [documentation for the intents operator](/reference/configuration/intents-operator).
+when an intent will generate a network policy that can block external traffic. To disable this feature, consult the [documentation for the intents operator](/reference/intents-operator).
 
 
 Let's look at an example from our demo. We have a **frontend** service being accessed from multiple sources:

@@ -109,7 +109,7 @@ The cryptographic credentials created by the Otterize credentials operator (mTLS
 3. By a SPIRE server that is deployed alongside the credentials operator.
 
 Note that, by default, the first option (in-cluster SPIRE) is used, even when the credentials operator is connected to Otterize Cloud). 
-The `certificateProvider` could be set to `otterize-cloud` or `cert-manager` to use the other options; see the [Helm chart configuration for the credentials operator](/reference/configuration/credentials-operator/helm-chart#cloud-parameters) for more details.
+The `certificateProvider` could be set to `otterize-cloud` or `cert-manager` to use the other options; see the [Helm chart configuration for the credentials operator](/reference/credentials-operator/helm-chart#cloud-parameters) for more details.
 
 The credentials operator watches for pods starting up in a Kubernetes cluster, and if mTLS credentials are requested, it uses the [resolved or declared service name](/reference/service-identities) plus the pod’s namespace to generate credentials for that service name, in that namespace. The operator is conceptually similar to a SPIRE agent in that it attests to the identity of pods.
 

@@ -24,7 +24,6 @@ To deploy Otterize, head over to [Otterize Cloud](https://app.otterize.com/), an
 
 ```bash
 --set intentsOperator.operator.enableEgressNetworkPolicyCreation=true
---set networkMapper.dnsClientIntentsUpdateEnabled=true
 ```
 
 ## Tutorial
@@ -43,7 +42,7 @@ By default, in Kubernetes, pods are non-isolated. Meaning they accept traffic fr
 
 Stringent policies can be essential in certain sectors, such as healthcare, finance, and government. Implementing egress policies is crucial in minimizing attack surfaces by concealing services or restricting the exposure of any compromised services. However, challenges may emerge when egress policies are applied to services dependent on external communications that were not initially accounted for. These external communications could include DNS, time synchronization, package repositories, logging, telemetry, cloud services, authentication, or other critical external dependencies that, while not directly related to a pod's primary functionality, are vital for its operation.
 
-Otterize helps elevate these issues by capturing and mapping the ingress and egress connections used by your pods and then providing suggested policies to maintain your witnessed tariff. You can also enable [shadow enforcement](/reference/shadow-vs-active-enforcement) to see which connections would be blocked without committing to active enforcement.
+Otterize helps elevate these issues by capturing and mapping the ingress and egress connections used by your pods and then providing suggested policies to maintain your witnessed traffic. You can also enable [shadow enforcement](/reference/shadow-vs-active-enforcement) to see which connections would be blocked without committing to active enforcement.
 
 ### Defining our intents
 
@@ -306,7 +305,7 @@ Status:
 
 </details>
 
-It is observed that Otterize identifies the IP addresses associated with the domain and incorporates them into a newly established section within the `status` block. This action informs the [Intent Operator](/reference/configuration/intents-operator) to dynamically adjust the network policies in response to the detection of new IP addresses originating from the specified domain name. For services that utilize dynamic IP addresses, each discovered IP address is systematically added to the network policy. Further details on DNS intents can be explored in the [Reference](/features/network-mapping-network-policies/reference#clientintents-with-dns).
+It is observed that Otterize identifies the IP addresses associated with the domain and incorporates them into a newly established section within the `status` block. This action informs the [Intent Operator](/reference/intents-operator) to dynamically adjust the network policies in response to the detection of new IP addresses originating from the specified domain name. For services that utilize dynamic IP addresses, each discovered IP address is systematically added to the network policy. Further details on DNS intents can be explored in the [Reference](/features/network-mapping-network-policies/reference#clientintents-with-dns).
 
 ## Teardown
 
