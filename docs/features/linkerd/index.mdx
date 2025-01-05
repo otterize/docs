@@ -1,0 +1,52 @@
+---
+sidebar_position: 1
+title: Linkerd | Overview
+hide_title: true
+---
+
+import DocsLinkCard from "@site/src/components/LinkCard";
+
+export const tutorials = [
+    {
+        title: 'Linkerd AuthorizationPolicy automation',
+        description: 'Generate AuthorizationPolicy docs from existing connections',
+        url: '/features/linkerd/tutorials/linkerd-authorization-policies'
+    },
+];
+
+# Linkerd
+Otterize can enforce access between services using Linkerd Authorization Policies.
+
+### Tutorials
+
+To learn how to use the Intents Operator to enforce access using Linkerd authorization policies. Try the quickstart tutorial below.
+
+<DocsLinkCard items={tutorials} colSize={"sm"}/>
+
+
+### How does Otterize work with Linkerd?
+
+1. First, the cluster must have [Otterize installed](/overview/installation).
+2. To have Otterize generate Linkerd authorization policies, declare and apply ([IBAC](/overview/intent-based-access-control)) ClientIntents for your services.
+Once you do so, Otterize will generate an Linkerd authorization policy allowing access from the client service, identified by its ServiceAccount, to the server, identified by its labels.
+The HTTP Resources section in the ClientIntents is optional: if you do not specify it, all pod-to-pod access is allowed.
+
+```yaml
+
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: client
+  namespace: otterize-tutorial-linkerd
+spec:
+  service:
+    name: client
+  calls:
+    - name: server-abc
+      type: http
+      HTTPResources:
+        - path: /client-path
+          methods: [ GET ]
+
+```
+
