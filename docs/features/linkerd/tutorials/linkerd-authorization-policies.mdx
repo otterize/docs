@@ -170,14 +170,14 @@ hello from /client-path
 4. You should also see that a new Istio authorization policy was created:
 
 ```bash
-kubectl get authorizationpolicies.security.istio.io -n otterize-tutorial-istio
+kubectl get authorizationpolicies.policy.linkerd.io -n otterize-tutorial-linkerd
 ```
 
 This should return:
 
 ```
 NAME                                                                AGE
-authorization-policy-to-nginx-from-client.otterize-tutorial-istio   6s
+authpolicy-to-nginx-port-80-from-client-client-<client-hash>        2m49s
 ```
 
 If you've attached Otterize OSS to Otterize Cloud, go back to see the [access graph in your browser](https://app.otterize.com):
@@ -199,7 +199,7 @@ Otterize did its job of both protecting the server _and_ allowing intended acces
 
 ### What did we accomplish?
 
-- Controlling access through Istio authorization policies no longer means touching authorization policies at all.
+- Controlling access through Linkerd authorization policies no longer means touching authorization policies at all.
 
 - The server is now protected, and can be accessed only by clients which declared their intents, authenticated via mTLS connection with specific certificates.
 
