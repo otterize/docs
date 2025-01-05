@@ -167,7 +167,7 @@ HTTP/1.1 200 OK
 hello from /client-path
 ```
 
-4. You should also see that a new Istio authorization policy was created:
+4. You should also see that a new Linkerd authorization policy was created:
 
 ```bash
 kubectl get authorizationpolicies.policy.linkerd.io -n otterize-tutorial-linkerd
@@ -177,7 +177,7 @@ This should return:
 
 ```
 NAME                                                                AGE
-authpolicy-to-nginx-port-80-from-client-client-<client-hash>        2m49s
+authpolicy-to-nginx-port-80-from-client-client-abcdefg       2m49s
 ```
 
 If you've attached Otterize OSS to Otterize Cloud, go back to see the [access graph in your browser](https://app.otterize.com):
@@ -211,14 +211,9 @@ Otterize did its job of both protecting the server _and_ allowing intended acces
     <summary>Expand to see what happened behind the scenes</summary>
 
     Otterize generated a specific Linkerd authorization policy on the ingress of the pod of the server, allowing the server to
-    be accessed by the pod of the client, based on that client's declared intent. Otterize uses labels to define the authorization policy and associate it
-    with a server in a namespace, and uses service accounts to identify clients, as Istio requires. This happens as follows:
-
-    1. The server's pod is given a label `intents.otterize.com/server` whose value uniquely represents that server.
-    The Istio authorization policy stipulates that it applies to the ingress of server pods with this label.
-    2. The client's service account is looked up through its pod, and used in the policy.
-    The authorization policy stipulates that only services with this service account can access the server.
-    In the event that the service account is shared by multiple services, an Event is placed on the `ClientIntent` to warn about this, which is also picked up as a warning in Otterize Cloud, if connected.
+    be accessed by the pod of the client, based on that client's declared intent. Otterize automated the creation of a `Server` resource
+    and its pairing with the target server, the creation of a mesh TLS authentication resource and its pairing with the client's service account,
+    and binding it all to an authorization policy to protect the server and allow only intended access.
 
     Otterize saved us from doing all this work: by simply declaring the client's intents in `intents.yaml`,
     all the appropriate configuration was managed automatically behind the scenes.
