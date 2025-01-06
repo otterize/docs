@@ -48,25 +48,36 @@ spec:
             operations: [ SELECT, INSERT ] # Allowed SQL operations
     - internet:
         domains:
-          - api.example.com
+          - api.example.com # Allowed domain names
         ips:
-          - 192.168.1.1
+          - 192.168.1.1 # Allowed IP addresses
         ports:
-          - 443
+          - 443 # Allowed ports for the IP addresses or domains
     - aws:
         arn: arn:aws:s3:::my-bucket # AWS resource ARN
         actions:
-          - s3:GetObject
+          - s3:GetObject # Allowed AWS actions
           - s3:PutObject
     - gcp:
-        resource: projects/my-project-id/buckets/my-bucket
+        resource: projects/my-project-id/buckets/my-bucket # GCP resource name
         permissions:
-          - storage.objects.get
+          - storage.objects.get # Allowed GCP permissions
           - storage.objects.create
     - azure:
-        scope: /subscriptions/my-subscription/resourceGroups/my-group/providers/Microsoft.Storage/storageAccounts/myaccount
+        scope: /subscriptions/my-subscription/resourceGroups/my-group/providers/Microsoft.Storage/storageAccounts/myaccount # Azure resource scope
         actions:
-          - Microsoft.Storage/storageAccounts/blobServices/containers/read
+          - Microsoft.Storage/storageAccounts/blobServices/containers/read # Allowed Azure actions
+        dataActions:
+          - Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read # Allowed Azure data actions
+        roles:
+          - Storage Blob Data Reader # Allowed Azure roles
+        keyVaultPolicy: # Azure Key Vault policy
+          secretPermissions:
+            - get
+            - list
+          keyPermissions:
+            - decrypt
+            - encrypt
 
 ```
 
@@ -117,14 +128,14 @@ spec:
       databaseResources:
         - databaseName: inventory_db # Database name
           table: products # Table name
-          operations: [ SELECT, UPDATE ]
+          operations: [ SELECT, UPDATE ] # Allowed SQL operations
     - name: api.retail.example.com # Internet domain
       internet:
         domains:
-          - api.retail.example.com
+          - api.retail.example.com # Allowed domain names
         ips:
-          - 203.0.113.10
+          - 203.0.113.10 # Allowed IP addresses
         ports:
-          - 443
+          - 443 # Allowed ports for the IP addresses or domains
 ```
 
