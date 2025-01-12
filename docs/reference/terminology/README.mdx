@@ -13,6 +13,9 @@ An Otterize workload is the logical workload identity used to refer to a particu
 
 It can be a client or a server or both. Workloads are connected through client intents: one workload intends to call another workload. [Learn how workload identity resolution happens](/reference/workload-identities).
 
+### Service
+A Service refers to a Kubernetes Service. This is different from a Workload, which is a logical entity that exists in Otterize and can be a client or a server. A Service is a Kubernetes object that exposes a set of pods as a network service. [Read more about Kubernetes Services in the official documentation](https://kubernetes.io/docs/concepts/services-networking/service/).
+
 ### Resource
 A resource is a generic term used to refer to any entity that can be accessed or interacted with that is not a workload. In the context of Otterize, resources can be databases, Kafka topics, S3 buckets.
 
