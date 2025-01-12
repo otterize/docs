@@ -16,13 +16,12 @@ To learn how to use the intents operator to control access, head over to the [Fe
 
 
 ## Pod annotations
-ORIORIORI - maybe we don't need this anymore? Followup after discussion with Omri
 You can override the workload name the intents operator uses when it computes network policies and Kafka ACLs with a pod annotation.
 
 
 | Annotation                          | Description                                                                                                                                          |
 |-------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `intents.otterize.com/service-name` | Used for [service identity resolution](/reference/service-identities#kubernetes-service-identity-resolution).|
+| `intents.otterize.com/service-name` | Used for [workload identity resolution](/reference/workload-identities#kubernetes-service-identity-resolution).|
 
 ## Supported enforcement types
 
@@ -33,7 +32,7 @@ The intents operator can also be configured to process client intents *without* 
 
 In the example above, the `checkoutservice` intends to call the `shippingservice`. When the CRD is applied through `kubectl apply`, the intents operator labels the `checkoutservice` and `shippingservice` pods, and creates a network policy for the ingress of the `shippingservice` that references these labels and allows calls to the `shippingservice` from the `checkoutservice`.
 
-See [workload identities and resolution](/reference/service-identities) to learn how service names are resolved for pods.
+See [workload identities and resolution](/reference/workload-identities) to learn how service names are resolved for pods.
 
 The intents operator uses the resolved identity as the workload name, and combines it with the namespace of the pod and hashed to form the value of the label `intents.otterize.com/server`.
 This label is used as a selector for network policies. Another
@@ -99,7 +98,7 @@ The intents operator can also be configured to process client intents *without* 
 
 In the example above, the `checkoutservice` intends to call the `shippingservice`. When the CRD is applied through `kubectl apply`, the intents operator labels the `shippingservice` pod, looks up `checkoutservice`'s service account, and creates an authorization policy for the ingress of the `shippingservice` that references the service account and allows calls to the `shippingservice` from the `checkoutservice`.
 
-See [workload identities and resolution](/reference/service-identities) to learn how workload identity is resolved for pods.
+See [workload identities and resolution](/reference/workload-identities) to learn how workload identity is resolved for pods.
 
 The intents operator uses the resolved identity as the workload identity, and combines it with the namespace of the pod and hashed to form the value of the label `intents.otterize.com/server`.
 This label is used as a selector for servers in Istio authorization policies. The same algorithm is used to look up the client from the workload name in the client intents, for whom the service account is looked up.

@@ -6,14 +6,12 @@ title: Terminology
 An overview of the terminology used in Otterize OSS documentation.
 If you think a term is missing here, please [let us know](https://github.com/otterize/docs/issues/new).
 
-ORIORIORI
-
 ## Basics
 
 ### Workload
 An Otterize workload is the logical workload identity used to refer to a particular service. For example, Kafka is a workload, the Frontend is a workload, the login-service is a workload. But an S3 bucket is not a workload.
 
-It can be a client or a server or both. Workloads are connected through client intents: one workload intends to call another workload. [Learn how workload identity resolution happens](/reference/service-identities).
+It can be a client or a server or both. Workloads are connected through client intents: one workload intends to call another workload. [Learn how workload identity resolution happens](/reference/workload-identities).
 
 ### Resource
 A resource is a generic term used to refer to any entity that can be accessed or interacted with that is not a workload. In the context of Otterize, resources can be databases, Kafka topics, S3 buckets.

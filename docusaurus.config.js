@@ -324,6 +324,10 @@ if (process.env.ADD_REDIRECTS === 'production') {
           to: '/overview/installation',
         },
         {
+          from: ['/reference/service-identities'],
+          to: '/reference/workload-identities',
+        },
+        {
           from: ['/intent-based-access-control', '/reference/intents-and-intents-files'],
           to: '/overview/intent-based-access-control'
         },
