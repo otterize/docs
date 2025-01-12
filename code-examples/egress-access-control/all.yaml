@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           image: 'otterize/egress-tutorial-frontend'
 ---
 apiVersion: apps/v1
@@ -38,7 +38,7 @@ spec:
     spec:
       containers:
         - name: backend
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           image: 'otterize/egress-tutorial-backend'
           ports:
             - containerPort: 8080
