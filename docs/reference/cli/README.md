@@ -3,8 +3,6 @@ sidebar_position: 10
 title: CLI
 ---
 
-import Tabs from "@theme/Tabs";
-
 The Otterize command line interface (CLI) offers the following capabilities:
 - [Interact with](#network-mapper) the [Otterize network mapper](/features/network-mapping-network-policies/tutorials/k8s-network-mapper) running in a Kubernetes cluster.
 - [Transform](#otterize-intents-convert--f-path) [intents files](/overview/intent-based-access-control) from plain YAML format to Kubernetes custom resource YAML format.
