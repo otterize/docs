@@ -47,7 +47,7 @@ aws eks update-kubeconfig --name otterize-tutorial-aws-visibility --region 'us-w
 You will first need to install Otterize in your cluster. If your cluster is not already connected, you can do so by following the Kubernetes setup instructions detailed on the [Integrations](https://app.otterize.com/integrations) page.
 
 :::info Important
-When installing Otterize, append the following flag to the helm command to enable the eBPF agent:
+When installing Otterize, append the following flag to the Helm command to enable the eBPF agent, which is responsible for inspecting SSL and non-SSL traffic and generates the visibility into AWS traffic:
 :::
 
 ```
