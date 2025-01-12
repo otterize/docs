@@ -28,7 +28,7 @@ spec:
   workload:
     name: checkoutservice
     kind: Deployment
-  calls:
+  targets:
     - service:
         name: productcatalogservice
         http:

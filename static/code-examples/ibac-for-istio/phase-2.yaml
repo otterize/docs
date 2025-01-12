@@ -6,7 +6,7 @@ spec:
   workload:
     name: recommendationservice
     kind: Deployment
-  calls:
+  targets:
     - service:
         name: productcatalogservice
         http:

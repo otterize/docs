@@ -7,7 +7,7 @@ spec:
   workload:
     name: server
     kind: Deployment
-  calls:
+  targets:
     - gcp:
         resource: projects/_/buckets/otterize-tutorial-bucket*
         permissions:
