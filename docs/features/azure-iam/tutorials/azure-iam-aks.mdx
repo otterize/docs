@@ -10,8 +10,9 @@ Otterize automates Azure IAM identities and role assignments for your Azure AKS 
 In this tutorial, we will:
 
 - Optionally, spin up an AKS cluster, install the Otterize Kubernetes operator on it, and configure it to manage Azure IAM.
-- Deploy a client pod that lists files in an Azure Blog Storage container.
+- Deploy a client pod that downloads file from one blob container, and upload them to another.
 - Label the client pod, telling the credentials operator to link its Kubernetes ServiceAccount with an Azure workload identity created for it.
+- See attempted operation to Azure Blob Storage.
 - Create a `ClientIntents` resource allowing the client pod to access Azure Blob Storage, that tells the intents operator to create a role assignment and associate it with the previously created workload identity.
 - See that the client is now able to list files in the Azure Blob Storage container.
 
@@ -78,6 +79,15 @@ az aks get-credentials -n $AKS_CLUSTER_NAME -g $RESOURCE_GROUP
 To deploy Otterize, head over to [Otterize Cloud](https://app.otterize.com) and:
 
 1. Create a Kubernetes integration on the [Integrations page](https://app.otterize.com/integrations), and follow the instructions. *Make sure to enable enforcement mode for this tutorial.* If you already have a Kubernetes cluster connected, skip this step.
+    - You will first need to install Otterize in your cluster. If your cluster is not already connected, you can do so by following the Kubernetes setup instructions detailed on the [Integrations](https://app.otterize.com/integrations) page.
+
+:::info Important
+When installing Otterize, append the following flag to the Helm command to enable the eBPF agent, which is responsible for inspecting SSL and non-SSL traffic and generates the visibility into Azure traffic:
+:::
+
+```
+helm upgrade ... --set networkMapper.nodeagent.enable=true
+```
 
 2. Create an Azure IAM integration on the [Integrations page](https://app.otterize.com/integrations).
     - Input your Azure tenant & subscription IDs. These are available in the Azure portal, or by running the following command:
@@ -101,24 +111,29 @@ Create a general-purpose storage account using the Azure CLI:
 export STORAGE_ACCOUNT_NAME=ottrtutorial`date +%s`
 az storage account create \
   --name $STORAGE_ACCOUNT_NAME \
-  --resource-group $RESOURCE_GROUP \
-  --location $LOCATION
+  --resource-group $RESOURCE_GROUP
 ```
 
-Create a container in the storage account:
+Create a source container in the storage account:
 ```bash
-export STORAGE_CONTAINER_NAME=ottrtutorialcontainer
 az storage container create \
     --account-name $STORAGE_ACCOUNT_NAME \
-    --name $STORAGE_CONTAINER_NAME
+    --name uploads
 ```
 
-Upload a blob to the storage container:
+Create a destination container in the storage account:
+```bash
+az storage container create \
+    --account-name $STORAGE_ACCOUNT_NAME \
+    --name downloads
+```
+
+Upload a blob to the source container:
 ```bash
 echo "Hello, Azure integration" > hello.txt
 az storage blob upload \
     --account-name $STORAGE_ACCOUNT_NAME \
-    --container-name $STORAGE_CONTAINER_NAME \
+    --container-name downloads \
     --file hello.txt \
     --name hello.txt
 ```
@@ -126,9 +141,8 @@ az storage blob upload \
 ### Deploy the sample client
 
 ```bash
-kubectl create namespace otterize-tutorial-azure-iam
-kubectl apply -n otterize-tutorial-azure-iam -f ${ABSOLUTE_URL}/code-examples/azure-iam-aks/client.yaml
-kubectl patch deployment -n otterize-tutorial-azure-iam client --type='json' -p="[{\"op\": \"replace\", \"path\": \"/spec/template/spec/containers/0/env\", \"value\": [{\"name\": \"AZURE_STORAGE_ACCOUNT\", \"value\": \"$STORAGE_ACCOUNT_NAME\"}, {\"name\": \"AZURE_STORAGE_CONTAINER\", \"value\": \"$STORAGE_CONTAINER_NAME\"}]}]"
+kubectl apply -f ${ABSOLUTE_URL}/code-examples/azure-iam-aks/client.yaml
+kubectl patch -n otterize-tutorial-azure-iam deployment/client --type='json' -p="[{\"op\": \"replace\", \"path\": \"/spec/template/spec/containers/0/env\", \"value\": [{\"name\": \"STORAGE_ACCOUNT_NAME\", \"value\": \"$STORAGE_ACCOUNT_NAME\"}]}]"
 ```
 
 <details>
@@ -161,7 +175,7 @@ Label the client pod so that the Otterize credentials operator creates an Azure 
 
 
 ```bash
-kubectl patch deployment -n otterize-tutorial-azure-iam client -p '{"spec": {"template":{"metadata":{"labels":{"credentials-operator.otterize.com/create-azure-workload-identity":"true"}}}} }'
+kubectl patch -n otterize-tutorial-azure-iam deployment/client -p '{"spec": {"template":{"metadata":{"labels":{"credentials-operator.otterize.com/create-azure-workload-identity":"true"}}}} }'
 ```
 
 This applies the following label to the client pod:
@@ -241,20 +255,20 @@ ERROR: Please run 'az login' to setup account.
 By annotating the pod, we've created a workload identity.
 We now need to specify what we need to access, and the intents operator will create an Azure IAM role assignment accordingly.
 
-To do so, we will apply a `ClientIntents` resource that specifies the access required for the client pod:
+To do so, we will apply a `ClientIntents` resource that permits the client pod to download files from the source container:
 ```bash
-kubectl apply -n otterize-tutorial-azure-iam -f ${ABSOLUTE_URL}/code-examples/azure-iam-aks/clientintents.yaml
-kubectl patch clientintents -n otterize-tutorial-azure-iam client --type='json' -p="[{\"op\": \"replace\", \"path\": \"/spec/calls/0/name\", \"value\": \"/providers/Microsoft.Storage/storageAccounts/"$STORAGE_ACCOUNT_NAME"/blobServices/default/containers/"$STORAGE_CONTAINER_NAME"\"}]"
+kubectl apply -n otterize-tutorial-azure-iam -f ${ABSOLUTE_URL}/code-examples/azure-iam-aks/clientintents-1.yaml
+kubectl patch -n otterize-tutorial-azure-iam clientintents/client-intents-for-client  --type='json' -p="[{\"op\": \"replace\", \"path\": \"/spec/calls/0/name\", \"value\": \"/providers/Microsoft.Storage/storageAccounts/$STORAGE_ACCOUNT_NAME/blobServices/default/containers/downloads\"}]"
 ```
 
-This applies the following ClientIntents, granting the `Storage Blob Data Contributor` permission to the Azure Blog Storage account & container we created:
+This applies the following ClientIntents, granting read access to the `downloads` container in the storage account:
 ```yaml
-{@include: ../../../../static/code-examples/azure-iam-aks/clientintents.yaml}
+{@include: ../../../../static/code-examples/azure-iam-aks/clientintents-1.yaml}
 ```
 
-### The client can now list files in the Azure Blob Storage container!
+### The client can now download files from the Azure Blob Storage container!
 
-Let's look at the client logs again to see that no more errors are being reported:
+Let's look at the client logs again:
 ```bash
 kubectl logs -f -n otterize-tutorial-azure-iam deploy/client
 ```
@@ -267,12 +281,42 @@ CloudName    HomeTenantId                          IsDefault    Name            
 -----------  ------------------------------------  -----------  --------------------  -------  ------------------------------------
 AzureCloud   00000000-0000-0000-0000-000000000000  True         Azure subscription 1  Enabled  00000000-0000-0000-0000-000000000000
 
-Listing storage blob container ottrtutorialcontainer in storage account ottrtutorial
-Name       Blob Type    Blob Tier    Length    Content Type    Last Modified              Snapshot
----------  -----------  -----------  --------  --------------  -------------------------  ----------
-hello.txt  BlockBlob    Hot          25        text/plain      2024-03-10T18:07:21+00:00
+Downloading file from storage blob container downloads in storage account ottrtutorial1735147968
+ Hello, Azure integration                                                                                                                        │
+Alive[################################################################]  100.0000%Finished[#################################################### │
+Uploading file to storage blob container uploads in storage account ottrtutorial1735147968                                                      │
+ERROR:                                                                                                                                          │
+You do not have the required permissions needed to perform this operation.                                                                      │
+Depending on your operation, you may need to be assigned one of the following roles:                                                            │
+    "Storage Blob Data Owner"                                                                                                                   │
+    "Storage Blob Data Contributor"                                                                                                             │
+    "Storage Blob Data Reader"                                                                                                                  │
+    "Storage Queue Data Contributor"                                                                                                            │
+    "Storage Queue Data Reader"                                                                                                                 │
+    "Storage Table Data Contributor"                                                                                                            │
+    "Storage Table Data Reader"
+```
 
+The file is successfully downloaded from the `downloads` container, but the client fails to upload it to the `uploads` container. This is because some permissions are still missing. Let's take a look at the access graph at [Otterize Cloud](https://app.otterize.com): 
 
+![Access Graph](/img/quick-tutorials/azure-iam-aks/accessgraph.png)
+
+The access graph visualizes the applied ClientIntents in green, while the newly discovered intents, which are still missing permissions, are shown in yellow. 
+
+By clicking on the `client` node, you can view and download the full set of ClientIntents required for it to access both buckets: 
+
+![Client Intents](/img/quick-tutorials/azure-iam-aks/clientintents.png)
+
+Use the otterize CLI to download and apply the intents to the cluster:
+
+```bash
+otterize clientintents export -n otterize-tutorial-azure-iam.<CLUSTER NAME> -v v2 | kubectl apply -f-
+```
+
+Complete ClientIntents file:
+
+```yaml
+{@include: ../../../../static/code-examples/azure-iam-aks/clientintents-2.yaml}
 ```
 
 :::note
