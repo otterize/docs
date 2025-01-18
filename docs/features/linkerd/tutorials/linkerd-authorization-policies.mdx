@@ -53,7 +53,9 @@ We will now declare that the **client** intends to call the **server** at a part
 When the intents YAML is applied, creating a custom resource of type `ClientIntents`,
 Otterize will start creating Linkerd resources to enable the intended access and to block non-declared access:
 1. A `Server` resource is created for the target in the `ClientIntents` (if required). A `Server` resource represents a service in the mesh that listens for incoming requests. It's configured to define the service's protocol, port, and other relevant settings.
-2. A `MeshTLSAuthentication` resource
+2. A `MeshTLSAuthentication` resource that is used to represent mesh identities, which will be created for our client.
+3. An `HTTPRoute` that will represent a single path, allowing for more fine-grained enforcement. This will be attached to the `Server` resource.
+4. Finally, an `AuthorizationPolicy` to bind it all together - enabling the intended traffic from
 (**client** &rarr; **server** with the declared path and method) and block all unintended calls (e.g., **client-other** &rarr; **server**).
 
 :::tip
