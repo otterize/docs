@@ -1,0 +1,37 @@
+apiVersion: v1
+items:
+  - apiVersion: policy.linkerd.io/v1beta3
+    kind: HTTPRoute
+    metadata:
+      creationTimestamp: "2025-01-18T23:23:26Z"
+      generation: 1
+      labels:
+        intents.otterize.com/linkerd-server: client-otterize-tutorial-li-353c48
+      name: http-route-for-nginx-port-80-bc98e3
+      namespace: otterize-tutorial-linkerd
+      resourceVersion: "190006"
+      uid: b944017d-f5b2-481e-bfea-97cdf894544f
+    spec:
+      parentRefs:
+        - group: policy.linkerd.io
+          kind: Server
+          name: server-for-nginx-port-80
+      rules:
+        - matches:
+            - path:
+                type: PathPrefix
+                value: /client-path
+    status:
+      parents:
+        - conditions:
+            - lastTransitionTime: "2025-01-18T23:23:26Z"
+              message: ""
+              reason: Accepted
+              status: "True"
+              type: Accepted
+          controllerName: linkerd.io/policy-controller
+          parentRef:
+            group: policy.linkerd.io
+            kind: Server
+            name: server-for-nginx-port-80
+            namespace: otterize-tutorial-linkerd

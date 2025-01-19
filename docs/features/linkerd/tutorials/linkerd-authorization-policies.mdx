@@ -171,31 +171,55 @@ HTTP/1.1 200 OK
 hello from /client-path
 ```
 
-4. You should also see the Linkerd resources that were created:
+4. Examine the Linkerd resources that were created
 
+<details>
+<summary>Expand to view Linkerd resources</summary>
+<Tabs>
 
-```bash
-kubectl get servers.policy.linkerd.io -n otterize-tutorial-linkerd
-NAME                       PORT   PROTOCOL   ACCESS POLICY
-server-for-nginx-port-80   80     unknown    deny
-```
-```bash
-kubectl get meshtlsauthentications.policy.linkerd.io -n otterize-tutorial-linkerd
-NAME                        AGE
-meshtls-for-client-client   51s
-```
-```bash
-kubectl get authorizationpolicies.policy.linkerd.io -n otterize-tutorial-linkerd
-NAME                                                                AGE
-authpolicy-to-nginx-port-80-from-client-client-abcdefg              2m49s
-```
-```bash
-kubectl get httproutes.policy.linkerd.io -n otterize-tutorial-linkerd
-NAME                                  HOSTNAMES   AGE
-http-route-for-nginx-port-80-bc98e3               2m54s
+<TabItem value="server.yaml" label="Server" default>
+
+This represents a service in the mesh that listens for incoming requests. It's configured to define the service's protocol, port, and other relevant settings.
+Matched with the target pod using label selectors.
+
+```yaml
+{@include: ../../../../static/code-examples/linkerd-authorization-policies/resources/server.yaml}
 ```
 
+</TabItem>
 
+<TabItem value="meshtlsauth.yaml" label="MeshTLSAuthentication" default>
+
+Otterize pairs `MeshTLSAuthentication` with our client's service account.
+
+```yaml
+{@include: ../../../../static/code-examples/linkerd-authorization-policies/resources/meshtlsauth.yaml}
+```
+
+</TabItem>
+<TabItem value="httproute.yaml" label="HTTPRoute" default>
+
+An HTTPRoute defines a set of rules which match HTTP requests to that resource. It is attached to a "parent" resource - in this case, the previously created `Server` resource.
+
+```yaml
+{@include: ../../../../static/code-examples/linkerd-authorization-policies/resources/httproute.yaml}
+```
+
+</TabItem>
+<TabItem value="authpolicy.yaml" label="AuthorizationPolicy" default>
+
+Which binds it all together and mentions the `HTTPRoute` or `Server` (The thing to be authorized) and the `MeshTLSAuthentication` (the clients that have autorization).
+
+```yaml
+{@include: ../../../../static/code-examples/linkerd-authorization-policies/resources/authpolicy.yaml}
+```
+
+</TabItem>
+
+</Tabs>
+</details>
+
+### View it in the cloud
 If you've attached Otterize OSS to Otterize Cloud, go back to see the [access graph in your browser](https://app.otterize.com):
 
 ![Access graph](/img/quick-tutorials/linkerd/linkerd.png)

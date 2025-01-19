@@ -28,7 +28,7 @@ To learn how to use the Intents Operator to enforce access using Linkerd authori
 
 1. First, the cluster must have [Otterize installed](/overview/installation).
 2. To have Otterize generate Linkerd authorization policies, declare and apply ([IBAC](/overview/intent-based-access-control)) ClientIntents for your services.
-Once you do so, Otterize will generate an Linkerd authorization policy allowing access from the client service, identified by its ServiceAccount, to the server, identified by its labels.
+Once you do so, Otterize will generate a Linkerd authorization policy allowing access from the client service, identified by its service account, to the server, identified by a Linkerd Server resource.
 The HTTP Resources section in the ClientIntents is optional: if you do not specify it, all pod-to-pod access is allowed.
 
 ```yaml
