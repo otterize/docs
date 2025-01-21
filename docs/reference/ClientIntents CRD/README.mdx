@@ -48,7 +48,8 @@ spec:
             operations: [ SELECT, INSERT ] # Allowed SQL operations
     - internet:
         domains:
-          - api.example.com # Allowed domain names
+          - 'api.example.com' # Allowed domain names
+          - '*.example.com' # Allowed domain names with '.example.com' suffix
         ips:
           - 192.168.1.1 # Allowed IP addresses
         ports:
