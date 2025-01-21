@@ -256,14 +256,8 @@ In the preceding example, a static IP address was employed for the definitions o
 
 In the above YAML file, we have replaced the IP address with our service’s domain name.
 
-Otterize will now track the resolved IP addresses for `api.adviceslip.com` and add them to NetworkPolicies within your clusters.
+Otterize will now track the resolved IP addresses for `api.adviceslip.com` and add them to NetworkPolicies within your clusters. Let’s deploy the revised intent with the command below:
 
-Alternatively, we can use domains prefixed with a wildcard. Otterize will try to match outgoing egress requests
-to wildcard domains by monitoring IPs in DNS responses. So requests to `api.adviceslip.com` will be
-paired with `*.adviceslip.com`.
-Since Otterize cannot resolve `*.adviceslip.com`'s IP itself, it relies on requests from pods in the cluster by reviewing their DNS response.
-
-Let’s deploy the revised intent with the command below:
 ```bash
 kubectl apply -n otterize-tutorial-egress-access -f ${ABSOLUTE_URL}/code-examples/egress-access-control/domain-intents.yaml
 ```
