@@ -1,20 +1,14 @@
-apiVersion: v1
-items:
-  - apiVersion: policy.linkerd.io/v1beta3
-    kind: Server
-    metadata:
-      creationTimestamp: "2025-01-18T23:23:26Z"
-      generation: 1
-      labels:
-        intents.otterize.com/linkerd-server: client-otterize-tutorial-li-353c48
-      name: server-for-nginx-port-80
-      namespace: otterize-tutorial-linkerd
-      resourceVersion: "189994"
-      uid: 087764e4-f8a1-493f-95a5-a36582a61263
-    spec:
-      accessPolicy: deny
-      podSelector:
-        matchLabels:
-          intents.otterize.com/service: nginx-otterize-tutorial-li-efa4db
-      port: 80
-      proxyProtocol: unknown
+apiVersion: policy.linkerd.io/v1beta3
+kind: Server
+metadata:
+  name: server-for-nginx-port-80
+  namespace: otterize-tutorial-linkerd
+spec:
+  accessPolicy: deny
+  podSelector:
+    matchLabels:
+      # highlight-next-line
+      intents.otterize.com/service: nginx-otterize-tutorial-li-efa4db # Pods are automatically labeled by Otterize
+  # highlight-next-line
+  port: 80 # Automatically determined by looking up the Kubernetes Service for this server
+  proxyProtocol: unknown
