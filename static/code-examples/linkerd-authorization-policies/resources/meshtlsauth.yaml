@@ -6,4 +6,6 @@ metadata:
 spec:
   identities:
     # highlight-next-line
-    - client-service-account.otterize-tutorial-linkerd.serviceaccount.identity.linkerd.cluster.local # Automatically determined by looking up the Kubernetes ServiceAccount for this client
+    # Automatically determined by looking up the Kubernetes ServiceAccount for this client
+    # highlight-next-line
+    - client-service-account.otterize-tutorial-linkerd.serviceaccount.identity.linkerd.cluster.local

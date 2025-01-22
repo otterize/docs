@@ -8,7 +8,11 @@ spec:
   podSelector:
     matchLabels:
       # highlight-next-line
-      intents.otterize.com/service: nginx-otterize-tutorial-li-efa4db # Pods are automatically labeled by Otterize
+      # Pods are automatically labeled by Otterize
+      # highlight-next-line
+      intents.otterize.com/service: nginx-otterize-tutorial-li-efa4db
   # highlight-next-line
-  port: 80 # Automatically determined by looking up the Kubernetes Service for this server
+  # Automatically determined by looking up the Kubernetes Service for this server
+  # highlight-next-line
+  port: 80
   proxyProtocol: unknown
