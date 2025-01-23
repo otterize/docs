@@ -190,6 +190,12 @@ const config = {
           {
             position: "left",
             target: "_self",
+            href:'https://otterize.com/resources?categories=Lab&page=1&search=',
+            html: "<div class='tw-inline tw-font-normal tw-text-base'>Labs</div>",
+          },
+          {
+            position: "left",
+            target: "_self",
             href:'https://www.otterize.com/pricing',
             html: "<div class='tw-inline tw-font-normal tw-text-base'>Pricing</div>",
           },
@@ -198,12 +204,6 @@ const config = {
             target: "_self",
             href:'https://www.otterize.com/resources',
             html: "<div class='tw-inline tw-font-normal tw-text-base'>Blog</div>",
-          },
-          {
-            position: "left",
-            target: "_self",
-            href:'https://www.otterize.com/team',
-            html: "<div class='tw-inline tw-font-normal tw-text-base'>Team</div>",
           },
           {
             href: "https://app.otterize.com/",
