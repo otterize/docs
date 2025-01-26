@@ -6,6 +6,7 @@ metadata:
 spec:
   workload:
     name: client
+    kind: Deployment
   targets:
     - kubernetes:
         name: nginx
