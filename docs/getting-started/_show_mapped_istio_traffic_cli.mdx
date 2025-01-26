@@ -48,7 +48,7 @@ Note the HTTP-level details in the `list` and `export` results. For example, the
 
 2. For the simple example above, you should see (concatenated into one YAML file):
    ```yaml
-   apiVersion: k8s.otterize.com/v2alpha1
+   apiVersion: k8s.otterize.com/v2beta1
       kind: ClientIntents
    metadata:
      name: client
@@ -64,7 +64,7 @@ Note the HTTP-level details in the `list` and `export` results. For example, the
            - path: /client-path
              methods: [GET]
    ---
-   apiVersion: k8s.otterize.com/v2alpha1
+   apiVersion: k8s.otterize.com/v2beta1
    kind: ClientIntents
    metadata:
      name: client2
@@ -95,7 +95,7 @@ Note the HTTP-level details in the `list` and `export` results. For example, the
     [
       {
         "kind": "ClientIntents",
-        "apiVersion": "k8s.otterize.com/v2alpha1",
+        "apiVersion": "k8s.otterize.com/v2beta1",
         "metadata": {
           "name": "client",
           "namespace": "otterize-tutorial-istio-mapping"
@@ -122,7 +122,7 @@ Note the HTTP-level details in the `list` and `export` results. For example, the
       },
       {
         "kind": "ClientIntents",
-        "apiVersion": "k8s.otterize.com/v2alpha1",
+        "apiVersion": "k8s.otterize.com/v2beta1",
         "metadata": {
           "name": "client2",
           "namespace": "otterize-tutorial-istio-mapping"

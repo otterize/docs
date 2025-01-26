@@ -160,7 +160,7 @@ as YAML [client intents file(s)](/overview/intent-based-access-control) or as JS
 Here's a partial output from `otterize network-mapper export -n otterize-ecom-demo`:
 
 ```yaml
-apiVersion: k8s.otterize.com/v2alpha1
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: cartservice
@@ -173,7 +173,7 @@ spec:
     - service: 
         name: redis-cart
 ---
-apiVersion: k8s.otterize.com/v2alpha1
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: checkoutservice

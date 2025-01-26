@@ -60,7 +60,7 @@ client-other in namespace otterize-tutorial-npol calls:
 ```
 **otterize mapper export example:**
 ```yaml
-apiVersion: k8s.otterize.com/v2alpha1
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: client
@@ -73,7 +73,7 @@ spec:
     - service:
         name: server
 ---
-apiVersion: k8s.otterize.com/v2alpha1
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: client-other
@@ -98,7 +98,7 @@ Having deployed Otterize, you can then apply the [ClientIntents](/reference/Clie
 Read more in the [Network Policies Deep Dive](/features/network-mapping-network-policies/Reference/Network-Policies-Deep-Dive).
 
 ```yaml
-apiVersion: k8s.otterize.com/v2alpha1
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: client

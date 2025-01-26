@@ -11,13 +11,13 @@ It is now also possible to target a specific kind of Kubernetes resource, such a
 
 Starting January 2025, or version 5 ORIORIORI of the `otterize-kubernetes` Helm chart, ClientIntents v2 is the default format.
 
-# ClientIntents: Differences between v1alpha3 and v2alpha1
+# ClientIntents: Differences between v1alpha3 and v2beta1
 
-This document highlights the differences in the `ClientIntents` Custom Resource Definition (CRD) specification between `v1alpha3` and `v2alpha1`. It provides a detailed breakdown of each part of the `spec` and outlines what has changed.
+This document highlights the differences in the `ClientIntents` Custom Resource Definition (CRD) specification between `v1alpha3` and `v2beta1`. It provides a detailed breakdown of each part of the `spec` and outlines what has changed.
 
 ## Overview of Key Differences
 
-The `v2alpha1` version introduces:
+The `v2beta1` version introduces:
 - More structured and streamlined target definitions.
 - Unified field names for consistency across all target types.
 - Simplifications in defining certain resource-specific details.
@@ -34,7 +34,7 @@ service:
 
 **Purpose**: Defines the client workload initiating requests.
 
-#### `v2alpha1`
+#### `v2beta1`
 ```yaml
 workload:
   name: <string>
@@ -62,7 +62,7 @@ calls:
   - `name`: Represents the  target resource (e.g., service name, ARN, scope).
 
 **Purpose**: Defines the resources that the workload interacts with.
-#### `v2alpha1`
+#### `v2beta1`
 ```yaml
 targets:
   - <target-type>:
@@ -88,7 +88,7 @@ cals:
 
 **Purpose**: Defines the target service for inter-service communication (will be translated to NetworkPolicies or mesh policies).
 
-#### `v2alpha1`
+#### `v2beta1`
 ```yaml
 targets:
   - kubernetes:
@@ -121,7 +121,7 @@ calls:
 
 **Purpose**: Defines HTTP resources accessed by the workload.
 
-#### `v2alpha1`
+#### `v2beta1`
 ```yaml
 targets:
   - kubernetes:
@@ -156,7 +156,7 @@ calls:
 
 **Purpose**: Represents the interaction with Kafka clusters.
 
-#### `v2alpha1`
+#### `v2beta1`
 ```yaml
 targets:
   - kafka:
@@ -198,7 +198,7 @@ calls:
 
 **Purpose**: Defines SQL database targets and operations.
 
-#### `v2alpha1`
+#### `v2beta1`
 ```yaml
 targets:
   - sql:
@@ -238,7 +238,7 @@ calls:
 
 **Purpose**: Defines AWS permissions and target resources.
 
-#### `v2alpha1`
+#### `v2beta1`
 ```yaml
 targets:
   - aws:
@@ -272,7 +272,7 @@ calls:
 
 **Purpose**: Defines Azure permissions and target resources.
 
-#### `v2alpha1`
+#### `v2beta1`
 ```yaml
 targets:
   - azure:
@@ -311,7 +311,7 @@ calls:
 
 **Purpose**: Defines GCP permissions and target resources.
 
-#### `v2alpha1`
+#### `v2beta1`
 ```yaml
 targets:
   - gcp:
@@ -353,7 +353,7 @@ calls:
 
 **Purpose**: Supports defining internet-based targets for workload interactions.
 
-#### `v2alpha1`
+#### `v2beta1`
 ```yaml
 targets:
   - internet:
@@ -374,7 +374,7 @@ targets:
 ---
 
 ### Summary
-| Feature             | `v1alpha3`                     | `v2alpha1`                    |
+| Feature             | `v1alpha3`                     | `v2beta1`                    |
 |---------------------|---------------------------------|--------------------------------|
 | Client Workload     | `service.name`                 | `workload.name`, `workload.kind` |
 | Target Field        | `calls`                        | `targets`                     |

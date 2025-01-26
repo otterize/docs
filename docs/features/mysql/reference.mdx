@@ -5,7 +5,7 @@ title: Reference
 
 ### MySQLServerConfig example (YAML)
 ```yaml
-apiVersion: k8s.otterize.com/v2alpha1
+apiVersion: k8s.otterize.com/v2beta1
 kind: MySQLServerConfig
 metadata:
   name: mysql-tutorial-db # database instance name - should match the target in ClientIntents
@@ -32,7 +32,7 @@ spec:
 ### ClientIntents example (YAML)
 
 ```yaml
-apiVersion: k8s.otterize.com/v2alpha1
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: client-intents-for-server

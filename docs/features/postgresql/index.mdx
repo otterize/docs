@@ -63,7 +63,7 @@ The Otterize credentials operator will create a unique PostgreSQL username-passw
 2. You'll need to create a `PostgreSQLServerConfig` in your cluster, providing a connection URL and admin-level credentials for Otterize to manage permissions in your database. Below is an example `PostgreSQLServerConfig` resource.
 
 ```yaml
-apiVersion: k8s.otterize.com/v2alpha1
+apiVersion: k8s.otterize.com/v2beta1
 kind: PostgreSQLServerConfig
 metadata:
   name: postgres-tutorial-db # database instance name - should match the target in ClientIntents
@@ -130,7 +130,7 @@ spec:
 4. Apply `ClientIntents` and the specified access will be `GRANT`ed to the workload in the `ClientIntents`.
 
 ```yaml
-apiVersion: k8s.otterize.com/v2alpha1
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: client-intents-for-server

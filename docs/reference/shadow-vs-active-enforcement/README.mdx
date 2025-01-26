@@ -71,7 +71,7 @@ otterize network-mapper export --server <WORKLOAD_NAME>.<WORKLOAD_NAMESPACE> > c
 The result, when there happens to be a single client, `frontend`, calling the `checkoutservice` as well as other workloads, would look like:
 
 ```yaml
-apiVersion: k8s.otterize.com/v2alpha1
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: frontend
@@ -106,7 +106,7 @@ Now, knowing authorized clients won't be blocked, you can override shadow mode f
 
 
 ```yaml
-apiVersion: k8s.otterize.com/v2alpha1
+apiVersion: k8s.otterize.com/v2beta1
 kind: ProtectedService
 metadata:
   name: <SERVICE_NAME> # This can actually be any name you want to give to this resource

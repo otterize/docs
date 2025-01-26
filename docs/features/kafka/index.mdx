@@ -41,7 +41,7 @@ To learn how to use the Intents Operator and Credentials Operator to enforce acc
 2. Configure the Otterize Intents Operator to manage a Kafka broker by declaring a `KafkaServerConfig`. See the example yaml below.
 
 ```yaml
-apiVersion: k8s.otterize.com/v2alpha1
+apiVersion: k8s.otterize.com/v2beta1
 kind: KafkaServerConfig
 metadata:
   name: kafkaserverconfig
@@ -110,7 +110,7 @@ spec:
 4. Once the Kafka clients are deployed with the mTLS credentials, they should be able to access topics as we have enabled `allowEveryoneIfNoAclFound`. To begin enforcing, declare ClientIntents, which will cause the Intents Operator to configure ACLs allowing this access.
 
 ```yaml
-apiVersion: k8s.otterize.com/v2alpha1
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: client

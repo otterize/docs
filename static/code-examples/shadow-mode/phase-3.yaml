@@ -1,4 +1,4 @@
-apiVersion: k8s.otterize.com/v2alpha1
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: frontend
@@ -12,7 +12,7 @@ spec:
     - service:
         name: productcatalogservice
 ---
-apiVersion: k8s.otterize.com/v2alpha1
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: checkoutservice

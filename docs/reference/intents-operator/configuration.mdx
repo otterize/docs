@@ -13,7 +13,7 @@ Here is an annotated example of a `KafkaServerConfig`, followed by an in-depth e
 ## Full annotated example
 
 ```yaml
-apiVersion: k8s.otterize.com/v2alpha1
+apiVersion: k8s.otterize.com/v2beta1
 kind: KafkaServerConfig
 metadata:
   name: kafkabroker  # the name of the KafkaServerConfig resource
@@ -40,7 +40,7 @@ The name of the workload as it appears in ClientIntents.
 For example:
 
 ```yaml
-apiVersion: k8s.otterize.com/v2alpha1
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 [...]
 spec:
@@ -130,7 +130,7 @@ Set(User:ANONYMOUS has DENY permission for operations: ALL from hosts: *)
 And when you declare and apply this intent:
 
 ```yaml
-apiVersion: k8s.otterize.com/v2alpha1
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 [...]
 spec:

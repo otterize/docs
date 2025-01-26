@@ -1,4 +1,4 @@
-apiVersion: k8s.otterize.com/v2alpha1
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: paymentservice
@@ -13,7 +13,7 @@ spec:
           - name: payments
             operations: [ all ]
 ---
-apiVersion: k8s.otterize.com/v2alpha1
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: checkoutservice
@@ -40,7 +40,7 @@ spec:
     - service:
         name: shippingservice
 ---
-apiVersion: k8s.otterize.com/v2alpha1
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: orderservice

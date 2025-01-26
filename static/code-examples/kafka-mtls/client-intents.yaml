@@ -1,4 +1,4 @@
-apiVersion: k8s.otterize.com/v2alpha1
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: client
@@ -16,7 +16,7 @@ spec:
           - name: transactions
             operations: [ produce,describe,consume ]
 ---
-apiVersion: k8s.otterize.com/v2alpha1
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: kafka

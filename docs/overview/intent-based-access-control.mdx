@@ -19,7 +19,7 @@ In other words, developers declare what their service intends to access, and tha
 
 Here’s an example of a client intents file (as a Kubernetes custom resource YAML) for a service named **client** that has network access to another service named **auth-server** and has access to **production-db’s** **metrics** database:
 ```yaml
-apiVersion: k8s.otterize.com/v2alpha1
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: client-intents

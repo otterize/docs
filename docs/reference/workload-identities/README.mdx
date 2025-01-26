@@ -7,7 +7,7 @@ Otterize supports two approaches for specifying workload identity in Kubernetes:
 ## Explicitly specifying `Kind`
 This approach requires specifying both the name, possibly with a namespace, and the kind of the service in the intent, ensuring precise identification.
 ```yaml
-   apiVersion: k8s.otterize.com/v2alpha1
+   apiVersion: k8s.otterize.com/v2beta1
    kind: ClientIntents
    metadata:
      name: client

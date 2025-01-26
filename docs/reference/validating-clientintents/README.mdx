@@ -28,7 +28,7 @@ The following are some example Kyverno policies that can be used to validate `Cl
             any:
               - resources:
                   kinds:
-                    - k8s.otterize.com/v2alpha1/ClientIntents
+                    - k8s.otterize.com/v2beta1/ClientIntents
           validate:
             message: "s3:DeleteObject is not allowed"
             foreach:

@@ -7,7 +7,7 @@ title: Reference
 
 
 ```yaml
-apiVersion: k8s.otterize.com/v2alpha1
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: server
@@ -35,7 +35,7 @@ Otterize supports templating AWS resource names by AWS region & account ID.
 The templates `$(AWS_REGION)` & `$(AWS_ACCOUNT_ID)` in AWS resource ARNs will be automatically replaced with the EKS cluster's region & account ID:
 
 ```yaml
-apiVersion: k8s.otterize.com/v2alpha1
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: server

@@ -177,7 +177,7 @@ otterize network-mapper export --server productcatalogservice.otterize-ecom-demo
 
 Here's the output:
 ```yaml
-apiVersion: k8s.otterize.com/v2alpha1
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: checkoutservice
@@ -202,7 +202,7 @@ spec:
     - service:
         name: shippingservice
 ---
-apiVersion: k8s.otterize.com/v2alpha1
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: frontend
@@ -227,7 +227,7 @@ spec:
     - service:
         name: shippingservice
 ---
-apiVersion: k8s.otterize.com/v2alpha1
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: recommendationservice
@@ -321,7 +321,7 @@ So what have we learned? You can gradually roll out IBAC and drive towards zero 
 3. Declare those intents: `kubectl apply -f protect-<NAME>.yaml`.
 4. Now protect that server by `kubectl apply -f` with the following YAML:
 ```yaml
-apiVersion: k8s.otterize.com/v2alpha1
+apiVersion: k8s.otterize.com/v2beta1
 kind: ProtectedService
 metadata:
   name: <NAME>
