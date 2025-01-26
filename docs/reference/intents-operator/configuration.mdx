@@ -18,7 +18,7 @@ kind: KafkaServerConfig
 metadata:
   name: kafkabroker  # the name of the KafkaServerConfig resource
 spec:
-  service:
+  workload:
     name: ecomm-events # the name of the Otterize service, as it would appear in ClientIntents as the destination.
     kind: Deployment # OPTIONAL: the kubernetes kind of the service you want to protect (Deployment, StatefulSet, Service, etc.)
   addr: ecommevents.namespace:9092 # the address the intents operator will connect to in order to apply ACLs to this broker
