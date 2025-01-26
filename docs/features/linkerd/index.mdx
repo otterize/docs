@@ -33,18 +33,20 @@ The HTTP Resources section in the ClientIntents is optional: if you do not speci
 
 ```yaml
 
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: client
   namespace: otterize-tutorial-linkerd
 spec:
-  service:
+  workload:
     name: client
-  calls:
-    - name: server-abc
-      type: http
-      HTTPResources:
+    kind: Deployment
+  targets:
+    - kubernetes:
+      name: server-abc
+      kind: Deployment
+      http:
         - path: /client-path
           methods: [ GET ]
 
