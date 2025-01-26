@@ -1,0 +1,18 @@
+apiVersion: policy.linkerd.io/v1beta3
+kind: Server
+metadata:
+  name: server-for-nginx-port-80
+  namespace: otterize-tutorial-linkerd
+spec:
+  accessPolicy: deny
+  podSelector:
+    matchLabels:
+      # highlight-next-line
+      # Pods are automatically labeled by Otterize
+      # highlight-next-line
+      intents.otterize.com/service: nginx-otterize-tutorial-li-efa4db
+  # highlight-next-line
+  # Automatically determined by looking up the Kubernetes Service for this server
+  # highlight-next-line
+  port: 80
+  proxyProtocol: unknown

@@ -1,0 +1,11 @@
+apiVersion: policy.linkerd.io/v1alpha1
+kind: MeshTLSAuthentication
+metadata:
+  name: meshtls-for-client-client
+  namespace: otterize-tutorial-linkerd
+spec:
+  identities:
+    # highlight-next-line
+    # Automatically determined by looking up the Kubernetes ServiceAccount for this client
+    # highlight-next-line
+    - client-service-account.otterize-tutorial-linkerd.serviceaccount.identity.linkerd.cluster.local
