@@ -1,21 +1,26 @@
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: frontend
   namespace:  otterize-tutorial-egress-access
 spec:
-  service:
+  workload:
     name: frontend
-  calls:
-    - name: backend
+    kind: Deployment
+  targets:
+    - service:
+        name: backend
+
 ---
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: backend
   namespace: otterize-tutorial-egress-access
 spec:
-  service:
+  workload:
     name: backend
-  calls:
-    - name: frontend
+    kind: Deployment
+  targets:
+    - service:
+        name: frontend

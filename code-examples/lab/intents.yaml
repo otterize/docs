@@ -1,81 +1,86 @@
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: cartservice
   namespace: otterize-ecom-demo
 spec:
-  service:
+  workload:
     name: cartservice
-  calls:
-    - name: redis-cart
-      type: http
+    kind: Deployment
+  targets:
+    - service:
+        name: redis-cart
 ---
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: checkoutservice
   namespace: otterize-ecom-demo
 spec:
-  service:
+  workload:
     name: checkoutservice
-  calls:
-    - name: cartservice
-      type: http
-    - name: currencyservice
-      type: http
-    - name: emailservice
-      type: http
-    - name: paymentservice
-      type: http
-    - name: productcatalogservice
-      type: http
-    - name: shippingservice
-      type: http
+    kind: Deployment
+  targets:
+    - service:
+        name: cartservice
+    - service:
+        name: currencyservice
+    - service:
+        name: emailservice
+    - service:
+        name: paymentservice
+    - service:
+        name: productcatalogservice
+    - service:
+        name: shippingservice
 ---
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: frontend
   namespace: otterize-ecom-demo
 spec:
-  service:
+  workload:
     name: frontend
-  calls:
-    - name: adservice
-      type: http
-    - name: cartservice
-      type: http
-    - name: checkoutservice
-      type: http
-    - name: currencyservice
-      type: http
-    - name: productcatalogservice
-      type: http
-    - name: recommendationservice
-      type: http
-    - name: shippingservice
-      type: http
+    kind: Deployment
+  targets:
+    - service:
+        name: adservice
+    - service:
+    -   name: cartservice
+    - service:
+    -   name: checkoutservice
+    - service:
+    -   name: currencyservice
+    - service:
+    -   name: productcatalogservice
+    - service:
+    -   name: recommendationservice
+    - service:
+    -   name: shippingservice
 ---
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: loadgenerator
   namespace: otterize-ecom-demo
 spec:
-  service:
+  workload:
     name: loadgenerator
-  calls:
-    - name: frontend
-      type: http
+    kind: Deployment
+  targets:
+    - service:
+        name: frontend
 ---
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: recommendationservice
   namespace: otterize-ecom-demo
 spec:
-  service:
+  workload:
     name: recommendationservice
-  calls:
-    - name: productcatalogservice
-      type: http
+    kind: Deployment
+  targets:
+    - service:
+        name: productcatalogservice

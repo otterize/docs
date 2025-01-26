@@ -1,52 +1,53 @@
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: frontend
   namespace: otterize-visual-tutorial-istio
 spec:
-  service:
+  workload:
     name: frontend
-  calls:
-    - name: adservice
-      type: http
-      HTTPResources:
-        - path: /ads
-          methods:
-            - GET
-    - name: cartservice
-      type: http
-      HTTPResources:
-        - path: /items
-          methods:
-            - POST
-            - GET
-    - name: checkoutservice
-      type: http
-      HTTPResources:
-        - path: /checkout
-          methods:
-            - POST
-    - name: currencyservice
-      type: http
-      HTTPResources:
-        - path: /currency
-          methods:
-            - GET
-    - name: productcatalogservice
-      type: http
-      HTTPResources:
-        - path: /products
-          methods:
-            - GET
-    - name: recommendationservice
-      type: http
-      HTTPResources:
-        - path: /recommendations
-          methods:
-            - GET
-    - name: shippingservice
-      type: http
-      HTTPResources:
-        - path: /shipping
-          methods:
-            - POST
+    kind: Deployment
+  targets:
+    - service:
+        name: adservice
+        http:
+          - path: /ads
+            methods:
+              - GET
+    - service:
+        name: cartservice
+        http:
+          - path: /items
+            methods:
+              - POST
+              - GET
+    - service:
+        name: checkoutservice
+        http:
+          - path: /checkout
+            methods:
+              - POST
+    - service:
+        name: currencyservice
+        http:
+          - path: /currency
+            methods:
+              - GET
+    - service:
+        name: productcatalogservice
+        http:
+          - path: /products
+            methods:
+              - GET
+    - service:
+        name: recommendationservice
+        http:
+          - path: /recommendations
+            methods:
+              - GET
+    - service:
+        name: shippingservice
+        http:
+          - path: /shipping
+            methods:
+              - POST

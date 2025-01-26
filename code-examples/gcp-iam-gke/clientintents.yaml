@@ -1,13 +1,14 @@
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: server
   namespace: otterize-tutorial-gcp-iam
 spec:
-  service:
+  workload:
     name: server
-  calls:
-    - name: projects/_/buckets/otterize-tutorial-bucket*
-      type: gcp
-      gcpPermissions:
-        - "storage.admin"
+    kind: Deployment
+  targets:
+    - gcp:
+        resource: projects/_/buckets/otterize-tutorial-bucket*
+        permissions:
+          - "storage.admin"

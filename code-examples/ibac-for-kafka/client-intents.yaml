@@ -1,14 +1,15 @@
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: myclient
   namespace:  ibac-for-kafka
 spec:
-  service:
+  workload:
     name: myclient
-  calls:
-    - name: kafka.kafka
-      type: kafka
-      kafkaTopics:
-        - name: my-topic
-          operations: [ all ]
+    kind: Deployment
+  targets:
+    - kafka:
+        name: kafka.kafka
+        topics:
+          - name: my-topic
+            operations: [ all ]

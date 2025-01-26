@@ -1,17 +1,18 @@
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: client-intents-for-server
   namespace: otterize-tutorial-postgres
 spec:
-  service:
+  workload:
     name: server
-  calls:
-    - name: postgres-tutorial-db # Same name as our PostgreSQLServerConfig metadata.name
-      type: database
-      databaseResources:
-        - databaseName: otterize-tutorial
-          table: public.example
-          operations:
-            - SELECT
-            - INSERT
+    kind: Deployment
+  targets:
+    - sql:
+        name: postgres-tutorial-db # Same name as our PostgreSQLServerConfig metadata.name
+        privileges:
+          - databaseName: otterize-tutorial
+            table: public.example
+            operations:
+              - SELECT
+              - INSERT
