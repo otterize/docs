@@ -1,0 +1,8 @@
+{
+  "label": "Linkerd",
+  "position": 7,
+  "collapsed": true,
+  "customProps": {
+    "image": "/img/icons/linkerd-no-word-mark.svg"
+  }
+}

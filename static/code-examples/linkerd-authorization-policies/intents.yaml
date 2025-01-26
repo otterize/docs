@@ -1,0 +1,15 @@
+apiVersion: k8s.otterize.com/v2beta1
+kind: ClientIntents
+metadata:
+  name: client
+  namespace: otterize-tutorial-linkerd
+spec:
+  workload:
+    name: client
+  targets:
+    - kubernetes:
+        name: nginx
+        kind: Deployment
+        http:
+          - path: /client-path
+            methods: [ GET ]
