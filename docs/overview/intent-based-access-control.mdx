@@ -19,23 +19,24 @@ In other words, developers declare what their service intends to access, and tha
 
 Here’s an example of a client intents file (as a Kubernetes custom resource YAML) for a service named **client** that has network access to another service named **auth-server** and has access to **production-db’s** **metrics** database:
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha2
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: client-intents
 
 spec:
-  service:
+  workload:
     name: client
-  calls:
-    - name: auth-server
-    - name: production-db
-      type: database
-      databaseResources:
-        - databaseName: metrics
+  targets:
+    - service:
+        name: auth-server
+    - sql:
+        name: production-db
+        resources:
+          - databaseName: metrics
 ```
 
 ## How do intents work?
-When intents are created for a client, the intents operator automatically creates, updates, and deletes the corresponding policies and automatically labels client and server pods to reflect precisely the client-to-server calls declared in client intents files. For instance, for a NetworkPolicy, a single policy is created per server, and pod labels are dynamically updated for clients when their intents are updated
+When intents are created for a client, the intents operator automatically creates, updates, and deletes the corresponding policies and automatically labels client and server pods to reflect precisely the client-to-server calls declared in client intents. For instance, for a NetworkPolicy, a single policy is created per server, and pod labels are dynamically updated for clients when their intents are updated.
 
-Service names are resolved by recursively getting the owner of a pod until the original owner is found, usually a Deployment, StatefulSet, or other such resource. The name of that resource is used unless the pod has a service-name annotation, in which case the value of that annotation is used instead.
+Workload identities are determined by recursively getting the owner of a pod until the original owner is found, usually a Deployment, StatefulSet, or other such resource. The name of that resource is used unless the pod has a workload-name annotation, in which case the value of that annotation is used instead.

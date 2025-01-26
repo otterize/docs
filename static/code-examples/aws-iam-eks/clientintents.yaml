@@ -1,12 +1,13 @@
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: server
 spec:
-  service:
+  workload:
     name: server
-  calls:
-    - name: arn:aws:s3:::otterize-tutorial-bucket-*/*
-      type: aws
-      awsActions:
-        - "s3:PutObject"
+    kind: Deployment
+  targets:
+    - aws:
+        arn: arn:aws:s3:::otterize-tutorial-bucket-*/*
+        actions:
+          - "s3:PutObject"

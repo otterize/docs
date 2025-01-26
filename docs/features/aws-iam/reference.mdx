@@ -5,49 +5,51 @@ title: Reference
 
 ### ClientIntents example (YAML)
 
+
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: server
 spec:
-  service:
-    # The name of the pod that will be granted access
+  workload:
+    # The name & kind of the workload that will be granted access
     name: server
-  calls:
-      # The AWS ARN or ARN wildcard that references the resource(s) for the authorization
-    - name: arn:aws:s3:::example-bucket-*/*
-      type: aws
-      # one or more AWS Actions or Action wildcards that will be provided to the specified resources
-      awsActions:
-        - "s3:PutObject"
-        - "s3:GetObject"
+    kind: Deployment
+  targets:
+    - aws:
+        # The AWS ARN or ARN wildcard that references the resource(s) for the authorization
+        arn: arn:aws:s3:::example-bucket-*/*
+        # one or more AWS Actions or Action wildcards that will be provided to the specified resources
+        actions:
+          - "s3:PutObject"
+          - "s3:GetObject"
     # Multiple call definitions can be defined for a single service.
-    - name: arn:aws:s3:::read-only-bucket-*/*
-      type: aws
-      awsActions:
-        - "s3:GetObject"
+    - aws:
+        arn: arn:aws:s3:::read-only-bucket-*/*
+        actions:
+          - "s3:GetObject"
 ```
 
 Otterize supports templating AWS resource names by AWS region & account ID.
 The templates `$(AWS_REGION)` & `$(AWS_ACCOUNT_ID)` in AWS resource ARNs will be automatically replaced with the EKS cluster's region & account ID:
 
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: server
 spec:
-  service:
+  workload:
     name: server
-  calls:
-    # $(AWS_REGION) & $(AWS_ACCOUNT_ID) will be replaced with the EKS cluster's region & account ID
-    - name: arn:aws:sqs:$(AWS_REGION):$(AWS_ACCOUNT_ID):queue1
-      type: aws
-      awsActions:
-        - "sqs:*"
+    kind: Deployment
+  targets:
+    - aws:
+        # $(AWS_REGION) & $(AWS_ACCOUNT_ID) will be replaced with the EKS cluster's region & account ID
+        arn: arn:aws:sqs:$(AWS_REGION):$(AWS_ACCOUNT_ID):queue1
+        actions:
+          - "sqs:*"
 ```
-
 ### Annotations
 
 | Key                                                        | Description                                                                                                                                                                                  | Default  |

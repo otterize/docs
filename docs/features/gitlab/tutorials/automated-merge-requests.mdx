@@ -77,19 +77,23 @@ otterize network-mapper export -n otterize-tutorial-gitlab > ./intents/intents.y
     <summary>View intents.yaml</summary>
 
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: adventure
   namespace: otterize-tutorial-gitlab
 spec:
-  service:
+  workload:
     name: adventure
-  calls:
-    - name: character-generator
-    - name: monster-generator
-    - name: quest-generator
-    - name: treasure-generator
+  targets:
+    - service:
+        name: character-generator
+    - service:
+        name: monster-generator
+    - service:
+        name: quest-generator
+    - service:
+        name: treasure-generator
 ```
 </details>
 

@@ -6,20 +6,21 @@ title: Reference
 ### ClientIntents example (YAML)
 
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: client
   namespace: otterize-tutorial-istio
 spec:
-  service:
+  workload:
     name: client
-  calls:
-    - name: nginx
-      type: http
-      HTTPResources:
-        - path: /client-path
-          methods: [ GET ]
+    kind: Deployment
+  targets:
+    - service:
+        name: nginx
+        http:
+          - path: /client-path
+            methods: [ GET ]
 ```
 
 

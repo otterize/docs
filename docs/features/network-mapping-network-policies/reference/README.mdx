@@ -7,25 +7,27 @@ hide_table_of_contents: false
 ## ClientIntents example (YAML)
 
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: client-server-access
   namespace:  otterize-example
 spec:
-  service:
-    # The name of the service initiating the connection
+  workload:
+    # The name of the workload initiating the connection
     name: client
-  calls:
+    kind: Deployment
+  targets:
     # The name of the service receiving the connection. Multiple names can be provided
-    - name: server
+    - service:
+        name: server
     # multiple services can be added
-    - name: orderservice
-      # Optional granular rules can be added like the HTTPResources options below.
-      type: http
-      HTTPResources:
-        - path: /orders/*
-          methods: [ get, post ]
+    - service:
+        name: orderservice
+        # Optional granular rules can be added like the http options below.
+        http:
+          - path: /orders/*
+            methods: [ get, post ]
 ```
 
 #### ClientIntents and DNS values
@@ -150,30 +152,32 @@ as YAML [client intents file(s)](/overview/intent-based-access-control) or as JS
 
 Here's a partial output from `otterize network-mapper export -n otterize-ecom-demo`:
 
-```shell
-apiVersion: k8s.otterize.com/v1alpha3
+```yaml
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: cartservice
   namespace: otterize-ecom-demo
 spec:
-  service:
+  workload:
     name: cartservice
-  calls:
-    - name: redis-cart
-      type: http
+    kind: Deployment
+  targets:
+    - service:
+        name: redis-cart
 ---
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: checkoutservice
   namespace: otterize-ecom-demo
 spec:
-  service:
+  workload:
     name: checkoutservice
-  calls:
-    - name: cartservice
-      type: http
-    - name: currencyservice
-      type: http
+    kind: Deployment
+  targets:
+    - service:
+        name: cartservice
+    - service:
+        name: currencyservice
 ```

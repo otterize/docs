@@ -21,7 +21,7 @@ authenticates, is allowed to perform any requested operation.
 
 There are many variations on authorization and authentication. For example, when Otterize is used with Kubernetes
 network policies, the Otterize intents operator first establishes pod identity using
-[a certain algorithm](/reference/service-identities). To authorize pod-to-pod access, it then creates labels and configures
+[a certain algorithm](/reference/workload-identities). To authorize pod-to-pod access, it then creates labels and configures
 network policies in the Kubernetes cluster such that only client pods that are authorized to access the server pod
 are allowed network access to those servers. At runtime, the authorized client pods can simply send requests
 to the server pods, and unless other enforcement mechanisms are in place, no authentication is needed. (Effectively,
@@ -33,8 +33,9 @@ the labels which Otterize configured Kubernetes to put on the pod serve as a kin
 
 <summary>What is IBAC?</summary>
 
-IBAC is short for intent-based access control, which is **a new paradigm** for configuring service-to-service access
-control based on the client service declaring what server calls (or operations) it intends to make.
+IBAC is short for intent-based access control, which is essentially a declarative approach to access control where each workload declares its intended access, and the system uses that information to automatically configure policies where appropriate.
+
+If you are familiar with the Android or iOS systems of permissions, where the app developer declares the access that the app _needs_, and the system uses that information to prompt the user for permission, you have a good analogy for IBAC. In IBAC, the client declares the access it _needs_, and the system uses that information to grant it after the access is reviewed by the user, then this is a similar concept.
 
 For more information, see the [IBAC documentation page](/overview/intent-based-access-control).
 
@@ -58,10 +59,6 @@ according to client intents that have been applied in a particular context -- sa
 an environment (when using Otterize Cloud). With Otterize Cloud, you can also set rules on how to process intents
 before they're used to configure access controls, or even to set access controls directly.
 
-Otterize also provides an optional server SDK (coming soon) that you can embed in your code as an inline access control.
-It provides a layer of authentication and authorization that can be standalone or can be used in addition to
-other access controls such as network policies, API gateways, or proxies.
-
 </details>
 
 <details>
@@ -76,7 +73,7 @@ Otterize also provides a cloud-based, SaaS offering called Otterize Cloud that i
 paid tiers. More information is available at [otterize.com/product](https://otterize.com/product)
 
 In general, **all** Otterize components that run on the user side ("on prem") are open sourced. These include the Kubernetes operators
-and the network mapper that are part of Otterize OSS, as well as the Otterize CLI, the Otterize SDK (coming soon), and components
+and the network mapper that are part of Otterize OSS, as well as the Otterize CLI, and components
 to integrate with your infrastructure, e.g. for integrating with Kafka outside of Kubernetes.
 
 </details>
@@ -117,11 +114,9 @@ topics from clients not having an ACL on it. In that case, intents not only enab
 
 But there may well be cases in which access should still require some other approval before it's granted. For example,
 intents might automatically turn into access only in certain environments, or only for certain services, while others
-require approval or some other check. For such cases, Otterize Cloud (coming soon) provides automation rules that
-intermediate between application of intents and granting of access. Even within Otterize OSS, platform teams can
-manage when access is granted by managing when `kubectl apply` executes within a CI/CD pipeline.
+require approval or some other check. You can achieve this by using [Kyverno validation policies](/reference/validating-clientintents) or the native [Kubernetes ValidatingAdmissionPolicies](https://kubernetes.io/docs/reference/access-authn-authz/validating-admission-policy/) available since v1.30.
 
-For more information on IBAC and security, see the [security documentation](/security).
+Otterize Cloud will also soon support native approval flows for intents, so that you can approve or reject intents -- either manually or through a set of rules, before they're used to affect actual access.
 
 </details>
 

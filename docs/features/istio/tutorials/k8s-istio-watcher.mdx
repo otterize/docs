@@ -97,13 +97,13 @@ The access graph reveals several types of information and insights, such as:
 1. Seeing the network map for different clusters, seeing the subset of the map for a given namespace, or even &mdash; according to how you've mapped namespaces to environments &mdash; seeing the subset of the map for a specific environment.
 2. Revealing detailed HTTP-level information about the calls being made (e.g. `GET` to `/client-path`), as reported by the Istio watcher.
 3. Filtering the map to include recently-seen traffic, since some date in the past. That way you can eliminate calls that are no longer relevant, without having to reset the network mapper and start building a new map.
-4. Showing more specifics about access, if the intents operator is also connected: understand which services are protected or would be protected, and which client calls are being blocked or would be blocked. We'll see more of that in the Istio AuthorizationPolicy tutorial.
+4. Showing more specifics about access, if the intents operator is also connected: understand which workloads are protected or would be protected, and which client calls are being blocked or would be blocked. We'll see more of that in the Istio AuthorizationPolicy tutorial.
 
 ### What's next
 
 The network mapper is a great way to bootstrap IBAC. It generates client intents files that reflect
-the current topology of your services; those can then be used by each client team to grant them easy
-and _secure_ access to the services they need, and as their needs evolve, they need only evolve
+the current topology of your workloads; those can then be used by each client team to grant them easy
+and _secure_ access to the workloads they need, and as their needs evolve, they need only evolve
 the intents files. We'll see more of that below.
 
 Where to go next?

@@ -8,17 +8,27 @@ If you think a term is missing here, please [let us know](https://github.com/ott
 
 ## Basics
 
+### Workload
+An Otterize workload is the logical workload identity used to refer to a particular service. For example, Kafka is a workload, the Frontend is a workload, the login-service is a workload. But an S3 bucket is not a workload.
+
+It can be a client or a server or both. Workloads are connected through client intents: one workload intends to call another workload. [Learn how workload identity resolution happens](/reference/workload-identities).
+
 ### Service
-An Otterize service is the logical "atom" of service-to-service authentication and authorization. It can be a client or a server or both. Services are connected through client intents: one service intends to call another service. [Learn how service identity resolution happens](/reference/service-identities).
+A Service refers to a Kubernetes Service. This is different from a Workload, which is a logical entity that exists in Otterize and can be a client or a server. A Service is a Kubernetes object that exposes a set of pods as a network service. [Read more about Kubernetes Services in the official documentation](https://kubernetes.io/docs/concepts/services-networking/service/).
+
+### Resource
+A resource is a generic term used to refer to any entity that can be accessed or interacted with that is not a workload. In the context of Otterize, resources can be databases, Kafka topics, S3 buckets.
 
 ### CLI
-The [Otterize CLI](/reference/cli) is a command-line utility used to control and interact with the Otterize network mapper, manipulate local Intents files, and (coming soon!) interact with Otterize Cloud.
+The [Otterize CLI](/reference/cli) is a command-line utility used to control and interact with the Otterize network mapper, manipulate local Intents files, and interact with Otterize Cloud.
 
 ### Intent (or client intent)
-Otterize intents are a way to declare that one service intends to call another service. Otterize uses them to apply authorization rules to enable the calls to go through, and block any unintended calls. An *intent* refers to a client declaring a particular call to a server; *all* a given client's intents to the servers it intends to call are collected in a single *client intents file*. [Learn more about intents](/overview/intent-based-access-control).
+Otterize intents are a way to declare that one workload intends to call another workload or use a resource. Otterize uses them to compute which credentials and policies are required to enable the calls to go through, and block any unintended calls. An *intent* refers to a client declaring a particular call to a server; *all* a given client's intents to the servers it intends to call are collected in a single *client intents file*. [Learn more about intents](/overview/intent-based-access-control).
 
 ### Integrations
-Otterize Cloud supports two types of integrations: Kubernetes integrations and generic integrations. Kubernetes integrations connect a Kubernetes cluster to Otterize Cloud, allowing communication with the Otterize operators. Generic integrations connect external systems to Otterize Cloud, providing API/CLI access credentials. These integrations are named based on their usage and must have unique names within an organization.
+An Integration is how you configure Otterize Cloud to work with your infrastructure. For example, you can configure Otterize Cloud to work with a Kubernetes cluster, your GitHub organization, your AWS account, your Slack organization, etc.
+
+Each Integration has different steps that you need to complete to perform the integration. For example, a Kubernetes integration requires that you deploy the Otterize operators. A GitHub integration requires that you connect the Otterize GitHub app to the relevant repositories.
 
 ## Identity
 
@@ -38,7 +48,7 @@ but google.com does not authenticate you, as the client, with a certificate, so 
 An open-source implementation of the [SPIFFE](https://github.com/spiffe/spire) specification. It's used for workload attestation and credential management. [Read more about SPIRE in the official documentation](https://spiffe.io/docs/latest/spire-about/).
 
 ### Credentials operator
-The Otterize [credentials operator](/reference/credentials-operator) automatically resolves pods to dev-friendly service names, registers them with a SPIRE server or with the Otterize Cloud-managed credentials service, and provisions credentials as Kubernetes Secrets.
+The Otterize [credentials operator](/reference/credentials-operator) automatically resolves pods to dev-friendly workload identities, registers them with a SPIRE server or with the Otterize Cloud-managed credentials service, and provisions credentials as Kubernetes Secrets.
 
 ## Enforcement
 
@@ -60,9 +70,6 @@ A Kubernetes custom resource refers to a resource that is not present in the bas
 ### CNI (Container Network Interface)
 CNI is a CNCF project that provides libraries for implementing plugins for configuring network interfaces in Linux containers, and is used by Kubernetes to provide pods running in a cluster with network connectivity.
 Examples of CNI plugins are Calico, Cilium, the AWS VPC CNI plugin. [Read more about Kubernetes CNI plugins here](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/).
-
-### Services
-Services represent the nodes in the access graph. They can be client services, server services, or both, and they are associated with specific namespaces within a Kubernetes cluster. Otterize Cloud infers services from reported intents and provides additional information for Kafka services and certificates. Service names must be unique within a namespace, but not necessarily across the entire cluster or multiple clusters.
 
 ### Namespaces and Environments
 Namespaces are used to group related services within a Kubernetes cluster and can be mapped to different environments (e.g., dev, staging, production). Intents can be cross-namespace and cross-environment, and Otterize Cloud associates namespaces with their respective environments. Environment names must be unique within an organization.

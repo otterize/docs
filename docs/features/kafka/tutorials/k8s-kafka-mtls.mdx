@@ -234,13 +234,13 @@ You can now browse to your account at [https://app.otterize.com](https://app.ott
 
 ![Access graph](/img/quick-tutorials/k8s-kafka-mtls/base.png)
 
-The access graph shows, through its green and orange lines linking the services, that no clients are currently blocked because we haven't enabled any sort of enforcement yet. The orange lines indicate that, since we have not declared any intents for these clients, they _would_ be blocked if we were to turn enforcement on.
+The access graph shows, through its green and orange lines linking the workloads, that no clients are currently blocked because we haven't enabled any sort of enforcement yet. The orange lines indicate that, since we have not declared any intents for these clients, they _would_ be blocked if we were to turn enforcement on.
 
 ### Apply intents
 
 :::tip
 
-You can click on the services or the lines connecting them to see which ClientIntents you need to apply to make the connection go green!
+You can click on the workloads or the lines connecting them to see which ClientIntents you need to apply to make the connection go green!
 
 :::
 
@@ -270,9 +270,9 @@ We can see what happened:
 
 1. Kafka topic-specific intents from **[client]** are declared (solid green line).
 2. Calls from **[client-other]** are not declared (orange line).
-3. Looking at the Kafka service, we can see that **[client]** has specific access configured (via Kafka ACLs) to perform `all` operations on the `mytopic` topic.
+3. Looking at the Kafka workload, we can see that **[client]** has specific access configured (via Kafka ACLs) to perform `all` operations on the `mytopic` topic.
 
-Also, the access graph shows information about the mTLS certificates (credentials) distributed to the various services, as long as [Cloud-managed credentials](/security#cryptographic-credentials) are being used.
+Also, the access graph shows information about the mTLS certificates (credentials) distributed to the various workloads, as long as Cloud-managed credentials are being used.
 
 ### Turn on protection
 

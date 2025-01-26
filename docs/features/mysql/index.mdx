@@ -16,7 +16,7 @@ export const mysql_tutorials = [
 
 # MySQL
 
-Otterize is able to create just-in-time username-and-password pairs for your service, providing them as a Kubernetes Secret that can be mounted to file or mapped to environment variables, as well as `GRANT`ing access to databases and tables, based on `ClientIntents` ([Intent-Based Access Control](/overview/intent-based-access-control)) declarations.
+Otterize is able to create just-in-time username-and-password pairs for your workload, providing them as a Kubernetes Secret that can be mounted to file or mapped to environment variables, as well as `GRANT`ing access to databases and tables, based on `ClientIntents` ([Intent-Based Access Control](/overview/intent-based-access-control)) declarations.
 
 ### Tutorials
 
@@ -28,12 +28,12 @@ To learn how to use the Intents Operator and Credentials Operator to enforce acc
 
 ### How does Otterize work with MySQL?
 
-The Otterize credentials operator will create a unique MySQL username-password combination for each service's use, exposed via a Kubernetes Secret. The service will use these credentials to connect to the database. `ClientIntents` will define the access required by that service. As the intents are applied, The Otterize intents operator will keep the database's list of users and GRANTs up to date so that the service is able to access it.
+The Otterize credentials operator will create a unique MySQL username-password combination for each workload's use, exposed via a Kubernetes Secret. The workload will use these credentials to connect to the database. `ClientIntents` will define the access required by that workload. As the intents are applied, The Otterize intents operator will keep the database's list of users and GRANTs up to date so that the workload is able to access it.
 
 1. To get started, your cluster must have Otterize deployed.
 2. You'll need to create a `MySQLServerConfig` in your cluster, providing a connection URL and admin-level credentials for Otterize to manage permissions in your database. Below is an example `MySQLServerConfig` resource.
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2beta1
 kind: MySQLServerConfig
 metadata:
   name: mysql-tutorial-db # database instance name - should match the target in ClientIntents
@@ -57,7 +57,7 @@ spec:
       passwordKey: password
 ```
 
-3. Each service can request a username-password Secret to be created, by annotating the Pod with `credentials-operator.otterize.com/user-password-secret-name`. Below is an example of that annotation and passing the generated credentials into a container with environmental variables.
+3. Each workload can request a username-password Secret to be created, by annotating the Pod with `credentials-operator.otterize.com/user-password-secret-name`. Below is an example of that annotation and passing the generated credentials into a container with environmental variables.
 
 ```yaml
 apiVersion: apps/v1
@@ -98,27 +98,28 @@ spec:
 ```
 
 
-4. Apply `ClientIntents` and the specified access will be `GRANT`ed to the service in the `ClientIntents`.
+4. Apply `ClientIntents` and the specified access will be `GRANT`ed to the workload in the `ClientIntents`.
 
 
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: client-intents-for-server
   namespace: otterize-tutorial-mysql
 spec:
-  service:
+  workload:
     name: server
-  calls:
-    - name: mysql-tutorial-db # Same name as MySQLServerConfig metadata.name
-      type: database
-      databaseResources:
-        - databaseName: otterize-tutorial
-          table: example
-          operations:
-            - SELECT
-            - INSERT
+    kind: Deployment
+  targets:
+    - sql:
+        name: mysql-tutorial-db # Same name as MySQLServerConfig metadata.name
+        privileges:
+          - databaseName: otterize-tutorial
+            table: example
+            operations:
+              - SELECT
+              - INSERT
 ```
 
 5. Done!

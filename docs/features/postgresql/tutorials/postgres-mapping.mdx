@@ -9,7 +9,7 @@ import CodeBlock from "@theme/CodeBlock";
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 
-Otterize visualizes table-level access to PostgreSQL databases, by collecting PostgreSQL audit logs and associating them with the client service identities.
+Otterize visualizes table-level access to PostgreSQL databases, by collecting PostgreSQL audit logs and associating them with the client workload identities.
 
 In this tutorial, we will:
 - Optionally, prepare a Kubernetes cluster and connect it to Otterize Cloud
@@ -138,7 +138,7 @@ and observe how audit log records are being directed to it.
 ### Apply a PostgreSQLServerConfig in your cluster
 To enable Otterize operators to access your database, apply a PostgreSQLServerConfig in your cluster:
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2beta1
 kind: PostgreSQLServerConfig
 metadata:
   name: otterize-tutorial-cloudsql # database instance name - should match the target in ClientIntents
@@ -185,7 +185,7 @@ At this point, Otterize Cloud is able to monitor and visualize your database acc
 Next, we will configure Otterize OSS to generate just-in-time PostgreSQL client credentials for the client application,
 and apply a permissive ClientIntents resource allowing the client application access to the Cloud SQL instance.
 This will create private credentials, used by the client application and by it only,
-which enables service-level visibility and least privilege access to your Cloud SQL instance.
+which enables workload-level visibility and least privilege access to your Cloud SQL instance.
 
 - Delete the secret containing common psql credentials, generated earlier in this tutorial:
 ```shell

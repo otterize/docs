@@ -1,0 +1,388 @@
+---
+sidebar_position: 7
+title: 'Differences between v1 and v2'
+---
+
+ClientIntents v2 is a new version of the `ClientIntents` Custom Resource Definition (CRD) specification. It introduces several changes to the structure and fields of the `ClientIntents` CRD.
+The key differences is that the term `service` is no longer used except exclusively to refer to a Kubernetes `Service`, and `workload` is used instead to refer to workloads that run on your infrastructure.
+The `calls` section has been renamed `targets` and now makes more sense when it is applied to non-network resources such as an AWS S3 bucket or a database.
+
+It is now also possible to target a specific kind of Kubernetes resource, such as a `Deployment` or a `StatefulSet`, and to specify the kind of resource that is being targeted, whereas before the way to do this was ambiguous and not obvious from the syntax.
+
+Starting version 5.0.0 of the `otterize-kubernetes` Helm chart, released on January 26th 2025, ClientIntents v2 is the default format.
+
+# ClientIntents: Differences between v1alpha3 and v2beta1
+
+This document highlights the differences in the `ClientIntents` Custom Resource Definition (CRD) specification between `v1alpha3` and `v2beta1`. It provides a detailed breakdown of each part of the `spec` and outlines what has changed.
+
+## Overview of Key Differences
+
+The `v2beta1` version introduces:
+- More structured and streamlined target definitions.
+- Unified field names for consistency across all target types.
+- Simplifications in defining certain resource-specific details.
+
+### `service` (Renamed to `workload`)
+#### `v1alpha3`
+```yaml
+service:
+  name: <string>
+```
+
+**Fields**:
+  - `name`: Represents the name of the client workload initiating requests.
+
+**Purpose**: Defines the client workload initiating requests.
+
+#### `v2beta1`
+```yaml
+workload:
+  name: <string>
+  kind: <string>
+```
+
+**Fields**:
+  - `name`: Name of the client workload initiating requests.
+  - `kind`: The type of workload, such as `Deployment` or `StatefulSet`.
+
+**Changes**:
+  - The field is renamed from `service` to `workload`.
+  - A new `kind` field is added to specify the workload type (e.g., `Deployment`, `StatefulSet`).
+
+---
+
+### `calls` (Renamed to `targets`)
+#### `v1alpha3`
+```yaml
+calls:
+  - name: <string>
+```
+
+**Fields**:
+  - `name`: Represents the  target resource (e.g., service name, ARN, scope).
+
+**Purpose**: Defines the resources that the workload interacts with.
+#### `v2beta1`
+```yaml
+targets:
+  - <target-type>:
+      ...
+```
+
+**Changes**:
+  - The field is renamed from `calls` to `targets`.
+  - Targets are explicitly categorized into resource types (`kubernetes`, `service`, `kafka`, `sql`, etc.).
+  - Each target type now has its own structured definition.
+
+---
+
+### Inter Service Communication
+#### `v1alpha3`
+```yaml
+cals:
+  - name: <name>[.<namespace>]
+```
+
+**Fields**:
+  - `name`: Represents the target service name (and optional namespace).It represents the resource owning the pods of the target service (such as Deployment, StatefulSet, etc.).
+
+**Purpose**: Defines the target service for inter-service communication (will be translated to NetworkPolicies or mesh policies).
+
+#### `v2beta1`
+```yaml
+targets:
+  - kubernetes:
+      name: <string>[.<namespace>]
+      kind: <string>
+  - service:
+      name: <string>[.<namespace>]
+```
+
+**Fields**:
+  - `kubernetes`: Target is a Kubernetes resource.
+    - `name`: The name of the target Kubernetes resource.
+    - `kind`: The kind of Kubernetes resource (e.g., `Deployment`, `StatefulSet`).
+  - `service`: Target is a Kubernetes Service. It's equivalent to the `kubernetes` target with `kind: Service`.
+    - `name`: The name of the target Service.
+
+**Changes**:
+    - Explicitly defines the target resource type (Kubernetes resource or Service).
+
+
+### HTTP Resources (Simplified)
+#### `v1alpha3`
+```yaml
+calls:
+  - name: <string>
+    HTTPResources:
+      - path: <string>
+        methods: [<string>, ...]
+```
+
+**Purpose**: Defines HTTP resources accessed by the workload.
+
+#### `v2beta1`
+```yaml
+targets:
+  - kubernetes:
+      name: <string>
+      kind: Service
+      http:
+        - path: <string>
+          methods: [<string>, ...]
+```
+
+**Changes**:
+  - `HTTPResources` is replaced by `http` under the respective target type (`kubernetes` or `service`).
+  - This change simplifies the hierarchy and aligns HTTP definitions with other target-specific fields.
+
+---
+
+### Kafka (No Major Changes)
+#### `v1alpha3`
+```yaml
+calls:
+  - name: <string>
+    kafkaTopics:
+      - name: <string>
+        operations: [<string>, ...]
+```
+
+**Fields**:
+  - `name`: Represents the Kafka cluster name.
+  - `kafkaTopics`: A list of Kafka topics with associated operations.
+- `name`: Name of the topic.
+- `operations`: Allowed operations on the topic (e.g., `produce`, `consume`).
+
+**Purpose**: Represents the interaction with Kafka clusters.
+
+#### `v2beta1`
+```yaml
+targets:
+  - kafka:
+      name: <string>
+      topics:
+        - name: <string>
+          operations: [<string>, ...]
+```
+
+**Fields**:
+  - `kafka`: Represents Kafka Target.
+- `name`: The name of the Kafka cluster.
+- `topics`: A list of Kafka topics and allowed operations.
+- `name`: The name of the topic.
+- `operations`: Allowed operations on the topic (e.g., `produce`, `consume`).
+
+**Changes**:
+  - Structurally, Kafka definitions remain the same.
+
+---
+
+### SQL Databases (Renamed to `sql`)
+#### `v1alpha3`
+```yaml
+calls:
+  - name: <string>
+    databaseResources:
+      - databaseName: <string>
+        table: <string>
+        operations: [<string>, ...]
+```
+
+**Fields**:
+  - `name`: Represents the SQL database target.
+  - `databaseResources`: A list of database-specific resources.
+- `databaseName`: The name of the target database.
+- `table`: The table within the database.
+- `operations`: Allowed operations (e.g., `SELECT`, `INSERT`).
+
+**Purpose**: Defines SQL database targets and operations.
+
+#### `v2beta1`
+```yaml
+targets:
+  - sql:
+      name: <string>
+      privileges:
+        - databaseName: <string>
+          table: <string>
+          operations: [<string>, ...]
+```
+
+**Fields**:
+  - `sql`: Represents SQL database targets.
+- `name`: The name of the SQL database.
+- `privileges`: A list of database-specific privileges.
+- `databaseName`: The name of the target database.
+- `table`: The name of the table within the database.
+- `operations`: Allowed SQL operations (e.g., `SELECT`, `INSERT`).
+
+**Changes**:
+  - `databaseResources` is replaced by `sql`.
+  - The field `privileges` replaces `databaseResources` for improved clarity.
+
+---
+
+### AWS
+#### `v1alpha3`
+```yaml
+calls:
+  - name: <ARN>
+    awsActions:
+      - <string>
+```
+
+**Fields**:
+  - `name`: Represents the Amazon Resource Name (ARN) of the target.
+  - `awsActions`: A list of allowed actions for AWS resources (e.g., `s3:GetObject`).
+
+**Purpose**: Defines AWS permissions and target resources.
+
+#### `v2beta1`
+```yaml
+targets:
+  - aws:
+      arn: <string>
+      actions: [<string>, ...]
+```
+
+**Fields**:
+  - `aws`: Represents AWS-specific targets.
+- `arn`: The Amazon Resource Name (ARN) of the target resource.
+- `actions`: List of allowed AWS actions (e.g., `s3:GetObject`).
+
+**Changes**:
+  - `awsActions` is replaced by `actions` within an `aws` block.
+  - `name` is replaced by `arn`, explicitly defining the target resource.
+
+---
+
+### Azure
+#### `v1alpha3`
+```yaml
+calls:
+  - name: <scope>
+    azureRoles:
+      - <string>
+```
+
+**Fields**:
+  - `name`: Represents the Azure resource scope.
+  - `azureRoles`: A list of roles assigned to the Azure target.
+
+**Purpose**: Defines Azure permissions and target resources.
+
+#### `v2beta1`
+```yaml
+targets:
+  - azure:
+      scope: <string>
+      roles: [<string>, ...]
+      actions: [<string>, ...]
+      dataActions: [<string>, ...]
+```
+
+**Fields**:
+  - `azure`: Represents Azure-specific targets.
+- `scope`: The Azure resource scope.
+- `roles`: List of Azure roles.
+- `actions`: List of allowed Azure actions.
+- `dataActions`: List of Azure data-specific actions.
+
+**Changes**:
+  - `azureRoles` is now supported as `roles`, maintaining backward compatibility.
+  - `actions` and `dataActions` are introduced for finer-grained permissions, aligning with Azure's least privilege mapping feature.
+  - `name` is replaced by `scope`, explicitly defining the Azure resource target.
+
+---
+
+### GCP (Unified and Relocated)
+#### `v1alpha3`
+```yaml
+calls:
+  - name: <string>
+    gcpPermissions:
+      - <string>
+```
+
+**Fields**:
+  - `name`: Represents the GCP resource identifier.
+  - `gcpPermissions`: A list of allowed permissions for the GCP resource.
+
+**Purpose**: Defines GCP permissions and target resources.
+
+#### `v2beta1`
+```yaml
+targets:
+  - gcp:
+      resource: <string>
+      permissions: [<string>, ...]
+```
+
+**Fields**:
+  - `gcp`: Represents GCP-specific targets.
+- `resource`: The GCP resource identifier.
+- `permissions`: List of allowed GCP permissions (e.g., `storage.objects.get`).
+
+**Changes**:
+  - `gcpPermissions` is replaced by `permissions` within a `gcp` block.
+  - `name` is replaced by `resource`, explicitly defining the target resource.
+
+---
+
+### Internet (No changes)
+#### `v1alpha3`
+```yaml
+calls:
+  - name: <string>
+    internet:
+      domains:
+        - <string>
+      ips:
+        - <string>
+      ports:
+        - <integer>
+```
+
+**Fields**:
+  - `name`: Represents the name of the internet-based target.
+  - `internet`: Defines internet-based targets.
+- `domains`: A list of allowed domains.
+- `ips`: A list of allowed IP addresses.
+- `ports`: A list of allowed ports.
+
+**Purpose**: Supports defining internet-based targets for workload interactions.
+
+#### `v2beta1`
+```yaml
+targets:
+  - internet:
+      domains: [<string>, ...]
+      ips: [<string>, ...]
+      ports: [<integer>, ...]
+```
+
+**Fields**:
+  - `internet`: Represents internet-based targets.
+- `domains`: List of allowed domains.
+- `ips`: List of allowed IP addresses.
+- `ports`: List of allowed ports.
+
+**Changes**:
+  - No structural changes. The `internet` block remains the same.
+
+---
+
+### Summary
+| Feature             | `v1alpha3`                     | `v2beta1`                    |
+|---------------------|---------------------------------|--------------------------------|
+| Client Workload     | `service.name`                 | `workload.name`, `workload.kind` |
+| Target Field        | `calls`                        | `targets`                     |
+| HTTP Resources      | `HTTPResources`                | `http`                        |
+| Kafka               | `kafkaTopics`                  | `topics`                      |
+| SQL Databases       | `databaseResources`            | `sql.privileges`              |
+| AWS                 | `name`, `awsActions`           | `arn`, `actions`              |
+| Azure               | `name`, `azureRoles`           | `scope`, `actions`, `dataActions` |
+| GCP                 | `name`, `gcpPermissions`       | `resource`, `permissions`     |
+| Internet            | `internet`                     | `internet`                    |
+

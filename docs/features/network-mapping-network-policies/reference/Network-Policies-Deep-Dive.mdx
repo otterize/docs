@@ -55,7 +55,7 @@ namespaces).
 ## Default deny network policy
 To block all traffic within a namespace, you can apply a default deny network policy to that namespace. After applying this policy, only traffic allowed by network policies, such as those generated automatically from ClientIntents, will be allowed within that namespace.
 
-Such a policy only blocks ingress traffic, so it does not prevent pods from connecting to the Internet. Enforcement is performed at the ingress to pods. This is appropriate for achieving in-cluster service-to-service zero trust and network segmentation within a namespace.
+Such a policy only blocks ingress traffic, so it does not prevent pods from connecting to the Internet. Enforcement is performed at the ingress to pods. This is appropriate for achieving in-cluster workload-to-workload zero trust and network segmentation within a namespace.
 
 Here is such a policy that you can apply to any namespace:
 
@@ -75,7 +75,7 @@ If using Calico as your CNI for network policies, you can deploy a global (clust
 
 It's important to exempt Otterize and Calico and the Kubernetes infrastructure itself from this policy, so they can function correctly by receiving calls from the Kubernetes API server.
 
-Such a policy only blocks ingress traffic, so it does not prevent pods from connecting to the Internet. Enforcement is performed at the ingress to pods. This is appropriate for achieving in-cluster service-to-service zero trust and network segmentation across an entire cluster.
+Such a policy only blocks ingress traffic, so it does not prevent pods from connecting to the Internet. Enforcement is performed at the ingress to pods. This is appropriate for achieving in-cluster workload-to-sworkload zero trust and network segmentation across an entire cluster.
 
 ```yaml
 apiVersion: projectcalico.org/v3
@@ -135,12 +135,12 @@ spec:
 
 ## Working with third-party Helm charts and a default deny policy
 After applying a default deny policy, you will need network policies for intended traffic to go through.
-The Otterize network mapper generates ClientIntents for your cluster, but we recommend you use ClientIntents for services that are functional clients, rather than purely operational infrastructure (e.g. `checkoutservice` is a client, while Prometheus is purely operational infrastructure). So you will need to enable traffic to/from such infrastructure outside of Otterize.
+The Otterize network mapper generates ClientIntents for your cluster, but we recommend you use ClientIntents for workloads that are functional clients, rather than purely operational infrastructure (e.g. `checkoutservice` is a client, while Prometheus is purely operational infrastructure). So you will need to enable traffic to/from such infrastructure outside of Otterize.
 
 Many third-party Helm charts come with a ready-made network policy to use when deployed into a cluster that uses a default deny policy. Simply enable them using the values found in the chart.
 
 :::tip
-We recommend using these explicit network policies rather than ClientIntents, as this relieves the infrastructure or platform team in your organization from maintaining ClientIntents for infrastructure services: instead, the Helm chart will always have the most accurate infrastructural network policies.
+We recommend using these explicit network policies rather than ClientIntents, as this relieves the infrastructure or platform team in your organization from maintaining ClientIntents for infrastructure workloads: instead, the Helm chart will always have the most accurate infrastructural network policies.
 :::
 
 ## Auto-generating network policies for external traffic
@@ -148,23 +148,24 @@ The intents operator defaults to automatically generate network policies for Kub
 when an intent will generate a network policy that can block external traffic. To disable this feature, consult the [documentation for the intents operator](/reference/intents-operator).
 
 
-Let's look at an example from our demo. We have a **frontend** service being accessed from multiple sources:
+Let's look at an example from our demo. We have a **frontend** workload being accessed from multiple sources:
 - **loadgenerator** calls it from within the cluster to generate traffic, by accessing the **frontend** **ClusterIP Service**.
 - **frontend-external** is a **Service** with type **LoadBalancer** directing traffic from outside the cluster to the frontend pods. The **LoadBalancer** type means that a cloud provider load balancer will be created and point traffic from the Internet to these pods.
 
 By applying the following intents file:
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: loadgenerator
 spec:
-  service:
+  workload:
     name: loadgenerator
-  calls:
-    - name: frontend
+  targets:
+    - service:
+        name: frontend
 ```
-Otterize will generate a network policy allowing access from the **loadgenerator** service to the **frontend** service.
+Otterize will generate a network policy allowing access from the **loadgenerator** workload to the **frontend** service.
 Once a single network policy matches a pod, other traffic not allowed by existing network policies to the **frontend** will get blocked. In our
 case that means that the **frontend-external** **LoadBalancer** won't be able to communicate with **frontend**.
 

@@ -1,20 +1,20 @@
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: checkoutservice
 spec:
-  service:
+  workload:
     name: checkoutservice
-  calls:
-    - name: emailservice
-      type: http
-    - name: orderservice
-      type: http
-      HTTPResources:
-        - path: /orders/*
-          methods: [ get, post ]
-    - name: ecomm-events
-      type: kafka
-      kafkaTopics:
-        - name: orders
-          operations: [ produce ]
+    kind: Deployment
+  targets:
+    - service:
+        name: emailservice
+    - service:
+        name: orderservice
+        http:
+          - path: /orders/*
+            methods: [ get, post ]
+    - kafka:
+        topics:
+          - name: orders
+            operations: [ produce ]

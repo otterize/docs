@@ -66,7 +66,7 @@ Now that you have Otterize installed, the next step is to create an intent which
 
 :::tip
 
-You can click on the services or the lines connecting them to see which ClientIntents you need to apply to make the connection go green!
+You can click on the workloads or the lines connecting them to see which ClientIntents you need to apply to make the connection go green!
 
 :::
 
@@ -77,34 +77,38 @@ otterize network-mapper export --server server.otterize-tutorial-eks | kubectl a
 Running this command will generate the following `ClientIntents` for each client connected to `server` and apply it to your cluster. You could also place it in a Helm chart or apply it some other way, instead of piping it directly to kubectl.
 
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: client
   namespace: otterize-tutorial-eks
 spec:
-  service:
+  workload:
     name: client
-  calls:
-    - name: server
+    kind: Deployment
+  targets:
+    - service:
+        name: server
 ---
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: client-other
   namespace: otterize-tutorial-eks
 spec:
-  service:
+  workload:
     name: client-other
-  calls:
-    - name: server
+    kind: Deployment
+  targets:
+    - service:
+        name: server
 ```
 
-At which point you should see that the `server` service is ready to be protected:
+At which point you should see that the `server` workload is ready to be protected:
 
 ![One intent applied](/img/quick-tutorials/aws-eks-mini/one-intent.png)
 
-And you can then protect the `server` service by applying the following `yaml` file:
+And you can then protect the `server` workload by applying the following `yaml` file:
 
 ```yaml
 {@include: ../../../../static/code-examples/aws-eks-mini/protect-server.yaml}
@@ -115,7 +119,7 @@ Protect the server by applying the resource:
 ```bash
 kubectl apply -f ${ABSOLUTE_URL}/code-examples/aws-eks-mini/protect-server.yaml
 ```
-And you should see your access graph showing the service as protected:
+And you should see your access graph showing the workload as protected:
 
 ![Protected Service](/img/quick-tutorials/aws-eks-mini/protected.png)
 

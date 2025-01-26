@@ -1,94 +1,124 @@
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: cartservice
 spec:
-  service:
+  workload:
     name: cartservice
-  calls:
-    - name: redis-cart
+    kind: Deployment
+  targets:
+    - service:
+        name: redis-cart
 ---
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: checkoutservice
 spec:
-  service:
+  workload:
     name: checkoutservice
-  calls:
-    - name: cartservice
-    - name: currencyservice
-    - name: emailservice
-    - name: kafka
-    - name: paymentservice
-    - name: productcatalogservice
-    - name: shippingservice
+    kind: Deployment
+  targets:
+    - service:
+        name: cartservice
+    - service:
+        name: currencyservice
+    - service:
+        name: emailservice
+    - service:
+        name: kafka
+    - service:
+        name: paymentservice
+    - service:
+        name: productcatalogservice
+    - service:
+        name: shippingservice
 
 ---
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: frontend
 spec:
-  service:
+  workload:
     name: frontend
-  calls:
-    - name: adservice
-    - name: cartservice
-    - name: checkoutservice
-    - name: currencyservice
-    - name: productcatalogservice
-    - name: recommendationservice
-    - name: shippingservice
+    kind: Deployment
+  targets:
+    - service:
+        name: adservice
+    - service:
+        name: cartservice
+    - service:
+        name: checkoutservice
+    - service:
+        name: currencyservice
+    - service:
+        name: productcatalogservice
+    - service:
+        name: recommendationservice
+    - service:
+        name: shippingservice
 ---
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: kafka
 spec:
-  service:
+  workload:
     name: kafka
-  calls:
-    - name: kafka
-    - name: zookeeper
+    kind: StatefulSet
+  targets:
+    - service:
+        name: kafka
+    - service:
+        name: zookeeper
 ---
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: loadgenerator
 spec:
-  service:
+  workload:
     name: loadgenerator
-  calls:
-    - name: frontend
+    kind: Deployment
+  targets:
+    - service:
+        name: frontend
 ---
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: orderservice
 spec:
-  service:
+  workload:
     name: orderservice
-  calls:
-    - name: kafka
-    - name: emailservice
+    kind: Deployment
+  targets:
+    - service:
+        name: kafka
+    - service:
+        name: emailservice
 ---
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: paymentservice
 spec:
-  service:
+  workload:
     name: paymentservice
-  calls:
-    - name: kafka
+    kind: Deployment
+  targets:
+    - service:
+        name: kafka
 ---
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: recommendationservice
 spec:
-  service:
+  workload:
     name: recommendationservice
-  calls:
-    - name: productcatalogservice
+    kind: Deployment
+  targets:
+    - service:
+        name: productcatalogservice

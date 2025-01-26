@@ -1,0 +1,142 @@
+---
+sidebar_position: 7
+title: 'ClientIntents CRD'
+---
+
+ClientIntents are used to specify the required and intended access for a particular workload to function successfully. The Otterize operators then use this information to generate the necessary credentials and policies to enable the intended access.
+
+Review for ClientIntents is normally done as part of the normal code review process, either in the same repository of the workload, in a different repository owned by the platform or security teams, or by additional reviewers with [aid of the CODEOWNERS feature for additional required reviewers](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners#codeowners-and-branch-protection).
+
+Some users of Otterize also choose to perform additional validation through [Kyverno validation policies](/reference/validating-clientintents) or the native [Kubernetes ValidatingAdmissionPolicies](https://kubernetes.io/docs/reference/access-authn-authz/validating-admission-policy/) available since v1.30.
+
+## ClientIntents v2
+The following is a fully annotated example of the CRD, demonstrating how you might specify different kinds of access.
+
+:::info Note
+Always use v2: While v1 is still supported, it is deprecated and only supported for backwards compatibility reasons. v2 is easier to understand and use and is an improved version based on customer feedback.
+:::
+
+```yaml
+apiVersion: k8s.otterize.com/v2beta1
+kind: ClientIntents
+metadata:
+  name: intents-for-checkoutservice
+  namespace: otterize-ecom-demo
+spec:
+  workload:
+    name: checkoutservice # Name of the workload initiating calls
+    kind: Deployment # Type of workload (e.g., Deployment, StatefulSet, etc.)
+  targets:
+    - kubernetes:
+        name: emailservice # Target Kubernetes resource name
+        kind: Service # Kind of the Kubernetes resource
+    - service: # Equivalent to kubernetes target with kind: Service
+        name: orderservice # Target Service name
+        http:
+          - path: /orders # HTTP path to target
+            methods: [ GET ] # Allowed HTTP methods
+    - kafka:
+        name: kafka-prod # Kafka cluster name
+        topics:
+          - name: orders # Kafka topic
+            operations: [ read, write ] # Allowed operations on the topic
+    - sql:
+        name: mysql-db # SQL database resource name
+        privileges:
+          - databaseName: ecommerce # Target database name
+            table: orders # Table name
+            operations: [ SELECT, INSERT ] # Allowed SQL operations
+    - internet:
+        domains:
+          - 'api.example.com' # Allowed domain names
+          - '*.example.com' # Allowed domain names with '.example.com' suffix
+        ips:
+          - 192.168.1.1 # Allowed IP addresses
+        ports:
+          - 443 # Allowed ports for the IP addresses or domains
+    - aws:
+        arn: arn:aws:s3:::my-bucket # AWS resource ARN
+        actions:
+          - s3:GetObject # Allowed AWS actions
+          - s3:PutObject
+    - gcp:
+        resource: projects/my-project-id/buckets/my-bucket # GCP resource name
+        permissions:
+          - storage.objects.get # Allowed GCP permissions
+          - storage.objects.create
+    - azure:
+        scope: /subscriptions/my-subscription/resourceGroups/my-group/providers/Microsoft.Storage/storageAccounts/myaccount # Azure resource scope
+        actions:
+          - Microsoft.Storage/storageAccounts/blobServices/containers/read # Allowed Azure actions
+        dataActions:
+          - Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read # Allowed Azure data actions
+        roles:
+          - Storage Blob Data Reader # Allowed Azure roles
+        keyVaultPolicy: # Azure Key Vault policy
+          secretPermissions:
+            - get
+            - list
+          keyPermissions:
+            - decrypt
+            - encrypt
+
+```
+
+## ClientIntents v1 (deprecated)
+:::caution Note
+Always use v2: While v1 is still supported, it is deprecated and only supported for backwards compatibility reasons. v2 is easier to understand and use and is an improved version based on customer feedback.
+:::
+
+```yaml
+apiVersion: k8s.otterize.com/v1alpha3
+kind: ClientIntents
+metadata:
+  name: intents-for-inventoryservice
+  namespace: otterize-retail-demo
+spec:
+  service:
+    name: inventoryservice # Name of the client workload initiating requests
+  calls:
+    - name: emailservice # Name of the Kubernetes resource (service)
+    - name: orderservice # Another Kubernetes service target
+      HTTPResources:
+        - path: /orders
+          methods: [ GET, POST ]
+    - name: arn:aws:s3:::inventory-bucket # AWS resource ARN
+      awsActions:
+        - s3:GetObject
+        - s3:PutObject
+    - name: /subscriptions/my-subscription/resourceGroups/my-group/providers/Microsoft.Storage/storageAccounts/mystorageaccount # Azure resource scope
+      azureRoles:
+        - Storage Blob Data Reader
+        - Storage Blob Data Contributor
+      azureKeyVaultPolicy:
+        secretPermissions:
+          - get
+          - list
+        keyPermissions:
+          - decrypt
+          - encrypt
+    - name: projects/my-project-id/buckets/my-bucket # GCP resource name
+      gcpPermissions:
+        - storage.objects.get
+        - storage.objects.create
+    - name: kafka-prod # Kafka cluster name
+      kafkaTopics:
+        - name: inventory_updates # Kafka topic name
+          operations: [ produce, consume ]
+    - name: ecommerce-database # SQL database resource name
+      databaseResources:
+        - databaseName: inventory_db # Database name
+          table: products # Table name
+          operations: [ SELECT, UPDATE ] # Allowed SQL operations
+    - name: api.retail.example.com # Internet domain
+      internet:
+        domains:
+          - api.retail.example.com # Allowed domain names
+        ips:
+          - 203.0.113.10 # Allowed IP addresses
+        ports:
+          - 443 # Allowed ports for the IP addresses or domains
+```
+

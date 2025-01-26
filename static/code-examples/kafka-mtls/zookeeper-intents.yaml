@@ -1,11 +1,12 @@
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: kafka
   namespace:  kafka
 spec:
-  service:
+  workload:
     name: kafka
-  calls:
-    - name: kafka.kafka-zookeeper
-      type: http
+    kind: StatefulSet
+  targets:
+    - service:
+        name: kafka.kafka-zookeeper

@@ -1,10 +1,11 @@
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: checkoutservice
   namespace:  otterize-ecom-demo
 spec:
-  service:
+  workload:
     name: checkoutservice
-  calls:
-    - name: productcatalogservice
+  targets:
+    - service:
+        name: productcatalogservice

@@ -1,4 +1,4 @@
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2beta1
 kind: ProtectedService
 metadata:
   name: server
@@ -6,3 +6,4 @@ metadata:
 
 spec:
   name: server
+  kind: Deployment

@@ -5,7 +5,7 @@ title: Reference
 
 ### MySQLServerConfig example (YAML)
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2beta1
 kind: MySQLServerConfig
 metadata:
   name: mysql-tutorial-db # database instance name - should match the target in ClientIntents
@@ -32,27 +32,28 @@ spec:
 ### ClientIntents example (YAML)
 
 ```yaml
-apiVersion: k8s.otterize.com/v1alpha3
+apiVersion: k8s.otterize.com/v2beta1
 kind: ClientIntents
 metadata:
   name: client-intents-for-server
   namespace: otterize-tutorial-mysql
 spec:
-  service:
-    # Service requiring access to MySQL
+  workload:
+    # workload requiring access to MySQL
     name: server
-  calls:
+    kind: Deployment
+  targets:
       # This name will need to match the MySQLServerConfig metadata.name field
-    - name: otterize-tutorial-mysql
-      type: database
-      databaseResources:
-        - databaseName: otterize_tutorial
-          # Optional table name, if omitted all tables will be granted access
-          table: example
-          # Operations being granted, options include SELECT, INSERT, UPDATE, DELETE, ALL
-          operations:
-            - SELECT
-            - INSERT
+    - sql:
+        name: otterize-tutorial-mysql
+        privileges:
+          - databaseName: otterize_tutorial
+            # Optional table name, if omitted all tables will be granted access
+            table: example
+            # Operations being granted, options include SELECT, INSERT, UPDATE, DELETE, ALL
+            operations:
+              - SELECT
+              - INSERT
 ```
 
 

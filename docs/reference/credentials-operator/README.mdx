@@ -30,13 +30,13 @@ If you want pods to be restarted automatically after secret rotation, set the an
 The credentials operator performs two steps in order to issue certificates.
 
 #### Step 1: SPIRE entry registration
-This step only happens if the operator is configured to use SPIRE for certificate generation. Once the operator [resolves the service name](#service-name-resolution-and-automatic-pod-labeling) for a pod, it labels the pod so that SPIRE can find it, and registers an entry with the SPIRE server for that label.
+This step only happens if the operator is configured to use SPIRE for certificate generation. Once the operator [resolves the workload identity](#service-name-resolution-and-automatic-pod-labeling) for a pod, it labels the pod so that SPIRE can find it, and registers an entry with the SPIRE server for that label.
 
 #### Step 2: Certificate generation
 The operator consults the annotation `credentials-operator.otterize.com/tls-secret-name`. If that annotation exists, the operator creates a secret named after the value of the label. That secret contains X.509 credentials within, provided by cert-manager, Otterize Cloud or SPIRE, depending on how the credentials operator is configured.
 
 ##### cert-manager
-The operator creates a cert-manager [`Certificate`](https://cert-manager.io/docs/usage/certificate/) resource, which will create a Kubernetes Secret with the name specified by the value of the annotation `credentials-operator.otterize.com/tls-secret-name`. The common name and DNS names in the certificate are values that represent the identity of the service, as resolved by the [service identity resolution algorithm](#3-service-name-resolution-and-automatic-pod-labeling), i.e. `servicename.namespace`.
+The operator creates a cert-manager [`Certificate`](https://cert-manager.io/docs/usage/certificate/) resource, which will create a Kubernetes Secret with the name specified by the value of the annotation `credentials-operator.otterize.com/tls-secret-name`. The common name and DNS names in the certificate are values that represent the workload identity, as resolved by the [workload identity resolution algorithm](#3-service-name-resolution-and-automatic-pod-labeling), i.e. `servicename.namespace`.
 
 The operator will use a [`ClusterIssuer`](https://cert-manager.io/docs/concepts/issuer/) or an [`Issuer`](https://cert-manager.io/docs/concepts/issuer/) to create the Certificate resource, which it expects to find in the same namespace as the `Pod` with the annotation. The `Issuer` is configured at deploy time, using the [Helm chart](/reference/credentials-operator/helm-chart).
 
@@ -46,7 +46,7 @@ In the event that the default approver controller in `cert-manager` is [disabled
 The operator requests certificates from Otterize Cloud, which internally manages them in Hashicorp Vault. The certificates are then placed within a Kubernetes Secret named with the value of the annotation `credentials-operator.otterize.com/tls-secret-name`.
 
 ##### SPIRE
-Once the operator has registered the pod with SPIRE, which happens automatically for a pod that has the `credentials-operator.otterize.com/tls-secret-name` annotation upon pod startup. The credentials operator then acquires the SVID and certificates for the CA chain and places them within a Kubernetes Secret. The SVID and DNS names in the certificate is the identity of the service, as resolved by the [service identity resolution algorithm](#3-service-name-resolution-and-automatic-pod-labeling), i.e. `servicename.namespace`.
+Once the operator has registered the pod with SPIRE, which happens automatically for a pod that has the `credentials-operator.otterize.com/tls-secret-name` annotation upon pod startup. The credentials operator then acquires the SVID and certificates for the CA chain and places them within a Kubernetes Secret. The SVID and DNS names in the certificate is the workload identity, as resolved by the [workload identity resolution algorithm](#3-service-name-resolution-and-automatic-pod-labeling), i.e. `servicename.namespace`.
 
 ## SPIRE workload registrar
 When deployed with a SPIRE server, the operator registers every pod with the SPIRE server (even those without annotations).
@@ -71,4 +71,4 @@ To learn more, check out the documentation for [SPIRE](https://spiffe.io/docs/la
 | `credentials-operator.otterize.com/restart-pod-on-certificate-renewal` | A pod with this annotation (no matter the value) will be restarted after certificate renewal, along with any replicas. Should be ideally set through the pod owner's `template` spec so it will persist between restarts.           | N/A                                                       |
 | `credentials-operator.otterize.com/user-password-secret-name`          | If set, the operator will create a secret with this name containing user-password credentials for this pod.                                                                                                                         | N/A                                                       |
 | `credentials-operator.otterize.com/restart-on-secret-rotation`         | A pod with this annotation (no matter the value) will be restarted after user-password secret rotation, along with any replicas. Should be ideally set through the pod owner's `template` spec so it will persist between restarts. |                                                           |
-| `intents.otterize.com/service-name`                                    | Used for [service identity resolution](/reference/service-identities#kubernetes-service-identity-resolution).                                                                                                                       |                                                           |
+| `intents.otterize.com/service-name`                                    | Used for [workload identity resolution](/reference/workload-identities#kubernetes-service-identity-resolution).                                                                                                                       |                                                           |

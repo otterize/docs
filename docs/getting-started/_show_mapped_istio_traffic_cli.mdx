@@ -48,35 +48,37 @@ Note the HTTP-level details in the `list` and `export` results. For example, the
 
 2. For the simple example above, you should see (concatenated into one YAML file):
    ```yaml
-   apiVersion: k8s.otterize.com/v1alpha3
+   apiVersion: k8s.otterize.com/v2beta1
       kind: ClientIntents
    metadata:
      name: client
      namespace: otterize-tutorial-istio-mapping
    spec:
-     service:
+     workload:
        name: client
-     calls:
-       - name: nginx
-         type: http
-         HTTPResources:
-            - path: /client-path
-              methods: [GET]
+       kind: Deployment
+     targets:
+       - service:
+         name: nginx
+         http:
+           - path: /client-path
+             methods: [GET]
    ---
-   apiVersion: k8s.otterize.com/v1alpha3
+   apiVersion: k8s.otterize.com/v2beta1
    kind: ClientIntents
    metadata:
      name: client2
      namespace: otterize-tutorial-istio-mapping
    spec:
-     service:
+     workload:
        name: client2
-     calls:
-       - name: nginx
-         type: http
-         HTTPResources:
-           - path: /client2-path
-             methods: [POST]
+       kind: Deployment
+     targets:
+       - service:
+           name: nginx
+           http:
+             - path: /client2-path
+               methods: [POST]
    ```
 
 </TabItem>
@@ -93,50 +95,54 @@ Note the HTTP-level details in the `list` and `export` results. For example, the
     [
       {
         "kind": "ClientIntents",
-        "apiVersion": "k8s.otterize.com/v1alpha3",
+        "apiVersion": "k8s.otterize.com/v2beta1",
         "metadata": {
           "name": "client",
           "namespace": "otterize-tutorial-istio-mapping"
         },
         "spec": {
-          "service": {
-            "name": "client"
+          "workload": {
+            "name": "client",
+            "kind": "Deployment"
           },
-          "calls": [
+          "targets": [
             {
-              "name": "nginx",
-              "type": "http",
-              "HTTPResources": [
-                {
-                  "path": "/client-path",
-                  "methods": ["GET"]
-                }
-              ]
-            }
+              "service": {
+                "name": "nginx"
+                "http": [
+                  {
+                    "path": "/client-path",
+                    "methods": ["GET"]
+                  }
+                ]
+              },
+            },
           ]
         }
       },
       {
         "kind": "ClientIntents",
-        "apiVersion": "k8s.otterize.com/v1alpha3",
+        "apiVersion": "k8s.otterize.com/v2beta1",
         "metadata": {
           "name": "client2",
           "namespace": "otterize-tutorial-istio-mapping"
         },
         "spec": {
-          "service": {
-            "name": "client2"
+          "workload": {
+            "name": "client2",
+            "kind": "Deployment"
           },
-          "calls": [
+          "targets": [
             {
-              "name": "nginx",
-              "type": "http",
-              "HTTPResources": [
-                {
-                  "path": "/client2-path",
-                  "methods": ["POST"]
-                }
-              ]
+              "service": {
+                "name": "nginx"
+                 "http": [
+                    {
+                      "path": "/client2-path",
+                      "methods": ["POST"]
+                    }
+                 ]
+              }
             }
           ]
         }
