@@ -27,7 +27,7 @@ Already have Otterize & a Kafka broker deployed on your cluster? Skip to the [tu
 To deploy Otterize, head over to [Otterize Cloud](https://app.otterize.com) and associate a Kubernetes cluster on the [Integrations page](https://app.otterize.com/integrations), and follow the instructions. If you already have a Kubernetes cluster connected, skip this step.
 
 ##### Note:
-* Under mTLS and Kafka support choose **Otterize Cloud**.
+* Under Select certificate provider (mTLS and Kafka support) choose **Otterize Cloud**.
 * Copy the Helm command and add the following flags:
 ```bash
 --set intentsOperator.operator.enableNetworkPolicyCreation=false \
@@ -35,7 +35,7 @@ To deploy Otterize, head over to [Otterize Cloud](https://app.otterize.com) and 
 --set networkMapper.kafkawatcher.kafkaServers={"kafka-0.kafka"}
 ```
 
-Note that enforcement is disabled, we will enable it later. The configuration tab should look like this:
+Note that enforcement is disabled, we will enable it later.
 
 ### 2. Install Kafka
 
@@ -89,7 +89,7 @@ Our simple example consists of two client pods:
 - One named "**client**".
 - And one named "**client-other**".
 
-These clients are connecting to Kafka using mTLS, the credentials which they will receive from Otterize. Otterize makes this easy, requiring just 4 simple changes:
+These clients are connecting to Kafka using mTLS, with the credentials which they will receive from Otterize. Otterize makes this easy, requiring just 3 simple changes:
 
 1. **Generate credentials**: add the `credentials-operator.otterize.com/tls-secret-name` annotation, which tells Otterize to generate mTLS credentials and store them in a Kubernetes Secret whose name is the value of this annotation.
 2. **Expose credentials in a volume**: add a volume containing this secret to the pod.
@@ -217,6 +217,9 @@ This other client should also be able to access both topics:
 
 ```bash
 kubectl logs -f --tail 1 -n otterize-tutorial-kafka-mtls deploy/client-other
+```
+This client should be able to access both topics:
+```
 [client-other] Loading mTLS certificates
 [client-other] Connecting to Kafka
 [client-other] Creating a producer and a consumer for - mytopic
@@ -258,9 +261,10 @@ kubectl apply -f ${ABSOLUTE_URL}/code-examples/kafka-mtls/client-intents.yaml
 
 If you go back to your access graph, you'll now see that the `client` has a solid green line connecting it to the Kafka broker. This is because the `client` has both declared its intent to access the Kafka broker, and it has been authenticated using mTLS.
 
-If you click on that solid line, you will see that the declared intents match the discovered intents, so access is assured.
+If you click on that solid line, you can see that the client has intents declared and allowed, so access is assured.
 
 ![client intents applied](/img/quick-tutorials/k8s-kafka-mtls/client-intents.png)
+
 
 2. At this point, since the Kafka server is not actually protected, the `client-other` can still access the topics. The line is orange, indicating that it has no declared intents.
 
@@ -270,7 +274,7 @@ We can see what happened:
 
 1. Kafka topic-specific intents from **[client]** are declared (solid green line).
 2. Calls from **[client-other]** are not declared (orange line).
-3. Looking at the Kafka workload, we can see that **[client]** has specific access configured (via Kafka ACLs) to perform `all` operations on the `mytopic` topic.
+3. Looking at the line connecting **[client]** to Kafka workload, we can see that **[client]** has specific access configured (via Kafka ACLs) to perform `all` operations on the `mytopic` and `transactions` topics.
 
 Also, the access graph shows information about the mTLS certificates (credentials) distributed to the various workloads, as long as Cloud-managed credentials are being used.
 
@@ -305,19 +309,19 @@ time="[...]" level=error msg="Failed reading/writing to Kafka"
 error="kafka server: The client is not authorized to access this topic
 ```
 
-And if you look back at your access graph, you'll see that the Kafka broker is now protected, and that the `client-other` and `client-authenticated` are blocked.
+And if you look back at your access graph, you'll see that `client-other` is blocked.
 
-![Clients blocked](/img/quick-tutorials/k8s-kafka-mtls/clients-blocked.png)
+![Clients blocked](/img/quick-tutorials/k8s-kafka-mtls/client-blocked.png)
 
 ### What did we accomplish?
 
-- Controlling Kafka access no longer means touching ACLs, issuing and managing and distributing certs, establishing trust,
+- Controlling Kafka access no longer means touching ACLs, issuing, managing and distributing certs, establishing trust,
   etc.
 
 - As we saw with pod-to-pod access, clients simply declare with their intents files the Kafka access they need,
   and define a place on their filesystem where they'll get the appropriate credentials (certs).
 
-- The next `kubectl apply` ensures that all the appropriate certs are issued and distributed,
+- The next `kubectl apply` you'll run will ensures that all the appropriate certs are issued and distributed,
   and that Kafka ACLs are configured to reflect precisely the intended topic-level access.
 
 <details>

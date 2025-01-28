@@ -58,6 +58,7 @@ Already have Otterize & a Kafka broker deployed on your cluster? Skip to the [tu
 To deploy Otterize, head over to [Otterize Cloud](https://app.otterize.com) and associate a Kubernetes cluster on the [Integrations page](https://app.otterize.com/integrations), and follow the instructions. If you already have a Kubernetes cluster connected, skip this step.
 
 ##### Note:
+* Use `ca-issuer` as the `issuerName` if you configure the CA and the issuer like in this tutorial 
 * Under mTLS and Kafka support choose **cert-manager**.
 * Copy the Helm command and add the following flags:
 ```bash
@@ -326,9 +327,7 @@ kubectl apply -f ${ABSOLUTE_URL}/code-examples/kafka-mtls-cert-manager/client-in
 
 If you go back to your access graph, you'll now see that the `client` has a solid green line connecting it to the Kafka broker. This is because the `client` has both declared its intent to access the Kafka broker, and it has been authenticated using mTLS.
 
-If you click on that solid line, you will see that the declared intents match the discovered intents, so access is assured.
-
-![client intents applied](/img/quick-tutorials/k8s-kafka-mtls-cert-mgr/client-intents.png)
+If you click on that solid line, you will see that the declared intents, so access is assured.
 
 2. At this point, since the Kafka server is not actually protected, the `client-other` can still access the topics. The line is orange, indicating that it has no declared intents.
 
@@ -359,6 +358,10 @@ kubectl apply -f ${ABSOLUTE_URL}/code-examples/kafka-mtls-cert-manager/protected
 ```
 
 If you once again tail the logs for `client-other` you'll see that it is no longer authorized to access this topic:
+
+```bash
+kubectl logs -f --tail 1 -n otterize-tutorial-kafka-mtls deploy/client-other
+```
 
 ```
 [client-other] Loading mTLS certificates
