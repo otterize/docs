@@ -4,6 +4,6 @@ metadata:
   name: kafkaserverconfig
   namespace: kafka
 spec:
-  service:
+  workload:
     name: kafka
   addr: kafka.kafka:9092
