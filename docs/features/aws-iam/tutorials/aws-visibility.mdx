@@ -124,8 +124,6 @@ kubectl apply -n otterize-tutorial-aws-visibility -f ${ABSOLUTE_URL}/code-exampl
 ```
 </details>
 
-In the Kubernetes `Deployment` manifest, you will notice the following label in the pod template: `network-mapper.otterize.com/aws-visibility`. This label instructs the network mapper to track AWS API calls for this pod, helping identify the resources and actions being utilized.
-
 Once the pod is deployed, you can verify the logs to confirm it is successfully calling the Lambda functions:
 
 ```bash
