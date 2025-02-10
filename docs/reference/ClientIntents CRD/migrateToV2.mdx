@@ -45,7 +45,7 @@ workload:
 
 **Fields**:
   - `name`: Name of the client workload initiating requests.
-  - `kind`: The type of workload, such as `Deployment` or `StatefulSet`.
+  - `kind`: The type of workload, such as `Deployment` or `StatefulSet`; Optional, omit to auto-detect pod identity. More info on [Workload identity and resolution](/reference/workload-identities).
 
 **Changes**:
   - The field is renamed from `service` to `workload`.
@@ -103,7 +103,7 @@ targets:
 **Fields**:
   - `kubernetes`: Target is a Kubernetes resource.
     - `name`: The name of the target Kubernetes resource.
-    - `kind`: The kind of Kubernetes resource (e.g., `Deployment`, `StatefulSet`).
+    - `kind`: The kind of Kubernetes resource (e.g., `Deployment`, `StatefulSet`); ; Optional, omit to auto-detect pod identity. More info on [Workload identity and resolution](/reference/workload-identities).
   - `service`: Target is a Kubernetes Service. It's equivalent to the `kubernetes` target with `kind: Service`.
     - `name`: The name of the target Service.
 
@@ -376,15 +376,15 @@ targets:
 ---
 
 ### Summary
-| Feature             | `v1alpha3`                     | `v2beta1`                    |
-|---------------------|---------------------------------|--------------------------------|
-| Client Workload     | `service.name`                 | `workload.name`, `workload.kind` |
-| Target Field        | `calls`                        | `targets`                     |
-| HTTP Resources      | `HTTPResources`                | `http`                        |
-| Kafka               | `kafkaTopics`                  | `topics`                      |
-| SQL Databases       | `databaseResources`            | `sql.privileges`              |
-| AWS                 | `name`, `awsActions`           | `arn`, `actions`              |
-| Azure               | `name`, `azureRoles`           | `scope`, `actions`, `dataActions` |
-| GCP                 | `name`, `gcpPermissions`       | `resource`, `permissions`     |
-| Internet            | `internet`                     | `internet`                    |
+| Feature         | `v1alpha3`               | `v2beta1`                         |
+|-----------------|--------------------------|-----------------------------------|
+| Client Workload | `service.name`           | `workload.name`, `workload.kind`  |
+| Target Field    | `calls`                  | `targets`                         |
+| HTTP Resources  | `HTTPResources`          | `http`                            |
+| Kafka           | `kafkaTopics`            | `topics`                          |
+| SQL Databases   | `databaseResources`      | `sql.privileges`                  |
+| AWS             | `name`, `awsActions`     | `arn`, `actions`                  |
+| Azure           | `name`, `azureRoles`     | `scope`, `actions`, `dataActions` |
+| GCP             | `name`, `gcpPermissions` | `resource`, `permissions`         |
+| Internet        | `internet`               | `internet`                        |
 
