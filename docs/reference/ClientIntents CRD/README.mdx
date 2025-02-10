@@ -25,11 +25,11 @@ metadata:
 spec:
   workload:
     name: checkoutservice # Name of the workload initiating calls
-    kind: Deployment # Type of workload (e.g., Deployment, StatefulSet, etc.)
+    kind: Deployment # Type of workload (e.g., Deployment, StatefulSet, etc.); Optional, omit to auto-detect pod identity
   targets:
     - kubernetes:
         name: emailservice # Target Kubernetes resource name
-        kind: Service # Kind of the Kubernetes resource
+        kind: Service # Kind of the Kubernetes resource; Optional, omit to auto-detect pod identity
     - service: # Equivalent to kubernetes target with kind: Service
         name: orderservice # Target Service name
         http:
