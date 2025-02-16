@@ -396,7 +396,7 @@ if (process.env.ADD_REDIRECTS === 'production') {
           to: '/features/istio/tutorials/k8s-istio-watcher',
         },
         {
-          from: ['/quick-visual-tutorials/visual-ibac-istio-authorization-policies','/quickstart/access-control/k8s-istio-authorization-policies', '/quickstart/k8s-istio-authorization-policies'],
+          from: ['/quick-visual-tutorials/visual-ibac-istio-authorization-policies','/quickstart/access-control/k8s-istio-authorization-policies', '/quickstart/k8s-istio-authorization-policies', '/quick-tutorials/k8s-istio-authorization-policies'],
           to: '/features/istio/tutorials/k8s-istio-authorization-policies',
         },
         {
