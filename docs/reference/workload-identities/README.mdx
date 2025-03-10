@@ -5,7 +5,7 @@ title: Workload identity and resolution
 Otterize supports two approaches for specifying workload identity in Kubernetes: explicit and implicit.
 
 ## Explicitly specifying `Kind`
-This approach requires specifying both the name, possibly with a namespace, and the kind of the service in the intent, ensuring precise identification.
+This approach requires specifying both the name, possibly with a namespace, and the kind of the workload in the intent, ensuring precise identification.
 ```yaml
    apiVersion: k8s.otterize.com/v2beta1
    kind: ClientIntents
@@ -24,17 +24,17 @@ This approach requires specifying both the name, possibly with a namespace, and 
        - service:
            name: server.example-ns
 ```
-In the YAML above, the service `client` is a `Deployment` in the namespace `otterize-tutorial-istio-mapping`, and it intends to call the service `server` is a `Service` in the namespace `example-ns`.
+In the YAML above, the workload `client` is a `Deployment` in the namespace `otterize-tutorial-istio-mapping`, and it intends to call the workload `server`, which is a `Service`, in the namespace `example-ns`.
 
 
 ### Kubernetes workload identity resolution
 How do Otterize operators decide what is the identity of the workload that runs within the pod? The algorithm is as follows:
 
-1. If the pod has an `intents.otterize.com/workload-name` annotation, its value is used as the service name. (You can change which annotation is used by setting `global.serviceNameOverrideAnnotationName` &mdash; see the [docs](/reference/otterize-chart#global-parameters).) This allows developers and
-   automations to explicitly name services, if needed. The value must not contain a period `.` as a period is used to separate service name and namespace, when the service is from a different namespace: `svcname.namespace`.
+1. If the pod has an `intents.otterize.com/workload-name` annotation, its value is used as the workload name. (You can change which annotation is used by setting `global.workloadNameOverrideAnnotationName` &mdash; see the [docs](/reference/otterize-chart#global-parameters).) This allows developers and
+   automations to explicitly name workloads, if needed. The value must not contain a period `.` as a period is used to separate workload name and namespace, when the workload is from a different namespace: `server.namespace`.
 2. If there is no `intents.otterize.com/workload-name` annotation, a recursive look-up is performed for the Kubernetes resource owner of
-   the pod, until the root resource is reached, and its name is used as the service name. For example, if you have
+   the pod, until the root resource is reached, and its name is used as the workload name. For example, if you have
    a `Deployment` named `checkoutservice`, which then creates and owns a `ReplicaSet`, which then creates and owns
-   a `Pod`, then the service name for that pod is `checkoutservice` - same as the name of the `Deployment`. This is
-   intended to capture the likely-more-meaningful "human name" of the service. If the resulting service name contains
-   a period `.`, it is replaced with an underscore `_`. Periods are used in service names to denote namespaces, e.g. `svcname.namespace`.
+   a `Pod`, then the workload name for that pod is `checkoutservice` - same as the name of the `Deployment`. This is
+   intended to capture the likely-more-meaningful "human name" of the workload. If the resulting workload name contains
+   a period `.`, it is replaced with an underscore `_`. Periods are used in workload names to denote namespaces, e.g. `server.namespace`.
