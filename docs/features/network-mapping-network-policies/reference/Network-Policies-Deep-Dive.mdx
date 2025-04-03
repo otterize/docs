@@ -179,8 +179,8 @@ would block existing traffic like **loadgenerator** -> **frontend**.
 
 
 ## Auto-generating network policies for Prometheus server
-When an intent generate a network policy that can block Prometheus server from querying metrics, the intents operator by default
-will automatically generates network policies for this workload to enable Prometheus.
+When an intent generates a network policy that can block Prometheus from querying metrics, the intents operator by default
+will automatically generate network policies to enable Prometheus to access the metrics port on this workload.
 
 The way Otterize identifies that a workloads (pods, services) would be blocked from Prometheus is composed of 2 conditions:
   1. The workload has the `prometheus.io/scrape` annotation set to `true`

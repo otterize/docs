@@ -42,9 +42,9 @@ pod.
 
 Learn more: [Network policies deep dive](/features/network-mapping-network-policies/reference/Network-Policies-Deep-Dive)
 
-### Handling Third Party Network Policies
-Otterize automate network policies that enables third party traffic.
-Current supported thirds parties are [external traffic](#Handling external traffic) and [Prometheus traffic](#Handling Prometheus traffic).
+### Handling Third Party or Infrastructure traffic
+Otterize automates network policies that enables third party or infrastructure traffic.
+Otterize can currently automatically handle [external traffic](#Handling external traffic) as well as [Prometheus monitoring traffic](#Handling Prometheus traffic).
 
 #### Handling external traffic
 The intents operator has automatic behavior for allowing external traffic for pods which have indicated that they are supposed to accept external traffic, such as by creating a `Service` of type `NodePort` or `LoadBalancer`, or an `Ingress` resource.
@@ -64,14 +64,14 @@ As the intents operator creates network policies, and the semantics of network p
 1. if no network policies apply to a pod, then all traffic is allowed.
 2. once any network policy applies to a pod, only the traffic explicitly allowed in the policy is allowed
 
-This meant that if you had no network policies on a pod, and created ClientIntents for that pod, then Prometheus scraping would be blocked. To make it easy to enable Prometheus metrics scraping, the intents operator automatically detects resources with `prometheus.io/scrape: "true"` annotation, and if it creates the first network policy to affect those pods, it also creates a network policy that allows Prometheus scraping.
+This meant that if you had no network policies on a pod, and created ClientIntents for that pod, then Prometheus scraping would be blocked. To make it easy to enable traffic for Prometheus metrics scraping, the intents operator automatically detects resources with `prometheus.io/scrape: "true"` annotation, and if it creates the first network policy to affect those pods, it also creates a network policy that allows Prometheus scraping.
 
-For this feature to work, you must set `prometheusServerConfigs` in the Helm chart, so Otterize would be able to identify the Prometheus server in the cluster.
+You must set `prometheusServerConfigs` in the Helm chart, so Otterize would be able to identify the Prometheus server in the cluster and restrict the network policy to only allow traffic from Prometheus.
 
-This behavior can be disabled using the Helm chart's values - `automateThirdPartyNetworkPolicies` or not setting `prometheusServerConfigs`.
+This behavior can be disabled using the Helm chart's values - `automateThirdPartyNetworkPolicies`, or to only disable Prometheus, make sure `prometheusServerConfigs` is not set.
 
-**Note**: If you haven't specified `prometheus.io/port` in the pod or service, Otterize will allow all the ports this workload expose.
-Consider specifying `prometheus.io/port` to allow only the port you want to expose.
+**Note**: If you haven't specified `prometheus.io/port` in the pod or service, Otterize will match Prometheus' behavior by allowing all ports.
+To improve security, specify `prometheus.io/port` to require Prometheus to only connect to that port. Otterize will the only allow access to that port.
 
 ### AWS IAM
 The intents operator enables automatic management of AWS IAM roles and policies according to the
