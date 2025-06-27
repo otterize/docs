@@ -10,9 +10,6 @@ const platformLinks = `
     <div class="tw-self-stretch tw-py-2 tw-justify-start tw-items-start tw-inline-flex">
     <a href="/" class="tw-grow tw-shrink tw-basis-0 tw-text-sky-950 tw-text-base tw-font-medium tw-font-sans tw-leading-normal tw-cursor-pointer !tw-no-underline">Documentation</a>
   </div>
-    <div class="tw-self-stretch tw-py-2 tw-justify-start tw-items-start tw-inline-flex">
-    <a href="https://www.otterize.com/pricing" class="tw-grow tw-shrink tw-basis-0 tw-text-sky-950 tw-text-base tw-font-medium tw-font-sans tw-leading-normal tw-cursor-pointer !tw-no-underline">Pricing</a>
-  </div>
 </div>
 `
 
@@ -196,33 +193,17 @@ const config = {
           {
             position: "left",
             target: "_self",
-            href:'https://www.otterize.com/pricing',
-            html: "<div class='tw-inline tw-font-normal tw-text-base'>Pricing</div>",
-          },
-          {
-            position: "left",
-            target: "_self",
             href:'https://www.otterize.com/resources',
             html: "<div class='tw-inline tw-font-normal tw-text-base'>Blog</div>",
           },
           {
-            href: "https://app.otterize.com/",
-            html: "<div id='login-link' class='tw-inline-flex tw-h-11 tw-w-24 tw-items-center tw-justify-center tw-gap-2 tw-rounded-lg tw-px-4 tw-py-2.5 tw-text-sm lg:tw-text-base tw-font-semibold tw-leading-normal tw-text-gray-600 tw-no-underline -tw-mr-10'>Log in</div>",
+            href: "https://app.otterize.com",
+            html: "<button class='tw-cursor-pointer tw-inline-flex tw-items-center tw-justify-center tw-gap-2 tw-rounded-xl tw-bg-gradient-to-b tw-px-3 tw-py-2.5 tw-text-sm lg:tw-text-base tw-font-semibold tw-leading-normal tw-no-underline tw-shadow tw-font-sans -tw-mr-2 tw-from-indigo-500 tw-bg-indigo-500 tw-to-indigo-600 tw-h-11 tw-border-none  tw-text-white tw-w-full'><img src='/img/menu/cloud.svg' />Log in<span></button>",
             position: "right",
           },
           {
-           href: "https://joinslack.otterize.com",
-           html: "<img  width='30'  height='30'  loading='lazy'  src='/img/footer/slack.svg'  alt='Slack logo'  className='w-5 h-5 relative'  />",
-           position: "right",
-          },
-          {
-            href: "https://otterize.com/signup",
-            html: "<button class='tw-cursor-pointer tw-inline-flex tw-items-center tw-justify-center tw-gap-2 tw-rounded-xl tw-bg-gradient-to-b tw-px-3 tw-py-2.5 tw-text-sm lg:tw-text-base tw-font-semibold tw-leading-normal tw-no-underline tw-shadow tw-font-sans -tw-mr-2 tw-from-indigo-500 tw-bg-indigo-500 tw-to-indigo-600 tw-h-11 tw-border-none  tw-text-white tw-w-full'><img src='/img/menu/cloud.svg' />Signup <span id='sign-extended-text'>for free<span></button>",
-            position: "right",
-          },
-          {
-            href: "https://otterize.com/book-demo",
-            html: "<div class='tw-cursor-pointer tw-font-sans tw-flex tw-items-center tw-rounded-xl tw-h-11 tw-border tw-border-solid tw-border-gray-300 tw-bg-white tw-px-3 tw-text-gray-900 tw-shadow tw-font-medium tw-text-sm lg:tw-text-base tw-w-full tw-justify-center'><span id='request-demo-full-text'>Request a demo</span><span id='request-demo-partial-text'>Demo</span><img class='tw-ml-2' src='/img/menu/right-arrow.svg' /></div>",
+            href: "mailto:support@otterize.com",
+            html: "<div class='tw-cursor-pointer tw-font-sans tw-flex tw-items-center tw-rounded-xl tw-h-11 tw-border tw-border-solid tw-border-gray-300 tw-bg-white tw-px-3 tw-text-gray-900 tw-shadow tw-font-medium tw-text-sm lg:tw-text-base tw-w-full tw-justify-center'><span id='request-demo-full-text'>Contact us</span><span id='request-demo-partial-text'>Demo</span><img class='tw-ml-2' src='/img/menu/right-arrow.svg' /></div>",
             position: "right",
           },
         ],
